@@ -92,6 +92,36 @@ See `.claude/agents/team-collaboration.md` for the full team structure and agent
 
 ---
 
+## [2026-04-07] rust-developer → tech-writer: doc-sync: umrs-label — TUI module added
+
+**Status**: open
+
+`umrs-label` Phase 2 TUI browser is complete. New public API surface and types added.
+
+**Files changed:**
+- `src/tui/mod.rs` (new) — `pub mod app; pub mod render;`
+- `src/tui/app.rs` (new) — `LabelRegistryApp`, `Panel`, `DetailContent`
+- `src/tui/render.rs` (new) — `render_label_registry()` and helpers
+- `src/cui/catalog.rs` (modified) — `DisseminationControl` struct added; `Catalog` gains `dissemination_controls: HashMap<String, DisseminationControl>` field
+- `src/lib.rs` (modified) — `pub mod tui;` added
+- `src/main.rs` (rewritten) — TUI/CLI/JSON dispatch; CLI flags `--us-catalog`, `--ca-catalog`
+- `examples/label_registry.rs` (new) — demonstrates full API
+- `Cargo.toml` (modified) — added ratatui, crossterm, chrono, nix, umrs-ui, umrs-selinux
+
+**Documentation pages that need updating:**
+- `docs/modules/umrs-tools/pages/` — needs a new `umrs-label.adoc` tool reference page (none exists yet)
+- Navigation: add `umrs-label.adoc` to relevant `nav.adoc`
+- Any existing CUI labeling pages that reference umrs-label CLI usage — update with TUI launch instructions and `--cli` flag
+- Developer guide if it references umrs-label API — `LabelRegistryApp` and `DisseminationControl` are now public API
+
+**Key public types for documentation:**
+- `LabelRegistryApp::new(us_catalog, ca_catalog)` — entry point
+- `LabelRegistryApp::build_tree() -> TreeModel` — tree for TUI
+- `DisseminationControl` — models US LDC entries from `dissemination_controls` JSON section
+- TUI key bindings: ↑↓/jk nav, Enter detail, ←→/hl expand/collapse, Tab panel switch, / search, ? help, q quit
+
+---
+
 ## [2026-03-23] The Hand → Henri + Knox: Catalog alignment and data cleanup
 
 **Status**: open

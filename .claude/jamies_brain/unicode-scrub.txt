@@ -1,0 +1,259 @@
+Unicode scrub
+
+Yes — and this is a real, actively exploited class of issues. What you’re referring to falls under Unicode-based obfuscation / steganography / injection. It’s not just theoretical; it shows up in source code attacks, logging evasion, and even policy bypass.
+
+I’ll break this into three precise parts:
+
+⸻
+
+1) How people hide data in Unicode
+
+A. Zero-width characters (invisible payloads)
+
+Characters like:
+	•	U+200B (Zero Width Space)
+	•	U+200C / U+200D (ZWNJ / ZWJ)
+	•	U+2060 (Word Joiner)
+	•	U+FEFF (BOM, also abused mid-text)
+
+These:
+	•	render nothing
+	•	can be chained to encode bits (binary via presence/absence)
+	•	survive copy/paste, logs, JSON, etc.
+
+Example attack pattern:
+
+"admin" != "a​d​m​i​n"   // visually identical, different bytes
+
+➡️ This breaks:
+	•	string comparisons
+	•	audit correlation
+	•	access control logic (if poorly written)
+
+⸻
+
+B. Bidirectional override (Trojan Source class)
+
+Characters like:
+	•	U+202E (Right-to-Left Override)
+	•	U+202D (Left-to-Right Override)
+
+They change how text is displayed vs stored.
+
+Example:
+
+let is_admin = true; //  } ⁦ if (false) {
+
+Compiler sees one thing, human sees another.
+
+➡️ This is the famous Trojan Source attack.
+
+⸻
+
+C. Homoglyphs (look-alike characters)
+
+Examples:
+	•	Latin a vs Cyrillic а
+	•	Latin o vs Greek ο
+
+Visually identical, different codepoints.
+
+➡️ Used in:
+	•	phishing
+	•	identifier spoofing
+	•	policy bypass
+
+⸻
+
+D. Variation selectors / rendering tricks
+
+You mentioned these earlier — they absolutely play a role.
+	•	U+FE0E → text style
+	•	U+FE0F → emoji style
+
+These can:
+	•	change rendering subtly
+	•	create normalization inconsistencies
+
+⸻
+
+E. Overlong combining sequences
+
+Stacking combining marks:
+
+a̴̿̾͗̈́́̾̿͘͠͝
+
+➡️ Can:
+	•	crash renderers
+	•	break parsers
+	•	hide data in long sequences
+
+⸻
+
+F. Encoding covert channels
+
+People literally encode data into:
+	•	zero-width chars → binary
+	•	homoglyph selection → bits
+	•	normalization differences
+
+➡️ This becomes a covert channel inside text
+
+⸻
+
+2) Would your Unicode sanitization help?
+
+Yes — if done correctly, your earlier instincts are exactly right for UMRS-level assurance.
+
+Your sanitization should cover:
+
+✔ Detect / reject invisible control chars
+	•	Zero-width
+	•	Bidi controls
+	•	Non-printing format chars (Cf category)
+
+✔ Normalize text
+
+Use:
+	•	NFC or NFKC
+
+This collapses:
+	•	combining sequences
+	•	compatibility variants
+
+✔ Detect confusables
+	•	Use Unicode confusable tables
+	•	Flag mixed-script identifiers
+
+✔ Enforce script policy
+
+Example:
+	•	“ASCII only” for identifiers
+	•	or “single script only”
+
+✔ Log raw + normalized forms
+
+For audit:
+	•	original bytes
+	•	normalized representation
+
+This fits your evidence-first model perfectly
+
+⸻
+
+3) What a high-assurance UMRS sanitizer should do
+
+Here’s a concrete model aligned with your design philosophy:
+
+Stage 0 — Raw capture
+	•	preserve original bytes
+	•	no mutation
+
+Stage 1 — Structural validation
+
+Reject or flag:
+	•	\0
+	•	control chars (except newline/tab if allowed)
+	•	Cf category (format chars)
+
+Stage 2 — Normalization
+
+Apply:
+	•	NFC (safe default)
+	•	optionally NFKC for stricter environments
+
+Stage 3 — Policy checks
+
+Reject:
+	•	bidi overrides
+	•	zero-width chars
+	•	mixed scripts (Latin + Cyrillic, etc.)
+
+Flag:
+	•	confusables
+	•	long combining chains
+
+Stage 4 — Canonical form
+
+Produce:
+	•	canonical_text
+	•	display_safe_text
+
+Stage 5 — Evidence output
+
+{
+  "original": "...",
+  "normalized": "...",
+  "flags": [
+    "ZERO_WIDTH_DETECTED",
+    "BIDI_CONTROL",
+    "CONFUSABLE"
+  ],
+  "risk_score": "HIGH"
+}
+
+
+⸻
+
+4) Rust implementation direction (high-level)
+
+Use:
+	•	unicode-normalization
+	•	unicode-segmentation
+	•	unicode-security (for confusables)
+
+Key checks:
+
+fn has_zero_width(c: char) -> bool {
+    matches!(c,
+        '\u{200B}' | '\u{200C}' | '\u{200D}' |
+        '\u{2060}' | '\u{FEFF}'
+    )
+}
+
+fn has_bidi_override(c: char) -> bool {
+    matches!(c,
+        '\u{202A}'..='\u{202E}' |
+        '\u{2066}'..='\u{2069}'
+    )
+}
+
+
+⸻
+
+5) Important nuance (this matters for your system)
+
+Even perfect sanitization does not mean you should trust text.
+
+You should classify text sources:
+	•	T0: raw, untrusted
+	•	T1: normalized
+	•	T2: policy-compliant
+	•	T3: verified domain-specific (e.g., validated identifier)
+
+This aligns directly with your trust ladder architecture.
+
+⸻
+
+Bottom line
+
+Yes — people are absolutely hiding data in Unicode using:
+	•	zero-width characters
+	•	bidi overrides (Trojan Source)
+	•	homoglyphs
+	•	normalization tricks
+
+And yes — your instinct to build a Unicode sanitization + validation layer is exactly the correct high-assurance response.
+
+But the key shift is this:
+
+Don’t just “sanitize” — classify, normalize, detect, and preserve evidence
+
+⸻
+
+If you want next, I can:
+	•	build you a UMRS-grade Rust TextEvidence module
+	•	or show a real covert channel encoder/decoder using zero-width chars so you can test detection empirically
+
+
+

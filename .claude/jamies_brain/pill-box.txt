@@ -1,0 +1,13 @@
+
+
+
+echo -e "\x1b[37;47m\u2b24\x1b[30;47m jamie \x1b[37;47m\u2b24\x1b[0m"
+
+
+echo -e "\x1b[37m\u2b24\x1b[30;47m jamie \x1b[37;47m\u2b24\x1b[0m"
+
+
+# Powerline fonts
+echo -e "\x1b[37m\ue0b6\x1b[7m jamie \x1b[27m\ue0b4\x1b[0m"
+
+

@@ -15,6 +15,7 @@
 - [TUI phases](tui_phase1.md) / [phase2](tui_phase2.md) / [phase3](tui_phase3.md) / [phase45](tui_phase45.md)
 - [Timestamp module](timestamp_module.md) — BootSessionTimestamp/Duration, CLOCK_MONOTONIC_RAW
 - [CPU access controls familiarization](cpu_access_controls_familiarization.md) — Phase 1E/1F: PCID, VulnerabilityReport, CET-SS/IBT, UMIP, PKU, ARM PAC/BTI/MTE, Rust CET limitation
+- [umrs-label TUI module](umrs_label_tui.md) — LabelRegistryApp, tui/app.rs+render.rs, DisseminationControl type, main.rs dispatch, Cargo deps
 
 ## CPU/Crypto Reference Scripts
 
@@ -205,6 +206,18 @@ Trust wiring in Phase 2.2/2.3 complete. New `trust.rs` module; `build_c2pa_setti
 All manifest reader functions now accept `&UmrsConfig`. Use `c2pa::Reader::from_context(ctx).with_file(path)`, not `Reader::from_file(path)`.
 See [project_umrs_c2pa.md](project_umrs_c2pa.md) for full details.
 
-## umrs-labels Catalog (2026-03-27)
+## umrs-labels Catalog (updated 2026-04-07)
 
-`src/cui/catalog.rs`: `CatalogMetadata` (flatten for nation-specific fields; `catalog_name`/`authority` `#[serde(default)]` for LEVELS.json compat), `Catalog` (both `labels` and `markings` `#[serde(default)]`), `Marking`/`Label` (`handling: serde_json::Value` — US=string, CA=object), `LevelRegistry`/`LevelDefinition` + `load_levels()`. `country_code()` helper on `Catalog`. Tests: `catalog_tests.rs` (47 tests covering fixture, US, CA, LEVELS.json).
+**LocaleText migration complete.** All human-readable text fields (`name`, `description`, `marking_banner`, `injury_examples`) in `Marking` are now `LocaleText`. `CatalogMetadata.catalog_name` is also `LocaleText`. Old `_fr` Option fields removed.
+
+`src/cui/locale_text.rs`: `LocaleText` — `HashMap<String, String>` newtype with custom serde `Visitor` that accepts both flat strings (stored as `en_US`) and locale-keyed objects. Use `.en()` for English, `.fr()` for Canadian French, `.get(locale)` for dynamic locale lookup. `Display` shows `.en()`. `Serialize` writes locale object form.
+
+`src/cui/catalog.rs`: `CatalogMetadata.catalog_name: LocaleText`; `Marking.name: LocaleText`, `description: LocaleText`, `marking_banner: Option<LocaleText>`, `injury_examples: Option<LocaleText>`. `display_name()` = `name.en()`. `has_description()` = `description.has_content()`.
+
+`pub use super::locale_text::LocaleText` re-exported from `catalog.rs` so callers import from one place.
+
+Tests: `catalog_tests.rs` 38 tests all pass. `setrans_tests.rs` has 7 pre-existing failures (hardcoded c200 vs c300 CA category values, 121 vs 143 US entry count) — unrelated to LocaleText.
+
+Callers in `main.rs` use `.en()` on `LocaleText` fields. `examples/labels.rs` uses `Display` impl directly (format strings).
+
+`umrs-ui/src/marking_detail.rs` `MarkingDetailData` retains separate `name_en/name_fr/description_en/description_fr` String fields — these are a display DTO populated by callers using `.en()` and `.fr()`; they are NOT changed.

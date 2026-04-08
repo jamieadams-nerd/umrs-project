@@ -414,42 +414,36 @@ fn render_system_posture_lines(
 
 /// Top-right of the header: operator session info.
 ///
-/// Three rows:
+/// Four rows:
 ///
 /// ```text
-///  User  : jadams (unconfined_t)
-///  Level : s0-s0:c0.c1023
-///  Time  : 2026-04-05 14:32:07 -08:00
+///  Tool   : umrs-ls v0.1.0
+///  User   : jadams
+///  Domain : unconfined_t
+///  Level  : s0-s0:c0.c1023
 /// ```
 ///
-/// - **User** combines `$USER` with the `_t` type of the running process
-///   context in parentheses.  The `_u` and `_r` components are
-///   deliberately omitted — the type is the only part an operator cares
-///   about at a glance.  Right-truncated to the column budget.
-/// - **Level** is the raw sensitivity level of the *running process*
-///   from `/proc/self/attr/current` — not necessarily the operator's
-///   clearance.  Under targeted policy both are usually `s0-s0:c0.c1023`;
-///   under MLS the process level reflects whatever level the operator
-///   logged in at (or was transitioned to), which may be narrower than
-///   their ceiling clearance.  The label in the header will be
-///   disambiguated in a future popup that also shows the user's full
-///   clearance range.
-/// - **Time** is the local date, time, and UTC offset on one line so the
-///   operator sees the timezone discrepancy when forced into GMT/EST
-///   without a separate row to overlook.
+/// - **Tool** shows the binary name and version for at-a-glance confirmation
+///   that the operator is running the expected tool release.
+/// - **User** is `$USER` or the NSS-resolved username for the running uid.
+///   The SELinux type (domain) has moved to its own **Domain** row.
+/// - **Domain** is the `_t` component of the running process context from
+///   `/proc/self/attr/current`.  Surfacing it separately from the username
+///   reduces visual clutter while preserving the policy-relevant information.
+/// - **Level** is the raw sensitivity level of the *running process* — not
+///   necessarily the operator's clearance ceiling.  Under targeted policy
+///   this is usually `s0-s0:c0.c1023`; under MLS it reflects the login level.
+///   A future popup will disambiguate this from the user's full clearance range.
 ///
 /// All values are right-truncated to the remaining column budget so
-/// long usernames, long MLS ranges, or exotic `_t` types never overflow
-/// the column onto the next field.
+/// long usernames, long MLS ranges, or exotic domain types never overflow.
 ///
-/// NIST SP 800-53 AU-3 — subject identity and timestamp are required
-/// audit record fields; keeping them visible on every frame keeps the
-/// operator's mental model aligned with the audit log.
-/// NIST SP 800-53 IA-2 — visible identification of the running user
-/// and process context supports accountability.
+/// NIST SP 800-53 AU-3 — subject identity is a required audit record field;
+/// surfacing it in every frame keeps the operator's mental model aligned with
+/// the audit log.
+/// NIST SP 800-53 IA-2 — visible identification of the running user and
+/// process domain supports operator accountability.
 fn render_user_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
-    use chrono::{Local, Offset};
-
     // ── Username ──────────────────────────────────────────────────────
     // Prefer $USER; fall back to NSS resolution via getuid, then to the
     // raw uid if NSS is unavailable.
@@ -461,9 +455,8 @@ fn render_user_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
             .map_or_else(|| uid.as_raw().to_string(), |u| u.name)
     });
 
-    // ── Process SELinux context: type + level ─────────────────────────
-    // The `_t` type is surfaced inline next to the username; the level
-    // gets its own row (raw for now — a popup will translate it later).
+    // ── Process SELinux context: domain type + level ──────────────────
+    // Domain (type) gets its own row; level gets its own row.
     let (ctx_type, ctx_level) = match umrs_selinux::utils::get_self_context() {
         Ok(sc) => {
             let t = sc.security_type().as_str().to_owned();
@@ -475,20 +468,13 @@ fn render_user_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
         Err(_) => ("<unavailable>".to_owned(), "-".to_owned()),
     };
 
-    let user_value = format!("{username} ({ctx_type})");
+    let tool_value = format!("{} v{}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
 
-    // ── Date / Time / Timezone on one line ────────────────────────────
-    let now = Local::now();
-    let offset_secs = now.offset().fix().local_minus_utc();
-    let sign = if offset_secs < 0 { '-' } else { '+' };
-    let abs = offset_secs.unsigned_abs();
-    let offset_str = format!("{sign}{:02}:{:02}", abs / 3600, (abs % 3600) / 60);
-    let time_str = format!("{} {offset_str}", now.format("%Y-%m-%d %H:%M:%S"));
-
-    let rows: [(&str, String, Style); 3] = [
-        ("User", user_value, theme.data_value),
+    let rows: [(&str, String, Style); 4] = [
+        ("Tool", tool_value, theme.data_value),
+        ("User", username, theme.data_value),
+        ("Domain", ctx_type, theme.data_value),
         ("Level", ctx_level, theme.data_value),
-        ("Time", time_str, theme.data_value),
     ];
 
     render_label_value_rows(frame, area, &rows, theme);
@@ -1274,7 +1260,7 @@ pub fn render_permission_denied(
         )).alignment(Alignment::Center),
         Line::from(""),
         Line::from(Span::styled(
-            "Press Enter or Esc to dismiss",
+            "Press \u{23CE} or \u{238b}\u{20e3} to dismiss",
             hint_style,
         )).alignment(Alignment::Center),
     ];
@@ -1290,8 +1276,8 @@ pub fn render_permission_denied(
 /// Render the `?` help popup.
 ///
 /// Centered modal, ~70% width, with a two-tab header (Navigation / Columns).
-/// `Tab` or `←/→` switches tabs; `?` or `Esc` dismisses.  All background
-/// input is blocked while the overlay is open.
+/// `Tab` or `←/→` switches tabs; `?` or `Esc` dismisses.  All background input is blocked while 
+/// the overlay is open.
 pub fn render_help_overlay(frame: &mut Frame, area: Rect, overlay: &HelpOverlay, theme: &Theme) {
     use ratatui::layout::Alignment;
 

@@ -36,4 +36,5 @@
 //!   authorizations.
 
 pub mod cui;
+pub mod tui;
 pub mod validate;

@@ -1,2 +1,0 @@
-  Model: Opus 4.6 (1M context)  Ctx: 0  ⎇ main  (+947,-4696)
-

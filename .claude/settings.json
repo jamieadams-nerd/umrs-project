@@ -309,7 +309,9 @@
       "Bash(rustup show:*)",
       "Bash(rustup toolchain:*)",
       "Read(//home/jadams/.rustup/toolchains/**)",
-      "Bash(rustup which:*)"
+      "Bash(rustup which:*)",
+      "Bash(cp umrs-c2pa.toml /tmp/test-c2pa.toml)",
+      "Bash(sed -i 's|config/C2PA-TRUST-LIST.pem|/tmp/clean-trust-list.pem|' /tmp/test-c2pa.toml)"
     ]
   },
   "enabledPlugins": {

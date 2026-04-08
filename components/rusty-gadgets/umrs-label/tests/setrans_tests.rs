@@ -444,12 +444,12 @@ fn targeted_every_us_setrans_label_exists_in_json() {
 
 #[test]
 fn mls_and_targeted_have_exactly_121_us_entries() {
-    // US-CUI-LABELS.json has 121 markings. Both setrans files must cover all of them.
+    // US-CUI-LABELS.json has 143 markings. Both setrans files must cover all of them.
     let us_cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     let json_count = us_cat.iter_markings().count();
     assert_eq!(
-        json_count, 121,
-        "US catalog should have 121 markings, got {json_count}"
+        json_count, 143,
+        "US catalog should have 143 markings, got {json_count}"
     );
 
     let mls_entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
@@ -509,11 +509,11 @@ fn mls_inline_comments_match_json_names() {
             // Absence is already caught by other tests
             continue;
         };
-        let json_name = &marking.name;
+        let json_name = marking.name.en();
         // The comment should be a substring of the JSON name or the JSON name
         // should contain the comment. Strip leading whitespace from comment.
         let comment_trimmed = e.comment.trim_start_matches(' ');
-        if !json_name.contains(comment_trimmed) && !comment_trimmed.contains(json_name.as_str()) {
+        if !json_name.contains(comment_trimmed) && !comment_trimmed.contains(json_name) {
             mismatches.push(format!(
                 "MLS line {}: label {:?} comment {:?} does not match JSON name {:?}",
                 e.lineno, e.label, comment_trimmed, json_name
@@ -542,9 +542,9 @@ fn targeted_inline_comments_match_json_names() {
         let Some(marking) = us_cat.marking(&e.label) else {
             continue;
         };
-        let json_name = &marking.name;
+        let json_name = marking.name.en();
         let comment_trimmed = e.comment.trim_start_matches(' ');
-        if !json_name.contains(comment_trimmed) && !comment_trimmed.contains(json_name.as_str()) {
+        if !json_name.contains(comment_trimmed) && !comment_trimmed.contains(json_name) {
             mismatches.push(format!(
                 "TARGETED line {}: label {:?} comment {:?} does not match JSON name {:?}",
                 e.lineno, e.label, comment_trimmed, json_name
@@ -604,8 +604,8 @@ fn mls_canadian_pa_uses_s1() {
         .find(|e| e.label == "PROTÉGÉ A")
         .expect("PROTÉGÉ A must exist in MLS");
     assert_eq!(
-        pa.mcs, "s1:c200",
-        "Canadian Protected A must be s1:c200 in MLS, got {:?}",
+        pa.mcs, "s1:c300",
+        "Canadian Protected A must be s1:c300 in MLS, got {:?}",
         pa.mcs
     );
 }
@@ -618,8 +618,8 @@ fn mls_canadian_pb_uses_s2() {
         .find(|e| e.label == "PROTÉGÉ B")
         .expect("PROTÉGÉ B must exist in MLS");
     assert_eq!(
-        pb.mcs, "s2:c201",
-        "Canadian Protected B must be s2:c201 in MLS, got {:?}",
+        pb.mcs, "s2:c301",
+        "Canadian Protected B must be s2:c301 in MLS, got {:?}",
         pb.mcs
     );
 }
@@ -632,8 +632,8 @@ fn mls_canadian_pc_uses_s3() {
         .find(|e| e.label == "PROTÉGÉ C")
         .expect("PROTÉGÉ C must exist in MLS");
     assert_eq!(
-        pc.mcs, "s3:c202",
-        "Canadian Protected C must be s3:c202 in MLS, got {:?}",
+        pc.mcs, "s3:c302",
+        "Canadian Protected C must be s3:c302 in MLS, got {:?}",
         pc.mcs
     );
 }
@@ -651,18 +651,18 @@ fn targeted_canadian_all_use_s0() {
         data.iter().find(|e| e.label == "PROTÉGÉ C").expect("PROTÉGÉ C must exist in TARGETED");
 
     assert_eq!(
-        pa.mcs, "s0:c200",
-        "PA targeted MCS should be s0:c200, got {:?}",
+        pa.mcs, "s0:c300",
+        "PA targeted MCS should be s0:c300, got {:?}",
         pa.mcs
     );
     assert_eq!(
-        pb.mcs, "s0:c201",
-        "PB targeted MCS should be s0:c201, got {:?}",
+        pb.mcs, "s0:c301",
+        "PB targeted MCS should be s0:c301, got {:?}",
         pb.mcs
     );
     assert_eq!(
-        pc.mcs, "s0:c202",
-        "PC targeted MCS should be s0:c202, got {:?}",
+        pc.mcs, "s0:c302",
+        "PC targeted MCS should be s0:c302, got {:?}",
         pc.mcs
     );
 }
@@ -857,18 +857,15 @@ fn mls_and_targeted_same_canadian_category_assignments() {
 fn mls_every_compound_entry_has_group_header() {
     // For every compound entry sN:cX,cY, there must be a group header sN:cX.
     //
-    // Note: The EXPT group (c30) is a known exception — CUI//EXPT uses compound
-    // entries (c30,c31 and c30,c32) without a standalone c30 header. This is by
-    // design: EXPT has no uncontrolled base category. The test documents these
-    // known exceptions and verifies no NEW exceptions appear.
+    // After the 2026-03 catalog rebuild, EXPT moved to simple entries (c25/c26/c27).
+    // There are zero compound entries in MLS-setrans.conf, so no exceptions are needed.
+    // This test verifies no compound entries without a group header appear.
     let entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
     let data = data_entries(&entries);
     let mcs_set: HashSet<&str> = data.iter().map(|e| e.mcs.as_str()).collect();
 
-    // Known group headers that are intentionally absent: EXPT uses c30 only as
-    // the base of compound entries; there is no standalone "CUI//EXPT" at s1:c30.
-    // This is per the CUI Registry design — EXPT has no unqualified base label.
-    let known_absent_group_headers: HashSet<&str> = ["s1:c30"].iter().copied().collect();
+    // No known absent group headers after the 2026-03 catalog rebuild.
+    let known_absent_group_headers: HashSet<&str> = HashSet::new();
 
     let mut unexpected_missing: Vec<String> = Vec::new();
 
@@ -897,12 +894,13 @@ fn mls_every_compound_entry_has_group_header() {
 
 #[test]
 fn targeted_every_compound_entry_has_group_header() {
-    // Same as the MLS test — EXPT (c30) is the only known intentional exception.
+    // Same as the MLS test. After the 2026-03 catalog rebuild, there are zero
+    // compound entries in TARGETED-setrans.conf — no exceptions are needed.
     let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let data = data_entries(&entries);
     let mcs_set: HashSet<&str> = data.iter().map(|e| e.mcs.as_str()).collect();
 
-    let known_absent_group_headers: HashSet<&str> = ["s0:c30"].iter().copied().collect();
+    let known_absent_group_headers: HashSet<&str> = HashSet::new();
 
     let mut unexpected_missing: Vec<String> = Vec::new();
 
@@ -939,8 +937,8 @@ fn mls_compound_label_starts_with_group_label() {
     let label_map: HashMap<&str, &str> =
         data.iter().map(|e| (e.mcs.as_str(), e.label.as_str())).collect();
 
-    // EXPT compound entries have no group header — skip them
-    let known_absent_group_headers: HashSet<&str> = ["s1:c30"].iter().copied().collect();
+    // No known absent group headers after the 2026-03 catalog rebuild.
+    let known_absent_group_headers: HashSet<&str> = HashSet::new();
 
     let mut mismatches: Vec<String> = Vec::new();
 
@@ -982,7 +980,7 @@ fn targeted_compound_label_starts_with_group_label() {
     let label_map: HashMap<&str, &str> =
         data.iter().map(|e| (e.mcs.as_str(), e.label.as_str())).collect();
 
-    let known_absent_group_headers: HashSet<&str> = ["s0:c30"].iter().copied().collect();
+    let known_absent_group_headers: HashSet<&str> = HashSet::new();
 
     let mut mismatches: Vec<String> = Vec::new();
 
@@ -1017,57 +1015,76 @@ fn targeted_compound_label_starts_with_group_label() {
 }
 
 #[test]
-fn mls_expt_known_exception_documented() {
-    // The EXPT group (Export Control) uses compound entries with no standalone
-    // group header at s1:c30. This test confirms the known exception is still
-    // exactly as expected — two entries at s1:c30,c31 and s1:c30,c32.
+fn mls_expt_uses_simple_entries() {
+    // After the 2026-03 catalog rebuild, EXPT moved from compound entries
+    // (c30,c31 / c30,c32) to simple entries at c25, c26, and c27. There are
+    // no compound EXPT entries — the old exception no longer applies.
     let entries = parse_setrans(&mls_setrans_path()).expect("MLS parse");
     let data = data_entries(&entries);
 
     let expt_entries: Vec<&SetransEntry> =
-        data.iter().filter(|e| e.mcs.contains("c30")).copied().collect();
+        data.iter().filter(|e| e.label.contains("EXPT")).copied().collect();
 
     assert_eq!(
         expt_entries.len(),
-        2,
-        "EXPT group should have exactly 2 entries (c30,c31 and c30,c32), found: {:?}",
-        expt_entries.iter().map(|e| &e.mcs).collect::<Vec<_>>()
+        3,
+        "EXPT group should have exactly 3 simple entries (c25, c26, c27), found: {:?}",
+        expt_entries.iter().map(|e| (&e.mcs, &e.label)).collect::<Vec<_>>()
     );
 
-    let mcs_set: HashSet<&str> = expt_entries.iter().map(|e| e.mcs.as_str()).collect();
-    assert!(
-        mcs_set.contains("s1:c30,c31"),
-        "Expected s1:c30,c31 for CUI//EXPT"
+    let mcs_map: HashMap<&str, &str> =
+        expt_entries.iter().map(|e| (e.mcs.as_str(), e.label.as_str())).collect();
+    assert_eq!(
+        mcs_map.get("s1:c25").copied(),
+        Some("CUI//EXPT"),
+        "Expected CUI//EXPT at s1:c25"
     );
-    assert!(
-        mcs_set.contains("s1:c30,c32"),
-        "Expected s1:c30,c32 for CUI//EXPT/EXPTR"
+    assert_eq!(
+        mcs_map.get("s1:c26").copied(),
+        Some("CUI//SP-EXPT"),
+        "Expected CUI//SP-EXPT at s1:c26"
+    );
+    assert_eq!(
+        mcs_map.get("s1:c27").copied(),
+        Some("CUI//EXPTR"),
+        "Expected CUI//EXPTR at s1:c27"
     );
 }
 
 #[test]
-fn targeted_expt_known_exception_documented() {
+fn targeted_expt_uses_simple_entries() {
+    // After the 2026-03 catalog rebuild, EXPT moved from compound entries
+    // (c30,c31 / c30,c32) to simple entries at c25, c26, and c27. There are
+    // no compound EXPT entries in TARGETED-setrans.conf either.
     let entries = parse_setrans(&targeted_setrans_path()).expect("TARGETED parse");
     let data = data_entries(&entries);
 
     let expt_entries: Vec<&SetransEntry> =
-        data.iter().filter(|e| e.mcs.contains("c30")).copied().collect();
+        data.iter().filter(|e| e.label.contains("EXPT")).copied().collect();
 
     assert_eq!(
         expt_entries.len(),
-        2,
-        "EXPT group should have exactly 2 entries in TARGETED (c30,c31 and c30,c32), found: {:?}",
-        expt_entries.iter().map(|e| &e.mcs).collect::<Vec<_>>()
+        3,
+        "EXPT group should have exactly 3 simple entries (c25, c26, c27), found: {:?}",
+        expt_entries.iter().map(|e| (&e.mcs, &e.label)).collect::<Vec<_>>()
     );
 
-    let mcs_set: HashSet<&str> = expt_entries.iter().map(|e| e.mcs.as_str()).collect();
-    assert!(
-        mcs_set.contains("s0:c30,c31"),
-        "Expected s0:c30,c31 for CUI//EXPT in TARGETED"
+    let mcs_map: HashMap<&str, &str> =
+        expt_entries.iter().map(|e| (e.mcs.as_str(), e.label.as_str())).collect();
+    assert_eq!(
+        mcs_map.get("s0:c25").copied(),
+        Some("CUI//EXPT"),
+        "Expected CUI//EXPT at s0:c25"
     );
-    assert!(
-        mcs_set.contains("s0:c30,c32"),
-        "Expected s0:c30,c32 for CUI//EXPT/EXPTR in TARGETED"
+    assert_eq!(
+        mcs_map.get("s0:c26").copied(),
+        Some("CUI//SP-EXPT"),
+        "Expected CUI//SP-EXPT at s0:c26"
+    );
+    assert_eq!(
+        mcs_map.get("s0:c27").copied(),
+        Some("CUI//EXPTR"),
+        "Expected CUI//EXPTR at s0:c27"
     );
 }
 

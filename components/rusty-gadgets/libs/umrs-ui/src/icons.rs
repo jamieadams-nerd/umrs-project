@@ -196,3 +196,12 @@ pub const ICON_ACTOR: &str = "\u{1FBC5}";
 
 /// Running figure pair (🮲🮳 — U+1FBB2 U+1FBB3).
 pub const ICON_RUNNING_FIGURE: &str = "\u{1FBB2}\u{1FBB3}";
+
+// ===========================================================================
+// Marking & catalog nodes
+// Glyphs used in the label registry tree to distinguish leaf nodes
+// (individual markings) from group branch nodes.
+// ===========================================================================
+
+/// ☐ Ballot Box — marking leaf nodes in tree displays (☐ — U+2610 BALLOT BOX).
+pub const ICON_MARKING: &str = "\u{2610}";

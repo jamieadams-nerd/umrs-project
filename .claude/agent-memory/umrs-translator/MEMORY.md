@@ -133,6 +133,12 @@ Four keys shortened after live TUI testing showed column jamming:
 .po because that is the binary domain at runtime. Translation: "Recommandé"
 (Termium Plus attests "recommandé/e" as fr_CA form). Added 2026-03-23.
 
+## US-CUI-LABELS.json (completed 2026-04-07)
+- All 143 markings + 10 dissemination controls translated (fr_CA name + description)
+- File: `components/rusty-gadgets/umrs-label/config/us/US-CUI-LABELS.json`
+- Key corpus results used: "infrastructures essentielles" (Termium), "application de la loi" (Termium), "sécurité de l'exploitation" (Termium for OPSEC), "contribuable" (Termium)
+- Judgment-call terms (no Termium/GDT entry): see task note in Task #1
+
 ## Vocabulary Highlights (key decisions — full list in vocabulary-fr_CA.md)
 - "enabled/disabled" → "activé/désactivé" — corpus:coreutils confirmed
 - "restricted" → "restreint" — corpus:bash confirmed

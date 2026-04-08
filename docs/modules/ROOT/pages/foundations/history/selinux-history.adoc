@@ -1,4 +1,4 @@
-= Origins of Security Enhanced Linux (SELinux)
+= Origins of Security-Enhanced Linux (SELinux)
 Jamie L. Adams
 
 The emergence of SELinux was not a single invention or a sudden breakthrough. It was the result of a careful convergence of trusted-systems research, academic operating system work, government security requirements, and commercial engineering discipline. Each contributor focused on a different part of the problem, and that division of labor is precisely why SELinux succeeded where many earlier efforts did not.

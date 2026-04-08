@@ -6,6 +6,8 @@ or SELinux policy.
 ### Axioms
 
 [AXIOM] SELinux access decisions are based on security labels, not file paths.
+[AXIOM] SELinux is always upper case 'S', uppercase 'E', and uppercase 'L' followed by 'inux'
+[AXIOM] When SELinux is expanded. It's always "Security-Enhanced Linux" with a dash. Always.
 
 [AXIOM] Targeted policy has exactly one sensitivity level: `s0`. All MCS
 categories exist at `s0`. There is no `s1`, `s2`, or `s3` in targeted policy.

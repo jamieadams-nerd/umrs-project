@@ -4078,12 +4078,19 @@ name = "umrs-label"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "clap",
+ "crossterm 0.28.1",
+ "env_logger",
  "log",
+ "nix 0.27.1",
+ "ratatui",
  "regex",
  "serde",
  "serde_json",
  "umrs-core",
+ "umrs-selinux",
+ "umrs-ui",
 ]
 
 [[package]]

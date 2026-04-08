@@ -28,12 +28,15 @@
   },
   "markings": {
     "CUI": {
-      "name": "Controlled Unclassified Information",
+      "name": {
+        "en_US": "Controlled Unclassified Information",
+        "fr_CA": "Informations non classifiées contrôlées"
+      },
       "abbrv_name": "CUI",
-      "description": [ 
-          { "en_US": "Umbrella designation for all controlled unclassified information. In UMRS, specific category markings (CUI//ABBREVIATION) are always required for granular MAC enforcement.",
-            "ca_FR": ""
-      }],
+      "description": {
+        "en_US": "Umbrella designation for all controlled unclassified information. In UMRS, specific category markings (CUI//ABBREVIATION) are always required for granular MAC enforcement.",
+        "fr_CA": "Désignation générale pour l'ensemble des informations non classifiées contrôlées. Dans UMRS, des marquages de catégorie spécifiques (CUI//ABRÉVIATION) sont toujours requis pour l'application granulaire du contrôle d'accès obligatoire."
+      },
       "index_group": null,
       "designation": "basic",
       "level": "s1",
@@ -42,9 +45,15 @@
       "required_dissemination_control": null
     },
     "CUI//ADJ": {
-      "name": "Status Adjustment",
+      "name": {
+        "en_US": "Status Adjustment",
+        "fr_CA": "Ajustement de statut"
+      },
       "abbrv_name": "ADJ",
-      "description": "Immigration records related to adjustment of status proceedings.",
+      "description": {
+        "en_US": "Immigration records related to adjustment of status proceedings.",
+        "fr_CA": "Dossiers d'immigration liés aux procédures d'ajustement de statut."
+      },
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
@@ -53,9 +62,15 @@
       "required_dissemination_control": null
     },
     "CUI//ADPO": {
-      "name": "Administrative Proceedings",
+      "name": {
+        "en_US": "Administrative Proceedings",
+        "fr_CA": "Procédures administratives"
+      },
       "abbrv_name": "ADPO",
-      "description": "Records related to administrative adjudication, dispute resolution, settlements, and issuances of orders.",
+      "description": {
+        "en_US": "Records related to administrative adjudication, dispute resolution, settlements, and issuances of orders.",
+        "fr_CA": "Dossiers relatifs aux décisions administratives, à la résolution de différends, aux règlements et aux ordonnances."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -64,9 +79,15 @@
       "required_dissemination_control": null
     },
     "CUI//AG": {
-      "name": "Agriculture",
+      "name": {
+        "en_US": "Agriculture",
+        "fr_CA": "Agriculture"
+      },
       "abbrv_name": "AG",
-      "description": "Intelligence information related to agricultural security and food supply.",
+      "description": {
+        "en_US": "Intelligence information related to agricultural security and food supply.",
+        "fr_CA": "Informations de renseignement relatives à la sécurité agricole et à l'approvisionnement alimentaire."
+      },
       "index_group": "Intelligence",
       "designation": "basic",
       "level": "s1",
@@ -75,9 +96,15 @@
       "required_dissemination_control": null
     },
     "CUI//APP": {
-      "name": "Patent Applications",
+      "name": {
+        "en_US": "Patent Applications",
+        "fr_CA": "Demandes de brevet"
+      },
       "abbrv_name": "APP",
-      "description": "Unpublished patent application records requiring controlled handling.",
+      "description": {
+        "en_US": "Unpublished patent application records requiring controlled handling.",
+        "fr_CA": "Dossiers de demandes de brevet non publiées nécessitant une gestion contrôlée."
+      },
       "index_group": "Patent",
       "designation": "basic",
       "level": "s1",
@@ -86,9 +113,15 @@
       "required_dissemination_control": null
     },
     "CUI//ARCHR": {
-      "name": "Archaeological Resources",
+      "name": {
+        "en_US": "Archaeological Resources",
+        "fr_CA": "Ressources archéologiques"
+      },
       "abbrv_name": "ARCHR",
-      "description": "Location and vulnerability information for archaeological sites and resources.",
+      "description": {
+        "en_US": "Location and vulnerability information for archaeological sites and resources.",
+        "fr_CA": "Informations sur la localisation et la vulnérabilité des sites et ressources archéologiques."
+      },
       "index_group": "Natural and Cultural Resources",
       "designation": "basic",
       "level": "s1",
@@ -97,9 +130,15 @@
       "required_dissemination_control": null
     },
     "CUI//ASYL": {
-      "name": "Asylee",
+      "name": {
+        "en_US": "Asylee",
+        "fr_CA": "Bénéficiaire de l'asile"
+      },
       "abbrv_name": "ASYL",
-      "description": "Records related to asylum seekers and asylee status determinations.",
+      "description": {
+        "en_US": "Records related to asylum seekers and asylee status determinations.",
+        "fr_CA": "Dossiers relatifs aux demandeurs d'asile et aux décisions concernant le statut de bénéficiaire de l'asile."
+      },
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
@@ -108,9 +147,15 @@
       "required_dissemination_control": null
     },
     "CUI//BARG": {
-      "name": "Collective Bargaining",
+      "name": {
+        "en_US": "Collective Bargaining",
+        "fr_CA": "Négociation collective"
+      },
       "abbrv_name": "BARG",
-      "description": "Records related to collective bargaining negotiations and agreements.",
+      "description": {
+        "en_US": "Records related to collective bargaining negotiations and agreements.",
+        "fr_CA": "Dossiers relatifs aux négociations et conventions collectives."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -119,9 +164,15 @@
       "required_dissemination_control": null
     },
     "CUI//BATT": {
-      "name": "Battered Spouse or Child",
+      "name": {
+        "en_US": "Battered Spouse or Child",
+        "fr_CA": "Conjoint ou enfant victime de violence"
+      },
       "abbrv_name": "BATT",
-      "description": "Immigration records related to battered spouse or child petitions.",
+      "description": {
+        "en_US": "Immigration records related to battered spouse or child petitions.",
+        "fr_CA": "Dossiers d'immigration relatifs aux pétitions de conjoint ou d'enfant victime de violence."
+      },
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
@@ -130,9 +181,15 @@
       "required_dissemination_control": null
     },
     "CUI//CMPRS": {
-      "name": "Committed Person",
+      "name": {
+        "en_US": "Committed Person",
+        "fr_CA": "Personne placée sous contrainte judiciaire"
+      },
       "abbrv_name": "CMPRS",
-      "description": "Records pertaining to individuals legally committed through judicial or law enforcement processes.",
+      "description": {
+        "en_US": "Records pertaining to individuals legally committed through judicial or law enforcement processes.",
+        "fr_CA": "Dossiers relatifs à des personnes légalement placées sous contrainte par décision judiciaire ou policière."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -141,9 +198,15 @@
       "required_dissemination_control": null
     },
     "CUI//COMPT": {
-      "name": "Comptroller General",
+      "name": {
+        "en_US": "Comptroller General",
+        "fr_CA": "Contrôleur général"
+      },
       "abbrv_name": "COMPT",
-      "description": "Records related to Comptroller General audits and financial oversight activities.",
+      "description": {
+        "en_US": "Records related to Comptroller General audits and financial oversight activities.",
+        "fr_CA": "Dossiers relatifs aux vérifications du contrôleur général et aux activités de surveillance financière."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -152,9 +215,15 @@
       "required_dissemination_control": null
     },
     "CUI//CONREG": {
-      "name": "Entity Registration Information",
+      "name": {
+        "en_US": "Entity Registration Information",
+        "fr_CA": "Informations d'enregistrement des entités"
+      },
       "abbrv_name": "CONREG",
-      "description": "Proprietary information from entity registration systems.",
+      "description": {
+        "en_US": "Proprietary information from entity registration systems.",
+        "fr_CA": "Informations exclusives provenant des systèmes d'enregistrement des entités."
+      },
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
@@ -163,9 +232,15 @@
       "required_dissemination_control": null
     },
     "CUI//CONV": {
-      "name": "Tax Convention",
+      "name": {
+        "en_US": "Tax Convention",
+        "fr_CA": "Convention fiscale"
+      },
       "abbrv_name": "CONV",
-      "description": "Information exchanged under international tax conventions, treaties, and bilateral fiscal agreements.",
+      "description": {
+        "en_US": "Information exchanged under international tax conventions, treaties, and bilateral fiscal agreements.",
+        "fr_CA": "Informations échangées dans le cadre de conventions fiscales internationales, de traités et d'accords bilatéraux en matière fiscale."
+      },
       "index_group": "Tax",
       "designation": "basic",
       "level": "s1",
@@ -174,9 +249,15 @@
       "required_dissemination_control": null
     },
     "CUI//CRIT": {
-      "name": "General Critical Infrastructure Information",
+      "name": {
+        "en_US": "General Critical Infrastructure Information",
+        "fr_CA": "Informations générales sur les infrastructures essentielles"
+      },
       "abbrv_name": "CRIT",
-      "description": "General information related to the protection, operation, or vulnerability of critical infrastructure systems and assets.",
+      "description": {
+        "en_US": "General information related to the protection, operation, or vulnerability of critical infrastructure systems and assets.",
+        "fr_CA": "Informations générales relatives à la protection, à l'exploitation ou à la vulnérabilité des systèmes et actifs d'infrastructures essentielles."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
@@ -185,9 +266,15 @@
       "required_dissemination_control": null
     },
     "CUI//CVI": {
-      "name": "Chemical-Terrorism Vulnerability Information",
+      "name": {
+        "en_US": "Chemical-Terrorism Vulnerability Information",
+        "fr_CA": "Informations sur la vulnérabilité aux attaques chimiques"
+      },
       "abbrv_name": "CVI",
-      "description": "Vulnerability assessments and security plans for chemical facilities under baseline handling.",
+      "description": {
+        "en_US": "Vulnerability assessments and security plans for chemical facilities under baseline handling.",
+        "fr_CA": "Évaluations de la vulnérabilité et plans de sécurité pour les installations chimiques, avec traitement de base."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
@@ -196,9 +283,15 @@
       "required_dissemination_control": null
     },
     "CUI//CVIC": {
-      "name": "Child Victim/Witness",
+      "name": {
+        "en_US": "Child Victim/Witness",
+        "fr_CA": "Enfant victime ou témoin"
+      },
       "abbrv_name": "CVIC",
-      "description": "Records related to child victims and witnesses in legal proceedings.",
+      "description": {
+        "en_US": "Records related to child victims and witnesses in legal proceedings.",
+        "fr_CA": "Dossiers relatifs aux enfants victimes et témoins dans les procédures judiciaires."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -207,9 +300,15 @@
       "required_dissemination_control": null
     },
     "CUI//DCNI": {
-      "name": "Unclassified Controlled Nuclear Information - Defense",
+      "name": {
+        "en_US": "Unclassified Controlled Nuclear Information - Defense",
+        "fr_CA": "Informations nucléaires non classifiées contrôlées — Défense"
+      },
       "abbrv_name": "DCNI",
-      "description": "Department of Defense unclassified nuclear information under baseline handling.",
+      "description": {
+        "en_US": "Department of Defense unclassified nuclear information under baseline handling.",
+        "fr_CA": "Informations nucléaires non classifiées du département de la Défense, avec traitement de base."
+      },
       "index_group": "Defense",
       "designation": "basic",
       "level": "s1",
@@ -218,9 +317,15 @@
       "required_dissemination_control": null
     },
     "CUI//DCRIT": {
-      "name": "DoD Critical Infrastructure Security Information",
+      "name": {
+        "en_US": "DoD Critical Infrastructure Security Information",
+        "fr_CA": "Informations de sécurité sur les infrastructures essentielles du DoD"
+      },
       "abbrv_name": "DCRIT",
-      "description": "Information concerning Department of Defense critical infrastructure, including facilities, systems, and supporting assets.",
+      "description": {
+        "en_US": "Information concerning Department of Defense critical infrastructure, including facilities, systems, and supporting assets.",
+        "fr_CA": "Informations relatives aux infrastructures essentielles du département de la Défense, notamment les installations, systèmes et actifs de soutien."
+      },
       "index_group": "Defense",
       "designation": "basic",
       "level": "s1",
@@ -229,9 +334,15 @@
       "required_dissemination_control": null
     },
     "CUI//DREC": {
-      "name": "Death Records",
+      "name": {
+        "en_US": "Death Records",
+        "fr_CA": "Actes de décès"
+      },
       "abbrv_name": "DREC",
-      "description": "Information contained in death records that is protected from public disclosure.",
+      "description": {
+        "en_US": "Information contained in death records that is protected from public disclosure.",
+        "fr_CA": "Informations contenues dans les actes de décès protégées contre la divulgation publique."
+      },
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
@@ -240,9 +351,15 @@
       "required_dissemination_control": null
     },
     "CUI//EMGT": {
-      "name": "Emergency Management",
+      "name": {
+        "en_US": "Emergency Management",
+        "fr_CA": "Gestion des urgences"
+      },
       "abbrv_name": "EMGT",
-      "description": "Information related to emergency management planning, response, recovery, and coordination activities.",
+      "description": {
+        "en_US": "Information related to emergency management planning, response, recovery, and coordination activities.",
+        "fr_CA": "Informations relatives à la planification, à l'intervention, au rétablissement et à la coordination en matière de gestion des urgences."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
@@ -251,9 +368,15 @@
       "required_dissemination_control": null
     },
     "CUI//EXPT": {
-      "name": "Export Controlled",
+      "name": {
+        "en_US": "Export Controlled",
+        "fr_CA": "Soumis au contrôle des exportations"
+      },
       "abbrv_name": "EXPT",
-      "description": "Information subject to U.S. export control laws under baseline handling. Applies when the governing regulation (e.g., EAR) does not mandate controls beyond standard CUI safeguards.",
+      "description": {
+        "en_US": "Information subject to U.S. export control laws under baseline handling. Applies when the governing regulation (e.g., EAR) does not mandate controls beyond standard CUI safeguards.",
+        "fr_CA": "Informations soumises aux lois américaines sur le contrôle des exportations, avec traitement de base. S'applique lorsque la réglementation applicable (p. ex. EAR) n'impose pas de mesures allant au-delà des garanties CUI standard."
+      },
       "index_group": "Export Control",
       "designation": "basic",
       "level": "s1",
@@ -262,9 +385,15 @@
       "required_dissemination_control": null
     },
     "CUI//EXPTR": {
-      "name": "Export Controlled Research",
+      "name": {
+        "en_US": "Export Controlled Research",
+        "fr_CA": "Recherche soumise au contrôle des exportations"
+      },
       "abbrv_name": "EXPTR",
-      "description": "Research data that falls under export control, often arising in academic or R&D contexts.",
+      "description": {
+        "en_US": "Research data that falls under export control, often arising in academic or R&D contexts.",
+        "fr_CA": "Données de recherche soumises au contrôle des exportations, souvent dans des contextes universitaires ou de R&D."
+      },
       "index_group": "Export Control",
       "designation": "basic",
       "level": "s1",
@@ -273,9 +402,15 @@
       "required_dissemination_control": null
     },
     "CUI//FHFANPI": {
-      "name": "Federal Housing Finance Non-Public Information",
+      "name": {
+        "en_US": "Federal Housing Finance Non-Public Information",
+        "fr_CA": "Informations non publiques sur le financement du logement fédéral"
+      },
       "abbrv_name": "FHFANPI",
-      "description": "Non-public information related to Federal Housing Finance Agency oversight activities.",
+      "description": {
+        "en_US": "Non-public information related to Federal Housing Finance Agency oversight activities.",
+        "fr_CA": "Informations non publiques relatives aux activités de surveillance de l'Agence fédérale de financement du logement."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -284,9 +419,15 @@
       "required_dissemination_control": null
     },
     "CUI//FINT": {
-      "name": "International Financial Institutions",
+      "name": {
+        "en_US": "International Financial Institutions",
+        "fr_CA": "Institutions financières internationales"
+      },
       "abbrv_name": "FINT",
-      "description": "Financial information related to international financial institutions and multilateral development banks.",
+      "description": {
+        "en_US": "Financial information related to international financial institutions and multilateral development banks.",
+        "fr_CA": "Informations financières relatives aux institutions financières internationales et aux banques multilatérales de développement."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -295,9 +436,15 @@
       "required_dissemination_control": null
     },
     "CUI//FNC": {
-      "name": "General Financial Information",
+      "name": {
+        "en_US": "General Financial Information",
+        "fr_CA": "Informations financières générales"
+      },
       "abbrv_name": "FNC",
-      "description": "General financially sensitive information under baseline handling, including transactional and operational financial details.",
+      "description": {
+        "en_US": "General financially sensitive information under baseline handling, including transactional and operational financial details.",
+        "fr_CA": "Informations financières sensibles générales avec traitement de base, notamment les détails transactionnels et opérationnels."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -306,9 +453,15 @@
       "required_dissemination_control": null
     },
     "CUI//FSEC": {
-      "name": "Bank Secrecy",
+      "name": {
+        "en_US": "Bank Secrecy",
+        "fr_CA": "Secret bancaire"
+      },
       "abbrv_name": "FSEC",
-      "description": "Bank secrecy information under baseline handling.",
+      "description": {
+        "en_US": "Bank secrecy information under baseline handling.",
+        "fr_CA": "Informations couvertes par le secret bancaire, avec traitement de base."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -317,9 +470,15 @@
       "required_dissemination_control": null
     },
     "CUI//FSI": {
-      "name": "Financial Supervision Information",
+      "name": {
+        "en_US": "Financial Supervision Information",
+        "fr_CA": "Informations de surveillance financière"
+      },
       "abbrv_name": "FSI",
-      "description": "Information related to financial institution supervision and regulatory examination.",
+      "description": {
+        "en_US": "Information related to financial institution supervision and regulatory examination.",
+        "fr_CA": "Informations relatives à la surveillance des institutions financières et aux examens réglementaires."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -328,9 +487,15 @@
       "required_dissemination_control": null
     },
     "CUI//GENETIC": {
-      "name": "Genetic Information",
+      "name": {
+        "en_US": "Genetic Information",
+        "fr_CA": "Informations génétiques"
+      },
       "abbrv_name": "GENETIC",
-      "description": "Individually identifiable genetic test results and characteristics under baseline handling.",
+      "description": {
+        "en_US": "Individually identifiable genetic test results and characteristics under baseline handling.",
+        "fr_CA": "Résultats de tests génétiques et caractéristiques permettant l'identification individuelle, avec traitement de base."
+      },
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
@@ -339,9 +504,15 @@
       "required_dissemination_control": null
     },
     "CUI//HLTH": {
-      "name": "Health Information",
+      "name": {
+        "en_US": "Health Information",
+        "fr_CA": "Informations sur la santé"
+      },
       "abbrv_name": "HLTH",
-      "description": "Protected health information under baseline handling.",
+      "description": {
+        "en_US": "Protected health information under baseline handling.",
+        "fr_CA": "Informations sur la santé protégées, avec traitement de base."
+      },
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
@@ -350,9 +521,15 @@
       "required_dissemination_control": null
     },
     "CUI//ID": {
-      "name": "Internal Data",
+      "name": {
+        "en_US": "Internal Data",
+        "fr_CA": "Données internes"
+      },
       "abbrv_name": "ID",
-      "description": "Intelligence community internal data under baseline handling.",
+      "description": {
+        "en_US": "Intelligence community internal data under baseline handling.",
+        "fr_CA": "Données internes de la communauté du renseignement, avec traitement de base."
+      },
       "index_group": "Intelligence",
       "designation": "basic",
       "level": "s1",
@@ -361,9 +538,15 @@
       "required_dissemination_control": null
     },
     "CUI//INF": {
-      "name": "Informant",
+      "name": {
+        "en_US": "Informant",
+        "fr_CA": "Informateur"
+      },
       "abbrv_name": "INF",
-      "description": "Information identifying or provided by confidential informants under baseline handling.",
+      "description": {
+        "en_US": "Information identifying or provided by confidential informants under baseline handling.",
+        "fr_CA": "Informations permettant l'identification d'informateurs confidentiels ou fournies par ceux-ci, avec traitement de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -372,9 +555,15 @@
       "required_dissemination_control": null
     },
     "CUI//INTEL": {
-      "name": "General Intelligence",
+      "name": {
+        "en_US": "General Intelligence",
+        "fr_CA": "Renseignement général"
+      },
       "abbrv_name": "INTEL",
-      "description": "General intelligence support data under baseline handling.",
+      "description": {
+        "en_US": "General intelligence support data under baseline handling.",
+        "fr_CA": "Données générales de soutien au renseignement, avec traitement de base."
+      },
       "index_group": "Intelligence",
       "designation": "basic",
       "level": "s1",
@@ -383,9 +572,15 @@
       "required_dissemination_control": null
     },
     "CUI//INV": {
-      "name": "Investigation",
+      "name": {
+        "en_US": "Investigation",
+        "fr_CA": "Enquête"
+      },
       "abbrv_name": "INV",
-      "description": "Investigative case records, evidence documentation, and operational law enforcement reporting under baseline handling.",
+      "description": {
+        "en_US": "Investigative case records, evidence documentation, and operational law enforcement reporting under baseline handling.",
+        "fr_CA": "Dossiers d'enquête, documentation des éléments de preuve et rapports opérationnels d'application de la loi, avec traitement de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -394,9 +589,15 @@
       "required_dissemination_control": null
     },
     "CUI//INVENT": {
-      "name": "Inventions",
+      "name": {
+        "en_US": "Inventions",
+        "fr_CA": "Inventions"
+      },
       "abbrv_name": "INVENT",
-      "description": "Information related to inventions requiring controlled handling prior to patent determination.",
+      "description": {
+        "en_US": "Information related to inventions requiring controlled handling prior to patent determination.",
+        "fr_CA": "Informations relatives aux inventions nécessitant une gestion contrôlée avant la décision de brevetabilité."
+      },
       "index_group": "Patent",
       "designation": "basic",
       "level": "s1",
@@ -405,9 +606,15 @@
       "required_dissemination_control": null
     },
     "CUI//ISVI": {
-      "name": "Information Systems Vulnerability Information",
+      "name": {
+        "en_US": "Information Systems Vulnerability Information",
+        "fr_CA": "Informations sur la vulnérabilité des systèmes d'information"
+      },
       "abbrv_name": "ISVI",
-      "description": "Details about weaknesses, vulnerabilities, or exploitation paths in information systems or networks.",
+      "description": {
+        "en_US": "Details about weaknesses, vulnerabilities, or exploitation paths in information systems or networks.",
+        "fr_CA": "Détails sur les faiblesses, vulnérabilités ou chemins d'exploitation dans les systèmes d'information ou les réseaux."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
@@ -416,9 +623,15 @@
       "required_dissemination_control": null
     },
     "CUI//IVIC": {
-      "name": "Victims of Human Trafficking",
+      "name": {
+        "en_US": "Victims of Human Trafficking",
+        "fr_CA": "Victimes de la traite des personnes"
+      },
       "abbrv_name": "IVIC",
-      "description": "Records related to victims of human trafficking and their immigration status.",
+      "description": {
+        "en_US": "Records related to victims of human trafficking and their immigration status.",
+        "fr_CA": "Dossiers relatifs aux victimes de la traite des personnes et à leur statut migratoire."
+      },
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
@@ -427,9 +640,15 @@
       "required_dissemination_control": null
     },
     "CUI//JURY": {
-      "name": "Federal Grand Jury",
+      "name": {
+        "en_US": "Federal Grand Jury",
+        "fr_CA": "Grand jury fédéral"
+      },
       "abbrv_name": "JURY",
-      "description": "Federal grand jury records and proceedings under baseline handling.",
+      "description": {
+        "en_US": "Federal grand jury records and proceedings under baseline handling.",
+        "fr_CA": "Dossiers et procédures du grand jury fédéral, avec traitement de base."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -438,9 +657,15 @@
       "required_dissemination_control": null
     },
     "CUI//JUV": {
-      "name": "Juvenile",
+      "name": {
+        "en_US": "Juvenile",
+        "fr_CA": "Mineur"
+      },
       "abbrv_name": "JUV",
-      "description": "Law enforcement records involving juveniles, protected under statutory confidentiality.",
+      "description": {
+        "en_US": "Law enforcement records involving juveniles, protected under statutory confidentiality.",
+        "fr_CA": "Dossiers d'application de la loi impliquant des mineurs, protégés par la confidentialité légale."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -449,9 +674,15 @@
       "required_dissemination_control": null
     },
     "CUI//LCOMM": {
-      "name": "Communications",
+      "name": {
+        "en_US": "Communications",
+        "fr_CA": "Communications"
+      },
       "abbrv_name": "LCOMM",
-      "description": "Intercepted, monitored, or retained law enforcement communications including authorized surveillance.",
+      "description": {
+        "en_US": "Intercepted, monitored, or retained law enforcement communications including authorized surveillance.",
+        "fr_CA": "Communications interceptées, surveillées ou conservées aux fins d'application de la loi, y compris la surveillance autorisée."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -460,9 +691,15 @@
       "required_dissemination_control": null
     },
     "CUI//LEI": {
-      "name": "General Law Enforcement",
+      "name": {
+        "en_US": "General Law Enforcement",
+        "fr_CA": "Application générale de la loi"
+      },
       "abbrv_name": "LEI",
-      "description": "General law enforcement information not covered by a more specific law enforcement category.",
+      "description": {
+        "en_US": "General law enforcement information not covered by a more specific law enforcement category.",
+        "fr_CA": "Informations générales d'application de la loi non couvertes par une catégorie plus spécifique."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -471,9 +708,15 @@
       "required_dissemination_control": null
     },
     "CUI//LMI": {
-      "name": "Legislative Materials",
+      "name": {
+        "en_US": "Legislative Materials",
+        "fr_CA": "Documents législatifs"
+      },
       "abbrv_name": "LMI",
-      "description": "Non-public legislative records and supporting documents.",
+      "description": {
+        "en_US": "Non-public legislative records and supporting documents.",
+        "fr_CA": "Documents législatifs non publics et pièces justificatives."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -482,9 +725,15 @@
       "required_dissemination_control": null
     },
     "CUI//LNSL": {
-      "name": "National Security Letter",
+      "name": {
+        "en_US": "National Security Letter",
+        "fr_CA": "Lettre de sécurité nationale"
+      },
       "abbrv_name": "LNSL",
-      "description": "Records associated with National Security Letters issued under authorized investigative authority.",
+      "description": {
+        "en_US": "Records associated with National Security Letters issued under authorized investigative authority.",
+        "fr_CA": "Dossiers associés aux lettres de sécurité nationale émises sous autorité d'enquête habilitée."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -493,9 +742,15 @@
       "required_dissemination_control": null
     },
     "CUI//LPROT": {
-      "name": "Protective Order",
+      "name": {
+        "en_US": "Protective Order",
+        "fr_CA": "Ordonnance de protection"
+      },
       "abbrv_name": "LPROT",
-      "description": "Records subject to judicial protective orders under baseline handling.",
+      "description": {
+        "en_US": "Records subject to judicial protective orders under baseline handling.",
+        "fr_CA": "Dossiers soumis à des ordonnances de protection judiciaires, avec traitement de base."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -504,9 +759,15 @@
       "required_dissemination_control": null
     },
     "CUI//LSCRN": {
-      "name": "Terrorist Screening",
+      "name": {
+        "en_US": "Terrorist Screening",
+        "fr_CA": "Criblage antiterroriste"
+      },
       "abbrv_name": "LSCRN",
-      "description": "Terrorist screening datasets, watchlist correlations, and identity vetting records.",
+      "description": {
+        "en_US": "Terrorist screening datasets, watchlist correlations, and identity vetting records.",
+        "fr_CA": "Ensembles de données de criblage antiterroriste, corrélations avec les listes de surveillance et dossiers de vérification d'identité."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -515,9 +776,15 @@
       "required_dissemination_control": null
     },
     "CUI//LVIC": {
-      "name": "Victim",
+      "name": {
+        "en_US": "Victim",
+        "fr_CA": "Victime"
+      },
       "abbrv_name": "LVIC",
-      "description": "Records related to victims in legal proceedings.",
+      "description": {
+        "en_US": "Records related to victims in legal proceedings.",
+        "fr_CA": "Dossiers relatifs aux victimes dans les procédures judiciaires."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -526,9 +793,15 @@
       "required_dissemination_control": null
     },
     "CUI//MERG": {
-      "name": "Mergers",
+      "name": {
+        "en_US": "Mergers",
+        "fr_CA": "Fusions"
+      },
       "abbrv_name": "MERG",
-      "description": "Financial information related to merger and acquisition activities.",
+      "description": {
+        "en_US": "Financial information related to merger and acquisition activities.",
+        "fr_CA": "Informations financières relatives aux activités de fusion et d'acquisition."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -537,9 +810,15 @@
       "required_dissemination_control": null
     },
     "CUI//MIL": {
-      "name": "Military Personnel Records",
+      "name": {
+        "en_US": "Military Personnel Records",
+        "fr_CA": "Dossiers du personnel militaire"
+      },
       "abbrv_name": "MIL",
-      "description": "Personnel data for military members requiring safeguarding.",
+      "description": {
+        "en_US": "Personnel data for military members requiring safeguarding.",
+        "fr_CA": "Données personnelles des membres des forces armées nécessitant une protection."
+      },
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
@@ -548,9 +827,15 @@
       "required_dissemination_control": null
     },
     "CUI//NETW": {
-      "name": "Net Worth",
+      "name": {
+        "en_US": "Net Worth",
+        "fr_CA": "Valeur nette"
+      },
       "abbrv_name": "NETW",
-      "description": "Net worth and financial disclosure information.",
+      "description": {
+        "en_US": "Net worth and financial disclosure information.",
+        "fr_CA": "Informations sur la valeur nette et les déclarations financières."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -559,9 +844,15 @@
       "required_dissemination_control": null
     },
     "CUI//NNPI": {
-      "name": "Naval Nuclear Propulsion Information",
+      "name": {
+        "en_US": "Naval Nuclear Propulsion Information",
+        "fr_CA": "Informations sur la propulsion nucléaire navale"
+      },
       "abbrv_name": "NNPI",
-      "description": "Naval nuclear propulsion information under baseline handling.",
+      "description": {
+        "en_US": "Naval nuclear propulsion information under baseline handling.",
+        "fr_CA": "Informations sur la propulsion nucléaire navale, avec traitement de base."
+      },
       "index_group": "Defense",
       "designation": "basic",
       "level": "s1",
@@ -570,9 +861,15 @@
       "required_dissemination_control": null
     },
     "CUI//NUC": {
-      "name": "General Nuclear",
+      "name": {
+        "en_US": "General Nuclear",
+        "fr_CA": "Nucléaire général"
+      },
       "abbrv_name": "NUC",
-      "description": "General nuclear information under baseline handling.",
+      "description": {
+        "en_US": "General nuclear information under baseline handling.",
+        "fr_CA": "Informations nucléaires générales, avec traitement de base."
+      },
       "index_group": "Nuclear",
       "designation": "basic",
       "level": "s1",
@@ -581,9 +878,15 @@
       "required_dissemination_control": null
     },
     "CUI//OCCMTO": {
-      "name": "Ocean Common Carrier and Marine Terminal Operator Agreements",
+      "name": {
+        "en_US": "Ocean Common Carrier and Marine Terminal Operator Agreements",
+        "fr_CA": "Accords entre transporteurs maritimes et exploitants de terminaux portuaires"
+      },
       "abbrv_name": "OCCMTO",
-      "description": "Proprietary agreements between ocean common carriers and marine terminal operators.",
+      "description": {
+        "en_US": "Proprietary agreements between ocean common carriers and marine terminal operators.",
+        "fr_CA": "Accords exclusifs entre transporteurs maritimes communs et exploitants de terminaux portuaires."
+      },
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
@@ -592,9 +895,15 @@
       "required_dissemination_control": null
     },
     "CUI//OPSEC": {
-      "name": "Operations Security",
+      "name": {
+        "en_US": "Operations Security",
+        "fr_CA": "Sécurité de l'exploitation"
+      },
       "abbrv_name": "OPSEC",
-      "description": "Information whose uncontrolled exposure would undermine operational security.",
+      "description": {
+        "en_US": "Information whose uncontrolled exposure would undermine operational security.",
+        "fr_CA": "Informations dont la divulgation non contrôlée compromettrait la sécurité de l'exploitation."
+      },
       "index_group": "Intelligence",
       "designation": "basic",
       "level": "s1",
@@ -603,9 +912,15 @@
       "required_dissemination_control": null
     },
     "CUI//PERS": {
-      "name": "Personnel Records",
+      "name": {
+        "en_US": "Personnel Records",
+        "fr_CA": "Dossiers du personnel"
+      },
       "abbrv_name": "PERS",
-      "description": "Federal employee personnel records under baseline handling.",
+      "description": {
+        "en_US": "Federal employee personnel records under baseline handling.",
+        "fr_CA": "Dossiers du personnel des employés fédéraux, avec traitement de base."
+      },
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
@@ -614,9 +929,15 @@
       "required_dissemination_control": null
     },
     "CUI//PEST": {
-      "name": "Pesticide Producer Survey",
+      "name": {
+        "en_US": "Pesticide Producer Survey",
+        "fr_CA": "Enquête sur les producteurs de pesticides"
+      },
       "abbrv_name": "PEST",
-      "description": "Survey data from pesticide producers protected from public disclosure.",
+      "description": {
+        "en_US": "Survey data from pesticide producers protected from public disclosure.",
+        "fr_CA": "Données d'enquête provenant de producteurs de pesticides, protégées contre la divulgation publique."
+      },
       "index_group": "Statistical",
       "designation": "basic",
       "level": "s1",
@@ -625,9 +946,15 @@
       "required_dissemination_control": null
     },
     "CUI//PHYS": {
-      "name": "Physical Security",
+      "name": {
+        "en_US": "Physical Security",
+        "fr_CA": "Sécurité physique"
+      },
       "abbrv_name": "PHYS",
-      "description": "Information related to physical security measures, vulnerabilities, or protection of facilities and assets.",
+      "description": {
+        "en_US": "Information related to physical security measures, vulnerabilities, or protection of facilities and assets.",
+        "fr_CA": "Informations relatives aux mesures de sécurité physique, aux vulnérabilités ou à la protection des installations et actifs."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
@@ -636,9 +963,15 @@
       "required_dissemination_control": null
     },
     "CUI//POST": {
-      "name": "Proprietary Postal",
+      "name": {
+        "en_US": "Proprietary Postal",
+        "fr_CA": "Informations postales exclusives"
+      },
       "abbrv_name": "POST",
-      "description": "Proprietary information related to postal service operations.",
+      "description": {
+        "en_US": "Proprietary information related to postal service operations.",
+        "fr_CA": "Informations exclusives relatives aux opérations du service postal."
+      },
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
@@ -647,9 +980,15 @@
       "required_dissemination_control": null
     },
     "CUI//PRE": {
-      "name": "Presentence Report",
+      "name": {
+        "en_US": "Presentence Report",
+        "fr_CA": "Rapport présentenciel"
+      },
       "abbrv_name": "PRE",
-      "description": "Presentence investigation reports prepared for judicial sentencing.",
+      "description": {
+        "en_US": "Presentence investigation reports prepared for judicial sentencing.",
+        "fr_CA": "Rapports d'enquête présentencielle préparés à l'intention du tribunal pour la détermination de la peine."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -658,9 +997,15 @@
       "required_dissemination_control": null
     },
     "CUI//PRIIG": {
-      "name": "Inspector General Protected",
+      "name": {
+        "en_US": "Inspector General Protected",
+        "fr_CA": "Protection de l'inspecteur général"
+      },
       "abbrv_name": "PRIIG",
-      "description": "Personally identifiable information protected in the context of Inspector General activities under baseline handling.",
+      "description": {
+        "en_US": "Personally identifiable information protected in the context of Inspector General activities under baseline handling.",
+        "fr_CA": "Renseignements personnels identifiables protégés dans le cadre des activités de l'inspecteur général, avec traitement de base."
+      },
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
@@ -669,9 +1014,15 @@
       "required_dissemination_control": null
     },
     "CUI//PRIOR": {
-      "name": "Prior Arrest",
+      "name": {
+        "en_US": "Prior Arrest",
+        "fr_CA": "Arrestation antérieure"
+      },
       "abbrv_name": "PRIOR",
-      "description": "Records of prior arrests protected from general disclosure.",
+      "description": {
+        "en_US": "Records of prior arrests protected from general disclosure.",
+        "fr_CA": "Dossiers d'arrestations antérieures protégés contre la divulgation générale."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -680,9 +1031,15 @@
       "required_dissemination_control": null
     },
     "CUI//PRIVILEGE": {
-      "name": "Legal Privilege",
+      "name": {
+        "en_US": "Legal Privilege",
+        "fr_CA": "Privilège juridique"
+      },
       "abbrv_name": "PRIVILEGE",
-      "description": "Information protected by attorney-client privilege or attorney work product doctrine.",
+      "description": {
+        "en_US": "Information protected by attorney-client privilege or attorney work product doctrine.",
+        "fr_CA": "Informations protégées par le secret professionnel de l'avocat ou la doctrine du produit du travail de l'avocat."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -691,9 +1048,15 @@
       "required_dissemination_control": "LDC restricted to Attorney-Client (AC) and/or Attorney Work Product (AWP) only. These LDCs may only be used with this category."
     },
     "CUI//PROPIN": {
-      "name": "General Proprietary Business Information",
+      "name": {
+        "en_US": "General Proprietary Business Information",
+        "fr_CA": "Informations commerciales exclusives générales"
+      },
       "abbrv_name": "PROPIN",
-      "description": "Proprietary business information provided to the government under baseline handling.",
+      "description": {
+        "en_US": "Proprietary business information provided to the government under baseline handling.",
+        "fr_CA": "Informations commerciales exclusives fournies au gouvernement, avec traitement de base."
+      },
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
@@ -702,9 +1065,15 @@
       "required_dissemination_control": null
     },
     "CUI//PROT": {
-      "name": "Temporary Protected Status",
+      "name": {
+        "en_US": "Temporary Protected Status",
+        "fr_CA": "Statut de protection temporaire"
+      },
       "abbrv_name": "PROT",
-      "description": "Information related to individuals granted Temporary Protected Status under immigration law.",
+      "description": {
+        "en_US": "Information related to individuals granted Temporary Protected Status under immigration law.",
+        "fr_CA": "Informations relatives aux personnes bénéficiant du statut de protection temporaire en vertu du droit de l'immigration."
+      },
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
@@ -713,9 +1082,15 @@
       "required_dissemination_control": null
     },
     "CUI//PRVCY": {
-      "name": "General Privacy",
+      "name": {
+        "en_US": "General Privacy",
+        "fr_CA": "Protection des renseignements personnels générale"
+      },
       "abbrv_name": "PRVCY",
-      "description": "General personally identifiable information and privacy-protected records under baseline handling.",
+      "description": {
+        "en_US": "General personally identifiable information and privacy-protected records under baseline handling.",
+        "fr_CA": "Renseignements personnels identifiables généraux et dossiers protégés par la vie privée, avec traitement de base."
+      },
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
@@ -724,9 +1099,15 @@
       "required_dissemination_control": null
     },
     "CUI//PSEC": {
-      "name": "Secrecy Orders",
+      "name": {
+        "en_US": "Secrecy Orders",
+        "fr_CA": "Ordonnances de secret"
+      },
       "abbrv_name": "PSEC",
-      "description": "Information subject to patent secrecy orders restricting disclosure of certain inventions.",
+      "description": {
+        "en_US": "Information subject to patent secrecy orders restricting disclosure of certain inventions.",
+        "fr_CA": "Informations soumises à des ordonnances de secret de brevet limitant la divulgation de certaines inventions."
+      },
       "index_group": "Patent",
       "designation": "basic",
       "level": "s1",
@@ -735,9 +1116,15 @@
       "required_dissemination_control": null
     },
     "CUI//PSI": {
-      "name": "Privileged Safety Information",
+      "name": {
+        "en_US": "Privileged Safety Information",
+        "fr_CA": "Informations de sécurité privilégiées"
+      },
       "abbrv_name": "PSI",
-      "description": "Department of Defense privileged safety information.",
+      "description": {
+        "en_US": "Department of Defense privileged safety information.",
+        "fr_CA": "Informations de sécurité privilégiées du département de la Défense."
+      },
       "index_group": "Defense",
       "designation": "basic",
       "level": "s1",
@@ -746,9 +1133,15 @@
       "required_dissemination_control": null
     },
     "CUI//RAIL": {
-      "name": "Railroad Safety Analysis Records",
+      "name": {
+        "en_US": "Railroad Safety Analysis Records",
+        "fr_CA": "Dossiers d'analyse de la sécurité ferroviaire"
+      },
       "abbrv_name": "RAIL",
-      "description": "Information related to railroad safety analysis, inspections, or incident assessments.",
+      "description": {
+        "en_US": "Information related to railroad safety analysis, inspections, or incident assessments.",
+        "fr_CA": "Informations relatives à l'analyse de la sécurité ferroviaire, aux inspections ou aux évaluations d'incidents."
+      },
       "index_group": "Transportation",
       "designation": "basic",
       "level": "s1",
@@ -757,9 +1150,15 @@
       "required_dissemination_control": null
     },
     "CUI//RECCOM": {
-      "name": "Nuclear Recommendation Material",
+      "name": {
+        "en_US": "Nuclear Recommendation Material",
+        "fr_CA": "Documents de recommandation nucléaire"
+      },
       "abbrv_name": "RECCOM",
-      "description": "Nuclear regulatory recommendation material.",
+      "description": {
+        "en_US": "Nuclear regulatory recommendation material.",
+        "fr_CA": "Documents de recommandation réglementaire nucléaire."
+      },
       "index_group": "Nuclear",
       "designation": "basic",
       "level": "s1",
@@ -768,9 +1167,15 @@
       "required_dissemination_control": null
     },
     "CUI//RESD": {
-      "name": "Permanent Resident Status",
+      "name": {
+        "en_US": "Permanent Resident Status",
+        "fr_CA": "Statut de résident permanent"
+      },
       "abbrv_name": "RESD",
-      "description": "Records related to permanent resident status and lawful permanent residency.",
+      "description": {
+        "en_US": "Records related to permanent resident status and lawful permanent residency.",
+        "fr_CA": "Dossiers relatifs au statut de résident permanent et à la résidence permanente légale."
+      },
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
@@ -779,9 +1184,15 @@
       "required_dissemination_control": null
     },
     "CUI//RTR": {
-      "name": "Retirement",
+      "name": {
+        "en_US": "Retirement",
+        "fr_CA": "Retraite"
+      },
       "abbrv_name": "RTR",
-      "description": "Federal retirement and pension-related financial information.",
+      "description": {
+        "en_US": "Federal retirement and pension-related financial information.",
+        "fr_CA": "Informations financières relatives à la retraite et aux pensions des fonctionnaires fédéraux."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -790,9 +1201,15 @@
       "required_dissemination_control": null
     },
     "CUI//RWRD": {
-      "name": "Reward",
+      "name": {
+        "en_US": "Reward",
+        "fr_CA": "Récompense"
+      },
       "abbrv_name": "RWRD",
-      "description": "Documentation related to reward programs, informant compensation, or public incentive investigative initiatives.",
+      "description": {
+        "en_US": "Documentation related to reward programs, informant compensation, or public incentive investigative initiatives.",
+        "fr_CA": "Documentation relative aux programmes de récompense, à la rémunération des informateurs ou aux initiatives d'enquête à incitation publique."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -801,9 +1218,15 @@
       "required_dissemination_control": null
     },
     "CUI//SAFE": {
-      "name": "SAFETY Act Information",
+      "name": {
+        "en_US": "SAFETY Act Information",
+        "fr_CA": "Informations relatives à la loi SAFETY Act"
+      },
       "abbrv_name": "SAFE",
-      "description": "Information related to SAFETY Act designations and certifications for anti-terrorism technologies.",
+      "description": {
+        "en_US": "Information related to SAFETY Act designations and certifications for anti-terrorism technologies.",
+        "fr_CA": "Informations relatives aux désignations et certifications de la loi SAFETY Act pour les technologies antiterroristes."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
@@ -812,9 +1235,15 @@
       "required_dissemination_control": null
     },
     "CUI//SBIZ": {
-      "name": "Small Business Research and Technology",
+      "name": {
+        "en_US": "Small Business Research and Technology",
+        "fr_CA": "Recherche et technologie des petites entreprises"
+      },
       "abbrv_name": "SBIZ",
-      "description": "Acquisition data related to small business research, innovation grants, and technology development programs.",
+      "description": {
+        "en_US": "Acquisition data related to small business research, innovation grants, and technology development programs.",
+        "fr_CA": "Données d'acquisition relatives à la recherche des petites entreprises, aux subventions à l'innovation et aux programmes de développement technologique."
+      },
       "index_group": "Procurement and Acquisition",
       "designation": "basic",
       "level": "s1",
@@ -823,9 +1252,15 @@
       "required_dissemination_control": null
     },
     "CUI//SCV": {
-      "name": "Sex Crime Victim",
+      "name": {
+        "en_US": "Sex Crime Victim",
+        "fr_CA": "Victime d'infraction sexuelle"
+      },
       "abbrv_name": "SCV",
-      "description": "Protected victim information related to sexual crimes, safeguarded to preserve privacy and investigative integrity.",
+      "description": {
+        "en_US": "Protected victim information related to sexual crimes, safeguarded to preserve privacy and investigative integrity.",
+        "fr_CA": "Informations protégées sur les victimes d'infractions sexuelles, protégées pour préserver la vie privée et l'intégrité de l'enquête."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -834,9 +1269,15 @@
       "required_dissemination_control": null
     },
     "CUI//SERV": {
-      "name": "Ocean Common Carrier Service Contracts",
+      "name": {
+        "en_US": "Ocean Common Carrier Service Contracts",
+        "fr_CA": "Contrats de service des transporteurs maritimes communs"
+      },
       "abbrv_name": "SERV",
-      "description": "Proprietary service contracts between ocean common carriers.",
+      "description": {
+        "en_US": "Proprietary service contracts between ocean common carriers.",
+        "fr_CA": "Contrats de service exclusifs entre transporteurs maritimes communs."
+      },
       "index_group": "Proprietary Business Information",
       "designation": "basic",
       "level": "s1",
@@ -845,9 +1286,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-ADPO": {
-      "name": "Administrative Proceedings (Specified)",
+      "name": {
+        "en_US": "Administrative Proceedings (Specified)",
+        "fr_CA": "Procédures administratives (précisées)"
+      },
       "abbrv_name": "SP-ADPO",
-      "description": "Administrative proceedings where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Administrative proceedings where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Procédures administratives pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
@@ -856,9 +1303,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-AIV": {
-      "name": "Accident Investigation (Specified)",
+      "name": {
+        "en_US": "Accident Investigation (Specified)",
+        "fr_CA": "Enquête sur les accidents (précisée)"
+      },
       "abbrv_name": "SP-AIV",
-      "description": "Accident investigation records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Accident investigation records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers d'enquête sur les accidents pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -867,9 +1320,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-BUDG": {
-      "name": "Budget (Specified)",
+      "name": {
+        "en_US": "Budget (Specified)",
+        "fr_CA": "Budget (précisé)"
+      },
       "abbrv_name": "SP-BUDG",
-      "description": "Budget information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Budget information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations budgétaires pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Financial",
       "designation": "specified",
       "level": "s1",
@@ -878,9 +1337,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-CCI": {
-      "name": "Consumer Complaint Information (Specified)",
+      "name": {
+        "en_US": "Consumer Complaint Information (Specified)",
+        "fr_CA": "Informations sur les plaintes des consommateurs (précisées)"
+      },
       "abbrv_name": "SP-CCI",
-      "description": "Consumer complaint information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Consumer complaint information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations sur les plaintes des consommateurs pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Financial",
       "designation": "specified",
       "level": "s1",
@@ -889,9 +1354,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-CEII": {
-      "name": "Critical Energy Infrastructure Information (Specified)",
+      "name": {
+        "en_US": "Critical Energy Infrastructure Information (Specified)",
+        "fr_CA": "Informations sur les infrastructures énergétiques essentielles (précisées)"
+      },
       "abbrv_name": "SP-CEII",
-      "description": "Energy sector infrastructure information (generation, transmission, pipelines) where the governing authority mandates specific handling controls to prevent disruption or safety compromise.",
+      "description": {
+        "en_US": "Energy sector infrastructure information (generation, transmission, pipelines) where the governing authority mandates specific handling controls to prevent disruption or safety compromise.",
+        "fr_CA": "Informations sur les infrastructures du secteur énergétique (production, transport, pipelines) pour lesquelles l'autorité réglementaire impose des mesures spécifiques afin de prévenir toute perturbation ou atteinte à la sécurité."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
@@ -900,9 +1371,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-CENS": {
-      "name": "US Census (Specified)",
+      "name": {
+        "en_US": "US Census (Specified)",
+        "fr_CA": "Recensement américain (précisé)"
+      },
       "abbrv_name": "SP-CENS",
-      "description": "Census data restricted to individuals with special sworn status for statistical purposes only. Mandates controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Census data restricted to individuals with special sworn status for statistical purposes only. Mandates controls beyond baseline CUI safeguards.",
+        "fr_CA": "Données de recensement réservées aux personnes ayant un statut assermenté spécial à des fins statistiques uniquement. Impose des mesures allant au-delà des garanties CUI de base."
+      },
       "index_group": "Statistical",
       "designation": "specified",
       "level": "s1",
@@ -911,9 +1388,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-CHLD": {
-      "name": "Child Pornography (Specified)",
+      "name": {
+        "en_US": "Child Pornography (Specified)",
+        "fr_CA": "Pornographie juvénile (précisée)"
+      },
       "abbrv_name": "SP-CHLD",
-      "description": "Child pornography case records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Child pornography case records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers d'affaires de pornographie juvénile pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
@@ -922,9 +1405,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-CHRI": {
-      "name": "Criminal History Records Information (Specified)",
+      "name": {
+        "en_US": "Criminal History Records Information (Specified)",
+        "fr_CA": "Informations sur les antécédents judiciaires (précisées)"
+      },
       "abbrv_name": "SP-CHRI",
-      "description": "Criminal history record information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Criminal history record information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations sur les antécédents judiciaires pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -933,9 +1422,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-CONTRACT": {
-      "name": "Contract Use (Specified)",
+      "name": {
+        "en_US": "Contract Use (Specified)",
+        "fr_CA": "Utilisation contractuelle (précisée)"
+      },
       "abbrv_name": "SP-CONTRACT",
-      "description": "Personally identifiable information collected under contractual relationships where the governing authority mandates specific handling controls.",
+      "description": {
+        "en_US": "Personally identifiable information collected under contractual relationships where the governing authority mandates specific handling controls.",
+        "fr_CA": "Renseignements personnels identifiables collectés dans le cadre de relations contractuelles pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques."
+      },
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
@@ -944,9 +1439,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-CRITAN": {
-      "name": "Ammonium Nitrate (Specified)",
+      "name": {
+        "en_US": "Ammonium Nitrate (Specified)",
+        "fr_CA": "Nitrate d'ammonium (précisé)"
+      },
       "abbrv_name": "SP-CRITAN",
-      "description": "Ammonium nitrate security information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Ammonium nitrate security information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations de sécurité sur le nitrate d'ammonium pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
@@ -955,9 +1456,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-CTI": {
-      "name": "Controlled Technical Information (Specified)",
+      "name": {
+        "en_US": "Controlled Technical Information (Specified)",
+        "fr_CA": "Informations techniques contrôlées (précisées)"
+      },
       "abbrv_name": "SP-CTI",
-      "description": "Technical information with military or space application that requires specific handling controls under defense-related regulations. Distribution Statements B through F apply as dissemination controls.",
+      "description": {
+        "en_US": "Technical information with military or space application that requires specific handling controls under defense-related regulations. Distribution Statements B through F apply as dissemination controls.",
+        "fr_CA": "Informations techniques à application militaire ou spatiale nécessitant des mesures de gestion spécifiques en vertu de la réglementation de défense. Les déclarations de distribution B à F s'appliquent comme mesures de diffusion."
+      },
       "index_group": "Defense",
       "designation": "specified",
       "level": "s1",
@@ -966,9 +1473,15 @@
       "required_dissemination_control": "Distribution Statements B through F per DoD Instruction 5230.24"
     },
     "CUI//SP-CVI": {
-      "name": "Chemical-Terrorism Vulnerability Information (Specified)",
+      "name": {
+        "en_US": "Chemical-Terrorism Vulnerability Information (Specified)",
+        "fr_CA": "Informations sur la vulnérabilité aux attaques chimiques (précisées)"
+      },
       "abbrv_name": "SP-CVI",
-      "description": "Chemical facility vulnerability assessments and security plans where 6 CFR 27.400 mandates specific handling controls.",
+      "description": {
+        "en_US": "Chemical facility vulnerability assessments and security plans where 6 CFR 27.400 mandates specific handling controls.",
+        "fr_CA": "Évaluations de la vulnérabilité des installations chimiques et plans de sécurité pour lesquels le 6 CFR 27.400 impose des mesures de gestion spécifiques."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
@@ -977,9 +1490,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-DCNI": {
-      "name": "Unclassified Controlled Nuclear Information - Defense (Specified)",
+      "name": {
+        "en_US": "Unclassified Controlled Nuclear Information - Defense (Specified)",
+        "fr_CA": "Informations nucléaires non classifiées contrôlées — Défense (précisées)"
+      },
       "abbrv_name": "SP-DCNI",
-      "description": "Department of Defense unclassified nuclear information where 10 U.S.C. 128 mandates specific handling controls.",
+      "description": {
+        "en_US": "Department of Defense unclassified nuclear information where 10 U.S.C. 128 mandates specific handling controls.",
+        "fr_CA": "Informations nucléaires non classifiées du département de la Défense pour lesquelles le 10 U.S.C. 128 impose des mesures de gestion spécifiques."
+      },
       "index_group": "Defense",
       "designation": "specified",
       "level": "s1",
@@ -988,9 +1507,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-EXPT": {
-      "name": "Export Controlled (Specified)",
+      "name": {
+        "en_US": "Export Controlled (Specified)",
+        "fr_CA": "Soumis au contrôle des exportations (précisé)"
+      },
       "abbrv_name": "SP-EXPT",
-      "description": "Export-controlled information where the governing regulation (e.g., ITAR) mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Export-controlled information where the governing regulation (e.g., ITAR) mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations soumises au contrôle des exportations pour lesquelles la réglementation applicable (p. ex. ITAR) impose des mesures spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Export Control",
       "designation": "specified",
       "level": "s1",
@@ -999,9 +1524,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-FISA": {
-      "name": "Foreign Intelligence Surveillance Act (Specified)",
+      "name": {
+        "en_US": "Foreign Intelligence Surveillance Act (Specified)",
+        "fr_CA": "Loi sur la surveillance du renseignement étranger (précisée)"
+      },
       "abbrv_name": "SP-FISA",
-      "description": "FISA-derived information where the statute mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "FISA-derived information where the statute mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations dérivées de la FISA pour lesquelles la loi impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
@@ -1010,9 +1541,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-FISAB": {
-      "name": "FISA Business Records (Specified)",
+      "name": {
+        "en_US": "FISA Business Records (Specified)",
+        "fr_CA": "Dossiers commerciaux FISA (précisés)"
+      },
       "abbrv_name": "SP-FISAB",
-      "description": "FISA business records where the statute mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "FISA business records where the statute mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers commerciaux relevant de la FISA pour lesquels la loi impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
@@ -1021,9 +1558,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-FNC": {
-      "name": "General Financial Information (Specified)",
+      "name": {
+        "en_US": "General Financial Information (Specified)",
+        "fr_CA": "Informations financières générales (précisées)"
+      },
       "abbrv_name": "SP-FNC",
-      "description": "Financial information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Financial information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations financières pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Financial",
       "designation": "specified",
       "level": "s1",
@@ -1032,9 +1575,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-FSEC": {
-      "name": "Bank Secrecy (Specified)",
+      "name": {
+        "en_US": "Bank Secrecy (Specified)",
+        "fr_CA": "Secret bancaire (précisé)"
+      },
       "abbrv_name": "SP-FSEC",
-      "description": "Bank secrecy information where FinCEN guidelines or BSA provisions mandate specific handling controls. SARs are confidential per 31 USC 5318(g)(2).",
+      "description": {
+        "en_US": "Bank secrecy information where FinCEN guidelines or BSA provisions mandate specific handling controls. SARs are confidential per 31 USC 5318(g)(2).",
+        "fr_CA": "Informations couvertes par le secret bancaire pour lesquelles les directives du FinCEN ou les dispositions du BSA imposent des mesures spécifiques. Les déclarations d'activités suspectes (SAR) sont confidentielles en vertu du 31 USC 5318(g)(2)."
+      },
       "index_group": "Financial",
       "designation": "specified",
       "level": "s1",
@@ -1043,9 +1592,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-FUND": {
-      "name": "Campaign Funds (Specified)",
+      "name": {
+        "en_US": "Campaign Funds (Specified)",
+        "fr_CA": "Fonds de campagne (précisés)"
+      },
       "abbrv_name": "SP-FUND",
-      "description": "Campaign fund tracking and financial investigative records where the governing authority mandates specific handling controls.",
+      "description": {
+        "en_US": "Campaign fund tracking and financial investigative records where the governing authority mandates specific handling controls.",
+        "fr_CA": "Dossiers de suivi des fonds de campagne et d'enquête financière pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -1054,9 +1609,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-GENETIC": {
-      "name": "Genetic Information (Specified)",
+      "name": {
+        "en_US": "Genetic Information (Specified)",
+        "fr_CA": "Informations génétiques (précisées)"
+      },
       "abbrv_name": "SP-GENETIC",
-      "description": "Genetic information where the governing authority (e.g., GINA) mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Genetic information where the governing authority (e.g., GINA) mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations génétiques pour lesquelles l'autorité réglementaire (p. ex. GINA) impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
@@ -1065,9 +1626,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-GEO": {
-      "name": "Geodetic Product Information (Specified)",
+      "name": {
+        "en_US": "Geodetic Product Information (Specified)",
+        "fr_CA": "Informations sur les produits géodésiques (précisées)"
+      },
       "abbrv_name": "SP-GEO",
-      "description": "Geodetic product information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Geodetic product information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations sur les produits géodésiques pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
@@ -1076,9 +1643,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-HISTP": {
-      "name": "Historic Properties (Specified)",
+      "name": {
+        "en_US": "Historic Properties (Specified)",
+        "fr_CA": "Propriétés historiques (précisées)"
+      },
       "abbrv_name": "SP-HISTP",
-      "description": "Historic property location and vulnerability information where the governing authority mandates specific handling controls.",
+      "description": {
+        "en_US": "Historic property location and vulnerability information where the governing authority mandates specific handling controls.",
+        "fr_CA": "Informations sur la localisation et la vulnérabilité des propriétés historiques pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques."
+      },
       "index_group": "Natural and Cultural Resources",
       "designation": "specified",
       "level": "s1",
@@ -1087,9 +1660,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-HLTH": {
-      "name": "Health Information (Specified)",
+      "name": {
+        "en_US": "Health Information (Specified)",
+        "fr_CA": "Informations sur la santé (précisées)"
+      },
       "abbrv_name": "SP-HLTH",
-      "description": "Protected health information where the governing authority (e.g., HIPAA) mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Protected health information where the governing authority (e.g., HIPAA) mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations sur la santé protégées pour lesquelles l'autorité réglementaire (p. ex. HIPAA) impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
@@ -1098,9 +1677,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-ID": {
-      "name": "Internal Data (Specified)",
+      "name": {
+        "en_US": "Internal Data (Specified)",
+        "fr_CA": "Données internes (précisées)"
+      },
       "abbrv_name": "SP-ID",
-      "description": "Intelligence community internal data where the governing authority mandates specific handling controls. Not intended for dissemination beyond originating agency channels.",
+      "description": {
+        "en_US": "Intelligence community internal data where the governing authority mandates specific handling controls. Not intended for dissemination beyond originating agency channels.",
+        "fr_CA": "Données internes de la communauté du renseignement pour lesquelles l'autorité réglementaire impose des mesures spécifiques. Non destinées à être diffusées en dehors des canaux de l'organisme émetteur."
+      },
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
@@ -1109,9 +1694,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-IFNC": {
-      "name": "Intelligence Financial Records (Specified)",
+      "name": {
+        "en_US": "Intelligence Financial Records (Specified)",
+        "fr_CA": "Dossiers financiers du renseignement (précisés)"
+      },
       "abbrv_name": "SP-IFNC",
-      "description": "Intelligence-related financial records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Intelligence-related financial records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers financiers liés au renseignement pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
@@ -1120,9 +1711,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-INF": {
-      "name": "Informant (Specified)",
+      "name": {
+        "en_US": "Informant (Specified)",
+        "fr_CA": "Informateur (précisé)"
+      },
       "abbrv_name": "SP-INF",
-      "description": "Confidential informant information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Confidential informant information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations sur les informateurs confidentiels pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -1131,9 +1728,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-INTEL": {
-      "name": "General Intelligence (Specified)",
+      "name": {
+        "en_US": "General Intelligence (Specified)",
+        "fr_CA": "Renseignement général (précisé)"
+      },
       "abbrv_name": "SP-INTEL",
-      "description": "Intelligence information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Intelligence information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations de renseignement pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Intelligence",
       "designation": "specified",
       "level": "s1",
@@ -1142,9 +1745,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-INTL": {
-      "name": "International Agreement Information (Specified)",
+      "name": {
+        "en_US": "International Agreement Information (Specified)",
+        "fr_CA": "Informations relatives aux accords internationaux (précisées)"
+      },
       "abbrv_name": "SP-INTL",
-      "description": "International agreement information where the governing authority mandates specific handling controls. Controlled by SecDef, SecDHS (Coast Guard), or SecEnergy (national security programs).",
+      "description": {
+        "en_US": "International agreement information where the governing authority mandates specific handling controls. Controlled by SecDef, SecDHS (Coast Guard), or SecEnergy (national security programs).",
+        "fr_CA": "Informations relatives aux accords internationaux pour lesquelles l'autorité réglementaire impose des mesures spécifiques. Contrôlées par le SecDef, le SecDHS (garde-côtes) ou le SecEnergy (programmes de sécurité nationale)."
+      },
       "index_group": "International Agreements",
       "designation": "specified",
       "level": "s1",
@@ -1153,9 +1762,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-INV": {
-      "name": "Investigation (Specified)",
+      "name": {
+        "en_US": "Investigation (Specified)",
+        "fr_CA": "Enquête (précisée)"
+      },
       "abbrv_name": "SP-INV",
-      "description": "Investigative records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Investigative records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers d'enquête pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -1164,9 +1779,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-JURY": {
-      "name": "Federal Grand Jury (Specified)",
+      "name": {
+        "en_US": "Federal Grand Jury (Specified)",
+        "fr_CA": "Grand jury fédéral (précisé)"
+      },
       "abbrv_name": "SP-JURY",
-      "description": "Federal grand jury information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Federal grand jury information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations du grand jury fédéral pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
@@ -1175,9 +1796,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-LDNA": {
-      "name": "DNA (Specified)",
+      "name": {
+        "en_US": "DNA (Specified)",
+        "fr_CA": "ADN (précisé)"
+      },
       "abbrv_name": "SP-LDNA",
-      "description": "Forensic DNA profiles and genetic identification records where the governing authority mandates specific handling controls.",
+      "description": {
+        "en_US": "Forensic DNA profiles and genetic identification records where the governing authority mandates specific handling controls.",
+        "fr_CA": "Profils ADN légistes et dossiers d'identification génétique pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -1186,9 +1813,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-LFNC": {
-      "name": "Law Enforcement Financial Records (Specified)",
+      "name": {
+        "en_US": "Law Enforcement Financial Records (Specified)",
+        "fr_CA": "Dossiers financiers d'application de la loi (précisés)"
+      },
       "abbrv_name": "SP-LFNC",
-      "description": "Law enforcement financial records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Law enforcement financial records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers financiers d'application de la loi pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -1197,9 +1830,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-LPROT": {
-      "name": "Protective Order (Specified)",
+      "name": {
+        "en_US": "Protective Order (Specified)",
+        "fr_CA": "Ordonnance de protection (précisée)"
+      },
       "abbrv_name": "SP-LPROT",
-      "description": "Records subject to judicial protective orders where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Records subject to judicial protective orders where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers soumis à des ordonnances de protection judiciaires pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
@@ -1208,9 +1847,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-MFC": {
-      "name": "Proprietary Manufacturer (Specified)",
+      "name": {
+        "en_US": "Proprietary Manufacturer (Specified)",
+        "fr_CA": "Fabricant exclusif (précisé)"
+      },
       "abbrv_name": "SP-MFC",
-      "description": "Proprietary manufacturing processes, designs, or production data where the governing authority mandates specific handling controls.",
+      "description": {
+        "en_US": "Proprietary manufacturing processes, designs, or production data where the governing authority mandates specific handling controls.",
+        "fr_CA": "Procédés de fabrication, conceptions ou données de production exclusifs pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques."
+      },
       "index_group": "Proprietary Business Information",
       "designation": "specified",
       "level": "s1",
@@ -1219,9 +1864,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-NNPI": {
-      "name": "Naval Nuclear Propulsion Information (Specified)",
+      "name": {
+        "en_US": "Naval Nuclear Propulsion Information (Specified)",
+        "fr_CA": "Informations sur la propulsion nucléaire navale (précisées)"
+      },
       "abbrv_name": "SP-NNPI",
-      "description": "Naval nuclear propulsion information where the governing statute mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Naval nuclear propulsion information where the governing statute mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations sur la propulsion nucléaire navale pour lesquelles la loi applicable impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Defense",
       "designation": "specified",
       "level": "s1",
@@ -1230,9 +1881,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-NPSR": {
-      "name": "National Park System Resources (Specified)",
+      "name": {
+        "en_US": "National Park System Resources (Specified)",
+        "fr_CA": "Ressources du système des parcs nationaux (précisées)"
+      },
       "abbrv_name": "SP-NPSR",
-      "description": "National Park System resource location and vulnerability information where the governing authority mandates specific handling controls.",
+      "description": {
+        "en_US": "National Park System resource location and vulnerability information where the governing authority mandates specific handling controls.",
+        "fr_CA": "Informations sur la localisation et la vulnérabilité des ressources du système des parcs nationaux pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques."
+      },
       "index_group": "Natural and Cultural Resources",
       "designation": "specified",
       "level": "s1",
@@ -1241,9 +1898,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-NUC": {
-      "name": "General Nuclear (Specified)",
+      "name": {
+        "en_US": "General Nuclear (Specified)",
+        "fr_CA": "Nucléaire général (précisé)"
+      },
       "abbrv_name": "SP-NUC",
-      "description": "Nuclear information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Nuclear information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations nucléaires pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Nuclear",
       "designation": "specified",
       "level": "s1",
@@ -1252,9 +1915,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-PCII": {
-      "name": "Protected Critical Infrastructure Information (Specified)",
+      "name": {
+        "en_US": "Protected Critical Infrastructure Information (Specified)",
+        "fr_CA": "Informations protégées sur les infrastructures essentielles (précisées)"
+      },
       "abbrv_name": "SP-PCII",
-      "description": "Critical infrastructure information submitted under the PCII program where the governing authority mandates specific handling controls.",
+      "description": {
+        "en_US": "Critical infrastructure information submitted under the PCII program where the governing authority mandates specific handling controls.",
+        "fr_CA": "Informations sur les infrastructures essentielles soumises dans le cadre du programme PCII pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
@@ -1263,9 +1932,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-PERS": {
-      "name": "Personnel Records (Specified)",
+      "name": {
+        "en_US": "Personnel Records (Specified)",
+        "fr_CA": "Dossiers du personnel (précisés)"
+      },
       "abbrv_name": "SP-PERS",
-      "description": "Personnel records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Personnel records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers du personnel pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
@@ -1274,9 +1949,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-PRIIG": {
-      "name": "Inspector General Protected (Specified)",
+      "name": {
+        "en_US": "Inspector General Protected (Specified)",
+        "fr_CA": "Protection de l'inspecteur général (précisée)"
+      },
       "abbrv_name": "SP-PRIIG",
-      "description": "Inspector General information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Inspector General information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations de l'inspecteur général pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
@@ -1285,9 +1966,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-PROCURE": {
-      "name": "General Procurement and Acquisition (Specified)",
+      "name": {
+        "en_US": "General Procurement and Acquisition (Specified)",
+        "fr_CA": "Approvisionnement et acquisition généraux (précisés)"
+      },
       "abbrv_name": "SP-PROCURE",
-      "description": "Procurement and acquisition information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Procurement and acquisition information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations d'approvisionnement et d'acquisition pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Procurement and Acquisition",
       "designation": "specified",
       "level": "s1",
@@ -1296,9 +1983,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-PROPIN": {
-      "name": "General Proprietary Business Information (Specified)",
+      "name": {
+        "en_US": "General Proprietary Business Information (Specified)",
+        "fr_CA": "Informations commerciales exclusives générales (précisées)"
+      },
       "abbrv_name": "SP-PROPIN",
-      "description": "Proprietary business information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Proprietary business information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations commerciales exclusives pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Proprietary Business Information",
       "designation": "specified",
       "level": "s1",
@@ -1307,9 +2000,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-PRVCY": {
-      "name": "General Privacy (Specified)",
+      "name": {
+        "en_US": "General Privacy (Specified)",
+        "fr_CA": "Protection des renseignements personnels générale (précisée)"
+      },
       "abbrv_name": "SP-PRVCY",
-      "description": "Privacy-protected information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Privacy-protected information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations protégées par la vie privée pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
@@ -1318,9 +2017,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-SGI": {
-      "name": "Safeguards Information (Specified)",
+      "name": {
+        "en_US": "Safeguards Information (Specified)",
+        "fr_CA": "Informations sur les garanties nucléaires (précisées)"
+      },
       "abbrv_name": "SP-SGI",
-      "description": "Nuclear safeguards information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Nuclear safeguards information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations sur les garanties nucléaires pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Nuclear",
       "designation": "specified",
       "level": "s1",
@@ -1329,9 +2034,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-SRI": {
-      "name": "Nuclear Security-Related Information (Specified)",
+      "name": {
+        "en_US": "Nuclear Security-Related Information (Specified)",
+        "fr_CA": "Informations relatives à la sécurité nucléaire (précisées)"
+      },
       "abbrv_name": "SP-SRI",
-      "description": "Nuclear security-related information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Nuclear security-related information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations relatives à la sécurité nucléaire pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Nuclear",
       "designation": "specified",
       "level": "s1",
@@ -1340,9 +2051,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-SSEL": {
-      "name": "Source Selection (Specified)",
+      "name": {
+        "en_US": "Source Selection (Specified)",
+        "fr_CA": "Sélection de la source (précisée)"
+      },
       "abbrv_name": "SP-SSEL",
-      "description": "Source selection materials where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Source selection materials where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Documents de sélection de la source pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Procurement and Acquisition",
       "designation": "specified",
       "level": "s1",
@@ -1351,9 +2068,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-SSI": {
-      "name": "Sensitive Security Information (Specified)",
+      "name": {
+        "en_US": "Sensitive Security Information (Specified)",
+        "fr_CA": "Informations sensibles sur la sécurité (précisées)"
+      },
       "abbrv_name": "SP-SSI",
-      "description": "Transportation security information where 49 CFR parts 15 and 1520 mandate specific handling controls.",
+      "description": {
+        "en_US": "Transportation security information where 49 CFR parts 15 and 1520 mandate specific handling controls.",
+        "fr_CA": "Informations de sécurité des transports pour lesquelles les parties 15 et 1520 du 49 CFR imposent des mesures de gestion spécifiques."
+      },
       "index_group": "Transportation",
       "designation": "specified",
       "level": "s1",
@@ -1362,9 +2085,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-STAT": {
-      "name": "Statistical Information (Specified)",
+      "name": {
+        "en_US": "Statistical Information (Specified)",
+        "fr_CA": "Informations statistiques (précisées)"
+      },
       "abbrv_name": "SP-STAT",
-      "description": "Statistical information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Statistical information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations statistiques pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Statistical",
       "designation": "specified",
       "level": "s1",
@@ -1373,9 +2102,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-STUD": {
-      "name": "Student Records (Specified)",
+      "name": {
+        "en_US": "Student Records (Specified)",
+        "fr_CA": "Dossiers des étudiants (précisés)"
+      },
       "abbrv_name": "SP-STUD",
-      "description": "Student education records where the governing authority (e.g., FERPA) mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Student education records where the governing authority (e.g., FERPA) mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers scolaires des étudiants pour lesquels l'autorité réglementaire (p. ex. FERPA) impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Privacy",
       "designation": "specified",
       "level": "s1",
@@ -1384,9 +2119,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-SUB": {
-      "name": "Controlled Substances (Specified)",
+      "name": {
+        "en_US": "Controlled Substances (Specified)",
+        "fr_CA": "Substances contrôlées (précisées)"
+      },
       "abbrv_name": "SP-SUB",
-      "description": "Controlled substance records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Controlled substance records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers sur les substances contrôlées pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -1395,9 +2136,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-TAX": {
-      "name": "Federal Taxpayer Information (Specified)",
+      "name": {
+        "en_US": "Federal Taxpayer Information (Specified)",
+        "fr_CA": "Informations fiscales des contribuables fédéraux (précisées)"
+      },
       "abbrv_name": "SP-TAX",
-      "description": "Federal taxpayer information where 26 U.S.C. 6103 mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Federal taxpayer information where 26 U.S.C. 6103 mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations fiscales des contribuables fédéraux pour lesquelles le 26 U.S.C. 6103 impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Tax",
       "designation": "specified",
       "level": "s1",
@@ -1406,9 +2153,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-TSCA": {
-      "name": "Toxic Substances (Specified)",
+      "name": {
+        "en_US": "Toxic Substances (Specified)",
+        "fr_CA": "Substances toxiques (précisées)"
+      },
       "abbrv_name": "SP-TSCA",
-      "description": "Toxic substance information where the Toxic Substances Control Act mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Toxic substance information where the Toxic Substances Control Act mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations sur les substances toxiques pour lesquelles la loi sur le contrôle des substances toxiques (TSCA) impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "specified",
       "level": "s1",
@@ -1417,9 +2170,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-UCNI": {
-      "name": "Unclassified Controlled Nuclear Information - Energy (Specified)",
+      "name": {
+        "en_US": "Unclassified Controlled Nuclear Information - Energy (Specified)",
+        "fr_CA": "Informations nucléaires non classifiées contrôlées — Énergie (précisées)"
+      },
       "abbrv_name": "SP-UCNI",
-      "description": "Department of Energy unclassified nuclear information where section 148 of the Atomic Energy Act mandates specific handling controls.",
+      "description": {
+        "en_US": "Department of Energy unclassified nuclear information where section 148 of the Atomic Energy Act mandates specific handling controls.",
+        "fr_CA": "Informations nucléaires non classifiées du département de l'Énergie pour lesquelles l'article 148 de la loi sur l'énergie atomique impose des mesures de gestion spécifiques."
+      },
       "index_group": "Nuclear",
       "designation": "specified",
       "level": "s1",
@@ -1428,9 +2187,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-WDT": {
-      "name": "Written Determinations (Specified)",
+      "name": {
+        "en_US": "Written Determinations (Specified)",
+        "fr_CA": "Décisions écrites (précisées)"
+      },
       "abbrv_name": "SP-WDT",
-      "description": "IRS written determinations where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "IRS written determinations where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Décisions écrites de l'IRS pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Tax",
       "designation": "specified",
       "level": "s1",
@@ -1439,9 +2204,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-WHSTL": {
-      "name": "Whistleblower Identity (Specified)",
+      "name": {
+        "en_US": "Whistleblower Identity (Specified)",
+        "fr_CA": "Identité du dénonciateur (précisée)"
+      },
       "abbrv_name": "SP-WHSTL",
-      "description": "Whistleblower identity and disclosure records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Whistleblower identity and disclosure records where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Dossiers d'identité et de divulgation des dénonciateurs pour lesquels l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "specified",
       "level": "s1",
@@ -1450,9 +2221,15 @@
       "required_dissemination_control": null
     },
     "CUI//SP-WIT": {
-      "name": "Witness Protection (Specified)",
+      "name": {
+        "en_US": "Witness Protection (Specified)",
+        "fr_CA": "Protection des témoins (précisée)"
+      },
       "abbrv_name": "SP-WIT",
-      "description": "Witness protection information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+      "description": {
+        "en_US": "Witness protection information where the governing authority mandates specific handling controls beyond baseline CUI safeguards.",
+        "fr_CA": "Informations de protection des témoins pour lesquelles l'autorité réglementaire impose des mesures de gestion spécifiques au-delà des garanties CUI de base."
+      },
       "index_group": "Legal",
       "designation": "specified",
       "level": "s1",
@@ -1461,9 +2238,15 @@
       "required_dissemination_control": null
     },
     "CUI//SRI": {
-      "name": "Nuclear Security-Related Information",
+      "name": {
+        "en_US": "Nuclear Security-Related Information",
+        "fr_CA": "Informations relatives à la sécurité nucléaire"
+      },
       "abbrv_name": "SRI",
-      "description": "Nuclear security-related information under baseline handling.",
+      "description": {
+        "en_US": "Nuclear security-related information under baseline handling.",
+        "fr_CA": "Informations relatives à la sécurité nucléaire, avec traitement de base."
+      },
       "index_group": "Nuclear",
       "designation": "basic",
       "level": "s1",
@@ -1472,9 +2255,15 @@
       "required_dissemination_control": null
     },
     "CUI//SSEL": {
-      "name": "Source Selection",
+      "name": {
+        "en_US": "Source Selection",
+        "fr_CA": "Sélection de la source"
+      },
       "abbrv_name": "SSEL",
-      "description": "Source selection materials including evaluation criteria, scoring records, and award decision documentation under baseline handling.",
+      "description": {
+        "en_US": "Source selection materials including evaluation criteria, scoring records, and award decision documentation under baseline handling.",
+        "fr_CA": "Documents de sélection de la source comprenant les critères d'évaluation, les dossiers de notation et la documentation des décisions d'attribution, avec traitement de base."
+      },
       "index_group": "Procurement and Acquisition",
       "designation": "basic",
       "level": "s1",
@@ -1483,9 +2272,15 @@
       "required_dissemination_control": null
     },
     "CUI//STAT": {
-      "name": "Statistical Information",
+      "name": {
+        "en_US": "Statistical Information",
+        "fr_CA": "Informations statistiques"
+      },
       "abbrv_name": "STAT",
-      "description": "General statistical information under baseline handling.",
+      "description": {
+        "en_US": "General statistical information under baseline handling.",
+        "fr_CA": "Informations statistiques générales, avec traitement de base."
+      },
       "index_group": "Statistical",
       "designation": "basic",
       "level": "s1",
@@ -1494,9 +2289,15 @@
       "required_dissemination_control": null
     },
     "CUI//STUD": {
-      "name": "Student Records",
+      "name": {
+        "en_US": "Student Records",
+        "fr_CA": "Dossiers des étudiants"
+      },
       "abbrv_name": "STUD",
-      "description": "Education records related to identifiable students under baseline handling.",
+      "description": {
+        "en_US": "Education records related to identifiable students under baseline handling.",
+        "fr_CA": "Dossiers scolaires relatifs à des étudiants identifiables, avec traitement de base."
+      },
       "index_group": "Privacy",
       "designation": "basic",
       "level": "s1",
@@ -1505,9 +2306,15 @@
       "required_dissemination_control": null
     },
     "CUI//SURV": {
-      "name": "Investment Survey",
+      "name": {
+        "en_US": "Investment Survey",
+        "fr_CA": "Enquête sur les investissements"
+      },
       "abbrv_name": "SURV",
-      "description": "Investment survey data protected from public disclosure.",
+      "description": {
+        "en_US": "Investment survey data protected from public disclosure.",
+        "fr_CA": "Données d'enquête sur les investissements protégées contre la divulgation publique."
+      },
       "index_group": "Statistical",
       "designation": "basic",
       "level": "s1",
@@ -1516,9 +2323,15 @@
       "required_dissemination_control": null
     },
     "CUI//TAI": {
-      "name": "Taxpayer Advocate Information",
+      "name": {
+        "en_US": "Taxpayer Advocate Information",
+        "fr_CA": "Informations du service du défenseur des contribuables"
+      },
       "abbrv_name": "TAI",
-      "description": "Taxpayer Advocate Service case records and protected taxpayer assistance documentation.",
+      "description": {
+        "en_US": "Taxpayer Advocate Service case records and protected taxpayer assistance documentation.",
+        "fr_CA": "Dossiers du Service du défenseur des contribuables et documentation d'assistance aux contribuables protégée."
+      },
       "index_group": "Tax",
       "designation": "basic",
       "level": "s1",
@@ -1527,9 +2340,15 @@
       "required_dissemination_control": null
     },
     "CUI//TRACE": {
-      "name": "Pen Register/Trap & Trace",
+      "name": {
+        "en_US": "Pen Register/Trap & Trace",
+        "fr_CA": "Registre téléphonique / dispositif de repérage"
+      },
       "abbrv_name": "TRACE",
-      "description": "Pen register and trap-and-trace surveillance data collected under authorized legal monitoring operations.",
+      "description": {
+        "en_US": "Pen register and trap-and-trace surveillance data collected under authorized legal monitoring operations.",
+        "fr_CA": "Données de surveillance par registre téléphonique et dispositif de repérage collectées dans le cadre d'opérations de surveillance légale autorisées."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -1538,9 +2357,15 @@
       "required_dissemination_control": null
     },
     "CUI//UCNI": {
-      "name": "Unclassified Controlled Nuclear Information - Energy",
+      "name": {
+        "en_US": "Unclassified Controlled Nuclear Information - Energy",
+        "fr_CA": "Informations nucléaires non classifiées contrôlées — Énergie"
+      },
       "abbrv_name": "UCNI",
-      "description": "Department of Energy unclassified nuclear information under baseline handling.",
+      "description": {
+        "en_US": "Department of Energy unclassified nuclear information under baseline handling.",
+        "fr_CA": "Informations nucléaires non classifiées du département de l'Énergie, avec traitement de base."
+      },
       "index_group": "Nuclear",
       "designation": "basic",
       "level": "s1",
@@ -1549,9 +2374,15 @@
       "required_dissemination_control": null
     },
     "CUI//VISA": {
-      "name": "Visas",
+      "name": {
+        "en_US": "Visas",
+        "fr_CA": "Visas"
+      },
       "abbrv_name": "VISA",
-      "description": "Records related to visa applications and determinations.",
+      "description": {
+        "en_US": "Records related to visa applications and determinations.",
+        "fr_CA": "Dossiers relatifs aux demandes de visa et aux décisions y afférentes."
+      },
       "index_group": "Immigration",
       "designation": "basic",
       "level": "s1",
@@ -1560,9 +2391,15 @@
       "required_dissemination_control": null
     },
     "CUI//WATER": {
-      "name": "Water Assessments",
+      "name": {
+        "en_US": "Water Assessments",
+        "fr_CA": "Évaluations des ressources en eau"
+      },
       "abbrv_name": "WATER",
-      "description": "Information related to assessments of drinking water systems and water infrastructure.",
+      "description": {
+        "en_US": "Information related to assessments of drinking water systems and water infrastructure.",
+        "fr_CA": "Informations relatives aux évaluations des systèmes d'eau potable et des infrastructures hydrauliques."
+      },
       "index_group": "Critical Infrastructure",
       "designation": "basic",
       "level": "s1",
@@ -1571,9 +2408,15 @@
       "required_dissemination_control": null
     },
     "CUI//WHSTL": {
-      "name": "Whistleblower Identity",
+      "name": {
+        "en_US": "Whistleblower Identity",
+        "fr_CA": "Identité du dénonciateur"
+      },
       "abbrv_name": "WHSTL",
-      "description": "Protected identity and disclosure records of whistleblowers under baseline handling.",
+      "description": {
+        "en_US": "Protected identity and disclosure records of whistleblowers under baseline handling.",
+        "fr_CA": "Dossiers d'identité et de divulgation des dénonciateurs protégés, avec traitement de base."
+      },
       "index_group": "Law Enforcement",
       "designation": "basic",
       "level": "s1",
@@ -1582,9 +2425,15 @@
       "required_dissemination_control": null
     },
     "CUI//WIT": {
-      "name": "Witness Protection",
+      "name": {
+        "en_US": "Witness Protection",
+        "fr_CA": "Protection des témoins"
+      },
       "abbrv_name": "WIT",
-      "description": "Witness protection information under baseline handling.",
+      "description": {
+        "en_US": "Witness protection information under baseline handling.",
+        "fr_CA": "Informations de protection des témoins, avec traitement de base."
+      },
       "index_group": "Legal",
       "designation": "basic",
       "level": "s1",
@@ -1593,9 +2442,15 @@
       "required_dissemination_control": null
     },
     "CUI//XFER": {
-      "name": "Electronic Funds Transfer",
+      "name": {
+        "en_US": "Electronic Funds Transfer",
+        "fr_CA": "Virement électronique de fonds"
+      },
       "abbrv_name": "XFER",
-      "description": "Electronic funds transfer records and transaction information.",
+      "description": {
+        "en_US": "Electronic funds transfer records and transaction information.",
+        "fr_CA": "Dossiers de virement électronique de fonds et informations sur les transactions."
+      },
       "index_group": "Financial",
       "designation": "basic",
       "level": "s1",
@@ -1606,95 +2461,169 @@
   },
   "dissemination_controls": {
     "Attorney-Client": {
-      "name": "Attorney-Client Privilege",
+      "name": {
+        "en_US": "Attorney-Client Privilege",
+        "fr_CA": "Secret professionnel de l'avocat"
+      },
       "banner_marking": "Attorney-Client",
       "portion_marking": "AC",
-      "description": "Dissemination of information protected by the attorney-client privilege beyond the attorney, the attorney's agents, or the client can result in the loss of the privilege and is prohibited unless the agency's executive decision-makers decide to disclose.",
+      "description": {
+        "en_US": "Dissemination of information protected by the attorney-client privilege beyond the attorney, the attorney's agents, or the client can result in the loss of the privilege and is prohibited unless the agency's executive decision-makers decide to disclose.",
+        "fr_CA": "La diffusion d'informations protégées par le secret professionnel de l'avocat au-delà de l'avocat, de ses mandataires ou du client peut entraîner la perte du privilège et est interdite, à moins que les décideurs de l'organisme n'autorisent la divulgation."
+      },
       "parameterized": false,
       "category_restriction": "PRIVILEGE",
       "mutually_exclusive_with": []
     },
     "Attorney-WP": {
-      "name": "Attorney Work Product",
+      "name": {
+        "en_US": "Attorney Work Product",
+        "fr_CA": "Produit du travail de l'avocat"
+      },
       "banner_marking": "Attorney-WP",
       "portion_marking": "AWP",
-      "description": "Dissemination of information protected by the attorney work product privilege beyond the attorney, the attorney's agents, or the client can result in the loss of the privilege and is prohibited unless specifically permitted by the overseeing attorney or their successor.",
+      "description": {
+        "en_US": "Dissemination of information protected by the attorney work product privilege beyond the attorney, the attorney's agents, or the client can result in the loss of the privilege and is prohibited unless specifically permitted by the overseeing attorney or their successor.",
+        "fr_CA": "La diffusion d'informations protégées par la doctrine du produit du travail de l'avocat au-delà de l'avocat, de ses mandataires ou du client peut entraîner la perte du privilège et est interdite, à moins d'une autorisation expresse de l'avocat responsable ou de son successeur."
+      },
       "parameterized": false,
       "category_restriction": "PRIVILEGE",
       "mutually_exclusive_with": []
     },
     "DISPLAY ONLY": {
-      "name": "Display Only",
+      "name": {
+        "en_US": "Display Only",
+        "fr_CA": "Affichage uniquement"
+      },
       "banner_marking": "DISPLAY ONLY",
       "portion_marking": "DISPLAY ONLY",
-      "description": "Information is authorized for disclosure to a foreign recipient but without providing the foreign recipient with a physical copy for retention, regardless of medium.",
+      "description": {
+        "en_US": "Information is authorized for disclosure to a foreign recipient but without providing the foreign recipient with a physical copy for retention, regardless of medium.",
+        "fr_CA": "L'information est autorisée à être divulguée à un destinataire étranger sans lui en remettre une copie physique à conserver, quel que soit le support."
+      },
       "parameterized": true,
       "parameter_format": "USA must appear first, followed by trigraph country codes in alphabetical order, followed by tetragraph codes for international organizations in alphabetical order.",
       "parameter_example": "DISPLAY ONLY USA, AUS, GBR",
       "category_restriction": null,
-      "mutually_exclusive_with": ["NOFORN"]
+      "mutually_exclusive_with": [
+        "NOFORN"
+      ]
     },
     "DL ONLY": {
-      "name": "Dissemination List Controlled",
+      "name": {
+        "en_US": "Dissemination List Controlled",
+        "fr_CA": "Diffusion restreinte à la liste"
+      },
       "banner_marking": "DL ONLY",
       "portion_marking": "DL ONLY",
-      "description": "Dissemination authorized only to individuals, organizations, or entities on an accompanying dissemination list. Supersedes other LDCs but cannot supersede dissemination stipulated in law, regulation, or government-wide policy.",
+      "description": {
+        "en_US": "Dissemination authorized only to individuals, organizations, or entities on an accompanying dissemination list. Supersedes other LDCs but cannot supersede dissemination stipulated in law, regulation, or government-wide policy.",
+        "fr_CA": "Diffusion autorisée uniquement aux personnes, organisations ou entités figurant sur la liste de diffusion annexée. Supplante les autres mesures de contrôle de la diffusion, mais ne peut supplanter la diffusion stipulée par la loi, la réglementation ou la politique pangouvernementale."
+      },
       "parameterized": false,
       "category_restriction": null,
       "mutually_exclusive_with": []
     },
     "FED ONLY": {
-      "name": "Federal Employees Only",
+      "name": {
+        "en_US": "Federal Employees Only",
+        "fr_CA": "Employés fédéraux uniquement"
+      },
       "banner_marking": "FED ONLY",
       "portion_marking": "FED ONLY",
-      "description": "Dissemination authorized only to employees of United States Government executive branch departments and agencies or armed forces personnel.",
+      "description": {
+        "en_US": "Dissemination authorized only to employees of United States Government executive branch departments and agencies or armed forces personnel.",
+        "fr_CA": "Diffusion autorisée uniquement aux employés des ministères et organismes du pouvoir exécutif du gouvernement des États-Unis ou au personnel des forces armées."
+      },
       "parameterized": false,
       "category_restriction": null,
-      "mutually_exclusive_with": ["FEDCON"]
+      "mutually_exclusive_with": [
+        "FEDCON"
+      ]
     },
     "FEDCON": {
-      "name": "Federal Employees and Contractors Only",
+      "name": {
+        "en_US": "Federal Employees and Contractors Only",
+        "fr_CA": "Employés fédéraux et entrepreneurs uniquement"
+      },
       "banner_marking": "FEDCON",
       "portion_marking": "FEDCON",
-      "description": "Dissemination authorized only to federal employees, armed forces personnel, or individuals/employers under contract with the United States, in furtherance of that contractual purpose.",
+      "description": {
+        "en_US": "Dissemination authorized only to federal employees, armed forces personnel, or individuals/employers under contract with the United States, in furtherance of that contractual purpose.",
+        "fr_CA": "Diffusion autorisée uniquement aux employés fédéraux, au personnel des forces armées ou aux personnes et employeurs liés par contrat aux États-Unis, dans le cadre de ce contrat."
+      },
       "parameterized": false,
       "category_restriction": null,
-      "mutually_exclusive_with": ["FED ONLY", "NOCON"]
+      "mutually_exclusive_with": [
+        "FED ONLY",
+        "NOCON"
+      ]
     },
     "NOCON": {
-      "name": "No Dissemination to Contractors",
+      "name": {
+        "en_US": "No Dissemination to Contractors",
+        "fr_CA": "Aucune diffusion aux entrepreneurs"
+      },
       "banner_marking": "NOCON",
       "portion_marking": "NOCON",
-      "description": "No dissemination authorized to contractors. Intended for use when dissemination is not permitted to Federal contractors but permits dissemination to state, local, or tribal employees.",
+      "description": {
+        "en_US": "No dissemination authorized to contractors. Intended for use when dissemination is not permitted to Federal contractors but permits dissemination to state, local, or tribal employees.",
+        "fr_CA": "Aucune diffusion autorisée aux entrepreneurs. À utiliser lorsque la diffusion aux entrepreneurs fédéraux est interdite, mais permise aux employés des États, des collectivités locales ou des tribus."
+      },
       "parameterized": false,
       "category_restriction": null,
-      "mutually_exclusive_with": ["FEDCON"]
+      "mutually_exclusive_with": [
+        "FEDCON"
+      ]
     },
     "NOFORN": {
-      "name": "No Foreign Dissemination",
+      "name": {
+        "en_US": "No Foreign Dissemination",
+        "fr_CA": "Aucune diffusion à l'étranger"
+      },
       "banner_marking": "NOFORN",
       "portion_marking": "NF",
-      "description": "Information may not be disseminated in any form to foreign governments, foreign nationals, foreign or international organizations, or non-US citizens.",
+      "description": {
+        "en_US": "Information may not be disseminated in any form to foreign governments, foreign nationals, foreign or international organizations, or non-US citizens.",
+        "fr_CA": "L'information ne peut être diffusée sous quelque forme que ce soit à des gouvernements étrangers, à des ressortissants étrangers, à des organisations étrangères ou internationales, ni à des non-citoyens américains."
+      },
       "parameterized": false,
       "category_restriction": null,
-      "mutually_exclusive_with": ["REL TO", "DISPLAY ONLY"]
+      "mutually_exclusive_with": [
+        "REL TO",
+        "DISPLAY ONLY"
+      ]
     },
     "REL TO": {
-      "name": "Authorized for Release to Certain Nationals Only",
+      "name": {
+        "en_US": "Authorized for Release to Certain Nationals Only",
+        "fr_CA": "Autorisé à la divulgation à certains ressortissants uniquement"
+      },
       "banner_marking": "REL TO",
       "portion_marking": "REL TO",
-      "description": "Information has been predetermined by the designating agency to be releasable or has been released only to the specified foreign countries or international organizations through established foreign disclosure procedures.",
+      "description": {
+        "en_US": "Information has been predetermined by the designating agency to be releasable or has been released only to the specified foreign countries or international organizations through established foreign disclosure procedures.",
+        "fr_CA": "L'information a été prédéterminée par l'organisme désignateur comme pouvant être divulguée, ou n'a été divulguée qu'aux pays étrangers ou aux organisations internationales désignés, conformément aux procédures de divulgation étrangère établies."
+      },
       "parameterized": true,
       "parameter_format": "USA must appear first, followed by trigraph country codes in alphabetical order, followed by tetragraph codes for international organizations in alphabetical order.",
       "parameter_example": "REL TO USA, AUS, CAN, GBR, NZL",
       "category_restriction": null,
-      "mutually_exclusive_with": ["NOFORN"]
+      "mutually_exclusive_with": [
+        "NOFORN"
+      ]
     },
     "RELIDO": {
-      "name": "Releasable by Information Disclosure Official",
+      "name": {
+        "en_US": "Releasable by Information Disclosure Official",
+        "fr_CA": "Divulgable par le responsable de la divulgation"
+      },
       "banner_marking": "RELIDO",
       "portion_marking": "RELIDO",
-      "description": "A permissive foreign disclosure and release marking indicating the originator has authorized a Senior Foreign Disclosure and Release Authority to make further sharing decisions for uncaveated intelligence material. Only agencies eligible to use RELIDO in the IC classified context may use this on CUI.",
+      "description": {
+        "en_US": "A permissive foreign disclosure and release marking indicating the originator has authorized a Senior Foreign Disclosure and Release Authority to make further sharing decisions for uncaveated intelligence material. Only agencies eligible to use RELIDO in the IC classified context may use this on CUI.",
+        "fr_CA": "Marquage permissif de divulgation étrangère indiquant que l'auteur a autorisé une autorité supérieure de divulgation et de diffusion étrangère à prendre d'autres décisions de partage pour les renseignements sans réserve. Seuls les organismes habilités à utiliser RELIDO dans le contexte classifié du renseignement peuvent l'utiliser pour les CUI."
+      },
       "parameterized": false,
       "category_restriction": null,
       "mutually_exclusive_with": []

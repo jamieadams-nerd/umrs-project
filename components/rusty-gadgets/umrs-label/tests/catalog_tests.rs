@@ -216,7 +216,9 @@ fn us_all_markings_returns_same_as_iter_markings() {
 fn us_has_description_reflects_field_content() {
     let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
     for (key, m) in cat.iter_markings() {
-        let expected = !m.description.trim().is_empty();
+        // has_description() delegates to LocaleText::has_content() which checks
+        // the trimmed English value.
+        let expected = !m.description.en().trim().is_empty();
         assert_eq!(
             m.has_description(),
             expected,
@@ -324,8 +326,8 @@ fn ca_catalog_markings_have_bilingual_names() {
     let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     for (key, marking) in cat.iter_markings() {
         assert!(
-            marking.name_fr.is_some(),
-            "CA marking {key} should have a French name"
+            !marking.name.fr().is_empty(),
+            "CA marking {key} should have a non-empty French name"
         );
     }
 }
@@ -449,4 +451,84 @@ fn levels_iter_yields_four_items() {
 fn levels_load_bad_path_returns_err() {
     let result = catalog::load_levels("/nonexistent/path/LEVELS.json");
     assert!(result.is_err(), "expected error for missing file");
+}
+
+// ---------------------------------------------------------------------------
+// country_flag — standalone function
+// ---------------------------------------------------------------------------
+
+#[test]
+fn country_flag_us() {
+    assert_eq!(catalog::country_flag("US"), Some("🇺🇸".to_string()));
+}
+
+#[test]
+fn country_flag_ca() {
+    assert_eq!(catalog::country_flag("CA"), Some("🇨🇦".to_string()));
+}
+
+#[test]
+fn country_flag_gb() {
+    assert_eq!(catalog::country_flag("GB"), Some("🇬🇧".to_string()));
+}
+
+#[test]
+fn country_flag_au() {
+    assert_eq!(catalog::country_flag("AU"), Some("🇦🇺".to_string()));
+}
+
+#[test]
+fn country_flag_nz() {
+    assert_eq!(catalog::country_flag("NZ"), Some("🇳🇿".to_string()));
+}
+
+#[test]
+fn country_flag_lowercase() {
+    assert_eq!(catalog::country_flag("us"), Some("🇺🇸".to_string()));
+}
+
+#[test]
+fn country_flag_mixed_case() {
+    assert_eq!(catalog::country_flag("Ca"), Some("🇨🇦".to_string()));
+}
+
+#[test]
+fn country_flag_invalid_length() {
+    assert_eq!(catalog::country_flag("USA"), None);
+}
+
+#[test]
+fn country_flag_single_char() {
+    assert_eq!(catalog::country_flag("U"), None);
+}
+
+#[test]
+fn country_flag_empty() {
+    assert_eq!(catalog::country_flag(""), None);
+}
+
+#[test]
+fn country_flag_digits() {
+    assert_eq!(catalog::country_flag("12"), None);
+}
+
+#[test]
+fn country_flag_special() {
+    assert_eq!(catalog::country_flag("U!"), None);
+}
+
+// ---------------------------------------------------------------------------
+// country_flag — Catalog convenience method
+// ---------------------------------------------------------------------------
+
+#[test]
+fn catalog_country_flag_us() {
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    assert_eq!(cat.country_flag(), Some("🇺🇸".to_string()));
+}
+
+#[test]
+fn catalog_country_flag_ca() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    assert_eq!(cat.country_flag(), Some("🇨🇦".to_string()));
 }

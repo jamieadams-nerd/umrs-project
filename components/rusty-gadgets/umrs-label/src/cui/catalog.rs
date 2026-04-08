@@ -6,12 +6,15 @@
 //! catalogs from JSON files, providing lookup and iteration over markings.
 //!
 //! Both US and Canadian catalogs use a unified `"markings"` top-level key.
-//! Canadian entries carry additional bilingual and impact-tier fields (e.g.,
-//! `name_fr`, `injury_examples`, `marking_banner_fr`) that are absent from US
-//! entries but represented as `Option` in the shared [`Marking`] type.
+//! Text fields (`name`, `description`, `marking_banner`, `injury_examples`)
+//! are represented as [`LocaleText`], which transparently handles both the
+//! legacy flat-string format (US catalogs) and the locale-keyed object format
+//! (bilingual catalogs). Use `.en()` for English display, `.fr()` for Canadian
+//! French.
 //!
 //! ## Key Exported Types
 //!
+//! - [`LocaleText`] — bilingual text container for locale-keyed catalog fields
 //! - [`CatalogMetadata`] — `_metadata` block present in all catalog files
 //! - [`Catalog`] — top-level container; loaded from JSON via [`load_catalog`]
 //! - [`Marking`] — a regulatory marking with handling guidance
@@ -24,6 +27,8 @@
 //!   canonical mapping between MCS labels and regulatory markings.
 //! - **NIST SP 800-53 AU-3**: Audit Record Content — markings loaded here appear
 //!   in all operator-visible security output.
+//! - **NIST SP 800-53 SI-10**: Information Input Validation — `LocaleText`
+//!   validates locale values at the deserialization boundary.
 //! - **CMMC AC.L2-3.1.3**: Control CUI flow in accordance with approved
 //!   authorizations.
 
@@ -33,6 +38,8 @@ use std::fs::File;
 use std::io::BufReader;
 use std::path::Path;
 
+pub use super::locale_text::LocaleText;
+
 // ===========================================================================
 // CatalogMetadata
 // ===========================================================================
@@ -40,9 +47,13 @@ use std::path::Path;
 /// Metadata block present at the top of every catalog file (`_metadata` key).
 ///
 /// Contains provenance, version, and MCS allocation information that applies
-/// to the entire catalog. Nation-specific fields (e.g., `catalog_name_fr`,
-/// `authority_date`, `structural_differences_from_us_cui`) are captured by
-/// `extra` via `#[serde(flatten)]`.
+/// to the entire catalog. Nation-specific fields (e.g., `authority_date`,
+/// `structural_differences_from_us_cui`) are captured by `extra` via
+/// `#[serde(flatten)]`.
+///
+/// `catalog_name` is a [`LocaleText`] that handles both the US flat-string
+/// form (`"United States CUI"`) and the Canadian locale-object form
+/// (`{"en_US": "...", "fr_CA": "..."}`).
 ///
 /// ## Compliance
 ///
@@ -50,8 +61,9 @@ use std::path::Path;
 #[derive(Debug, Deserialize)]
 pub struct CatalogMetadata {
     /// Human-readable catalog name. Absent in `LEVELS.json` which uses `description` instead.
+    /// Handles both flat-string (US) and locale-object (CA) JSON representations.
     #[serde(default)]
-    pub catalog_name: String,
+    pub catalog_name: LocaleText,
     /// Semantic version string (e.g., `"0.2.0"`).
     pub version: String,
     /// Governing authority (e.g., `"NARA CUI Registry / 32 CFR Part 2002"`).
@@ -72,12 +84,55 @@ pub struct CatalogMetadata {
 // Catalog
 // ===========================================================================
 
+// ===========================================================================
+// DisseminationControl
+// ===========================================================================
+
+/// A Limited Dissemination Control (LDC) entry from the `dissemination_controls`
+/// section of a US CUI catalog.
+///
+/// LDCs constrain who may receive CUI — e.g., `NOFORN` (no foreign dissemination),
+/// `FED ONLY` (federal employees only). They appear at the end of a CUI banner
+/// after a double slash: `CUI//SP-CTI//NOFORN`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-16**: LDCs are dissemination-control security attributes
+///   that restrict which principals may receive CUI outside the originating agency.
+/// - **CMMC AC.L2-3.1.3**: Control CUI flow in accordance with approved authorizations.
+#[derive(Debug, Deserialize, Clone)]
+pub struct DisseminationControl {
+    /// Full human-readable name (may be bilingual).
+    pub name: LocaleText,
+    /// Description of when this LDC applies and what it means.
+    pub description: LocaleText,
+    /// The token that appears in the banner (e.g., `"NOFORN"`, `"Attorney-Client"`).
+    pub banner_marking: Option<String>,
+    /// Short portion-marking abbreviation (e.g., `"NF"`, `"AC"`).
+    pub portion_marking: Option<String>,
+    /// Whether this LDC requires a parameter (e.g., country codes for `REL TO`).
+    #[serde(default)]
+    pub parameterized: bool,
+    /// If present, this LDC may only be used with the named CUI category.
+    pub category_restriction: Option<String>,
+    /// LDC abbreviations that are mutually exclusive with this one.
+    #[serde(default)]
+    pub mutually_exclusive_with: Vec<String>,
+}
+
+// ===========================================================================
+// Catalog
+// ===========================================================================
+
 /// Top-level catalog container, loaded from a JSON file.
 ///
 /// Both US and Canadian catalogs use the `markings` key. US entries contain
 /// the core CUI taxonomy. Canadian entries additionally carry bilingual names,
 /// impact-tier examples, and structured handling objects — all represented as
 /// `Option` fields in the shared [`Marking`] type.
+///
+/// US catalogs also include a `dissemination_controls` section (LDCs) that is
+/// separate from `markings`. Canadian catalogs omit this section.
 ///
 /// ## Compliance
 ///
@@ -92,6 +147,12 @@ pub struct Catalog {
     /// `"PROTECTED-A"`). Both US and Canadian catalogs populate this key.
     #[serde(default)]
     pub markings: HashMap<String, Marking>,
+    /// Limited Dissemination Controls (LDCs) — US catalogs only.
+    ///
+    /// Keyed by the LDC name (e.g., `"NOFORN"`, `"Attorney-Client"`).
+    /// Empty in Canadian catalogs.
+    #[serde(default)]
+    pub dissemination_controls: HashMap<String, DisseminationControl>,
 }
 
 /// Load and deserialize a catalog from a JSON file at `path`.
@@ -118,6 +179,17 @@ impl Catalog {
         self.metadata.as_ref().and_then(|m| m.country_code.as_deref())
     }
 
+    /// Returns the Unicode flag emoji for this catalog's country, if the
+    /// country code is present and valid.
+    ///
+    /// Delegates to [`country_flag`]. Returns `None` when the catalog has no
+    /// `country_code` in its `_metadata` block, or when the stored code is not
+    /// exactly two ASCII alphabetic characters.
+    #[must_use = "flag emoji is computed but unused"]
+    pub fn country_flag(&self) -> Option<String> {
+        self.country_code().and_then(country_flag)
+    }
+
     /// Iterate all markings as `(key, marking)` pairs.
     pub fn all_markings(&self) -> impl Iterator<Item = (&String, &Marking)> {
         self.markings.iter()
@@ -133,6 +205,22 @@ impl Catalog {
     pub fn iter_markings(&self) -> impl Iterator<Item = (&String, &Marking)> {
         self.markings.iter()
     }
+
+    /// Iterate all dissemination controls as `(key, control)` pairs.
+    ///
+    /// Returns an empty iterator for catalogs that have no dissemination controls
+    /// section (e.g., Canadian catalogs).
+    pub fn iter_dissemination_controls(
+        &self,
+    ) -> impl Iterator<Item = (&String, &DisseminationControl)> {
+        self.dissemination_controls.iter()
+    }
+
+    /// Returns `true` if this catalog contains any dissemination control entries.
+    #[must_use = "check return value to determine whether to build the LDC tree branch"]
+    pub fn has_dissemination_controls(&self) -> bool {
+        !self.dissemination_controls.is_empty()
+    }
 }
 
 // ===========================================================================
@@ -142,17 +230,18 @@ impl Catalog {
 /// A specific regulatory marking with associated metadata.
 ///
 /// This type represents a unified schema shared by both US CUI and Canadian
-/// Protected catalog entries. Fields present only in Canadian entries
-/// (`name_fr`, `description_fr`, `injury_examples`, etc.) are `Option` and
-/// will be `None` for US entries.
+/// Protected catalog entries. All human-readable text fields (`name`,
+/// `description`, `marking_banner`, `injury_examples`) use [`LocaleText`],
+/// which transparently handles both legacy flat-string and locale-keyed object
+/// JSON representations. Use `.en()` for English and `.fr()` for Canadian French.
 ///
-/// `index_group` replaces the former `parent_group` field. It is a
-/// display-only grouping hint for UI purposes (e.g., `"Law Enforcement"`)
-/// and carries no enforcement semantics.
+/// `index_group` is a display-only grouping hint for UI purposes (e.g.,
+/// `"Law Enforcement"`) and carries no enforcement semantics.
 ///
 /// The `handling` field is `serde_json::Value` to accommodate both US string
-/// handling instructions and Canadian structured handling objects. Use
-/// `handling_as_str()` or `handling_as_object()` for typed access.
+/// handling instructions and Canadian structured handling objects (which contain
+/// locale-keyed sub-fields). Use `handling_as_str()` or `handling_as_object()`
+/// for typed access.
 ///
 /// ## Compliance
 ///
@@ -165,30 +254,28 @@ impl Catalog {
 #[derive(Debug, Deserialize)]
 pub struct Marking {
     /// Full human-readable name (e.g., `"Law Enforcement Information"`).
-    pub name: String,
-    /// Full name in French (bilingual catalogs).
-    pub name_fr: Option<String>,
+    /// Use `.en()` for English, `.fr()` for Canadian French.
+    pub name: LocaleText,
     /// Abbreviated name (e.g., `"LEI"`).
     pub abbrv_name: String,
-    /// Display-only grouping hint (e.g., `"Law Enforcement"`). Replaces
-    /// the former `parent_group` field. Carries no enforcement semantics.
+    /// Display-only grouping hint (e.g., `"Law Enforcement"`). Carries no
+    /// enforcement semantics.
     pub index_group: Option<String>,
     /// CUI designation: `"basic"`, `"specified"`, or `null`.
     pub designation: Option<String>,
-    /// Optional description of the marking.
+    /// Description of the marking. Use `.en()` for English, `.fr()` for
+    /// Canadian French. Empty `LocaleText` when absent.
     #[serde(default)]
-    pub description: String,
-    /// Optional description in French.
-    pub description_fr: Option<String>,
+    pub description: LocaleText,
     /// MCS sensitivity level identifier (e.g., `"s1"`).
     pub level: Option<String>,
     /// Handling guidance — string (US) or structured object (Canadian).
+    /// Canadian objects contain locale-keyed sub-fields; use `handling_as_object()`
+    /// and navigate the sub-keys directly as `serde_json::Value`.
     #[serde(default)]
     pub handling: serde_json::Value,
     /// Detailed handling restrictions (US catalogs).
     pub handling_restrictions: Option<String>,
-    /// Detailed handling restrictions in French.
-    pub handling_restrictions_fr: Option<String>,
     /// Optional handling group identifier for grouping related markings.
     /// `null` in Canadian entries.
     pub handling_group_id: Option<String>,
@@ -208,28 +295,37 @@ pub struct Marking {
     pub dissemination_controls: Option<serde_json::Value>,
     /// Cross-reference to approximately equivalent US CUI categories.
     pub us_cui_approximate_correspondence: Option<String>,
-    /// Display banner in English (e.g., `"PROTECTED A"`).
-    pub marking_banner_en: Option<String>,
-    /// Display banner in French (e.g., `"PROTÉGÉ A"`).
-    pub marking_banner_fr: Option<String>,
+    /// Display banner text (e.g., English `"PROTECTED A"`, French `"PROTÉGÉ A"`).
+    /// Use `.en()` for English, `.fr()` for Canadian French.
+    /// `None` for US CUI entries that do not carry a separate banner field.
+    pub marking_banner: Option<LocaleText>,
     /// Governing authority section reference (e.g., `"J.2.4.2.3"`).
     pub authority_section: Option<String>,
     /// Implementation phase notes for UMRS-specific constraints.
     pub phase_note: Option<String>,
-    /// Injury examples in English (Canadian catalogs).
-    pub injury_examples: Option<String>,
-    /// Injury examples in French (Canadian catalogs).
-    pub injury_examples_fr: Option<String>,
+    /// Injury examples (Canadian catalogs). Use `.en()` or `.fr()`.
+    pub injury_examples: Option<LocaleText>,
     /// Optional auxiliary metadata for forward compatibility.
     #[serde(default)]
     pub other: serde_json::Value,
 }
 
 impl Marking {
-    /// Returns `true` if this marking has a non-empty description.
+    /// Returns the English display name for this marking.
+    ///
+    /// Convenience accessor equivalent to `self.name.en()`.
+    #[must_use = "display name is consumed by label rendering and audit paths"]
+    pub fn display_name(&self) -> &str {
+        self.name.en()
+    }
+
+    /// Returns `true` if this marking has non-empty description text.
+    ///
+    /// Uses the English value as the canonical presence indicator — a marking
+    /// with only a French description is considered to have content.
     #[must_use = "check return value to determine if description is present"]
     pub fn has_description(&self) -> bool {
-        !self.description.trim().is_empty()
+        self.description.has_content()
     }
 
     /// Returns handling guidance as a plain string, if it is one.
@@ -340,6 +436,72 @@ impl LevelRegistry {
     pub fn iter_levels(&self) -> impl Iterator<Item = (&String, &LevelDefinition)> {
         self.levels.iter()
     }
+}
+
+// ===========================================================================
+// Country flag emoji
+// ===========================================================================
+
+/// Convert an ISO 3166-1 alpha-2 country code to a Unicode flag emoji.
+///
+/// Each letter maps to a Regional Indicator Symbol Letter (U+1F1E6 through
+/// U+1F1FF). Two such code points combined render as a flag emoji in
+/// Unicode-conformant renderers.
+///
+/// Returns `None` if `iso_code` is not exactly two ASCII alphabetic characters.
+/// The check is case-insensitive — `"us"`, `"US"`, and `"Us"` all yield `"🇺🇸"`.
+///
+/// # Examples
+///
+/// ```rust
+/// use umrs_labels::cui::catalog::country_flag;
+///
+/// assert_eq!(country_flag("US"), Some("🇺🇸".to_string()));
+/// assert_eq!(country_flag("CA"), Some("🇨🇦".to_string()));
+/// assert_eq!(country_flag("GB"), Some("🇬🇧".to_string()));
+/// assert_eq!(country_flag("us"), Some("🇺🇸".to_string()));
+/// assert_eq!(country_flag("USA"), None);
+/// assert_eq!(country_flag("12"), None);
+/// assert_eq!(country_flag(""),   None);
+/// ```
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Audit Record Content — flag emoji provides
+///   operator-visible nation identification in security output.
+#[must_use = "flag emoji is computed but unused"]
+pub fn country_flag(iso_code: &str) -> Option<String> {
+    // Regional Indicator Symbol Letter A starts at U+1F1E6.
+    // Offset by (uppercase_letter - 'A') to reach the correct indicator letter.
+    const REGIONAL_A: u32 = 0x1F1E6;
+
+    // Consume exactly two characters; reject empty, single-char, and longer inputs.
+    let mut chars = iso_code.chars();
+    let a = chars.next()?;
+    let b = chars.next()?;
+
+    // Must be exactly 2 characters — reject a third.
+    if chars.next().is_some() {
+        return None;
+    }
+
+    // Both characters must be ASCII alphabetic.
+    if !a.is_ascii_alphabetic() || !b.is_ascii_alphabetic() {
+        return None;
+    }
+
+    let offset_a = u32::from(a.to_ascii_uppercase()) - u32::from('A');
+    let offset_b = u32::from(b.to_ascii_uppercase()) - u32::from('A');
+
+    // char::from_u32 returns Option<char>; propagate None on failure (fail-closed).
+    // In practice this cannot fail for valid A-Z input, but we do not rely on that.
+    let ri_a = char::from_u32(REGIONAL_A + offset_a)?;
+    let ri_b = char::from_u32(REGIONAL_A + offset_b)?;
+
+    let mut flag = String::with_capacity(8); // two 4-byte Unicode scalar values
+    flag.push(ri_a);
+    flag.push(ri_b);
+    Some(flag)
 }
 
 // ===========================================================================

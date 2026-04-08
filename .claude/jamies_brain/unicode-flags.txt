@@ -1,0 +1,143 @@
+Country flags are built from two “Regional Indicator Symbols”:
+	•	Each letter (A–Z) has a corresponding Unicode code point
+	•	You combine two letters = ISO country code
+
+👉 Example: United States (US)
+
+U → U+1F1FA
+S → U+1F1F8
+
+Combined:
+
+🇺🇸
+
+
+⸻
+
+Key Rule
+
+Flag = ISO 3166-1 alpha-2 country code → mapped to two regional indicator symbols
+
+⸻
+
+Common Examples
+
+🇺🇸 United States
+	•	U+1F1FA U+1F1F8
+
+🇨🇦 Canada
+	•	U+1F1E8 U+1F1E6
+
+🇬🇧 United Kingdom
+	•	U+1F1EC U+1F1E7
+
+🇫🇷 France
+	•	U+1F1EB U+1F1F7
+
+🇩🇪 Germany
+	•	U+1F1E9 U+1F1EA
+
+⸻
+
+How to Generate Them (Programmatically)
+
+Algorithm:
+
+For each letter in country code:
+    codepoint = 0x1F1E6 + (letter - 'A')
+
+
+⸻
+
+Example in Rust
+
+fn flag(code: &str) -> String {
+    code
+        .chars()
+        .map(|c| {
+            let base = 0x1F1E6;
+            let offset = c as u32 - 'A' as u32;
+            char::from_u32(base + offset).unwrap()
+        })
+        .collect()
+}
+
+fn main() {
+    println!("{}", flag("US")); // 🇺🇸
+}
+
+
+1) ISO Country → Unicode Flag Mapping
+
+Core Mechanism (Deterministic)
+
+Every flag is derived from:
+
+ISO 3166-1 alpha-2 code → 2 regional indicator symbols
+
+Formula
+
+codepoint = 0x1F1E6 + (letter - 'A')
+
+
+⸻
+
+High-Value Reference Table (Common + Relevant)
+
+Country	ISO	Unicode Sequence	Render
+United States	US	U+1F1FA U+1F1F8	🇺🇸
+Canada	CA	U+1F1E8 U+1F1E6	🇨🇦
+United Kingdom	GB	U+1F1EC U+1F1E7	🇬🇧
+France	FR	U+1F1EB U+1F1F7	🇫🇷
+Germany	DE	U+1F1E9 U+1F1EA	🇩🇪
+Japan	JP	U+1F1EF U+1F1F5	🇯🇵
+Australia	AU	U+1F1E6 U+1F1FA	🇦🇺
+New Zealand	NZ	U+1F1F3 U+1F1FF	🇳🇿
+NATO	(none)	❌ not supported	—
+
+👉 Important: Only official ISO codes render as flags
+
+⸻
+
+Full Mapping Strategy (Don’t Hardcode)
+
+You do NOT want a static table.
+
+Instead:
+
+Rust Utility (Canonical)
+
+pub fn iso_to_flag(iso: &str) -> Option<String> {
+    if iso.len() != 2 {
+        return None;
+    }
+
+    let mut result = String::new();
+
+    for c in iso.to_uppercase().chars() {
+        if !c.is_ascii_alphabetic() {
+            return None;
+        }
+
+        let base = 0x1F1E6;
+        let offset = c as u32 - 'A' as u32;
+        let ch = char::from_u32(base + offset)?;
+        result.push(ch);
+    }
+
+    Some(result)
+}
+
+
+⸻
+
+Optional: Validation Layer (Recommended for UMRS)
+
+Tie into your validation model:
+
+fn is_valid_iso(code: &str) -> bool {
+    matches!(code,
+        "US" | "CA" | "GB" | "FR" | "DE" | "JP" | "AU" | "NZ"
+        // extend via ISO dataset later
+    )
+}

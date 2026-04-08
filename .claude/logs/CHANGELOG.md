@@ -1,5 +1,36 @@
 # Changelog
 
+## 2026-04-08
+
+### umrs-label TUI — Phase 2/3 Completion + Extensive Polish
+- Fixed 7 `setrans_tests` failures: US CUI catalog count corrected (121→143), Canadian category range shifted to c200–c300, EXPT test suite rewritten for new simplified layout (removed stale compound category exceptions), emptied `known_absent_group_headers` test fixture.
+- Added `country_flag(iso_code)` function with 14 unit tests and 1 doctest, converting ISO 3166-1 alpha-2 codes to Unicode flag emojis; exposed via `Catalog::country_flag()` convenience method.
+- Created reusable `pill.rs` widget in umrs-ui with `render_pill()` and `pill_line()` functions for badge-style UI elements using ⬤ (U+2B24) end caps.
+- Added `ICON_MARKING` (☐ U+2610 BALLOT BOX) constant to shared icon catalog.
+- Restructured umrs-label TUI header: right column now displays Tool/User/Domain/Level (removed Time and Assessed fields, matching umrs-ls).
+- Added "UMRS SECURITY LABEL REGISTRY" centered pill badge to header.
+- Removed catalog info row and panel title headers for cleaner interface.
+- Widened tree panel to 48%, added top padding, removed "Group: " prefix from group headers.
+- Tree leaves display `marking + name` instead of `abbreviation + name` with ellipsis truncation.
+- Detail panel: dynamic label-width measurement with proper word-wrapping and indented continuation lines for both key-value and label-on-own-line formats.
+- Promoted 8 fields to label-on-own-line format (Description, Handling, Dissemination, Required Warning, Injury Examples, US CUI Approximation) with 4-space indented wrapped text.
+- Removed 8 fields from detail panel (Level, Banner, MCS Category Base, MCS Range, Scope, Notes, and two others) to reduce cognitive load.
+- Applied palette-colored marking key chips per index group (fixed no-red/no-orange constraint: `crit_brass`→`olive`, `propin_bronze`→`warm_taupe`).
+- Added compact catalog provenance text at bottom of detail panel.
+- Disabled French localization rows pending seamless locale-aware switching (English-only display for current session).
+- Changed panel focus toggle: Enter no longer switches panels; Shift-Tab toggles like Tab for consistency.
+- Active panel border now uses bright cyan + bold; inactive uses dark gray.
+- CatalogMetadata values properly word-wrap in detail panel.
+- Updated umrs-ls header to match: right column now Tool/User/Domain/Level.
+
+### Code Quality & Test Coverage
+- All workspace `cargo xtask clippy` passes with zero warnings.
+- All umrs-label and umrs-ui tests pass.
+
+### Planning & Governance
+- Marked `umrs-label-tui.md` plan as completed.
+- Marked `cozy-watching-pearl.md` (setrans test fix) plan as completed.
+
 ## 2026-04-05
 
 ### umrs-ls TUI Polish Pass
