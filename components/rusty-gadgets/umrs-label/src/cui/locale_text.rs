@@ -73,7 +73,9 @@ impl LocaleText {
     pub fn from_en(value: impl Into<String>) -> Self {
         let mut inner = HashMap::with_capacity(1);
         inner.insert("en_US".to_string(), value.into());
-        Self { inner }
+        Self {
+            inner,
+        }
     }
 
     /// Construct a `LocaleText` from individual locale strings.
@@ -82,7 +84,9 @@ impl LocaleText {
         let mut inner = HashMap::with_capacity(2);
         inner.insert("en_US".to_string(), en_us.into());
         inner.insert("fr_CA".to_string(), fr_ca.into());
-        Self { inner }
+        Self {
+            inner,
+        }
     }
 
     /// Returns the English (`en_US`) text, or the first available value, or
@@ -165,7 +169,9 @@ impl<'de> Visitor<'de> for LocaleTextVisitor {
         // Flat legacy string — store under en_US.
         let mut inner = HashMap::with_capacity(1);
         inner.insert("en_US".to_string(), value.to_string());
-        Ok(LocaleText { inner })
+        Ok(LocaleText {
+            inner,
+        })
     }
 
     fn visit_map<M: MapAccess<'de>>(self, mut access: M) -> Result<LocaleText, M::Error> {
@@ -174,7 +180,9 @@ impl<'de> Visitor<'de> for LocaleTextVisitor {
         while let Some((key, value)) = access.next_entry::<String, String>()? {
             inner.insert(key, value);
         }
-        Ok(LocaleText { inner })
+        Ok(LocaleText {
+            inner,
+        })
     }
 }
 

@@ -11,7 +11,10 @@ regex = "1"
 chrono = "0.4"
 bitflags = "2.11.0"
 env_logger = "0.11"
-rustix = { version = "0.38", features = ["fs", "std"] }
+# rustix 1.x — migrated from 0.38 to align with workspace (C-4 remediation).
+# APIs used: fgetxattr (xattrs.rs), IFlags + ioctl_getflags (secure_dirent.rs).
+# Both are present in 1.x under the same rustix::fs module paths.
+rustix = { version = "1", features = ["fs", "std"] }
 nix    = { version = "0.27", features = ["user", "fs" ] }
 log    = { version = "0.4",  features = ["release_max_level_info"] }
 systemd-journal-logger = "2.2.2"

@@ -273,6 +273,15 @@ fn check_system_fips_marker() -> bool {
 /// NIST SP 800-53 SI-11: Error Discipline — errors do not reveal policy content.
 /// The content itself is only visible at debug level.
 fn read_crypto_policy_state() -> Option<String> {
+    // DIRECT-IO-EXCEPTION: std::fs::read_to_string on
+    // /etc/crypto-policies/state/current. No EtcText / SecureEtcReader abstraction
+    // exists in umrs-platform for /etc/ configuration files; these are regular
+    // filesystem reads where PROC_SUPER_MAGIC / SYSFS_MAGIC verification does not
+    // apply. This read is caller-gated: read_configured_fips_state() is only
+    // invoked when /proc/sys/crypto/fips_enabled was accessible (trust gate rule).
+    // The result feeds contradiction detection as advisory configured state only —
+    // the live kernel FIPS value from ProcFips is always authoritative.
+    // NIST SP 800-53 CM-6; NIST SP 800-53 SI-7; NIST SP 800-53 SC-13.
     match std::fs::read_to_string(CRYPTO_POLICY_STATE) {
         Ok(content) => {
             let trimmed = content.trim().to_owned();

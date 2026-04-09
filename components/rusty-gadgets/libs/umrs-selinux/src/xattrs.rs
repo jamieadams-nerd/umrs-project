@@ -192,7 +192,7 @@ impl SecureXattrReader {
     ///
     /// Returns `io::Error` if the extended attribute cannot be read from the file descriptor.
     pub fn read_raw(file: &File, attr: &str) -> io::Result<Vec<u8>> {
-        let size = fgetxattr(file, attr, &mut []).map_err(
+        let size = fgetxattr(file, attr, &mut [] as &mut [u8; 0]).map_err(
             #[expect(clippy::redundant_closure, reason = "explicit closure required for map_err with a From impl that rustc cannot infer without it")]
             |e| io::Error::from(e),
         )?;

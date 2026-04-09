@@ -46,6 +46,7 @@
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
+use umrs_platform::detect::OsDetector;
 use umrs_platform::kattrs::{
     EnforceState, KernelLockdown, LockdownMode, ProcFips, ProcfsText, SecureReader, SelinuxEnforce,
     StaticSource, SysfsText,
@@ -114,6 +115,41 @@ pub fn read_security_indicators() -> SecurityIndicators {
         active_lsm,
         lockdown_mode,
         secure_boot,
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Public entry point — OS name detection
+// ---------------------------------------------------------------------------
+
+/// Detect and format the OS name from the host system.
+///
+/// Runs the `OsDetector` pipeline (which routes through the provenance-verified
+/// `SecureReader` abstraction rather than raw `/etc/os-release` I/O) and returns
+/// a human-readable `"NAME VERSION_ID"` string suitable for the audit card header.
+///
+/// Falls back to `"unavailable"` on any detection failure — never returns a
+/// fabricated or guessed value.
+///
+/// This helper consolidates the detect → extract → format → fallback pattern
+/// that was previously duplicated across each binary crate.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**: OS release data is read through the provenance-
+///   verified `OsDetector` pipeline; no raw filesystem I/O on `/etc/`.
+/// - **NSA RTB RAIN**: Non-bypassability — all reads route through the
+///   `umrs-platform` abstraction layer.
+#[must_use = "OS name string must be passed to build_header_context; discarding it \
+              hides host OS identification from the audit card"]
+pub fn detect_os_name() -> String {
+    let Some(rel) = OsDetector::default().detect().ok().and_then(|r| r.os_release) else {
+        return "unavailable".to_owned();
+    };
+    let name = rel.name.as_str();
+    match rel.version_id.as_ref() {
+        Some(v) => format!("{name} {}", v.as_str()),
+        None => name.to_owned(),
     }
 }
 

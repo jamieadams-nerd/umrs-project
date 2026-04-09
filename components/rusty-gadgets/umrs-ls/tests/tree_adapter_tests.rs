@@ -65,9 +65,7 @@ fn make_dir_entry(name: &str) -> ListEntry {
 }
 
 /// Construct a DirListing from a list of (selinux_type, marking, entries) tuples.
-fn make_listing(
-    groups: Vec<(&str, &str, Vec<ListEntry>)>,
-) -> DirListing {
+fn make_listing(groups: Vec<(&str, &str, Vec<ListEntry>)>) -> DirListing {
     let dir_groups = groups
         .into_iter()
         .map(|(selinux_type, marking, entries)| DirGroup {
@@ -135,7 +133,10 @@ fn single_group_with_files_produces_expanded_branch() {
     );
 
     // Group starts expanded.
-    assert!(group_node.expanded, "SELinux group node should start expanded");
+    assert!(
+        group_node.expanded,
+        "SELinux group node should start expanded"
+    );
 
     // Three file children (no siblings, so all leaves).
     assert_eq!(group_node.children.len(), 3);
@@ -166,7 +167,10 @@ fn cuddled_siblings_produce_expanded_branch_with_leaf_children() {
     let base_node = &group_node.children[0];
     // Base with siblings → branch node.
     assert!(!base_node.is_leaf(), "cuddled base should be a branch node");
-    assert!(!base_node.expanded, "cuddled base should start collapsed for less clutter");
+    assert!(
+        !base_node.expanded,
+        "cuddled base should start collapsed for less clutter"
+    );
     assert_eq!(base_node.children.len(), 2, "two sibling children expected");
 
     // Sibling children are leaves.
@@ -247,10 +251,7 @@ fn parent_nav_is_always_first_root() {
 
 #[test]
 fn directory_entries_have_is_dir_true_metadata() {
-    let entries = vec![
-        make_dir_entry(".ssh"),
-        make_entry("authorized_keys", 256),
-    ];
+    let entries = vec![make_dir_entry(".ssh"), make_entry("authorized_keys", 256)];
     let listing = make_listing(vec![("admin_home_t", "s0", entries)]);
     let model = build_tree(&listing, Path::new("/root"));
 
@@ -295,15 +296,9 @@ fn directory_entries_have_is_dir_true_metadata() {
 
 #[test]
 fn compute_stats_counts_files_and_directories() {
-    let group1_entries = vec![
-        make_dir_entry("subdir"),
-        make_entry("file1.txt", 100),
-        make_entry("file2.txt", 200),
-    ];
-    let group2_entries = vec![
-        make_entry("other.conf", 50),
-        make_dir_entry("etc"),
-    ];
+    let group1_entries =
+        vec![make_dir_entry("subdir"), make_entry("file1.txt", 100), make_entry("file2.txt", 200)];
+    let group2_entries = vec![make_entry("other.conf", 50), make_dir_entry("etc")];
     let listing = make_listing(vec![
         ("type_a", "s0", group1_entries),
         ("type_b", "s0", group2_entries),

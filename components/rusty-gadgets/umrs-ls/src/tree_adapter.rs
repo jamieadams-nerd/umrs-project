@@ -256,10 +256,7 @@ fn build_file_group_node(fg: &FileGroup) -> TreeNode {
 
         // Base-level metadata.
         populate_entry_metadata(&mut node.metadata, &fg.base);
-        node.metadata.insert(
-            "sibling_count".to_owned(),
-            sibling_count.to_string(),
-        );
+        node.metadata.insert("sibling_count".to_owned(), sibling_count.to_string());
         node.metadata.insert("sibling_summary".to_owned(), summary);
 
         // Sibling leaf children.
@@ -342,7 +339,15 @@ fn populate_entry_metadata(meta: &mut BTreeMap<String, String>, entry: &ListEntr
 
     // Directory / navigation flag.
     let is_dir = dirent.file_type.is_directory();
-    meta.insert("is_dir".to_owned(), if is_dir { "true" } else { "false" }.to_owned());
+    meta.insert(
+        "is_dir".to_owned(),
+        if is_dir {
+            "true"
+        } else {
+            "false"
+        }
+        .to_owned(),
+    );
     meta.insert("file_type".to_owned(), file_type_char.to_owned());
 
     // Mountpoint and encryption flags — used by the TUI renderer for icon selection.
@@ -410,9 +415,8 @@ fn extract_selinux_strings(
         umrs_selinux::SelinuxCtxState::Labeled(ctx) => {
             let full = ctx.to_string();
             let selinux_type = ctx.security_type().to_string();
-            let marking = ctx
-                .level()
-                .map_or_else(|| "<no-level>".to_owned(), |l| l.raw().to_owned());
+            let marking =
+                ctx.level().map_or_else(|| "<no-level>".to_owned(), |l| l.raw().to_owned());
             (full, selinux_type, marking)
         }
         umrs_selinux::SelinuxCtxState::Unlabeled => (

@@ -105,9 +105,7 @@ fn get_regex(kind: UmrsPattern) -> &'static Regex {
         UmrsPattern::RgbHex => &RE_RGB_HEX,
         UmrsPattern::SafeString => &RE_SAFE_STRING,
     };
-    cell.get_or_init(|| {
-        Regex::new(kind.regex()).expect("UmrsPattern regex failed to compile")
-    })
+    cell.get_or_init(|| Regex::new(kind.regex()).expect("UmrsPattern regex failed to compile"))
 }
 
 /// Validate `input` against a registered `UmrsPattern`.

@@ -53,15 +53,21 @@ use umrs_selinux::posix::primitives::FileSize;
 use umrs_selinux::secure_dirent::{InodeSecurityFlags, SecDirError, SecureDirent};
 use umrs_selinux::{ObservationKind, SecurityObservation, SelinuxCtxState};
 use umrs_ui::app::{DataRow, StatusLevel, StatusMessage, StyleHint, TabDef};
+use umrs_ui::popup::PopupCardData;
 
 // ---------------------------------------------------------------------------
 // Size formatting helper
 // ---------------------------------------------------------------------------
 
-/// Format a `FileSize` as "N bytes (X.Y KB/MB/GB)".
+/// Format a `FileSize` as a human-readable string.
 ///
-/// The raw byte count is always shown; the human-readable suffix is appended
-/// when size is >= 1024 bytes.
+/// - Below 1024 bytes: `"N bytes"`
+/// - 1 KB – 999 KB: `"X.Y KB"`
+/// - 1 MB – 999 MB: `"X.Y MB"`
+/// - 1 GB and above: `"X.YZ GB"`
+///
+/// Raw byte counts are omitted above 1 KB — they add noise at larger scales
+/// without aiding operator comprehension.
 #[must_use = "formatted size string is the only output; discarding it means the size is never shown"]
 pub fn format_size(size: FileSize) -> String {
     let bytes = size.as_u64();
@@ -74,7 +80,7 @@ pub fn format_size(size: FileSize) -> String {
     )]
     let kb_frac = bytes as f64 / 1024.0;
     if kb_frac < 1024.0 {
-        return format!("{bytes} bytes ({kb_frac:.1} KB)");
+        return format!("{kb_frac:.1} KB");
     }
     #[expect(
         clippy::cast_precision_loss,
@@ -82,14 +88,14 @@ pub fn format_size(size: FileSize) -> String {
     )]
     let mb_frac = bytes as f64 / (1024.0 * 1024.0);
     if mb_frac < 1024.0 {
-        return format!("{bytes} bytes ({mb_frac:.1} MB)");
+        return format!("{mb_frac:.1} MB");
     }
     #[expect(
         clippy::cast_precision_loss,
         reason = "display hint only; precision loss on large byte counts is acceptable"
     )]
     let gb_frac = bytes as f64 / (1024.0 * 1024.0 * 1024.0);
-    format!("{bytes} bytes ({gb_frac:.2} GB)")
+    format!("{gb_frac:.2} GB")
 }
 
 // ---------------------------------------------------------------------------
@@ -212,6 +218,8 @@ pub struct ElfInfo {
 /// DIRECT-IO-EXCEPTION: ELF magic byte read is display-only (binary type hint),
 /// never influences a security decision, and no umrs-platform abstraction exists
 /// for this purpose.
+/// TOCTOU: the file may have been replaced since SecureDirent construction;
+/// the ELF bytes are display hints, not assertions.
 #[must_use = "ElfInfo is the only output; discarding it means binary type context is not displayed"]
 pub fn read_elf_info(path: &Path) -> Option<ElfInfo> {
     use std::io::Read;
@@ -238,7 +246,10 @@ pub fn read_elf_info(path: &Path) -> Option<ElfInfo> {
         _ => "Unknown",
     };
 
-    Some(ElfInfo { class, elf_type })
+    Some(ElfInfo {
+        class,
+        elf_type,
+    })
 }
 
 // ---------------------------------------------------------------------------
@@ -257,7 +268,18 @@ pub fn read_elf_info(path: &Path) -> Option<ElfInfo> {
 pub fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Vec<DataRow> {
     let mut rows = Vec::new();
 
-    rows.push(DataRow::normal(i18n::tr("Path"), dirent.path.to_string()));
+    let dir_path = Path::new(&*dirent.path).parent().map_or_else(
+        || "/".to_owned(),
+        |p| {
+            let s = p.to_string_lossy().into_owned();
+            if s.ends_with('/') {
+                s
+            } else {
+                format!("{s}/")
+            }
+        },
+    );
+    rows.push(DataRow::normal(i18n::tr("Path"), dir_path));
     rows.push(DataRow::normal(
         i18n::tr("Filename"),
         dirent.name.to_string(),
@@ -269,6 +291,9 @@ pub fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Ve
     ));
 
     if dirent.file_type.is_symlink() {
+        // DIRECT-IO-EXCEPTION: display-only symlink target resolution.
+        // No trust decision is derived from this value. TOCTOU: the link
+        // target may have changed since SecureDirent construction.
         let target = match std::fs::read_link(path) {
             Ok(p) => p.to_string_lossy().into_owned(),
             Err(_) => "(unreadable)".to_owned(),
@@ -302,9 +327,7 @@ pub fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Ve
     }
 
     rows.push(DataRow::normal(i18n::tr("Size"), format_size(dirent.size)));
-    rows.push(DataRow::normal(i18n::tr("Mode"), dirent.mode.as_mode_str()));
     rows.push(DataRow::normal("Inode", dirent.inode.to_string()));
-    rows.push(DataRow::normal("Device", dirent.dev.to_string()));
 
     let nlink_val: u32 = dirent.nlink.into();
     let (nlink_str, nlink_hint) = if nlink_val > 1 && !dirent.file_type.is_directory() {
@@ -316,156 +339,61 @@ pub fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Ve
 
     rows.push(DataRow::separator());
 
-    let (owner_str, owner_hint) = match &dirent.ownership.user.name {
-        Some(name) => (
-            format!("{}:{}", dirent.ownership.user.uid, name.as_str()),
-            StyleHint::Normal,
-        ),
-        None => (
-            format!("{}:(unresolved)", dirent.ownership.user.uid),
-            StyleHint::TrustYellow,
-        ),
+    let mp_str = if dirent.is_mountpoint {
+        "yes"
+    } else {
+        "no"
     };
-    rows.push(DataRow::new("Owner", owner_str, owner_hint));
-
-    let (group_str, group_hint) = match &dirent.ownership.group.name {
-        Some(name) => (
-            format!("{}:{}", dirent.ownership.group.gid, name.as_str()),
-            StyleHint::Normal,
-        ),
-        None => (
-            format!("{}:(unresolved)", dirent.ownership.group.gid),
-            StyleHint::TrustYellow,
-        ),
-    };
-    rows.push(DataRow::new("Group", group_str, group_hint));
-
-    rows.push(DataRow::separator());
-
-    let mp_str = if dirent.is_mountpoint { "yes" } else { "no" };
     rows.push(DataRow::normal("Mount point", mp_str));
 
     if let Some(fs) = find_fs_info(path) {
-        rows.push(DataRow::normal("Filesystem", fs.fs_type));
+        rows.push(DataRow::normal("Filesystem type", fs.fs_type));
         rows.push(DataRow::normal("Device node", fs.device));
+        rows.push(DataRow::normal("Device ID", dirent.dev.to_string()));
         rows.push(DataRow::normal("Mounted on", fs.mount_point));
     }
 
     rows
 }
 
-/// Build inode security flag rows.
-///
-/// Each flag is surfaced individually with a human-readable label.
-///
-/// NIST SP 800-53 SI-7, AU-9, AC-3.
-#[must_use = "inode flag rows are the only output; discarding them hides security flag state"]
-pub fn build_inode_flag_rows(dirent: &SecureDirent) -> Vec<DataRow> {
-    let mut rows = Vec::new();
-
-    let (immut_str, immut_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::IMMUTABLE) {
-        ("Yes", StyleHint::TrustGreen)
-    } else {
-        ("No", StyleHint::Normal)
-    };
-    rows.push(DataRow::new(i18n::tr("Immutable"), immut_str, immut_hint));
-
-    let (ima_str, ima_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::IMA_PRESENT) {
-        ("Yes — integrity hash present", StyleHint::TrustGreen)
-    } else {
-        ("No", StyleHint::Normal)
-    };
-    rows.push(DataRow::new(i18n::tr("IMA/EVM"), ima_str, ima_hint));
-
-    let (append_str, append_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::APPEND_ONLY) {
-        ("Yes", StyleHint::TrustGreen)
-    } else {
-        ("No", StyleHint::Normal)
-    };
-    rows.push(DataRow::new("Append-only", append_str, append_hint));
-
-    let (acl_str, acl_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::ACL_PRESENT) {
-        ("Yes — extended DAC in effect", StyleHint::TrustYellow)
-    } else {
-        ("No", StyleHint::Normal)
-    };
-    rows.push(DataRow::new("POSIX ACL", acl_str, acl_hint));
-
-    let (access_str, access_hint) = if dirent.access_denied {
-        ("yes", StyleHint::TrustYellow)
-    } else {
-        ("no", StyleHint::Normal)
-    };
-    rows.push(DataRow::new("Access denied", access_str, access_hint));
-
-    rows
-}
-
 /// Build the Security tab rows for a successfully-read `SecureDirent`.
 ///
-/// Row order: SELinux label summary, per-component fields (when labeled),
-/// raw label, label state, separator, security marking (MCS translation),
-/// separator, inode flag rows, separator, encryption source.
+/// Layout:
+/// 1. Marking (top-level, always visible)
+/// 2. Encryption + Access denied
+/// 3. Mandatory Access Controls (SELinux) — user/role/type/label
+/// 4. Integrity Controls — IMA/EVM
+/// 5. Discretionary Access Controls — Owner/Group/Mode/Immutable/Append-only/ACL
 ///
 /// NIST SP 800-53 AC-3, AC-4, SI-7, SC-28.
 #[must_use = "security rows are the only output; discarding them hides the Security tab content"]
+#[expect(
+    clippy::too_many_lines,
+    reason = "five security sections form a single logical unit; splitting would scatter the tab layout across multiple functions"
+)]
 pub fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
     let mut rows = Vec::new();
 
-    let label_hint = match &dirent.selinux_label {
-        SelinuxCtxState::Labeled(_) => StyleHint::TrustGreen,
-        SelinuxCtxState::Unlabeled
-        | SelinuxCtxState::ParseFailure
-        | SelinuxCtxState::TpiDisagreement => StyleHint::TrustRed,
-    };
-    rows.push(DataRow::new(
-        i18n::tr("SELinux Context"),
-        " ",
-        label_hint,
-    ));
+    // ── General Security ──────────────────────────────────────────────────────
+    rows.push(DataRow::GroupTitle("General Security".to_owned()));
 
-    if let SelinuxCtxState::Labeled(ctx) = &dirent.selinux_label {
-        rows.push(DataRow::normal("  SELinux user", ctx.user().to_string()));
-        rows.push(DataRow::normal("  SELinux role", ctx.role().to_string()));
-        rows.push(DataRow::normal(
-            "  SELinux type",
-            ctx.security_type().to_string(),
-        ));
-        let level_str = ctx.level().map_or_else(|| "(none)".to_owned(), |l| l.raw().to_owned());
-        rows.push(DataRow::normal("  Raw label", level_str));
-
-        let (state_str, state_hint) = match &dirent.selinux_label {
-            SelinuxCtxState::Labeled(_) => ("Labeled", StyleHint::TrustGreen),
-            SelinuxCtxState::Unlabeled => ("Unlabeled", StyleHint::TrustRed),
-            SelinuxCtxState::ParseFailure => ("ParseFailure", StyleHint::TrustRed),
-            SelinuxCtxState::TpiDisagreement => ("TpiDisagreement", StyleHint::TrustRed),
-        };
+    if let SelinuxCtxState::Labeled(ctx) = &dirent.selinux_label
+        && let Some(lvl) = ctx.level()
+    {
+        let range = SecurityRange::from_level(lvl);
+        let marking = GLOBAL_TRANSLATOR.read().map_or_else(
+            |_| lvl.raw().to_owned(),
+            |g| g.lookup(&range).unwrap_or_else(|| lvl.raw().to_owned()),
+        );
         rows.push(DataRow::new(
-            i18n::tr("  Label state"),
-            state_str,
-            state_hint,
+            format!(" {}", i18n::tr("Marking")),
+            marking,
+            StyleHint::Highlight,
         ));
-
-        rows.push(DataRow::separator());
-
-        if let Some(lvl) = ctx.level() {
-            let range = SecurityRange::from_level(lvl);
-            let marking = GLOBAL_TRANSLATOR.read().map_or_else(
-                |_| lvl.raw().to_owned(),
-                |g| g.lookup(&range).unwrap_or_else(|| lvl.raw().to_owned()),
-            );
-            rows.push(DataRow::new(
-                i18n::tr("Marking"),
-                marking,
-                StyleHint::Highlight,
-            ));
-        }
     }
-
-    rows.push(DataRow::separator());
-    rows.extend(build_inode_flag_rows(dirent));
     rows.push(DataRow::separator());
 
+    // ── Encryption & access ──────────────────────────────────────────────────
     let (enc_str, enc_hint) = match &dirent.encryption {
         EncryptionSource::None => ("None".to_owned(), StyleHint::Normal),
         EncryptionSource::LuksDevice => ("LUKS (dm-crypt)".to_owned(), StyleHint::TrustGreen),
@@ -474,7 +402,119 @@ pub fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
             StyleHint::TrustGreen,
         ),
     };
-    rows.push(DataRow::new(i18n::tr("Encryption"), enc_str, enc_hint));
+    rows.push(DataRow::new(
+        format!(" {}", i18n::tr("Encryption")),
+        enc_str,
+        enc_hint,
+    ));
+
+    let (access_str, access_hint) = if dirent.access_denied {
+        ("yes", StyleHint::TrustYellow)
+    } else {
+        ("no", StyleHint::Normal)
+    };
+    rows.push(DataRow::new(" Access denied", access_str, access_hint));
+    rows.push(DataRow::separator());
+
+    // ── Mandatory Access Controls (SELinux) ──────────────────────────────────
+    rows.push(DataRow::GroupTitle(
+        "Mandatory Access Controls (SELinux)".to_owned(),
+    ));
+
+    if let SelinuxCtxState::Labeled(ctx) = &dirent.selinux_label {
+        let (user_str, user_hint) = {
+            let u = ctx.user().to_string();
+            if u == "unconfined_u" {
+                (format!("\u{26A0} {u}"), StyleHint::TrustYellow)
+            } else {
+                (u, StyleHint::Normal)
+            }
+        };
+        rows.push(DataRow::new(" SELinux user", user_str, user_hint));
+        rows.push(DataRow::normal(" SELinux role", ctx.role().to_string()));
+        rows.push(DataRow::normal(
+            " SELinux type",
+            ctx.security_type().to_string(),
+        ));
+        let level_str = ctx.level().map_or_else(|| "(none)".to_owned(), |l| l.raw().to_owned());
+        rows.push(DataRow::normal(" Raw label", level_str));
+
+        let (state_str, state_hint) = match &dirent.selinux_label {
+            SelinuxCtxState::Labeled(_) => ("Labeled", StyleHint::TrustGreen),
+            SelinuxCtxState::Unlabeled => ("Unlabeled", StyleHint::TrustRed),
+            SelinuxCtxState::ParseFailure => ("ParseFailure", StyleHint::TrustRed),
+            SelinuxCtxState::TpiDisagreement => ("TpiDisagreement", StyleHint::TrustRed),
+        };
+        rows.push(DataRow::new(" Label state", state_str, state_hint));
+    }
+    rows.push(DataRow::separator());
+
+    // ── Integrity Controls ───────────────────────────────────────────────────
+    rows.push(DataRow::GroupTitle("Integrity Controls".to_owned()));
+
+    let (ima_str, ima_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::IMA_PRESENT) {
+        ("Yes — integrity hash present", StyleHint::TrustGreen)
+    } else {
+        ("No", StyleHint::Normal)
+    };
+    rows.push(DataRow::new(
+        format!(" {}", i18n::tr("IMA/EVM")),
+        ima_str,
+        ima_hint,
+    ));
+    rows.push(DataRow::separator());
+
+    // ── Discretionary Access Controls ────────────────────────────────────────
+    rows.push(DataRow::GroupTitle(
+        "Discretionary Access Controls".to_owned(),
+    ));
+
+    let (owner_str, owner_hint) = match &dirent.ownership.user.name {
+        Some(name) => (
+            format!("{} ({})", name.as_str(), dirent.ownership.user.uid),
+            StyleHint::Normal,
+        ),
+        None => (
+            format!("{} (unresolved)", dirent.ownership.user.uid),
+            StyleHint::TrustYellow,
+        ),
+    };
+    rows.push(DataRow::new(" Owner", owner_str, owner_hint));
+
+    let (group_str, group_hint) = match &dirent.ownership.group.name {
+        Some(name) => (
+            format!("{} ({})", name.as_str(), dirent.ownership.group.gid),
+            StyleHint::Normal,
+        ),
+        None => (
+            format!("{} (unresolved)", dirent.ownership.group.gid),
+            StyleHint::TrustYellow,
+        ),
+    };
+    rows.push(DataRow::new(" Group", group_str, group_hint));
+
+    rows.push(DataRow::normal(" Mode", dirent.mode.as_mode_str()));
+
+    let (immut_str, immut_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::IMMUTABLE) {
+        ("Yes", StyleHint::TrustGreen)
+    } else {
+        ("No", StyleHint::Normal)
+    };
+    rows.push(DataRow::new(" Immutable", immut_str, immut_hint));
+
+    let (append_str, append_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::APPEND_ONLY) {
+        ("Yes", StyleHint::TrustGreen)
+    } else {
+        ("No", StyleHint::Normal)
+    };
+    rows.push(DataRow::new(" Append-only", append_str, append_hint));
+
+    let (acl_str, acl_hint) = if dirent.sec_flags.contains(InodeSecurityFlags::ACL_PRESENT) {
+        ("Yes — extended DAC in effect", StyleHint::TrustYellow)
+    } else {
+        ("No", StyleHint::Normal)
+    };
+    rows.push(DataRow::new(" POSIX ACL", acl_str, acl_hint));
 
     rows
 }
@@ -499,7 +539,7 @@ pub fn build_observation_rows(observations: &[SecurityObservation]) -> Vec<DataR
     if observations.is_empty() {
         rows.push(DataRow::new(
             i18n::tr("Findings"),
-            i18n::tr("No security observations"),
+            format!("\u{2705} {}", i18n::tr("No security observations")),
             StyleHint::TrustGreen,
         ));
     } else {
@@ -583,6 +623,25 @@ pub struct FileStatApp {
     /// `&'static str` only in the standalone binary, where the allocation
     /// lifetime is the process lifetime.
     pub report_subject: String,
+    /// Translated security marking for the file (e.g., `"SystemLow"`,
+    /// `"CUI//LEI"`).  `None` when the file has no MCS/MLS level.
+    ///
+    /// Displayed in the upper-right corner of the popup tab bar so the
+    /// operator always sees the marking context.
+    ///
+    /// NIST SP 800-53 AC-16 — security attribute visibility.
+    pub marking: Option<String>,
+    /// Index group for the marking (e.g., `"Critical Infrastructure"`).
+    /// Used to select the palette color in the popup tab bar.
+    /// Set by callers with catalog access (umrs-ls); `None` in standalone mode.
+    ///
+    /// NIST SP 800-53 AC-16 — visual consistency across tools.
+    pub marking_index_group: Option<String>,
+    /// Number of security observations (Risk + Warning + Good).
+    /// Used to show a flag icon on the Observations tab when > 0.
+    ///
+    /// NIST SP 800-53 CA-7 — finding count drives visual indicator.
+    pub observation_count: usize,
 }
 
 impl FileStatApp {
@@ -609,6 +668,19 @@ impl FileStatApp {
         let security_rows = build_security_rows(dirent);
         let observation_rows = build_observation_rows(&observations);
 
+        // Extract the translated marking for the popup header display.
+        let marking = if let SelinuxCtxState::Labeled(ctx) = &dirent.selinux_label
+            && let Some(lvl) = ctx.level()
+        {
+            let range = SecurityRange::from_level(lvl);
+            Some(GLOBAL_TRANSLATOR.read().map_or_else(
+                |_| lvl.raw().to_owned(),
+                |g| g.lookup(&range).unwrap_or_else(|| lvl.raw().to_owned()),
+            ))
+        } else {
+            None
+        };
+
         Self {
             tabs,
             identity_rows,
@@ -616,6 +688,9 @@ impl FileStatApp {
             observation_rows,
             status,
             report_subject: dirent.path.to_string(),
+            marking,
+            marking_index_group: None,
+            observation_count: observations.len(),
         }
     }
 
@@ -643,6 +718,9 @@ impl FileStatApp {
                 i18n::tr("Failed to read file attributes"),
             ),
             report_subject: path_str.to_owned(),
+            marking: None,
+            marking_index_group: None,
+            observation_count: 0,
         }
     }
 
@@ -662,5 +740,48 @@ impl FileStatApp {
             2 => &self.observation_rows,
             _ => &[],
         }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// PopupCardData implementation
+// ---------------------------------------------------------------------------
+
+/// Static tab name slice for the three-tab layout.
+///
+/// These are the English-language display names used by the popup tab bar.
+/// They match the tab order in [`FileStatApp::rows_for_tab`]: Identity (0),
+/// Security (1), Observations (2).
+static FILE_STAT_TAB_NAMES: &[&str] = &["Identity", "Security", "Observations"];
+
+/// Implement [`PopupCardData`] for [`FileStatApp`] so that
+/// [`umrs_ui::popup::render_audit_card_popup`] can render a file audit card
+/// popup without a direct dependency on this crate's concrete type.
+///
+/// NIST SP 800-53 AU-3 — tabbed data layout ensures complete file identity
+/// and security metadata is always accessible without information truncation.
+/// NIST SP 800-53 SI-10 — `rows_for_tab` delegates to the existing
+/// bounds-checked implementation; out-of-range indices return an empty slice.
+impl PopupCardData for FileStatApp {
+    fn tab_names(&self) -> &[&'static str] {
+        FILE_STAT_TAB_NAMES
+    }
+
+    fn rows_for_tab(&self, tab: usize) -> &[DataRow] {
+        // Delegates to the existing bounds-checked implementation so the
+        // bounds logic is never duplicated.
+        Self::rows_for_tab(self, tab)
+    }
+
+    fn marking(&self) -> Option<&str> {
+        self.marking.as_deref()
+    }
+
+    fn marking_index_group(&self) -> Option<&str> {
+        self.marking_index_group.as_deref()
+    }
+
+    fn observation_count(&self) -> usize {
+        self.observation_count
     }
 }

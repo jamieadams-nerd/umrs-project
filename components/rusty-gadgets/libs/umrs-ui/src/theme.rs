@@ -243,9 +243,7 @@ impl Theme {
             // recessed warm tint on a dark terminal, distinctly "this
             // row is selected" without any of the glow of the ANSI
             // bright-yellow slot.  Black fg, no bold.
-            list_selection: Style::default()
-                .fg(Color::Black)
-                .bg(Color::Rgb(160, 145, 95)),
+            list_selection: Style::default().fg(Color::Black).bg(Color::Rgb(160, 145, 95)),
             group_title: Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
             // Dialog styles
             dialog_info_border: Style::default().fg(Color::Cyan),

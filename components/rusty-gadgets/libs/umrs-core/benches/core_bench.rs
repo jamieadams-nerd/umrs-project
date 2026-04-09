@@ -76,8 +76,11 @@ fn bench_metricfmt(c: &mut Criterion) {
     // format_in_prefix — forced Micro prefix, no prefix-selection walk
     group.bench_function("format_in_prefix/micro forced", |b| {
         b.iter(|| {
-            let result =
-                metricfmt::format_in_prefix(black_box(1.234e-6), SIPrefix::Micro, PrefixStyle::AbbrevAscii);
+            let result = metricfmt::format_in_prefix(
+                black_box(1.234e-6),
+                SIPrefix::Micro,
+                PrefixStyle::AbbrevAscii,
+            );
             black_box(result)
         });
     });
@@ -153,7 +156,12 @@ fn bench_textwrap(c: &mut Criterion) {
     // Short string — no wrapping occurs (fits in 80 columns)
     group.bench_function("text_wrap/short no-wrap (80 col)", |b| {
         b.iter(|| {
-            let result = text_wrap(black_box(short_input), black_box(80), black_box(0), black_box(0));
+            let result = text_wrap(
+                black_box(short_input),
+                black_box(80),
+                black_box(0),
+                black_box(0),
+            );
             black_box(result)
         });
     });
@@ -161,7 +169,12 @@ fn bench_textwrap(c: &mut Criterion) {
     // Long string — wraps at 80 columns, 4-space indent
     group.bench_function("text_wrap/long wrap (80 col, 4-pad)", |b| {
         b.iter(|| {
-            let result = text_wrap(black_box(long_input), black_box(80), black_box(4), black_box(0));
+            let result = text_wrap(
+                black_box(long_input),
+                black_box(80),
+                black_box(4),
+                black_box(0),
+            );
             black_box(result)
         });
     });
@@ -169,7 +182,12 @@ fn bench_textwrap(c: &mut Criterion) {
     // Long string — narrower column forces more wraps
     group.bench_function("text_wrap/long wrap (40 col, 4-pad)", |b| {
         b.iter(|| {
-            let result = text_wrap(black_box(long_input), black_box(40), black_box(4), black_box(0));
+            let result = text_wrap(
+                black_box(long_input),
+                black_box(40),
+                black_box(4),
+                black_box(0),
+            );
             black_box(result)
         });
     });
@@ -177,7 +195,12 @@ fn bench_textwrap(c: &mut Criterion) {
     // Right-padding enabled — exercises the additional padding loop
     group.bench_function("text_wrap/long wrap with right-pad (80 col, 4+4)", |b| {
         b.iter(|| {
-            let result = text_wrap(black_box(long_input), black_box(80), black_box(4), black_box(4));
+            let result = text_wrap(
+                black_box(long_input),
+                black_box(80),
+                black_box(4),
+                black_box(4),
+            );
             black_box(result)
         });
     });
@@ -243,7 +266,10 @@ fn bench_validate(c: &mut Criterion) {
     // SafeString — valid (all printable ASCII)
     group.bench_function("is_valid/SafeString valid", |b| {
         b.iter(|| {
-            let result = is_valid(UmrsPattern::SafeString, black_box("CUI//SP-CTI/EXPT//NOFORN"));
+            let result = is_valid(
+                UmrsPattern::SafeString,
+                black_box("CUI//SP-CTI/EXPT//NOFORN"),
+            );
             black_box(result)
         });
     });

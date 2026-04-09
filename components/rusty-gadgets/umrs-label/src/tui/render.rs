@@ -69,7 +69,7 @@ const SEARCH_BAR_HEIGHT: u16 = 3;
 const TREE_PERCENT: u16 = 48;
 
 /// Compact key legend for the status bar.
-const KEY_LEGEND: &str = "  ↑↓:nav  Enter:show  Tab:panel  /:search  ?:help  q:quit";
+const KEY_LEGEND: &str = "  ↑↓: nav | Enter: show | Tab: panel | /: search | ?: help | q: quit";
 
 // ---------------------------------------------------------------------------
 // Master render entry point
@@ -86,7 +86,10 @@ const KEY_LEGEND: &str = "  ↑↓:nav  Enter:show  Tab:panel  /:search  ?:help 
 /// NIST SP 800-53 AU-3 — all identification, security posture, and catalog
 /// fields are present in every rendered frame.
 /// NIST SP 800-53 AC-3 — rendering is unconditionally read-only.
-#[expect(clippy::too_many_arguments, reason = "render entry points aggregate all display state; splitting would scatter the layout pass")]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "render entry points aggregate all display state; splitting would scatter the layout pass"
+)]
 pub fn render_label_registry(
     frame: &mut Frame,
     area: Rect,
@@ -98,16 +101,20 @@ pub fn render_label_registry(
     detail_scroll: u16,
     active_panel: Panel,
 ) {
-    let search_height = if state.search_active { SEARCH_BAR_HEIGHT } else { 0 };
+    let search_height = if state.search_active {
+        SEARCH_BAR_HEIGHT
+    } else {
+        0
+    };
 
     // ── Outer vertical split ─────────────────────────────────────────────────
     let outer = Layout::default()
         .direction(Direction::Vertical)
         .constraints([
-            Constraint::Length(HEADER_HEIGHT),   // header row
-            Constraint::Min(0),                  // body (tree + detail)
-            Constraint::Length(search_height),   // search bar
-            Constraint::Length(1),               // status bar
+            Constraint::Length(HEADER_HEIGHT), // header row
+            Constraint::Min(0),                // body (tree + detail)
+            Constraint::Length(search_height), // search bar
+            Constraint::Length(1),             // status bar
         ])
         .split(area);
 
@@ -142,7 +149,14 @@ pub fn render_label_registry(
     };
 
     render_tree_panel(frame, tree_area, state, theme, active_panel);
-    render_detail_panel(frame, detail_area, detail_content, detail_scroll, theme, active_panel);
+    render_detail_panel(
+        frame,
+        detail_area,
+        detail_content,
+        detail_scroll,
+        theme,
+        active_panel,
+    );
 
     // ── Search bar ───────────────────────────────────────────────────────────
     if state.search_active {
@@ -176,7 +190,12 @@ fn render_posture_header(frame: &mut Frame, area: Rect, ctx: &HeaderContext, the
     // Vertical split: 4 posture rows, gap, 1 title row.
     let rows = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([Constraint::Length(4), Constraint::Min(0), Constraint::Length(1), Constraint::Length(1)])
+        .constraints([
+            Constraint::Length(4),
+            Constraint::Min(0),
+            Constraint::Length(1),
+            Constraint::Length(1),
+        ])
         .split(inner);
     let [top_area, _gap, title_area, _bottom_pad] = *rows else {
         return;
@@ -206,12 +225,7 @@ fn render_posture_header(frame: &mut Frame, area: Rect, ctx: &HeaderContext, the
 }
 
 /// Host, OS, SELinux, FIPS rows.
-fn render_system_posture_lines(
-    frame: &mut Frame,
-    area: Rect,
-    ctx: &HeaderContext,
-    theme: &Theme,
-) {
+fn render_system_posture_lines(frame: &mut Frame, area: Rect, ctx: &HeaderContext, theme: &Theme) {
     let selinux_value = indicator_text(&ctx.indicators.selinux_status);
     let selinux_style = theme.indicator_style(&ctx.indicators.selinux_status);
     let fips_value = indicator_text(&ctx.indicators.fips_mode);
@@ -268,16 +282,10 @@ fn render_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
 }
 
 /// Reusable `Label : value` row renderer — matches umrs-ls header pattern.
-fn render_kv_rows(
-    frame: &mut Frame,
-    area: Rect,
-    rows: &[(&str, String, Style)],
-    theme: &Theme,
-) {
+fn render_kv_rows(frame: &mut Frame, area: Rect, rows: &[(&str, String, Style)], theme: &Theme) {
     let max_label = rows.iter().map(|(l, ..)| display_width(l)).max().unwrap_or(0);
     let label_cell_width = 1 + max_label + 3;
-    let value_budget =
-        (area.width as usize).saturating_sub(label_cell_width).saturating_sub(1);
+    let value_budget = (area.width as usize).saturating_sub(label_cell_width).saturating_sub(1);
 
     let lines: Vec<Line<'static>> = rows
         .iter()
@@ -300,11 +308,8 @@ fn render_kv_rows(
 
 /// Render the WIZARD_SMALL ASCII art logo panel (identical to umrs-ls).
 fn render_wizard_logo(frame: &mut Frame, area: Rect, theme: &Theme) {
-    let lines: Vec<Line<'_>> = WIZARD_SMALL
-        .lines
-        .iter()
-        .map(|l| Line::from(Span::styled(*l, theme.wizard)))
-        .collect();
+    let lines: Vec<Line<'_>> =
+        WIZARD_SMALL.lines.iter().map(|l| Line::from(Span::styled(*l, theme.wizard))).collect();
 
     let block = Block::default()
         .borders(Borders::ALL)
@@ -569,7 +574,13 @@ fn render_detail_panel(
             // rendering a separate border block first, then rendering the inner
             // content without borders, so that the active/inactive style applies.
             render_marking_detail_with_border(
-                frame, area, data, prov, scroll_offset, theme, border_style,
+                frame,
+                area,
+                data,
+                prov,
+                scroll_offset,
+                theme,
+                border_style,
             );
         }
 
@@ -602,7 +613,8 @@ fn render_detail_panel(
                 }
                 let key_str = format!("  {key:<max_label$} : ");
                 let key_prefix_width = display_width(&key_str);
-                let value_budget = (inner.width as usize).saturating_sub(key_prefix_width).saturating_sub(1);
+                let value_budget =
+                    (inner.width as usize).saturating_sub(key_prefix_width).saturating_sub(1);
                 let value_lines = wrap_text_lines(value, value_budget);
                 let continuation_pad = " ".repeat(key_prefix_width);
                 for (i, vline) in value_lines.iter().enumerate() {
@@ -620,12 +632,14 @@ fn render_detail_panel(
                 }
             }
             lines.push(Line::from(""));
-            let paragraph = Paragraph::new(lines)
-                .scroll((scroll_offset, 0));
+            let paragraph = Paragraph::new(lines).scroll((scroll_offset, 0));
             frame.render_widget(paragraph, inner);
         }
 
-        DetailContent::Group { name, count } => {
+        DetailContent::Group {
+            name,
+            count,
+        } => {
             let block = Block::default()
                 .borders(Borders::ALL)
                 .border_type(BorderType::Rounded)
@@ -730,12 +744,22 @@ fn render_detail_content_inner(
     // excluded from the key-width calculation.
     let skip_fields = ["MCS Category Base", "MCS Range (Reserved)", "US CUI Approximation"];
     let mut labels: Vec<&str> = Vec::new();
-    if !data.name_en.is_empty() { labels.push("Name"); }
-    if !data.abbreviation.is_empty() { labels.push("Abbreviation"); }
-    if !data.designation.is_empty() { labels.push("Designation"); }
-    if !data.index_group.is_empty() { labels.push("Index Group"); }
+    if !data.name_en.is_empty() {
+        labels.push("Name");
+    }
+    if !data.abbreviation.is_empty() {
+        labels.push("Abbreviation");
+    }
+    if !data.designation.is_empty() {
+        labels.push("Designation");
+    }
+    if !data.index_group.is_empty() {
+        labels.push("Index Group");
+    }
     for (key, value) in &data.additional {
-        if !value.is_empty() && !skip_fields.contains(&key.as_str()) { labels.push(key.as_str()); }
+        if !value.is_empty() && !skip_fields.contains(&key.as_str()) {
+            labels.push(key.as_str());
+        }
     }
     let key_width = labels.iter().map(|l| display_width(l)).max().unwrap_or(12);
 
@@ -748,10 +772,7 @@ fn render_detail_content_inner(
         let fg = palette_fg(&data.index_group);
         let key_style = Style::default().fg(fg).bg(bg).add_modifier(Modifier::BOLD);
         let padded_key = format!("  {} ", data.key);
-        let mut spans = vec![
-            Span::raw("  "),
-            Span::styled(padded_key.clone(), key_style),
-        ];
+        let mut spans = vec![Span::raw("  "), Span::styled(padded_key.clone(), key_style)];
         if !data.country_flag.is_empty() {
             let flag_width = display_width(&data.country_flag);
             let used = 2 + display_width(&padded_key); // leading "  " + chip
@@ -764,16 +785,30 @@ fn render_detail_content_inner(
     }
 
     // Identity fields — English only; French locale display is a future feature.
-    push_kv_detail(&mut lines, "Name", &data.name_en, key_width, KEY_SEP, panel_width, theme);
-    push_kv_detail(&mut lines, "Abbreviation", &data.abbreviation, key_width, KEY_SEP, panel_width, theme);
+    push_kv_detail(
+        &mut lines,
+        "Name",
+        &data.name_en,
+        key_width,
+        KEY_SEP,
+        panel_width,
+        theme,
+    );
+    push_kv_detail(
+        &mut lines,
+        "Abbreviation",
+        &data.abbreviation,
+        key_width,
+        KEY_SEP,
+        panel_width,
+        theme,
+    );
 
     // Designation with colour coding
     if !data.designation.is_empty() {
         let key_str = format!("  {:<key_width$}{KEY_SEP}", "Designation");
         let value_style = match data.designation.as_str() {
-            "specified" | "SP" => {
-                Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD)
-            }
+            "specified" | "SP" => Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
             "basic" => Style::default().fg(Color::Green).add_modifier(Modifier::BOLD),
             "LDC" => Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
             _ => theme.data_value,
@@ -784,32 +819,61 @@ fn render_detail_content_inner(
         ]));
     }
 
-    push_kv_detail(&mut lines, "Index Group", &data.index_group, key_width, KEY_SEP, panel_width, theme);
+    push_kv_detail(
+        &mut lines,
+        "Index Group",
+        &data.index_group,
+        key_width,
+        KEY_SEP,
+        panel_width,
+        theme,
+    );
     // Description — label on its own line, wrapped text below with 4-char indent.
     if !data.description_en.is_empty() {
         lines.push(Line::from(""));
         lines.push(Line::from(Span::styled("  Description", theme.data_key)));
-        lines.extend(wrap_indented(&data.description_en, "    ", panel_width, theme.data_value));
+        lines.extend(wrap_indented(
+            &data.description_en,
+            "    ",
+            panel_width,
+            theme.data_value,
+        ));
     }
 
     // Handling — label on its own line, wrapped text below with 4-char indent.
     if !data.handling.is_empty() {
         lines.push(Line::from(""));
         lines.push(Line::from(Span::styled("  Handling", theme.data_key)));
-        lines.extend(wrap_indented(&data.handling, "    ", panel_width, theme.data_value));
+        lines.extend(wrap_indented(
+            &data.handling,
+            "    ",
+            panel_width,
+            theme.data_value,
+        ));
     }
 
     // Injury examples — label on its own line, wrapped text below with 4-char indent.
     if !data.injury_examples_en.is_empty() {
         lines.push(Line::from(""));
-        lines.push(Line::from(Span::styled("  Injury Examples", theme.data_key)));
-        lines.extend(wrap_indented(&data.injury_examples_en, "    ", panel_width, theme.data_value));
+        lines.push(Line::from(Span::styled(
+            "  Injury Examples",
+            theme.data_key,
+        )));
+        lines.extend(wrap_indented(
+            &data.injury_examples_en,
+            "    ",
+            panel_width,
+            theme.data_value,
+        ));
     }
 
     // Required warning — label on its own line, wrapped text below with 4-char indent.
     if !data.required_warning.is_empty() {
         lines.push(Line::from(""));
-        lines.push(Line::from(Span::styled("  Required Warning", theme.data_key)));
+        lines.push(Line::from(Span::styled(
+            "  Required Warning",
+            theme.data_key,
+        )));
         lines.extend(wrap_indented(
             &data.required_warning,
             "    ",
@@ -845,7 +909,15 @@ fn render_detail_content_inner(
                 lines.push(Line::from(Span::styled(format!("  {key}"), theme.data_key)));
                 lines.extend(wrap_indented(value, "    ", panel_width, theme.data_value));
             } else {
-                push_kv_detail(&mut lines, key, value, key_width, KEY_SEP, panel_width, theme);
+                push_kv_detail(
+                    &mut lines,
+                    key,
+                    value,
+                    key_width,
+                    KEY_SEP,
+                    panel_width,
+                    theme,
+                );
             }
         }
     }
@@ -854,11 +926,8 @@ fn render_detail_content_inner(
     if !provenance.is_empty() {
         let prov_style = Style::default().fg(Color::DarkGray);
         // Build a compact "Catalog · Version · Authority" line.
-        let parts: Vec<&str> = provenance
-            .iter()
-            .filter(|(_, v)| !v.is_empty())
-            .map(|(_, v)| v.as_str())
-            .collect();
+        let parts: Vec<&str> =
+            provenance.iter().filter(|(_, v)| !v.is_empty()).map(|(_, v)| v.as_str()).collect();
         if !parts.is_empty() {
             let attribution = format!("  {}", parts.join("  ·  "));
             lines.push(Line::from(""));
@@ -869,8 +938,7 @@ fn render_detail_content_inner(
 
     lines.push(Line::from(""));
 
-    let paragraph = Paragraph::new(lines)
-        .scroll((scroll_offset, 0));
+    let paragraph = Paragraph::new(lines).scroll((scroll_offset, 0));
     frame.render_widget(paragraph, area);
 }
 
@@ -910,7 +978,6 @@ fn push_kv_detail(
         }
     }
 }
-
 
 // ---------------------------------------------------------------------------
 // Search bar
@@ -957,17 +1024,16 @@ fn render_status_bar(frame: &mut Frame, area: Rect, app: &LabelRegistryApp, them
         truncate_right(&center, budget)
     };
 
-    let line = Line::from(Span::styled(text, theme.status_text));
-    let bg_block = Block::default()
-        .style(Style::default().bg(Color::DarkGray));
-    frame.render_widget(bg_block, area);
+    // Info-level background — consistent with umrs-ui shared status bar palette.
+    let bg = umrs_ui::theme::status_bg_color(umrs_ui::app::StatusLevel::Info);
+    let style = Style::default().bg(bg).patch(theme.status_text);
+    let line = Line::from(Span::styled(text, style));
     frame.render_widget(Paragraph::new(vec![line]), area);
 }
 
 // ---------------------------------------------------------------------------
 // Palette color helpers
 // ---------------------------------------------------------------------------
-
 
 // ---------------------------------------------------------------------------
 // Private helpers

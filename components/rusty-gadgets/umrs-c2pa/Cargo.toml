@@ -75,8 +75,10 @@ libc = "0.2"
 
 # rustix — safe syscall wrappers (already in workspace: umrs-platform,
 # umrs-selinux, umrs-hw, umrs-ui, umrs-stat). Used here for geteuid()
-# without unsafe. Controls: NIST SP 800-53 AC-3.
-rustix = { version = "0.38", features = ["process"] }
+# without unsafe. Migrated from 0.38 → 1.x (C-4 remediation); geteuid()
+# is present in rustix::process in 1.x under the same signature.
+# Controls: NIST SP 800-53 AC-3.
+rustix = { version = "1", features = ["process"] }
 
 # Internationalization — gettext-based message translation.
 # gettext-rs wraps GNU gettext; gettext-system links the system libintl (present

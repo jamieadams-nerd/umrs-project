@@ -108,7 +108,10 @@ pub(super) fn run(
 // run_inner performs a sequential verification pipeline; splitting it would
 // obscure the flow. The line-count overage is a result of F-02 TOCTOU
 // re-verification code added for security compliance.
-#[expect(clippy::too_many_lines, reason = "line-count overage is TOCTOU re-verification code for NSA RTB / NIST SP 800-53 SI-7 compliance")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "line-count overage is TOCTOU re-verification code for NSA RTB / NIST SP 800-53 SI-7 compliance"
+)]
 fn run_inner(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,

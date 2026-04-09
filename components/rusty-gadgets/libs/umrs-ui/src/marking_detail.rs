@@ -181,9 +181,7 @@ pub fn render_marking_detail(
         Some(d) => build_detail_lines(d, theme, inner_width),
     };
 
-    let paragraph = Paragraph::new(lines)
-        .block(block)
-        .scroll((scroll_offset, 0));
+    let paragraph = Paragraph::new(lines).block(block).scroll((scroll_offset, 0));
 
     frame.render_widget(paragraph, area);
 }
@@ -224,20 +222,44 @@ fn placeholder_lines(theme: &Theme) -> Vec<Line<'static>> {
 /// their own block rather than accepting the nested `Details` border that
 /// [`render_marking_detail`] would otherwise produce.
 #[must_use = "build_detail_lines returns the rendered content lines; pass them to a Paragraph widget"]
-pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max_width: usize) -> Vec<Line<'a>> {
+#[expect(
+    clippy::too_many_lines,
+    reason = "each section corresponds to a distinct CUI label field; \
+              splitting into sub-functions would scatter the field ordering and break \
+              the structural documentation embedded in the section comments"
+)]
+pub fn build_detail_lines<'a>(
+    data: &'a MarkingDetailData,
+    theme: &'a Theme,
+    max_width: usize,
+) -> Vec<Line<'a>> {
     // ── Dynamic key width — measure only key-value (non-multi-line) labels ────
     // Multi-line fields (Description, Handling, Injury Examples, Required Warning,
     // Dissemination) are rendered as label-then-block rather than key : value
     // pairs, so they do not contribute to the key column width calculation.
     let mut labels: Vec<&str> = Vec::new();
-    if !data.name_en.is_empty() { labels.push("Name"); }
-    if !data.abbreviation.is_empty() { labels.push("Abbreviation"); }
-    if !data.designation.is_empty() { labels.push("Designation"); }
-    if !data.index_group.is_empty() { labels.push("Index Group"); }
-    if !data.level.is_empty() { labels.push("Level"); }
-    if !data.marking_banner_en.is_empty() { labels.push("Banner"); }
+    if !data.name_en.is_empty() {
+        labels.push("Name");
+    }
+    if !data.abbreviation.is_empty() {
+        labels.push("Abbreviation");
+    }
+    if !data.designation.is_empty() {
+        labels.push("Designation");
+    }
+    if !data.index_group.is_empty() {
+        labels.push("Index Group");
+    }
+    if !data.level.is_empty() {
+        labels.push("Level");
+    }
+    if !data.marking_banner_en.is_empty() {
+        labels.push("Banner");
+    }
     for (key, value) in &data.additional {
-        if !value.is_empty() { labels.push(key.as_str()); }
+        if !value.is_empty() {
+            labels.push(key.as_str());
+        }
     }
     let key_width = labels.iter().map(|l| display_width(l)).max().unwrap_or(12);
 
@@ -265,10 +287,7 @@ pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max
         // background has breathing room around the text.
         let padded_key = format!(" {} ", data.key);
         let key_display_width = 2 + display_width(&data.key); // "  " prefix + key
-        let mut spans = vec![
-            Span::raw("  "),
-            Span::styled(padded_key, key_style),
-        ];
+        let mut spans = vec![Span::raw("  "), Span::styled(padded_key, key_style)];
         if !data.country_flag.is_empty() {
             let flag_width = display_width(&data.country_flag);
             // key_display_width includes the "  " indent plus the padded key
@@ -288,9 +307,21 @@ pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max
     // Section 2 — Identity fields (English only)
     // -----------------------------------------------------------------------
     push_kv(&mut lines, "Name", &data.name_en, key_width, theme);
-    push_kv(&mut lines, "Abbreviation", &data.abbreviation, key_width, theme);
+    push_kv(
+        &mut lines,
+        "Abbreviation",
+        &data.abbreviation,
+        key_width,
+        theme,
+    );
     push_designation(&mut lines, &data.designation, key_width, theme);
-    push_kv(&mut lines, "Index Group", &data.index_group, key_width, theme);
+    push_kv(
+        &mut lines,
+        "Index Group",
+        &data.index_group,
+        key_width,
+        theme,
+    );
     push_kv(&mut lines, "Level", &data.level, key_width, theme);
 
     // -----------------------------------------------------------------------
@@ -298,7 +329,13 @@ pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max
     // -----------------------------------------------------------------------
     if !data.marking_banner_en.is_empty() {
         lines.push(Line::from(""));
-        push_kv(&mut lines, "Banner", &data.marking_banner_en, key_width, theme);
+        push_kv(
+            &mut lines,
+            "Banner",
+            &data.marking_banner_en,
+            key_width,
+            theme,
+        );
     }
 
     // -----------------------------------------------------------------------
@@ -310,7 +347,12 @@ pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max
     if !data.description_en.is_empty() {
         lines.push(Line::from(""));
         lines.push(Line::from(Span::styled("  Description", theme.data_key)));
-        lines.extend(wrap_indented(&data.description_en, "    ", max_width, theme.data_value));
+        lines.extend(wrap_indented(
+            &data.description_en,
+            "    ",
+            max_width,
+            theme.data_value,
+        ));
     }
 
     // -----------------------------------------------------------------------
@@ -320,7 +362,12 @@ pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max
     if !data.handling.is_empty() {
         lines.push(Line::from(""));
         lines.push(Line::from(Span::styled("  Handling", theme.data_key)));
-        lines.extend(wrap_indented(&data.handling, "    ", max_width, theme.data_value));
+        lines.extend(wrap_indented(
+            &data.handling,
+            "    ",
+            max_width,
+            theme.data_value,
+        ));
     }
 
     // -----------------------------------------------------------------------
@@ -329,8 +376,16 @@ pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max
     // -----------------------------------------------------------------------
     if !data.injury_examples_en.is_empty() {
         lines.push(Line::from(""));
-        lines.push(Line::from(Span::styled("  Injury Examples", theme.data_key)));
-        lines.extend(wrap_indented(&data.injury_examples_en, "    ", max_width, theme.data_value));
+        lines.push(Line::from(Span::styled(
+            "  Injury Examples",
+            theme.data_key,
+        )));
+        lines.extend(wrap_indented(
+            &data.injury_examples_en,
+            "    ",
+            max_width,
+            theme.data_value,
+        ));
     }
 
     // -----------------------------------------------------------------------
@@ -339,9 +394,17 @@ pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max
     // -----------------------------------------------------------------------
     if !data.required_warning.is_empty() {
         lines.push(Line::from(""));
-        lines.push(Line::from(Span::styled("  Required Warning", theme.data_key)));
+        lines.push(Line::from(Span::styled(
+            "  Required Warning",
+            theme.data_key,
+        )));
         let warn_style = Style::default().fg(Color::Yellow);
-        lines.extend(wrap_indented(&data.required_warning, "    ", max_width, warn_style));
+        lines.extend(wrap_indented(
+            &data.required_warning,
+            "    ",
+            max_width,
+            warn_style,
+        ));
     }
 
     // -----------------------------------------------------------------------
@@ -351,7 +414,12 @@ pub fn build_detail_lines<'a>(data: &'a MarkingDetailData, theme: &'a Theme, max
     if !data.required_dissemination.is_empty() {
         lines.push(Line::from(""));
         lines.push(Line::from(Span::styled("  Dissemination", theme.data_key)));
-        lines.extend(wrap_indented(&data.required_dissemination, "    ", max_width, theme.data_value));
+        lines.extend(wrap_indented(
+            &data.required_dissemination,
+            "    ",
+            max_width,
+            theme.data_value,
+        ));
     }
 
     // -----------------------------------------------------------------------
@@ -443,12 +511,8 @@ fn push_designation<'a>(
     }
     let key_str = format!("  {:<key_width$}{KEY_SEP}", "Designation");
     let value_style = match designation {
-        "specified" => Style::default()
-            .fg(Color::Yellow)
-            .add_modifier(Modifier::BOLD),
-        "basic" => Style::default()
-            .fg(Color::Green)
-            .add_modifier(Modifier::BOLD),
+        "specified" => Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+        "basic" => Style::default().fg(Color::Green).add_modifier(Modifier::BOLD),
         _ => theme.data_value,
     };
     lines.push(Line::from(vec![
@@ -456,4 +520,3 @@ fn push_designation<'a>(
         Span::styled(designation, value_style),
     ]));
 }
-

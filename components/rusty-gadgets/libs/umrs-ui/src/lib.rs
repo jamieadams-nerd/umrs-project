@@ -88,6 +88,7 @@ pub mod layout;
 pub mod marking_detail;
 pub mod palette;
 pub mod pill;
+pub mod popup;
 pub mod status_bar;
 pub mod tabs;
 pub mod text_fit;
@@ -107,6 +108,10 @@ pub use keymap::{Action, KeyMap};
 pub use layout::render_audit_card;
 pub use marking_detail::{MarkingDetailData, build_detail_lines, render_marking_detail};
 pub use pill::{pill_line, render_pill};
+pub use popup::{
+    PopupCardData, PopupConfig, data_row_to_line, render_audit_card_popup,
+    render_marking_detail_popup, render_popup_frame,
+};
 pub use theme::Theme;
 pub use viewer::tree::{NodeId, TreeModel, TreeNode};
 pub use viewer::{ViewerApp, ViewerHeaderContext, ViewerState, render_viewer};

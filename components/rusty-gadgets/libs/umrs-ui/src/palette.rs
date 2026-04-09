@@ -50,17 +50,17 @@ pub fn palette_bg(index_group: &str) -> Color {
         "Immigration" | "International Agreements" | "Legal" => {
             Color::Rgb(0x5B, 0x7C, 0x99) // govt_blue_gray
         }
-        "Intelligence" => Color::Rgb(0x4B, 0x2E, 0x83),            // intel_purple
-        "Law Enforcement" => Color::Rgb(0x1F, 0x4E, 0x79),         // police_blue
+        "Intelligence" => Color::Rgb(0x4B, 0x2E, 0x83), // intel_purple
+        "Law Enforcement" => Color::Rgb(0x1F, 0x4E, 0x79), // police_blue
         "Natural and Cultural Resources" => Color::Rgb(0x70, 0xAD, 0x47), // agriculture_green
-        "Nuclear" => Color::Rgb(0x1B, 0x3A, 0x5C),                 // nnpi_navy
+        "Nuclear" => Color::Rgb(0x1B, 0x3A, 0x5C),      // nnpi_navy
         "Patent" | "Statistical" => Color::Rgb(0x6E, 0x6E, 0x6E), // research_gray
-        "Privacy" => Color::Rgb(0x8B, 0x3A, 0x62),                 // privacy_rose
+        "Privacy" => Color::Rgb(0x8B, 0x3A, 0x62),      // privacy_rose
         "Procurement and Acquisition" => Color::Rgb(0x4A, 0x55, 0x68), // procure_slate
         "Proprietary Business Information" => Color::Rgb(0x7A, 0x6B, 0x5A), // warm_taupe
-        "Tax" => Color::Rgb(0x55, 0x6B, 0x2F),                     // tax_olive
-        "Transportation" => Color::Rgb(0x2D, 0x2D, 0x2D),          // opsec_charcoal
-        _ => Color::Rgb(0x6A, 0x3D, 0x9A),                         // cui_purple (default / CA)
+        "Tax" => Color::Rgb(0x55, 0x6B, 0x2F),          // tax_olive
+        "Transportation" => Color::Rgb(0x2D, 0x2D, 0x2D), // opsec_charcoal
+        _ => Color::Rgb(0x6A, 0x3D, 0x9A),              // cui_purple (default / CA)
     }
 }
 

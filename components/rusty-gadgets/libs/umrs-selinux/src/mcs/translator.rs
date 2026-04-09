@@ -339,7 +339,10 @@ impl FromStr for SecurityLevel {
 
                 // Style Auditor (Order)
                 // Read readability: we prefer the categories to be in ascending order.
-                #[expect(clippy::collapsible_if, reason = "nested option guards reflect independent conditions; collapsing into && would require a different binding form")]
+                #[expect(
+                    clippy::collapsible_if,
+                    reason = "nested option guards reflect independent conditions; collapsing into && would require a different binding form"
+                )]
                 if let Some(curr) = current_id {
                     if let Some(last) = last_cat_id {
                         if curr < last {

@@ -48,8 +48,8 @@ use std::time::Instant;
 use umrs_selinux::secure_dirent::SecureDirent;
 use umrs_selinux::utils::dirlist::{DirListing, list_directory};
 use umrs_ui::app::{StatusLevel, StatusMessage, TabDef};
-use umrs_ui::viewer::{ViewerApp, ViewerHeaderContext};
 use umrs_ui::viewer::tree::TreeModel;
+use umrs_ui::viewer::{ViewerApp, ViewerHeaderContext};
 
 use crate::tree_adapter::{ScanStats, build_tree, compute_stats};
 
@@ -83,29 +83,88 @@ pub struct DirMeta {
 impl DirMeta {
     /// Stat a directory path and extract its security metadata.
     ///
-    /// Falls back to placeholder values if the stat fails — the header
-    /// still renders, just without directory metadata.
+    /// Attempts `SecureDirent::from_path` first.  For paths where
+    /// `SecureDirent` cannot construct a `ValidatedFileName` (notably `/`,
+    /// which has no filename component), falls back to a manual stat +
+    /// SELinux context read so the header still shows real metadata.
     fn from_path(path: &Path) -> Self {
-        match SecureDirent::from_path(path) {
-            Ok(d) => {
-                let ft = crate::tree_adapter::file_type_char_pub(d.file_type);
-                let mode = format!("{ft}{}", d.mode.as_mode_str());
-                let uid = d.ownership.user.uid.as_u32();
-                let gid = d.ownership.group.gid.as_u32();
-                let owner = resolve_username(uid);
-                let group = resolve_groupname(gid);
-                let (selinux_type, marking) = extract_selinux_short(&d);
-                let is_mountpoint = d.is_mountpoint;
-                Self { mode, owner, group, selinux_type, marking, is_mountpoint }
-            }
-            Err(_) => Self {
-                mode: "?".to_owned(),
-                owner: "?".to_owned(),
-                group: "?".to_owned(),
-                selinux_type: "?".to_owned(),
-                marking: "?".to_owned(),
-                is_mountpoint: false,
-            },
+        if let Ok(d) = SecureDirent::from_path(path) {
+            let ft = crate::tree_adapter::file_type_char_pub(d.file_type);
+            let mode = format!("{ft}{}", d.mode.as_mode_str());
+            let uid = d.ownership.user.uid.as_u32();
+            let gid = d.ownership.group.gid.as_u32();
+            let owner = resolve_username(uid);
+            let group = resolve_groupname(gid);
+            let (selinux_type, marking) = extract_selinux_short(&d);
+            let is_mountpoint = d.is_mountpoint;
+            return Self {
+                mode,
+                owner,
+                group,
+                selinux_type,
+                marking,
+                is_mountpoint,
+            };
+        }
+
+        // Fallback: manual stat for paths rejected by ValidatedFileName
+        // (e.g., `/` which has no filename component).
+        // DIRECT-IO-EXCEPTION: display-only header metadata for the root
+        // directory; no trust decision is made from this data.
+        Self::from_metadata_fallback(path)
+    }
+
+    /// Stat fallback used when `SecureDirent::from_path` cannot construct a
+    /// `ValidatedFileName` for the path (e.g., `/`).
+    ///
+    /// Uses `std::fs::symlink_metadata` for POSIX attributes and
+    /// `umrs_selinux::utils::get_file_context` (fd-anchored, TPI-validated)
+    /// for the SELinux context.  The result is display-only; no security
+    /// decision is derived from it.
+    fn from_metadata_fallback(path: &Path) -> Self {
+        use std::os::unix::fs::MetadataExt as _;
+
+        use umrs_selinux::posix::primitives::FileMode;
+        use umrs_selinux::secure_dirent::FileType;
+
+        let Ok(meta) = std::fs::symlink_metadata(path) else {
+            return Self::placeholder();
+        };
+
+        let file_mode = FileMode::from_mode(meta.mode());
+        let file_type = FileType::from_mode(meta.mode());
+        let ft = crate::tree_adapter::file_type_char_pub(file_type);
+        let mode = format!("{ft}{}", file_mode.as_mode_str());
+
+        let owner = resolve_username(meta.uid());
+        let group = resolve_groupname(meta.gid());
+
+        let (selinux_type, marking) = selinux_from_path(path);
+
+        let is_mountpoint = path == Path::new("/")
+            || path.parent().is_none_or(|parent| {
+                std::fs::symlink_metadata(parent).map_or(true, |pm| pm.dev() != meta.dev())
+            });
+
+        Self {
+            mode,
+            owner,
+            group,
+            selinux_type,
+            marking,
+            is_mountpoint,
+        }
+    }
+
+    /// Return a placeholder `DirMeta` used when stat fails entirely.
+    fn placeholder() -> Self {
+        Self {
+            mode: "?".to_owned(),
+            owner: "?".to_owned(),
+            group: "?".to_owned(),
+            selinux_type: "?".to_owned(),
+            marking: "?".to_owned(),
+            is_mountpoint: false,
         }
     }
 }
@@ -322,12 +381,9 @@ impl ViewerApp for DirViewerApp {
         let total_entries = self.stats.file_count.saturating_add(self.stats.dir_count);
         let group_count = self.listing.groups.len();
 
-        let summary = format!(
-            "{group_count} SELinux groups · {total_entries} entries",
-        );
+        let summary = format!("{group_count} SELinux groups · {total_entries} entries",);
 
-        ViewerHeaderContext::new("umrs-ls", data_source, total_entries)
-            .with_summary(summary)
+        ViewerHeaderContext::new("umrs-ls", data_source, total_entries).with_summary(summary)
     }
 
     /// Provide the initial tree model for the viewer.
@@ -374,6 +430,38 @@ fn resolve_groupname(gid: u32) -> String {
     }
 }
 
+/// Read SELinux type and translated marking directly from a filesystem path.
+///
+/// Used as a fallback when `SecureDirent::from_path` cannot construct a
+/// `ValidatedFileName` (e.g., for `/`).  Opens the path via
+/// `umrs_selinux::utils::get_file_context`, which is fd-anchored and
+/// TPI-validated.  Returns `("?", "?")` on any failure.
+///
+/// NIST SP 800-53 AU-3 — security context of the listed directory is
+/// audit-relevant header context.
+fn selinux_from_path(path: &Path) -> (String, String) {
+    use umrs_selinux::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange};
+    use umrs_selinux::utils::get_file_context;
+
+    match get_file_context(path) {
+        Ok(ctx) => {
+            let selinux_type = ctx.security_type().to_string();
+            let marking = ctx.level().map_or_else(
+                || "<no-level>".to_owned(),
+                |lvl| {
+                    let range = SecurityRange::from_level(lvl);
+                    GLOBAL_TRANSLATOR.read().map_or_else(
+                        |_| lvl.raw().to_owned(),
+                        |g| g.lookup(&range).unwrap_or_else(|| lvl.raw().to_owned()),
+                    )
+                },
+            );
+            (selinux_type, marking)
+        }
+        Err(_) => ("?".to_owned(), "?".to_owned()),
+    }
+}
+
 /// Extract SELinux type and translated marking from a `SecureDirent`.
 ///
 /// Uses the global setrans translator to convert the raw MLS/MCS level
@@ -401,4 +489,3 @@ fn extract_selinux_short(dirent: &SecureDirent) -> (String, String) {
         _ => ("<unlabeled>".to_owned(), "<no-level>".to_owned()),
     }
 }
-

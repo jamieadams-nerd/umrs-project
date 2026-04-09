@@ -111,19 +111,25 @@ fn bench_category_set_operations(c: &mut Criterion) {
         });
     });
 
-    c.bench_function("CategorySet::dominates (sparse dominates dense = false)", |b| {
-        b.iter(|| {
-            let result = black_box(&sparse).dominates(black_box(&dense));
-            black_box(result)
-        });
-    });
+    c.bench_function(
+        "CategorySet::dominates (sparse dominates dense = false)",
+        |b| {
+            b.iter(|| {
+                let result = black_box(&sparse).dominates(black_box(&dense));
+                black_box(result)
+            });
+        },
+    );
 
-    c.bench_function("CategorySet::dominates (dense dominates sparse = true)", |b| {
-        b.iter(|| {
-            let result = black_box(&dense).dominates(black_box(&sparse));
-            black_box(result)
-        });
-    });
+    c.bench_function(
+        "CategorySet::dominates (dense dominates sparse = true)",
+        |b| {
+            b.iter(|| {
+                let result = black_box(&dense).dominates(black_box(&sparse));
+                black_box(result)
+            });
+        },
+    );
 
     c.bench_function("CategorySet::contains", |b| {
         b.iter(|| {
@@ -193,12 +199,15 @@ fn bench_mls_level_parse(c: &mut Criterion) {
     });
 
     // Worst-case realistic: full MCS span with many categories
-    c.bench_function("MlsLevel::from_str (10 categories: s0:c0,c1,c2,...,c9)", |b| {
-        b.iter(|| {
-            let lvl = MlsLevel::from_str(black_box("s0:c0,c1,c2,c3,c4,c5,c6,c7,c8,c9"));
-            black_box(lvl)
-        });
-    });
+    c.bench_function(
+        "MlsLevel::from_str (10 categories: s0:c0,c1,c2,...,c9)",
+        |b| {
+            b.iter(|| {
+                let lvl = MlsLevel::from_str(black_box("s0:c0,c1,c2,c3,c4,c5,c6,c7,c8,c9"));
+                black_box(lvl)
+            });
+        },
+    );
 }
 
 // ---------------------------------------------------------------------------

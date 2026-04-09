@@ -16,7 +16,7 @@
 // and an RPM database. It reads live kernel interfaces — no mocking is needed
 // or desirable for a pipeline that is itself a provenance verification system.
 
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 use umrs_platform::detect::{DetectionPhase, OsDetector};
 
 /// Benchmark the full `OsDetector::detect()` pipeline end-to-end.
@@ -38,9 +38,7 @@ fn bench_detect_full_pipeline(c: &mut Criterion) {
             // Errors from hard-gate failures (ProcfsNotReal, PidCoherenceFailed)
             // would indicate a broken test environment — we surface them as panics
             // rather than silently swallowing them.
-            detector
-                .detect()
-                .expect("detect() failed — is this a real Linux system with /proc?")
+            detector.detect().expect("detect() failed — is this a real Linux system with /proc?")
         });
     });
 }
@@ -59,9 +57,8 @@ fn bench_detect_phase_durations(c: &mut Criterion) {
     // Run detect once to obtain the phase duration breakdown. Fail loudly
     // on hard-gate errors — those indicate a broken test environment, not
     // a benchmark concern.
-    let result = detector
-        .detect()
-        .expect("detect() failed — is this a real Linux system with /proc?");
+    let result =
+        detector.detect().expect("detect() failed — is this a real Linux system with /proc?");
 
     // Map DetectionPhase to a human-readable label for Criterion's output.
     let phase_label = |phase: DetectionPhase| -> &'static str {
@@ -133,5 +130,9 @@ fn bench_detect_phase_durations(c: &mut Criterion) {
     );
 }
 
-criterion_group!(benches, bench_detect_full_pipeline, bench_detect_phase_durations);
+criterion_group!(
+    benches,
+    bench_detect_full_pipeline,
+    bench_detect_phase_durations
+);
 criterion_main!(benches);

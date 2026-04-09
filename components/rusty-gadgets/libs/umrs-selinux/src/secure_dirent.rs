@@ -724,7 +724,10 @@ pub mod flags {
         /// True if IMA integrity measurement is active on this inode.
         ///
         /// NIST SP 800-53 SI-7: integrity measurement active.
-        #[expect(clippy::missing_const_for_fn, reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes")]
+        #[expect(
+            clippy::missing_const_for_fn,
+            reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes"
+        )]
         #[must_use = "IMA protection indicator; discarding this silently misses active integrity measurement on the inode"]
         pub fn has_ima_protection(self) -> bool {
             self.contains(Self::IMA_PRESENT)
@@ -733,7 +736,10 @@ pub mod flags {
         /// True if extended ACL is in effect.
         ///
         /// NIST SP 800-53 AC-3: extended DAC is present.
-        #[expect(clippy::missing_const_for_fn, reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes")]
+        #[expect(
+            clippy::missing_const_for_fn,
+            reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes"
+        )]
         #[must_use = "pure accessor; extended ACL presence is a DAC configuration finding"]
         pub fn has_acl(self) -> bool {
             self.contains(Self::ACL_PRESENT)
@@ -743,7 +749,10 @@ pub mod flags {
         ///
         /// NIST SP 800-53 AC-4: MAC label is persisted (not runtime-only).
         #[must_use = "pure accessor; explicit on-disk SELinux label confirms the MAC label is persisted, not policy-defaulted"]
-        #[expect(clippy::missing_const_for_fn, reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes")]
+        #[expect(
+            clippy::missing_const_for_fn,
+            reason = "bitflags::contains is not const-stable; cannot be made const until upstream stabilizes"
+        )]
         pub fn has_explicit_selinux_label(self) -> bool {
             self.contains(Self::SELINUX_XATTR)
         }
@@ -923,7 +932,10 @@ impl SecureDirent {
     // The xattr permission-denial branch adds a few lines beyond the 100-line
     // default limit.  The function is a single sequential construction sequence
     // with no hidden branches; splitting it would hurt readability more than help.
-    #[expect(clippy::too_many_lines, reason = "single sequential TOCTOU-safe construction sequence; splitting would obscure the security-critical ordering")]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "single sequential TOCTOU-safe construction sequence; splitting would obscure the security-critical ordering"
+    )]
     pub fn from_path(path: &Path) -> Result<Self, SecDirError> {
         #[cfg(debug_assertions)]
         let start = Instant::now();
@@ -963,7 +975,10 @@ impl SecureDirent {
         // Step 5: Open the file once — all attribute reads use this fd
         // TOCTOU: after this open, path is never re-resolved.
         // NSA RTB: Non-Bypassability — fd-based attribute reads.
-        #[expect(clippy::option_if_let_else, reason = "explicit match is clearer here: the error arm sets a boolean side-effect that map_or_else would obscure")]
+        #[expect(
+            clippy::option_if_let_else,
+            reason = "explicit match is clearer here: the error arm sets a boolean side-effect that map_or_else would obscure"
+        )]
         let (file_opt, mut access_denied) = match File::open(path) {
             Ok(f) => (Some(f), false),
             Err(_) => (None, true),

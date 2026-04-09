@@ -16,6 +16,7 @@
 - [Timestamp module](timestamp_module.md) — BootSessionTimestamp/Duration, CLOCK_MONOTONIC_RAW
 - [CPU access controls familiarization](cpu_access_controls_familiarization.md) — Phase 1E/1F: PCID, VulnerabilityReport, CET-SS/IBT, UMIP, PKU, ARM PAC/BTI/MTE, Rust CET limitation
 - [umrs-label TUI module](umrs_label_tui.md) — LabelRegistryApp, tui/app.rs+render.rs, DisseminationControl type, main.rs dispatch, Cargo deps
+- [Popup module](popup_module.md) — umrs-ui popup.rs: PopupConfig, PopupCardData trait, render_popup_frame, render_marking_detail_popup, render_audit_card_popup, data_row_to_line; FileStatApp impl in umrs-stat
 
 ## CPU/Crypto Reference Scripts
 

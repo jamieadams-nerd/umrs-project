@@ -128,13 +128,13 @@ impl DetectionPhase {
     #[must_use = "phase name is used to label audit timing records"]
     pub const fn name(self) -> &'static str {
         match self {
-            Self::KernelAnchor    => "kernel_anchor",
-            Self::MountTopology   => "mount_topology",
+            Self::KernelAnchor => "kernel_anchor",
+            Self::MountTopology => "mount_topology",
             Self::ReleaseCandidate => "release_candidate",
-            Self::PkgSubstrate    => "pkg_substrate",
-            Self::FileOwnership   => "file_ownership",
-            Self::IntegrityCheck  => "integrity_check",
-            Self::ReleaseParse    => "release_parse",
+            Self::PkgSubstrate => "pkg_substrate",
+            Self::FileOwnership => "file_ownership",
+            Self::IntegrityCheck => "integrity_check",
+            Self::ReleaseParse => "release_parse",
         }
     }
 }
@@ -397,7 +397,10 @@ impl OsDetector {
     // record_phase() call — six lines of instrumentation per phase. The
     // underlying logic is still sequential and linear; the overage is
     // mechanical AU-8 instrumentation, not structural complexity.
-    #[expect(clippy::too_many_lines, reason = "line-count overage is AU-8 instrumentation (timestamp pairs, evidence deltas, phase records) — six lines per phase")]
+    #[expect(
+        clippy::too_many_lines,
+        reason = "line-count overage is AU-8 instrumentation (timestamp pairs, evidence deltas, phase records) — six lines per phase"
+    )]
     pub fn detect(&self) -> Result<DetectionResult, DetectionError> {
         let mut evidence = EvidenceBundle::new();
         let mut confidence = ConfidenceModel::new();
@@ -580,14 +583,12 @@ impl OsDetector {
                 log::debug!(
                     "[detect_pipeline] phase={phase} duration_ns={dur} records={rec}",
                     phase = pd.phase.name(),
-                    dur   = pd.duration_ns,
-                    rec   = pd.record_count,
+                    dur = pd.duration_ns,
+                    rec = pd.record_count,
                 );
             }
-            let total_ns: u64 = phase_durations
-                .iter()
-                .map(|pd| pd.duration_ns)
-                .fold(0u64, u64::saturating_add);
+            let total_ns: u64 =
+                phase_durations.iter().map(|pd| pd.duration_ns).fold(0u64, u64::saturating_add);
             log::debug!(
                 "[detect_pipeline] total_duration_ns={total} phases={count}",
                 total = total_ns,

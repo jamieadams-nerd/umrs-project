@@ -1,5 +1,71 @@
 # Changelog
 
+## 2026-04-09
+
+### Shared Display Infrastructure & Code Consolidation
+- Created `libs/umrs-ui/src/popup.rs` — reusable popup module with `PopupConfig`, `PopupCardData` trait, `render_popup_frame()`, `render_audit_card_popup()`, `render_marking_detail_popup()`, and `data_row_to_line()` for consistent popup rendering across all tools.
+- Removed ~300 lines of duplicate popup rendering from umrs-ls; now delegates to shared umrs-ui popup module. Bug fixes and enhancements propagate to all tools from one place.
+
+### Bug Fixes (from Jamie's bug list)
+- Root `/` header no longer displays question marks — metadata resolution now uses symlink_metadata fallback with proper error handling.
+- Owner/group display format changed from `uid:name` to `name (uid)` for clarity.
+- File size above 1K no longer displays redundant raw byte count.
+- Dynamic popup key column width (was hardcoded to 20 chars).
+- Left padding added to all popup data rows for consistent spacing.
+- "Filesystem" label renamed to "Filesystem type"; "Device" renamed to "Device ID" and relocated to filesystem section.
+- File path displays directory portion with trailing `/`; filename shows basename only.
+- Security marking repositioned to top of Security tab with palette colors rendered in tab bar.
+- SELinux context rendered as group title with no trailing colon.
+- `unconfined_u` highlighted in yellow with warning icon.
+- Zero observations shows checkmark (✅) instead of number.
+- Blank line added before popup tab bar.
+- Long owner:group truncated with ellipsis in TUI listing view.
+- Empty directory indicator text ("(empty directory)" in italic) added to directory rows.
+- Metadata line overflow truncated in header display.
+- Marking pill color in popup now matches palette colors from directory listing.
+
+### Security Tab Restructure
+- Reorganized Security tab into four logical sections: General Security (Marking/Encryption/Access denied), Mandatory Access Controls (SELinux context), Integrity Controls (IMA/EVM status), Discretionary Access Controls (Owner/Group/Mode/Immutable/Append-only/POSIX ACL).
+- Identity tab now contains pure identity information only (removed Owner, Group, Mode fields).
+- Section headers use group styling with children properly indented.
+
+### Consistency Pass Across TUI Tools
+- Key legend format normalized to `key: action | key: action` style across umrs-stat, umrs-ls, umrs-label, and umrs-uname.
+- Status bar background colors now use level-colored backgrounds from shared `status_bg_color()` function.
+- Popup scroll hints unified to bracketed style with ↑↓ arrow indicators.
+- Logging switched to journald via systemd-journal-logger for all four binary tools.
+
+### Knox Security Review — 33 Findings Resolved
+- **E-1 (Error):** Raw std::fs in umrs-platform posture modules — `/proc/` paths now routed through `ProcfsText` + `SecureReader`; `/etc/` paths documented with `DIRECT-IO-EXCEPTION` comments citing Phase 1 scope and future review.
+- **E-2 (Error):** `marking_to_detail` function duplicated between umrs-ls and umrs-label — extracted and made public in umrs-labels crate for reuse.
+- **E-3 (Error):** Phantom dependencies in umrs-label (`anyhow`, `clap`, `chrono`) — removed.
+- **C-3 (Concern):** OS name resolution duplicated — shared `detect_os_name()` function created in umrs-ui.
+- **C-4 (Concern):** rustix version misalignment (0.x vs 1.x) — aligned entire workspace to rustix 1.x.
+- **C-5 (Concern):** Catalog loading without documented risk — added accepted-risk documentation.
+- **C-6 (Concern):** ELF read TOCTOU vulnerability noted — documented with `DIRECT-IO-EXCEPTION`.
+- **C-7 (Concern):** `read_link` system call — added `DIRECT-IO-EXCEPTION` documentation.
+- **C-8 (Concern):** Raw ANSI escape sequences in rendering — documented with justification; extracted escape codes to named constants.
+- **C-9 (Concern):** HOME environment variable expansion — added `DIRECT-IO-EXCEPTION` documentation.
+- **C-10 (Concern):** Manual argument parsing in umrs-ls — documented TODO for future cleanup.
+- **C-11 (Concern):** systemd-journal-logger dependency in library crate — removed from umrs-ui; moved to binary crates only.
+- **C-12 (Concern):** regex dependency without justification — added comment to Cargo.toml explaining necessity for pattern matching.
+
+### Observation Flag Icon
+- Observations tab now displays ⚑ (flag) icon when observation count is greater than zero.
+
+### Cuddling Exclusions Enhanced
+- Added independent suffix blocklist: `.net`, `.local`, `.conf`, `.d`, `.allow`, `.deny`, `.encrypted`.
+- Fixes spurious cuddling of `issue/issue.net` and `credstore/credstore.encrypted` patterns.
+
+### Code Quality
+- All workspace `cargo xtask clippy` passes with zero warnings.
+- All tests pass for umrs-ui, umrs-ls, umrs-label, umrs-stat.
+
+### Future Work Created
+- Display POSIX ACL entries when access control list is present on file.
+- Improve Observations tab readability with control citations and severity levels.
+- Surface log warnings and errors as TUI dialog popups for operator visibility.
+
 ## 2026-04-08
 
 ### umrs-label TUI — Phase 2/3 Completion + Extensive Polish

@@ -329,6 +329,15 @@ fn load_conf_dir(
     blacklisted: &mut HashMap<String, String>,
     hard_blacklisted: &mut HashMap<String, String>,
 ) -> usize {
+    // DIRECT-IO-EXCEPTION: std::fs::read_dir on /etc/modprobe.d/ and
+    // /usr/lib/modprobe.d/. No SecureReadDir abstraction exists in umrs-platform;
+    // the System State Read Prohibition Rule covers read_to_string and File::open,
+    // not directory enumeration for config discovery. These reads are caller-gated
+    // behind a kernel status check (posture scanning only runs when the platform
+    // layer confirms the subsystem is accessible). Results feed contradiction
+    // detection as advisory configured state — the live kernel module state
+    // (read via SecureReader in posture/reader.rs) is always authoritative.
+    // NIST SP 800-53 CM-6; NSA RTB RAIN.
     let mut files: Vec<PathBuf> = match std::fs::read_dir(dir) {
         Ok(entries) => entries
             .filter_map(|e| e.ok().map(|e| e.path()))
@@ -369,6 +378,13 @@ fn load_conf_file(
     blacklisted: &mut HashMap<String, String>,
     hard_blacklisted: &mut HashMap<String, String>,
 ) -> io::Result<()> {
+    // DIRECT-IO-EXCEPTION: std::fs::read_to_string on a modprobe.d .conf file path.
+    // No EtcText / SecureEtcReader abstraction exists in umrs-platform for /etc/
+    // configuration files. These are regular filesystem reads (not pseudo-filesystem
+    // reads) where PROC_SUPER_MAGIC / SYSFS_MAGIC verification does not apply.
+    // The read is gated at the call site via load_conf_dir enumeration of known
+    // modprobe.d directories. Result is advisory configured state only.
+    // NIST SP 800-53 CM-6; NIST SP 800-53 SI-7.
     let content = std::fs::read_to_string(path)?;
     let source = path.to_string_lossy().into_owned();
 

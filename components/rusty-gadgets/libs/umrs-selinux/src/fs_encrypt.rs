@@ -168,7 +168,10 @@ fn find_mount_entry(mount_point: &Path) -> Option<MountEntry> {
 /// Returns `false` on any read or resolve error — fail-closed.
 ///
 /// NIST SP 800-53 SC-28 / SI-7.
-#[expect(clippy::collapsible_if, reason = "nested ifs reflect independent guard conditions; collapsing would obscure the two-stage resolve → probe logic")]
+#[expect(
+    clippy::collapsible_if,
+    reason = "nested ifs reflect independent guard conditions; collapsing would obscure the two-stage resolve → probe logic"
+)]
 fn check_luks_encrypted(dev_path: &str) -> bool {
     // Canonicalize /dev/mapper/X -> /dev/dm-N (or similar).
     let Ok(real_path) = std::fs::canonicalize(dev_path) else {

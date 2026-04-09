@@ -178,6 +178,16 @@ const SYSCTL_SEARCH_DIRS: &[&str] = &["/usr/lib/sysctl.d", "/run/sysctl.d", "/et
 /// all files. Unreadable files and lines that fail to parse are skipped
 /// and logged at `debug`.
 fn load_conf_dir(dir: &Path, map: &mut HashMap<String, (String, String)>) -> usize {
+    // DIRECT-IO-EXCEPTION: std::fs::read_dir on /usr/lib/sysctl.d/, /run/sysctl.d/,
+    // and /etc/sysctl.d/. No SecureReadDir abstraction exists in umrs-platform; the
+    // System State Read Prohibition Rule covers read_to_string and File::open on system
+    // paths, not directory enumeration for config discovery. These reads are caller-gated
+    // behind a kernel status check (posture snapshot is only built when the platform
+    // layer confirms the subsystem is accessible). The resulting key=value pairs feed
+    // contradiction detection, so callers must treat these values as advisory configured
+    // state — not as kernel-authoritative truth. The live kernel state (read via
+    // SecureReader in posture/reader.rs) is always the authoritative source.
+    // NIST SP 800-53 CM-6; NSA RTB RAIN.
     let mut files: Vec<PathBuf> = match std::fs::read_dir(dir) {
         Ok(entries) => entries
             .filter_map(|e| e.ok().map(|e| e.path()))
@@ -216,6 +226,14 @@ fn load_conf_dir(dir: &Path, map: &mut HashMap<String, (String, String)>) -> usi
 /// NIST SP 800-53 SI-10: Input Validation — malformed lines are rejected and
 /// logged rather than silently ignored or causing a parse error.
 fn load_conf_file(path: &Path, map: &mut HashMap<String, (String, String)>) -> io::Result<usize> {
+    // DIRECT-IO-EXCEPTION: std::fs::read_to_string on a sysctl.d .conf file path.
+    // No EtcText / SecureEtcReader abstraction exists in umrs-platform for /etc/
+    // configuration files. These are regular filesystem reads (not pseudo-filesystem
+    // reads) where PROC_SUPER_MAGIC / SYSFS_MAGIC verification does not apply.
+    // The read is gated at the call site: load_conf_dir is only invoked when
+    // posture scanning is active, and the path is discovered via enumeration of
+    // known sysctl.d directories. Result is advisory configured state only.
+    // NIST SP 800-53 CM-6; NIST SP 800-53 SI-7.
     let content = std::fs::read_to_string(path)?;
     let source = path.to_string_lossy().into_owned();
     let mut count = 0usize;

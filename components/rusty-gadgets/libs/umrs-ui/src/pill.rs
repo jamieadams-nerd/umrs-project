@@ -42,7 +42,10 @@ pub fn pill_line(text: &str, fg: Color, bg: Color, padding: usize) -> Line<'stat
     let body = format!("{pad}{text}{pad}");
     Line::from(vec![
         Span::styled(PILL_CAP, Style::default().fg(bg)),
-        Span::styled(body, Style::default().fg(fg).bg(bg).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            body,
+            Style::default().fg(fg).bg(bg).add_modifier(Modifier::BOLD),
+        ),
         Span::styled(PILL_CAP, Style::default().fg(bg).bg(bg)),
     ])
 }
@@ -75,7 +78,10 @@ pub fn render_pill(
     let line = Line::from(vec![
         Span::raw(" ".repeat(left_pad)),
         Span::styled(PILL_CAP, Style::default().fg(bg)),
-        Span::styled(body, Style::default().fg(fg).bg(bg).add_modifier(Modifier::BOLD)),
+        Span::styled(
+            body,
+            Style::default().fg(fg).bg(bg).add_modifier(Modifier::BOLD),
+        ),
         Span::styled(PILL_CAP, Style::default().fg(bg).bg(bg)),
     ]);
 

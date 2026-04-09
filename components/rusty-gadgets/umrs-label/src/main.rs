@@ -51,8 +51,7 @@ use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
 use umrs_labels::cui::catalog;
 use umrs_labels::tui::app::{DetailContent, LabelRegistryApp, Panel};
 use umrs_labels::tui::render::render_label_registry;
-use umrs_platform::detect::OsDetector;
-use umrs_ui::indicators::build_header_context;
+use umrs_ui::indicators::{build_header_context, detect_os_name};
 use umrs_ui::keymap::{Action, KeyMap};
 use umrs_ui::theme::Theme;
 use umrs_ui::viewer::ViewerState;
@@ -62,10 +61,14 @@ use umrs_ui::viewer::ViewerState;
 // ---------------------------------------------------------------------------
 
 fn main() {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn"))
-        .format_timestamp(None)
-        .init();
+    if let Ok(logger) = systemd_journal_logger::JournalLog::new() {
+        let _ = logger.install();
+        log::set_max_level(log::LevelFilter::Info);
+    }
 
+    // TODO: Consider adopting clap for structured argument parsing with
+    // automatic --help, --version, and validation. Current manual parsing
+    // is functional but does not reject unknown flags.
     let args: Vec<String> = std::env::args().collect();
 
     let json_mode = args.contains(&"--json".to_owned());
@@ -121,7 +124,11 @@ fn run_cli(us_catalog: &catalog::Catalog, ca_catalog: Option<&catalog::Catalog>)
 fn print_catalog_listing(cat: &catalog::Catalog) {
     if let Some(meta) = &cat.metadata {
         println!();
-        println!("  {} ({})", meta.catalog_name.en(), meta.country_code.as_deref().unwrap_or("??"));
+        println!(
+            "  {} ({})",
+            meta.catalog_name.en(),
+            meta.country_code.as_deref().unwrap_or("??")
+        );
         println!("  Version {}", meta.version);
     }
     println!("  {} markings loaded", cat.iter_markings().count());
@@ -129,8 +136,7 @@ fn print_catalog_listing(cat: &catalog::Catalog) {
 
     let mut groups: BTreeMap<String, Vec<(&String, &catalog::Marking)>> = BTreeMap::new();
     for (key, marking) in cat.iter_markings() {
-        let group_name =
-            marking.index_group.clone().unwrap_or_else(|| "(No Group)".to_owned());
+        let group_name = marking.index_group.clone().unwrap_or_else(|| "(No Group)".to_owned());
         groups.entry(group_name).or_default().push((key, marking));
     }
     for entries in groups.values_mut() {
@@ -141,7 +147,11 @@ fn print_catalog_listing(cat: &catalog::Catalog) {
         println!("  {}", "-".repeat(group.len()));
         for (key, marking) in entries {
             let designation = marking.designation.as_deref().unwrap_or("");
-            let tag = if designation == "specified" { " [SP]" } else { "" };
+            let tag = if designation == "specified" {
+                " [SP]"
+            } else {
+                ""
+            };
             println!("    {key}  {}{tag}", marking.name.en());
         }
         println!();
@@ -172,10 +182,6 @@ fn print_catalog_listing(cat: &catalog::Catalog) {
 /// NIST SP 800-53 AU-3 — the header carries tool identity, hostname, and
 /// security posture on every rendered frame.
 fn run_tui(us_catalog: catalog::Catalog, ca_catalog: Option<catalog::Catalog>) {
-    // Silence logger: env_logger writes to stderr which ratatui shares with
-    // its alt-screen output — any log::warn! would corrupt the rendered frame.
-    log::set_max_level(log::LevelFilter::Off);
-
     let app = LabelRegistryApp::new(us_catalog, ca_catalog);
 
     // Build the tree and load into viewer state.
@@ -187,24 +193,51 @@ fn run_tui(us_catalog: catalog::Catalog, ca_catalog: Option<catalog::Catalog>) {
 
     // umrs-label uses Tab/BackTab for panel switching (Tree ↔ Detail), not tab
     // navigation. Override the default NextTab/PrevTab bindings.
-    keymap.bind(KeyEvent::new(KeyCode::Tab, KeyModifiers::NONE), Action::PanelSwitch);
-    keymap.bind(KeyEvent::new(KeyCode::BackTab, KeyModifiers::SHIFT), Action::PanelSwitch);
+    keymap.bind(
+        KeyEvent::new(KeyCode::Tab, KeyModifiers::NONE),
+        Action::PanelSwitch,
+    );
+    keymap.bind(
+        KeyEvent::new(KeyCode::BackTab, KeyModifiers::SHIFT),
+        Action::PanelSwitch,
+    );
 
     // Right/Left expand/collapse in the tree, overriding default NextTab/PrevTab.
-    keymap.bind(KeyEvent::new(KeyCode::Right, KeyModifiers::NONE), Action::Expand);
-    keymap.bind(KeyEvent::new(KeyCode::Left, KeyModifiers::NONE), Action::Collapse);
+    keymap.bind(
+        KeyEvent::new(KeyCode::Right, KeyModifiers::NONE),
+        Action::Expand,
+    );
+    keymap.bind(
+        KeyEvent::new(KeyCode::Left, KeyModifiers::NONE),
+        Action::Collapse,
+    );
 
     // Vim-style expand/collapse bindings (l = right, h = left).
-    keymap.bind(KeyEvent::new(KeyCode::Char('l'), KeyModifiers::NONE), Action::Expand);
-    keymap.bind(KeyEvent::new(KeyCode::Char('h'), KeyModifiers::NONE), Action::Collapse);
+    keymap.bind(
+        KeyEvent::new(KeyCode::Char('l'), KeyModifiers::NONE),
+        Action::Expand,
+    );
+    keymap.bind(
+        KeyEvent::new(KeyCode::Char('h'), KeyModifiers::NONE),
+        Action::Collapse,
+    );
 
     // Space behaves the same as Enter (expand branch or load leaf detail),
     // not just expand. Override the default Space = Expand binding.
-    keymap.bind(KeyEvent::new(KeyCode::Char(' '), KeyModifiers::NONE), Action::DialogConfirm);
+    keymap.bind(
+        KeyEvent::new(KeyCode::Char(' '), KeyModifiers::NONE),
+        Action::DialogConfirm,
+    );
 
     // Uppercase Q also quits.
-    keymap.bind(KeyEvent::new(KeyCode::Char('Q'), KeyModifiers::NONE), Action::Quit);
-    keymap.bind(KeyEvent::new(KeyCode::Char('Q'), KeyModifiers::SHIFT), Action::Quit);
+    keymap.bind(
+        KeyEvent::new(KeyCode::Char('Q'), KeyModifiers::NONE),
+        Action::Quit,
+    );
+    keymap.bind(
+        KeyEvent::new(KeyCode::Char('Q'), KeyModifiers::SHIFT),
+        Action::Quit,
+    );
 
     // NO_COLOR environment variable compliance (https://no-color.org/).
     // When set (to any value), color output must be suppressed.
@@ -217,22 +250,10 @@ fn run_tui(us_catalog: catalog::Catalog, ca_catalog: Option<catalog::Catalog>) {
     // Snapshot the security posture header once at startup.  OS name is read
     // through the umrs-platform OsDetector pipeline, which routes through
     // provenance-verified SecureReader paths rather than raw /etc/os-release I/O.
-    let os_name = OsDetector::default()
-        .detect()
-        .ok()
-        .and_then(|r| r.os_release)
-        .map(|rel| {
-            let name = rel.name.as_str();
-            match rel.version_id.as_ref() {
-                Some(v) => format!("{name} {}", v.as_str()),
-                None => name.to_owned(),
-            }
-        })
-        .unwrap_or_else(|| "unavailable".to_owned());
     let ctx = build_header_context(
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"),
-        os_name,
+        detect_os_name(),
     );
 
     // TUI state — detail panel content + scroll + active panel.
@@ -263,7 +284,10 @@ fn run_tui(us_catalog: catalog::Catalog, ca_catalog: Option<catalog::Catalog>) {
 ///
 /// Separated from `run_tui` to allow `ratatui::restore()` to always run on
 /// exit regardless of how the loop terminates.
-#[expect(clippy::too_many_arguments, reason = "TUI event loop aggregates all mutable state; extracting would require a wrapper struct")]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "TUI event loop aggregates all mutable state; extracting would require a wrapper struct"
+)]
 fn run_event_loop(
     terminal: &mut ratatui::DefaultTerminal,
     app: &LabelRegistryApp,
@@ -394,8 +418,7 @@ fn run_event_loop(
                     *detail_scroll = detail_scroll.saturating_add(10);
                 } else {
                     let max = state.tree.display_count().saturating_sub(1);
-                    state.selected_index =
-                        state.selected_index.saturating_add(10).min(max);
+                    state.selected_index = state.selected_index.saturating_add(10).min(max);
                 }
             }
 
@@ -423,9 +446,7 @@ fn run_event_loop(
                 // Ctrl+C fallback — not representable as a standalone keymap binding
                 // because the modifier pattern overlaps with the Char dispatch.
                 // Handle it here as a safety net.
-                if key.code == KeyCode::Char('c')
-                    && key.modifiers.contains(KeyModifiers::CONTROL)
-                {
+                if key.code == KeyCode::Char('c') && key.modifiers.contains(KeyModifiers::CONTROL) {
                     break;
                 }
             }
@@ -488,11 +509,7 @@ fn handle_enter(
     match kind {
         "catalog_root" => {
             // Show catalog metadata in detail panel.
-            let is_us = node
-                .metadata
-                .get("is_us")
-                .map(|v| v == "1")
-                .unwrap_or(true);
+            let is_us = node.metadata.get("is_us").map(|v| v == "1").unwrap_or(true);
             let rows = if is_us {
                 app.us_catalog_metadata()
             } else {
@@ -504,12 +521,17 @@ fn handle_enter(
 
         "group" | "dc_branch" => {
             // Toggle expand/collapse on branch; also show group summary.
-            let name = node.metadata.get("group_name").cloned().unwrap_or_else(|| {
-                node.label.trim_start_matches("Group: ").to_owned()
-            });
+            let name = node
+                .metadata
+                .get("group_name")
+                .cloned()
+                .unwrap_or_else(|| node.label.trim_start_matches("Group: ").to_owned());
             let count_str = node.metadata.get("count").cloned().unwrap_or_default();
             let count = count_str.parse::<usize>().unwrap_or(0);
-            *detail_content = DetailContent::Group { name, count };
+            *detail_content = DetailContent::Group {
+                name,
+                count,
+            };
             *detail_scroll = 0;
 
             if node.expanded {
@@ -556,11 +578,7 @@ fn handle_enter(
 /// Render a simple modal help overlay.
 ///
 /// Displayed when `?` is pressed. Dismissed by `?`, `Esc`, or `Enter`.
-fn render_help_overlay(
-    frame: &mut ratatui::Frame,
-    area: ratatui::layout::Rect,
-    theme: &Theme,
-) {
+fn render_help_overlay(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, theme: &Theme) {
     use ratatui::widgets::Clear;
 
     let help_width = 60u16.min(area.width.saturating_sub(4));
@@ -660,4 +678,3 @@ fn arg_value(args: &[String], flag: &str) -> Option<String> {
     }
     None
 }
-

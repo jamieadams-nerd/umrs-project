@@ -265,7 +265,12 @@ pub fn wrap_text_lines(text: &str, max_width: usize) -> Vec<String> {
 ///   may be rendered without its indent prefix, which would break visual
 ///   grouping with the originating label.
 #[must_use = "wrapped lines are the only output; pass them to a Paragraph widget"]
-pub fn wrap_indented(text: &str, indent: &str, max_width: usize, style: Style) -> Vec<Line<'static>> {
+pub fn wrap_indented(
+    text: &str,
+    indent: &str,
+    max_width: usize,
+    style: Style,
+) -> Vec<Line<'static>> {
     let indent_width = display_width(indent);
     let text_budget = max_width.saturating_sub(indent_width);
     if text_budget == 0 || text.is_empty() {

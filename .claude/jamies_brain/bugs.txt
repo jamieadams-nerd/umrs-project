@@ -1,0 +1,59 @@
+umrs-ls bugs:
+
+# When viewing root /
+- SHIFT-G, '/' - In the header, all of the information regading '/' are question marks. 
+```
+Directory : /
+              ?  ?:?  ?  ?
+```
+
+# File Security Audit Pop-up
+- when showing Owner (or group) show username (uid) not uid:username.
+- Padding is wrong on all three tabs.
+
+BEFORE, not left character padd and too much between label/value: We fixed this already.
+```
+│Path                 : /home/umrs-agent/.bashrc   
+║Filename             : .bashrc               
+║File type            : regular
+```
+AFTER, take in account for longest label:
+```
+│ Path         : /home/umrs-agent/.bashrc   
+║ Filename     : .bashrc               
+║ File type    : regular
+```
+
+- Security marking is missing shown on Secuirty Tab.
+  = I think it should be in the upper right corner on the same line as the tabs
+  - Should be using color pallette
+  - on the Security tab, the Marking should be the top-level item before SELinux Context
+  - Should have Marking and the full name on folowing line. 
+
+Don't forget line wrapping and s uch. I am sure the Path in one strange situaiotn will be super
+long. Let's test that... it must be escaped or wrapped. or soemtning. 
+
+If a file is above a 1K no reason to display the bytes, too. This will be stupid whenn we get into
+mega and giga. 
+
+In the security audit tab, If an SELinux user is unconfined_u, it should be bright yellow with
+arning icon. 
+
+On the file security audit, there should be one blank line befre the tab line. 
+
+On the Observations tab, it just says zero. No security observatoins. is this a good thing?
+ Maybe a checkmark next to it. I don' tknow
+
+ On the Identify tab, if we fix the space before the :, perhaps, there is a chance we can do four
+ columns (label/value) + (label/value) for like stuff. 
+
+ Not sure we need both Path AND Filename. My opinion, if we use path, drop the filename from Path
+ and end with "/" or just do Filename with the absolute path.  
+
+ In both the pop-up and the regular umrs-stat (which should be the sAME damn code), explain
+ "Device". What does that mean? "dev:0xfd00" is the root defice. Perhaps it should be next to
+ (before) the Device node. 
+
+ Filesystem says "xfs" it's actually the "Filesystem type"  
+
+

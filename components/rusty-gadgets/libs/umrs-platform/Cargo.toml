@@ -44,16 +44,17 @@ nom      = "7.1"
 nix      = { version = "0.27", features = ["fs"] }
 log      = { version = "0.4",  features = ["release_max_level_info"] }
 
-# rustix 0.38 — safe syscall wrappers (no libc, no unsafe surface for callers).
-# Provides: getpid(), statx, readlinkat, openat2 + ResolveFlags.
-# Same version already present in umrs-selinux — consistent across workspace.
+# rustix 1.x — safe syscall wrappers (no libc, no unsafe surface for callers).
+# Provides: getpid(), statx, readlinkat, fstat, fgetxattr, clock_gettime, uname.
+# Migrated from 0.38 → 1.x to align with umrs-ui and umrs-stat; eliminates the
+# dual-version split that caused two copies of rustix to be compiled into the
+# workspace binary (C-4 remediation, Knox security review 2026-04-09).
 # Supply chain: actively maintained, zero-unsafe API, minimal transitive deps.
+# All 0.38 APIs used by this crate (statx, readlinkat, CWD, AtFlags, StatxFlags,
+# fstat, major, minor, getpid, clock_gettime) are present in 1.x under the same
+# module paths and type signatures. Verified against rustix 1.1.4 source.
 # NIST SP 800-53 SI-7: fd-anchored I/O eliminates TOCTOU races.
-rustix    = { version = "0.38", features = ["fs", "process", "system", "time"] }
-# "time" feature added to support clock_gettime(CLOCK_MONOTONIC_RAW) in
-# timestamp.rs (BootSessionTimestamp). No new transitive dependencies — the
-# "time" feature has an empty dependency list in rustix 0.38. This is a
-# feature expansion on an already-vetted dependency, not a new crate addition.
+rustix    = { version = "1", features = ["fs", "process", "system", "time"] }
 
 # sha2 0.10 — RustCrypto SHA-256 implementation (pure Rust, no unsafe).
 # Used exclusively for integrity verification in integrity_check.rs:

@@ -96,7 +96,10 @@ pub enum DetailContent {
     /// A catalog root node is selected — show `_metadata` rows.
     CatalogMetadata(Vec<(String, String)>),
     /// A group branch is selected — show a brief group summary.
-    Group { name: String, count: usize },
+    Group {
+        name: String,
+        count: usize,
+    },
 }
 
 // ---------------------------------------------------------------------------
@@ -148,11 +151,15 @@ impl LabelRegistryApp {
     /// catalog data, not estimated.
     #[must_use = "LabelRegistryApp must be used in the event loop; discarding it has no effect"]
     pub fn new(us_catalog: Catalog, ca_catalog: Option<Catalog>) -> Self {
-        let us_count = us_catalog.markings.len()
-            .saturating_add(us_catalog.dissemination_controls.len());
+        let us_count =
+            us_catalog.markings.len().saturating_add(us_catalog.dissemination_controls.len());
         let ca_count = ca_catalog.as_ref().map_or(0, |c| c.markings.len());
         let total = us_count.saturating_add(ca_count);
-        Self { us_catalog, ca_catalog, total }
+        Self {
+            us_catalog,
+            ca_catalog,
+            total,
+        }
     }
 
     /// Total marking and dissemination control count across all loaded catalogs.
@@ -329,12 +336,24 @@ fn build_catalog_root(cat: &Catalog, is_us: bool) -> TreeNode {
     let detail = format!(
         "{} markings{}",
         marking_count,
-        if dc_count > 0 { format!(", {dc_count} LDCs") } else { String::new() },
+        if dc_count > 0 {
+            format!(", {dc_count} LDCs")
+        } else {
+            String::new()
+        },
     );
 
     let mut root = TreeNode::branch(label, detail);
     root.metadata.insert("kind".to_owned(), "catalog_root".to_owned());
-    root.metadata.insert("is_us".to_owned(), if is_us { "1" } else { "0" }.to_owned());
+    root.metadata.insert(
+        "is_us".to_owned(),
+        if is_us {
+            "1"
+        } else {
+            "0"
+        }
+        .to_owned(),
+    );
     root.expanded = true;
 
     // ── Sort markings by index_group (None first), then by key ──────────────
@@ -342,10 +361,7 @@ fn build_catalog_root(cat: &Catalog, is_us: bool) -> TreeNode {
     // `None` entries sort before any group name by using an empty-string proxy.
     let mut by_group: BTreeMap<String, Vec<(&String, &Marking)>> = BTreeMap::new();
     for (key, marking) in cat.iter_markings() {
-        let group_key = marking
-            .index_group
-            .clone()
-            .unwrap_or_default(); // "" = ungrouped, sorts first alphabetically
+        let group_key = marking.index_group.clone().unwrap_or_default(); // "" = ungrouped, sorts first alphabetically
         by_group.entry(group_key).or_default().push((key, marking));
     }
     for entries in by_group.values_mut() {
@@ -428,7 +444,7 @@ fn marking_leaf(key: &str, marking: &Marking) -> TreeNode {
 ///
 /// Maps all available `Marking` fields into the flat owned-string format
 /// expected by [`render_marking_detail`].
-fn marking_to_detail(key: &str, m: &Marking, flag: &str) -> MarkingDetailData {
+pub fn marking_to_detail(key: &str, m: &Marking, flag: &str) -> MarkingDetailData {
     let handling = match m.handling_as_str() {
         Some(s) if !s.trim().is_empty() => s.to_owned(),
         _ => m
@@ -515,7 +531,10 @@ fn dc_to_detail(key: &str, dc: &DisseminationControl, flag: &str) -> MarkingDeta
         additional.push(("Portion Marking".to_owned(), pm.clone()));
     }
     if dc.parameterized {
-        additional.push(("Parameterized".to_owned(), "yes — requires parameter".to_owned()));
+        additional.push((
+            "Parameterized".to_owned(),
+            "yes — requires parameter".to_owned(),
+        ));
     }
     if let Some(cr) = &dc.category_restriction {
         additional.push(("Category Restriction".to_owned(), cr.clone()));

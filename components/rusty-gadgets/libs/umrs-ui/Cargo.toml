@@ -18,7 +18,6 @@ umrs-core = { path = "../umrs-core" }
 umrs-platform = { path = "../umrs-platform" }
 umrs-selinux = { path = "../umrs-selinux" }
 log = "0.4"
-systemd-journal-logger = "2"
 unicode-width = "0.2"
 
 [lints.clippy]

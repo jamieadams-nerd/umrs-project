@@ -164,6 +164,11 @@ pub struct Catalog {
 pub fn load_catalog<P: AsRef<Path>>(path: P) -> Result<Catalog, String> {
     let path_ref = path.as_ref();
 
+    // ACCEPTED-RISK: Catalog JSON files are the authoritative source of CUI label
+    // definitions (NIST SP 800-53 AC-16). A tampered catalog could show incorrect
+    // marking information. Catalog integrity verification (SHA-256 against a
+    // known-good manifest) is planned for a future phase. Until then, catalog
+    // files are trusted based on filesystem permissions and SELinux type enforcement.
     let file = File::open(path_ref)
         .map_err(|e| format!("Failed to open {}: {}", path_ref.display(), e))?;
 
@@ -538,7 +543,10 @@ pub fn policy_aware_description(description: &str) -> String {
         // language to avoid overstating UMRS capability (Phase 1).
         description
             .replace("MAC enforcement", "MCS labeling")
-            .replace("mandatory access control enforcement", "MCS category labeling")
+            .replace(
+                "mandatory access control enforcement",
+                "MCS category labeling",
+            )
             .replace("granular MAC enforcement", "granular MCS category labeling")
             // French equivalents
             .replace("contrôle d'accès obligatoire", "étiquetage MCS")

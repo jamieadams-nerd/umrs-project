@@ -74,11 +74,7 @@ fn make_listing(path: &Path) -> DirListing {
             selinux_type: "bin_t".to_owned(),
             marking: "s0".to_owned(),
         },
-        entries: vec![
-            make_file("cat"),
-            make_file("ls"),
-            make_file("sh"),
-        ],
+        entries: vec![make_file("cat"), make_file("ls"), make_file("sh")],
     };
 
     let group_b = DirGroup {
@@ -86,10 +82,7 @@ fn make_listing(path: &Path) -> DirListing {
             selinux_type: "usr_t".to_owned(),
             marking: "s0".to_owned(),
         },
-        entries: vec![
-            make_dir("lib"),
-            make_file("hello.so"),
-        ],
+        entries: vec![make_dir("lib"), make_file("hello.so")],
     };
 
     DirListing {
@@ -251,15 +244,12 @@ fn viewer_app_status_sub_millisecond_shows_less_than_1ms() {
 #[test]
 #[ignore = "requires a real filesystem directory; run manually or in integration env"]
 fn viewer_app_navigate_to_updates_stats() {
-    let mut app = DirViewerApp::scan(std::path::Path::new("/tmp"))
-        .expect("scan /tmp failed");
+    let mut app = DirViewerApp::scan(std::path::Path::new("/tmp")).expect("scan /tmp failed");
 
     let original_path = app.current_path().to_path_buf();
 
     // Navigate to /tmp itself (same directory — guaranteed to work in test env).
-    let tree = app
-        .navigate_to(std::path::Path::new("/tmp"))
-        .expect("navigate_to /tmp failed");
+    let tree = app.navigate_to(std::path::Path::new("/tmp")).expect("navigate_to /tmp failed");
 
     // After navigation the path is updated.
     assert_eq!(app.current_path(), std::path::Path::new("/tmp"));
@@ -280,8 +270,8 @@ fn viewer_app_navigate_to_updates_stats() {
 #[test]
 #[ignore = "requires a real filesystem directory; run manually or in integration env"]
 fn viewer_app_scan_tmp_returns_ok() {
-    let app = DirViewerApp::scan(std::path::Path::new("/tmp"))
-        .expect("DirViewerApp::scan(/tmp) failed");
+    let app =
+        DirViewerApp::scan(std::path::Path::new("/tmp")).expect("DirViewerApp::scan(/tmp) failed");
 
     assert_eq!(app.current_path(), std::path::Path::new("/tmp"));
     // Status bar text should be well-formed.

@@ -77,9 +77,13 @@ use serde::Serialize;
 use chrono::{DateTime, Local};
 use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
 use umrs_core::i18n;
+use umrs_labels::cui::catalog::{Catalog, load_catalog};
+use umrs_labels::marking_to_detail;
 use umrs_ls::grouping::{FileGroup, SiblingKind, aggregate_size, group_entries, sibling_summary};
+use umrs_ls::tui_render::{
+    GotoBar, HelpOverlay, render_dir_browser, render_help_overlay, render_permission_denied,
+};
 use umrs_ls::viewer_app::DirViewerApp;
-use umrs_platform::detect::OsDetector;
 use umrs_selinux::ObservationKind;
 use umrs_selinux::mcs::colors::{
     ContextComponents, Rgb, SeColorConfig, load_default as load_secolor_default, resolve_colors,
@@ -88,16 +92,13 @@ use umrs_selinux::secure_dirent::{FileType, InodeSecurityFlags};
 use umrs_selinux::utils::dirlist::{
     Column, ColumnSet, DirGroup, GroupKey, ListEntry, list_directory,
 };
-use umrs_ui::indicators::build_header_context;
+use umrs_stat::FileStatApp;
+use umrs_ui::indicators::{build_header_context, detect_os_name};
 use umrs_ui::keymap::{Action, KeyMap};
+use umrs_ui::marking_detail::MarkingDetailData;
+use umrs_ui::popup::{render_audit_card_popup, render_marking_detail_popup};
 use umrs_ui::theme::Theme;
 use umrs_ui::viewer::{ViewerApp as _, ViewerState};
-use umrs_ls::tui_render::{
-    GotoBar, HelpOverlay, render_dir_browser, render_help_overlay, render_permission_denied,
-};
-use umrs_labels::cui::catalog::{Catalog, Marking, load_catalog, policy_aware_description};
-use umrs_ui::marking_detail::{MarkingDetailData, build_detail_lines};
-use umrs_stat::FileStatApp;
 
 // ============================================================================
 // JSON output types
@@ -170,6 +171,13 @@ const TERM_WIDTH: usize = 100;
 const ROW_INDENT: &str = "  "; // 2-space left indent on every row
 const NAME_PREFIX: &str = "   "; // 3-char icon zone before filename
 
+// CLI ANSI escape codes — used only when `DisplayConfig::use_color` is true.
+// NO_COLOR compliance: `use_color` is false when NO_COLOR is set (see argument
+// parsing in main()), so these escapes are never emitted when NO_COLOR is present.
+//
+// TODO: Migrate to owo-colors (already in umrs-core) for type-safe colour
+// application and automatic NO_COLOR detection. The current approach is
+// correct but raw escapes are fragile and harder to audit than typed wrappers.
 const BOLD_RED: &str = "\x1b[1;31m";
 const DIM_ITALIC: &str = "\x1b[2;3m";
 const DIM: &str = "\x1b[2m";
@@ -179,6 +187,8 @@ const RESET: &str = "\x1b[0m";
 const UNDERLINE: &str = "\x1b[4m";
 const REVERSE: &str = "\x1b[7m";
 const BLACK_ON_CYAN: &str = "\x1b[30;46m";
+// Cyan-on-black: used as the transition glyph between BLACK_ON_CYAN and REVERSE segments.
+const CYAN_ON_BLACK: &str = "\x1b[36;30m";
 
 // Runtime display configuration — colour switch, mount symbols, and loaded
 // secolor config.
@@ -286,105 +296,44 @@ fn lookup_marking_detail(
         && let Some(m) = cat.marking(marking)
     {
         let flag = cat.country_flag().unwrap_or_default();
-        return Some(build_marking_detail(marking, m, &flag));
+        return Some(marking_to_detail(marking, m, &flag));
     }
     if let Some(cat) = ca_catalog
         && let Some(m) = cat.marking(marking)
     {
         let flag = cat.country_flag().unwrap_or_default();
-        return Some(build_marking_detail(marking, m, &flag));
+        return Some(marking_to_detail(marking, m, &flag));
     }
     None
 }
 
-/// Transform a catalog [`Marking`] into a [`MarkingDetailData`] for the popup.
+/// Find the index group for a marking string by searching the catalogs.
 ///
-/// Mirrors the field mapping used in `umrs-label`'s `marking_to_detail`
-/// function so both tools show consistent label information.
-fn build_marking_detail(key: &str, m: &Marking, flag: &str) -> MarkingDetailData {
-    use umrs_labels::cui::catalog::LocaleText;
-    use serde_json::{Map, Value};
-
-    let handling = match m.handling_as_str() {
-        Some(s) if !s.trim().is_empty() => s.to_owned(),
-        _ => m
-            .handling_as_object()
-            .and_then(|obj: &Map<String, Value>| {
-                obj.get("en_US")
-                    .or_else(|| obj.get("en"))
-                    .and_then(|v: &Value| v.as_str())
-                    .map(str::to_owned)
-            })
-            .unwrap_or_default(),
-    };
-
-    let mut additional: Vec<(String, String)> = Vec::new();
-    if let Some(cat_base) = &m.category_base {
-        additional.push(("MCS Category Base".to_owned(), cat_base.clone()));
+/// Returns `None` for system-level markings (SystemLow, etc.) that have
+/// no catalog entry — they use the default palette color.
+fn find_index_group_for_marking(
+    marking: &str,
+    us_catalog: Option<&Catalog>,
+    ca_catalog: Option<&Catalog>,
+) -> Option<String> {
+    if let Some(cat) = us_catalog
+        && let Some(m) = cat.marking(marking)
+    {
+        return m.index_group.clone();
     }
-    if let Some(range) = &m.category_range_reserved {
-        additional.push(("MCS Range (Reserved)".to_owned(), range.clone()));
+    if let Some(cat) = ca_catalog
+        && let Some(m) = cat.marking(marking)
+    {
+        return m.index_group.clone();
     }
-    if let Some(ph) = &m.phase_note {
-        additional.push(("Phase Note".to_owned(), ph.clone()));
-    }
-    if let Some(auth) = &m.authority_section {
-        additional.push(("Authority Section".to_owned(), auth.clone()));
-    }
-    if let Some(corr) = &m.us_cui_approximate_correspondence {
-        additional.push(("US CUI Approximation".to_owned(), corr.clone()));
-    }
-    if let Some(domains) = m.risk_domains.as_ref().filter(|d: &&Vec<String>| !d.is_empty()) {
-        additional.push(("Risk Domains".to_owned(), domains.join(", ")));
-    }
-
-    MarkingDetailData {
-        key: key.to_owned(),
-        name_en: m.name.en().to_owned(),
-        name_fr: m.name.fr().to_owned(),
-        abbreviation: m.abbrv_name.clone(),
-        designation: m.designation.as_deref().unwrap_or("").to_owned(),
-        index_group: m.index_group.as_deref().unwrap_or("").to_owned(),
-        level: String::new(), // Suppressed in popup context — level display is pending design review
-
-        description_en: policy_aware_description(m.description.en()),
-        description_fr: policy_aware_description(m.description.fr()),
-        handling,
-        required_warning: m.required_warning_statement.as_deref().unwrap_or("").to_owned(),
-        required_dissemination: m
-            .required_dissemination_control
-            .as_deref()
-            .unwrap_or("")
-            .to_owned(),
-        marking_banner_en: m
-            .marking_banner
-            .as_ref()
-            .map(|lt: &LocaleText| lt.en().to_owned())
-            .unwrap_or_default(),
-        marking_banner_fr: m
-            .marking_banner
-            .as_ref()
-            .map(|lt: &LocaleText| lt.fr().to_owned())
-            .unwrap_or_default(),
-        injury_examples_en: m
-            .injury_examples
-            .as_ref()
-            .map(|lt: &LocaleText| lt.en().to_owned())
-            .unwrap_or_default(),
-        injury_examples_fr: m
-            .injury_examples
-            .as_ref()
-            .map(|lt: &LocaleText| lt.fr().to_owned())
-            .unwrap_or_default(),
-        additional,
-        country_flag: flag.to_owned(),
-    }
+    None
 }
 
 fn main() -> io::Result<()> {
-    env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("warn"))
-        .format_timestamp(None)
-        .init();
+    if let Ok(logger) = systemd_journal_logger::JournalLog::new() {
+        let _ = logger.install();
+        log::set_max_level(log::LevelFilter::Info);
+    }
 
     i18n::init("umrs-ls");
 
@@ -423,7 +372,11 @@ fn run_json(args: &[String], target: &str) -> io::Result<()> {
     // forward-compatibility — callers may pass it without knowing the mode.
     let _ = args; // consumed only for flag detection in main()
     let listing = list_directory(Path::new(target))?;
-    emit_json(&listing.groups, &listing.path.display().to_string(), listing.elapsed_us)
+    emit_json(
+        &listing.groups,
+        &listing.path.display().to_string(),
+        listing.elapsed_us,
+    )
 }
 
 // ============================================================================
@@ -561,14 +514,11 @@ fn run_cli(args: &[String], target: &str, flat_mode: bool) -> io::Result<()> {
 /// created, deleted, or modified through the viewer interface.
 /// NIST SP 800-53 AU-3 — the viewer header carries tool identity, data source
 /// path, and entry counts on every rendered frame.
-#[expect(clippy::too_many_lines, reason = "TUI event loop is inherently sequential; splitting would scatter the state machine")]
+#[expect(
+    clippy::too_many_lines,
+    reason = "TUI event loop is inherently sequential; splitting would scatter the state machine"
+)]
 fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
-    // Silence the global logger for the duration of the TUI session.
-    // `env_logger` writes to stderr, which ratatui shares with its alt-screen
-    // output — any `log::warn!` would corrupt the rendered frame.  Errors
-    // visible to the operator go through modal overlays instead.
-    log::set_max_level(log::LevelFilter::Off);
-
     // Canonicalize the target path so the header always shows an absolute path.
     let path = std::fs::canonicalize(target)?;
 
@@ -611,24 +561,12 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
     let (us_catalog, ca_catalog) = load_catalogs();
 
     // Build the header context once at startup.  OS name is read through
-    // the umrs-platform OsDetector pipeline, which routes through
-    // provenance-verified SecureReader paths rather than raw /etc/os-release I/O.
-    let os_name = OsDetector::default()
-        .detect()
-        .ok()
-        .and_then(|r| r.os_release)
-        .map(|rel| {
-            let name = rel.name.as_str();
-            match rel.version_id.as_ref() {
-                Some(v) => format!("{name} {}", v.as_str()),
-                None => name.to_owned(),
-            }
-        })
-        .unwrap_or_else(|| "unavailable".to_owned());
+    // the umrs-platform OsDetector pipeline via detect_os_name(), which routes
+    // through provenance-verified SecureReader paths rather than raw /etc/os-release I/O.
     let ctx = build_header_context(
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"),
-        os_name,
+        detect_os_name(),
     );
 
     // Enter the alternate screen and raw mode.
@@ -670,7 +608,17 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
     // Event loop — 100 ms poll timeout keeps the TUI snappy without busy-waiting.
     loop {
         if let Err(e) = terminal.draw(|f| {
-            render_dir_browser(f, f.area(), &app, &state, &ctx, &theme, &goto, us_catalog.as_ref(), ca_catalog.as_ref());
+            render_dir_browser(
+                f,
+                f.area(),
+                &app,
+                &state,
+                &ctx,
+                &theme,
+                &goto,
+                us_catalog.as_ref(),
+                ca_catalog.as_ref(),
+            );
             // Permission denied overlay — rendered on top when present.
             if let Some((ref path, ref msg)) = nav_error {
                 render_permission_denied(f, f.area(), path, msg, &theme);
@@ -681,13 +629,20 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
             }
             // Label detail popup — rendered on top of all other overlays.
             if let Some((ref data, scroll)) = label_popup {
-                render_label_popup(f, f.area(), data, scroll, &theme);
+                render_marking_detail_popup(f, f.area(), data, scroll, &theme);
             }
             // Stat audit popup — rendered on top of everything else when open.
             // Mutually exclusive with label_popup (Enter logic prevents both
             // from opening simultaneously).
             if let Some(ref sp) = stat_popup {
-                render_stat_popup(f, f.area(), sp, &theme);
+                render_audit_card_popup(
+                    f,
+                    f.area(),
+                    &sp.app,
+                    sp.active_tab,
+                    sp.scroll[sp.active_tab],
+                    &theme,
+                );
             }
         }) {
             log::error!("terminal draw error: {e}");
@@ -782,10 +737,7 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
                     // `?` activates the help overlay (from normal mode only;
                     // the prompt bars get a chance to consume `?` as a
                     // literal character further down).
-                    if key.code == KeyCode::Char('?')
-                        && !state.search_active
-                        && !goto.active
-                    {
+                    if key.code == KeyCode::Char('?') && !state.search_active && !goto.active {
                         help.open();
                         continue;
                     }
@@ -810,12 +762,7 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
                                 continue;
                             }
                             KeyCode::Enter => {
-                                handle_goto_submit(
-                                    &mut app,
-                                    &mut state,
-                                    &mut goto,
-                                    &mut nav_error,
-                                );
+                                handle_goto_submit(&mut app, &mut state, &mut goto, &mut nav_error);
                                 continue;
                             }
                             _ => {}
@@ -964,6 +911,10 @@ fn build_stat_popup_state(file_path: &Path) -> StatPopupState {
 /// creates, modifies, or deletes directory entries.
 /// NIST SP 800-53 AC-16 — pressing Enter on a labeled node opens the full
 /// regulatory definition for the applied marking.
+#[expect(
+    clippy::too_many_lines,
+    reason = "enter-key dispatch is a single state machine; splitting would scatter the priority logic"
+)]
 fn handle_enter(
     app: &mut DirViewerApp,
     state: &mut ViewerState,
@@ -1061,7 +1012,16 @@ fn handle_enter(
     {
         let name = node.metadata.get("name").map(String::as_str).unwrap_or("");
         let file_path = app.current_path().join(name);
-        *stat_popup = Some(build_stat_popup_state(&file_path));
+        let mut popup_state = build_stat_popup_state(&file_path);
+
+        // Look up the index group for the marking so the popup pill color
+        // matches the directory listing group header color.
+        if let Some(marking_str) = node.metadata.get("marking") {
+            let group = find_index_group_for_marking(marking_str, us_catalog, ca_catalog);
+            popup_state.app.marking_index_group = group;
+        }
+
+        *stat_popup = Some(popup_state);
         return;
     }
 
@@ -1093,10 +1053,7 @@ fn handle_enter(
             // acknowledge it.  The previous listing remains valid.
             // No log::warn! here — stderr output corrupts the TUI display.
             // The error is shown to the operator via the modal overlay.
-            *nav_error = Some((
-                new_path.display().to_string(),
-                e.to_string(),
-            ));
+            *nav_error = Some((new_path.display().to_string(), e.to_string()));
         }
     }
 }
@@ -1170,6 +1127,9 @@ fn handle_goto_submit(
 /// Handles `~` expansion and relative paths.  Does not touch the
 /// filesystem — callers must canonicalize separately.
 fn resolve_goto_path(query: &str, cwd: &Path) -> PathBuf {
+    // DIRECT-IO-EXCEPTION: HOME is read for UX-only tilde expansion in the
+    // goto bar. No security decision is derived from this value. HOME is
+    // user-controlled and not validated beyond basic path existence.
     if let Some(rest) = query.strip_prefix('~')
         && let Ok(home) = std::env::var("HOME")
     {
@@ -1231,6 +1191,8 @@ fn complete_goto_query(goto: &mut GotoBar) {
     let parent_path: PathBuf = if parent_str.is_empty() {
         PathBuf::from(".")
     } else if let Some(rest) = parent_str.strip_prefix('~') {
+        // DIRECT-IO-EXCEPTION: HOME is read for UX-only tilde completion in the
+        // goto bar. No security decision is derived from this value.
         if let Ok(home) = std::env::var("HOME") {
             let trimmed = rest.strip_prefix('/').unwrap_or(rest);
             PathBuf::from(home).join(trimmed)
@@ -1353,309 +1315,6 @@ fn handle_refresh(app: &mut DirViewerApp, state: &mut ViewerState) {
         }
     }
 }
-
-// ============================================================================
-// Label detail popup
-// ============================================================================
-
-/// Render the security label detail popup over the directory listing.
-///
-/// Uses double-line borders to visually distinguish this popup from the
-/// rounded-corner panels used elsewhere in the directory browser.  The title
-/// "SECURITY LABEL" is centred on the top border.
-///
-/// The popup is sized at 70 % of the terminal width and height, clamped to
-/// practical minimum dimensions (40 × 12) and a maximum width of 80 columns.
-/// Content is scrolled by `scroll_offset` rows.
-///
-/// Content is built via [`umrs_ui::marking_detail::build_detail_lines`] and
-/// rendered directly inside the popup's own Double border — no nested block.
-/// Field layout and styling match the `umrs-label` registry browser so
-/// operators see consistent label information across both tools.
-///
-/// ## Compliance
-///
-/// - **NIST SP 800-53 AC-16**: Security Attributes — the full regulatory label
-///   definition is accessible to the operator without leaving the directory view.
-/// - **NIST SP 800-53 AU-3**: Audit Record Content — every rendered panel is
-///   self-identifying via the marking key header.
-fn render_label_popup(
-    frame: &mut ratatui::Frame,
-    area: ratatui::layout::Rect,
-    data: &MarkingDetailData,
-    scroll_offset: u16,
-    theme: &Theme,
-) {
-    use ratatui::layout::{Alignment, Rect};
-    use ratatui::style::{Color, Modifier, Style};
-    use ratatui::text::{Line, Span};
-    use ratatui::widgets::{Block, BorderType, Borders};
-
-    // Centre the popup — 70 % of terminal dimensions, clamped to useful bounds.
-    //
-    // f32::from(u16) is lossless; the f32 → u16 cast truncates toward zero,
-    // which is the intended rounding for pixel-layout purposes.  The result
-    // is always in [0, 65535] because area dimensions fit in u16.
-    #[expect(
-        clippy::cast_possible_truncation,
-        reason = "popup width: f32 result of 0.70 * u16 is bounded and truncation is intentional"
-    )]
-    #[expect(
-        clippy::cast_sign_loss,
-        reason = "f32 value is always non-negative (0.70 * u16 >= 0.0)"
-    )]
-    let popup_width = (f32::from(area.width) * 0.70_f32) as u16;
-    let popup_width = popup_width.clamp(40, 80);
-
-    #[expect(
-        clippy::cast_possible_truncation,
-        reason = "popup height: f32 result of 0.70 * u16 is bounded and truncation is intentional"
-    )]
-    #[expect(
-        clippy::cast_sign_loss,
-        reason = "f32 value is always non-negative (0.70 * u16 >= 0.0)"
-    )]
-    let popup_height = (f32::from(area.height) * 0.70_f32) as u16;
-    let popup_height = popup_height.clamp(12, 30);
-    let x = area.x.saturating_add(area.width.saturating_sub(popup_width) / 2);
-    let y = area.y.saturating_add(area.height.saturating_sub(popup_height) / 2);
-    let popup_area = Rect::new(x, y, popup_width, popup_height);
-
-    // Clear the screen area behind the popup to prevent the directory listing
-    // from bleeding through the transparent background.
-    frame.render_widget(ratatui::widgets::Clear, popup_area);
-
-    // Double-line border with reverse-video centred title — black text on
-    // cyan background makes the popup immediately identifiable at a glance
-    // and visually distinct from the rounded panels used elsewhere.
-    let title = Line::from(Span::styled(
-        " SECURITY LABEL DETAILS ",
-        Style::default()
-            .fg(Color::White)
-            .add_modifier(Modifier::BOLD),
-    ));
-    let block = Block::default()
-        .title(title)
-        .title_alignment(Alignment::Center)
-        .borders(Borders::ALL)
-        .border_type(BorderType::Double)
-        .border_style(
-            Style::default()
-                .fg(Color::Cyan)
-                .add_modifier(Modifier::BOLD),
-        );
-
-    let inner = block.inner(popup_area);
-    frame.render_widget(block, popup_area);
-
-    // Build content lines directly — `build_detail_lines` is used instead of
-    // `render_marking_detail` so the popup's own Double border is the only
-    // border rendered.  Calling `render_marking_detail` would add a nested
-    // Rounded "Details" block inside the popup border, producing an ugly
-    // double-nested border.
-    //
-    // Multi-line fields are manually word-wrapped to the inner column budget so
-    // continuation lines remain indented with the originating label.
-    let mut lines = build_detail_lines(data, theme, inner.width as usize);
-
-    // Escape hint at the bottom — dim, non-intrusive.  Gives operators an
-    // explicit affordance without requiring them to know the key binding.
-    lines.push(Line::from(""));
-    lines.push(Line::from(Span::styled(
-        "  [ESC] close",
-        Style::default().fg(Color::DarkGray),
-    )));
-
-    let paragraph = ratatui::widgets::Paragraph::new(lines)
-        .scroll((scroll_offset, 0));
-    frame.render_widget(paragraph, inner);
-}
-
-// ============================================================================
-// File security audit popup
-// ============================================================================
-
-/// Convert a single [`DataRow`] into a ratatui [`Line`] for the stat popup.
-///
-/// The `col_width` parameter controls the key column padding (characters);
-/// `val_width` is the available value column width used for truncation.
-/// `theme` drives the value style for plain/structured rows.
-fn stat_row_to_line<'a>(
-    row: &'a umrs_ui::app::DataRow,
-    col_width: usize,
-    val_width: usize,
-    theme: &Theme,
-) -> ratatui::text::Line<'a> {
-    use ratatui::style::{Color, Modifier, Style};
-    use ratatui::text::{Line, Span};
-    use umrs_ui::app::DataRow;
-    use umrs_ui::theme::style_hint_color;
-
-    match row {
-        DataRow::Separator => Line::from(""),
-        DataRow::KeyValue { key, value, style_hint, .. } => {
-            let key_style = Style::default().fg(Color::DarkGray);
-            let val_style = Style::default().fg(style_hint_color(*style_hint));
-            let key_padded = format!("{key:<col_width$}");
-            let value_display = if value.len() > val_width && val_width > 0 {
-                format!("{}…", &value[..val_width.saturating_sub(1)])
-            } else {
-                value.clone()
-            };
-            Line::from(vec![
-                Span::styled(key_padded, key_style),
-                Span::raw(" : "),
-                Span::styled(value_display, val_style),
-            ])
-        }
-        DataRow::GroupTitle(title) => Line::from(Span::styled(
-            title.as_str(),
-            Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
-        )),
-        DataRow::TwoColumn { left_key, left_value, right_key, right_value, .. } => {
-            Line::from(vec![
-                Span::styled(format!("{left_key:<col_width$} : {left_value}"), theme.data_value),
-                Span::raw("  "),
-                Span::styled(format!("{right_key} : {right_value}"), theme.data_value),
-            ])
-        }
-        DataRow::IndicatorRow { key, value, .. } => Line::from(vec![
-            Span::styled(format!("{key:<col_width$}"), Style::default().fg(Color::DarkGray)),
-            Span::raw(" : "),
-            Span::styled(value.as_str(), theme.data_value),
-        ]),
-        DataRow::TableRow { col1, col2, col3, .. } => Line::from(Span::styled(
-            format!("{col1:<col_width$}  {col2}  {col3}"),
-            theme.data_value,
-        )),
-        DataRow::TableHeader { col1, col2, col3 } => Line::from(Span::styled(
-            format!("{col1:<col_width$}  {col2}  {col3}"),
-            Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
-        )),
-    }
-}
-
-/// Render the file security audit popup over the directory listing.
-///
-/// Sized and centred the same way as `render_label_popup`: 70 % of the
-/// terminal area, clamped to practical minimum (60 × 18) and maximum (90 × 35)
-/// dimensions.  A Double border with a centred title distinguishes this
-/// overlay from the rounded panels used elsewhere.
-///
-/// The popup has three tabs — Identity, Security, Observations — rendered
-/// as a tab bar at the top of the inner area.  The active tab's rows are
-/// rendered below as a scrollable list of key-value pairs.
-///
-/// ## Compliance
-///
-/// - **NIST SP 800-53 AU-3**: The audit card provides complete file identity
-///   and security attribute information in one view.
-/// - **NIST SP 800-53 CA-7**: Security observations are accessible on demand
-///   for every file node.
-fn render_stat_popup(
-    frame: &mut ratatui::Frame,
-    area: ratatui::layout::Rect,
-    sp: &StatPopupState,
-    theme: &Theme,
-) {
-    use ratatui::layout::{Alignment, Constraint, Direction, Layout, Rect};
-    use ratatui::style::{Color, Modifier, Style};
-    use ratatui::text::{Line, Span};
-    use ratatui::widgets::{Block, BorderType, Borders, Paragraph};
-
-    // Centre the popup — 70 % of terminal dimensions, clamped to useful bounds.
-    #[expect(
-        clippy::cast_possible_truncation,
-        reason = "popup width: f32 result of 0.70 * u16 is bounded and truncation is intentional"
-    )]
-    #[expect(
-        clippy::cast_sign_loss,
-        reason = "f32 value is always non-negative (0.70 * u16 >= 0.0)"
-    )]
-    let popup_width = (f32::from(area.width) * 0.70_f32) as u16;
-    let popup_width = popup_width.clamp(60, 90);
-
-    #[expect(
-        clippy::cast_possible_truncation,
-        reason = "popup height: f32 result of 0.70 * u16 is bounded and truncation is intentional"
-    )]
-    #[expect(
-        clippy::cast_sign_loss,
-        reason = "f32 value is always non-negative (0.70 * u16 >= 0.0)"
-    )]
-    let popup_height = (f32::from(area.height) * 0.70_f32) as u16;
-    let popup_height = popup_height.clamp(18, 35);
-
-    let x = area.x.saturating_add(area.width.saturating_sub(popup_width) / 2);
-    let y = area.y.saturating_add(area.height.saturating_sub(popup_height) / 2);
-    let popup_area = Rect::new(x, y, popup_width, popup_height);
-    frame.render_widget(ratatui::widgets::Clear, popup_area);
-
-    let title = Line::from(Span::styled(
-        " FILE SECURITY AUDIT ",
-        Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
-    ));
-    let block = Block::default()
-        .title(title)
-        .title_alignment(Alignment::Center)
-        .borders(Borders::ALL)
-        .border_type(BorderType::Double)
-        .border_style(Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD));
-
-    let inner = block.inner(popup_area);
-    frame.render_widget(block, popup_area);
-
-    let chunks = Layout::default()
-        .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(1), // tab bar
-            Constraint::Length(1), // blank separator
-            Constraint::Min(1),    // scrollable content
-            Constraint::Length(1), // key hint line
-        ])
-        .split(inner);
-
-    // ── Tab bar ────────────────────────────────────────────────────────────
-    let tab_names = ["Identity", "Security", "Observations"];
-    let tab_spans: Vec<Span<'_>> = tab_names
-        .iter()
-        .enumerate()
-        .flat_map(|(i, name)| {
-            let label = format!(" [{name}] ");
-            let style = if i == sp.active_tab {
-                Style::default().fg(Color::Black).bg(Color::Cyan).add_modifier(Modifier::BOLD)
-            } else {
-                Style::default().fg(Color::DarkGray)
-            };
-            if i < tab_names.len().saturating_sub(1) {
-                vec![Span::styled(label, style), Span::raw(" ")]
-            } else {
-                vec![Span::styled(label, style)]
-            }
-        })
-        .collect();
-    frame.render_widget(Paragraph::new(Line::from(tab_spans)), chunks[0]);
-
-    // ── Scrollable content ─────────────────────────────────────────────────
-    let rows = sp.app.rows_for_tab(sp.active_tab);
-    let col_width: usize = 20;
-    // u16 → usize: lossless on all supported targets (32-bit and 64-bit).
-    let val_width = usize::from(chunks[2].width).saturating_sub(col_width).saturating_sub(3);
-    let lines: Vec<Line<'_>> = rows
-        .iter()
-        .map(|row| stat_row_to_line(row, col_width, val_width, theme))
-        .collect();
-    let content = Paragraph::new(lines).scroll((sp.scroll[sp.active_tab], 0));
-    frame.render_widget(content, chunks[2]);
-
-    // ── Key hint ────────────────────────────────────────────────────────────
-    let hint = Line::from(Span::styled(
-        "  [ESC/q] close  [TAB/\u{2192}] next tab  [j/k] scroll",
-        Style::default().fg(Color::DarkGray),
-    ));
-    frame.render_widget(Paragraph::new(hint), chunks[3]);
-}
-
 // ============================================================================
 // Cuddle line
 // ============================================================================
@@ -2002,7 +1661,7 @@ fn group_separator(key: &GroupKey, cfg: &DisplayConfig) -> String {
     } else {
         // BE CAREFUL HERE! This combination of reverrse, colors, and unicode was challenging!
         format!(
-            "{BLACK_ON_CYAN} {0:20} {REVERSE}\x1b[36;30m\u{1FB6C}{RESET}{REVERSE}\u{1FB6C}{1:^20} {RESET}{UNDERLINE}\u{1FB6C}{fill}{RESET}",
+            "{BLACK_ON_CYAN} {0:20} {REVERSE}{CYAN_ON_BLACK}\u{1FB6C}{RESET}{REVERSE}\u{1FB6C}{1:^20} {RESET}{UNDERLINE}\u{1FB6C}{fill}{RESET}",
             key.selinux_type, key.marking
         )
     }
@@ -2025,6 +1684,9 @@ fn resolve_groupname(gid: u32) -> String {
     }
 }
 
+// Applies a 24-bit RGB foreground colour using the SGR truecolor sequence.
+// The escape values are computed at call time from the Rgb argument and cannot
+// be pre-declared as constants. Only called when `DisplayConfig::use_color` is true.
 fn ansi_fg(rgb: Rgb, text: &str) -> String {
     format!("\x1b[38;2;{};{};{}m{text}\x1b[0m", rgb.r, rgb.g, rgb.b)
 }

@@ -44,7 +44,12 @@ fn main() {
     println!();
     println!("Tree root nodes: {}", tree.roots.len());
     for (i, root) in tree.roots.iter().enumerate() {
-        println!("  [{}] {} — {} children", i, root.label, root.children.len());
+        println!(
+            "  [{}] {} — {} children",
+            i,
+            root.label,
+            root.children.len()
+        );
     }
 
     // Demonstrate detail construction for a known US marking.

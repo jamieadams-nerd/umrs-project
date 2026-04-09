@@ -38,3 +38,5 @@
 pub mod cui;
 pub mod tui;
 pub mod validate;
+
+pub use tui::app::marking_to_detail;

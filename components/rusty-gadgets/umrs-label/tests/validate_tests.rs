@@ -16,7 +16,10 @@ use umrs_labels::validate::{CuiPattern, is_valid};
 #[test]
 fn valid_cui_base() {
     // Plain "CUI" with no category is a valid marking under NARA rules.
-    assert!(is_valid(CuiPattern::CuiMarking, "CUI"), "bare CUI should be valid");
+    assert!(
+        is_valid(CuiPattern::CuiMarking, "CUI"),
+        "bare CUI should be valid"
+    );
 }
 
 #[test]
@@ -115,7 +118,10 @@ fn valid_cui_with_ldc_fed_only() {
 
 #[test]
 fn valid_cui_with_ldc_rel_to_list() {
-    assert!(is_valid(CuiPattern::CuiMarking, "CUI//SP-CTI//REL TO USA, CAN, GBR"));
+    assert!(is_valid(
+        CuiPattern::CuiMarking,
+        "CUI//SP-CTI//REL TO USA, CAN, GBR"
+    ));
 }
 
 #[test]

@@ -76,7 +76,6 @@ use umrs_ui::icons::{
     ICON_FLAG, ICON_MOUNT, ICON_PARENT, ICON_PLACEHOLDER, ICON_SIBLING, ICON_SYMLINK, PROMPT_ARROW,
 };
 
-
 // ---------------------------------------------------------------------------
 // Layout constants
 // ---------------------------------------------------------------------------
@@ -91,13 +90,12 @@ const HEADER_HEIGHT: u16 = 9;
 /// Shared by the search bar and the "Go to" bar — only one is active at a time.
 const SEARCH_BAR_HEIGHT: u16 = 3;
 
-
 /// Compact key legend for the umrs-ls TUI status bar.
 ///
 /// Only the essentials stay in the status bar — everything else (search,
 /// goto, refresh, column reference) lives in the `?` help popup so the bar
 /// never overflows on narrow terminals.
-const KEY_LEGEND: &str = "  ↑↓:nav Enter:open ?:help q:quit ";
+const KEY_LEGEND: &str = "  ↑↓: nav | Enter: open | ?: help | q: quit";
 
 // ---------------------------------------------------------------------------
 // HelpOverlay — modal help popup
@@ -230,7 +228,11 @@ pub fn render_dir_browser(
 ) {
     // Search and Goto share the same bar area (mutually exclusive).
     let prompt_active = state.search_active || goto.active;
-    let search_height = if prompt_active { SEARCH_BAR_HEIGHT } else { 0 };
+    let search_height = if prompt_active {
+        SEARCH_BAR_HEIGHT
+    } else {
+        0
+    };
 
     // ── Top-level vertical split: header row + display panel ────────────
     // The status bar is inside the display panel, separated by T-connectors.
@@ -358,11 +360,7 @@ fn render_posture_header(
     // Vertical split: 4 rows (posture+session) · 1 blank · 2 rows (directory)
     let rows = Layout::default()
         .direction(Direction::Vertical)
-        .constraints([
-            Constraint::Length(4),
-            Constraint::Length(1),
-            Constraint::Min(2),
-        ])
+        .constraints([Constraint::Length(4), Constraint::Length(1), Constraint::Min(2)])
         .split(inner);
     let [top_area, _gap_area, dir_area] = *rows else {
         return;
@@ -394,12 +392,7 @@ fn render_posture_header(
 /// Hostnames can be arbitrarily long FQDNs and OS strings carry an
 /// architecture suffix — the operator has essentially no bound on these
 /// fields, so the renderer must never trust the value to fit.
-fn render_system_posture_lines(
-    frame: &mut Frame,
-    area: Rect,
-    ctx: &HeaderContext,
-    theme: &Theme,
-) {
+fn render_system_posture_lines(frame: &mut Frame, area: Rect, ctx: &HeaderContext, theme: &Theme) {
     // Each entry: (label, value, value_style).  The `value_style` is
     // either `theme.data_value` for plain text or an indicator style
     // for enabled/disabled/unavailable state fields.
@@ -467,9 +460,7 @@ fn render_user_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
     let (ctx_type, ctx_level) = match umrs_selinux::utils::get_self_context() {
         Ok(sc) => {
             let t = sc.security_type().as_str().to_owned();
-            let l = sc
-                .level()
-                .map_or_else(|| "-".to_owned(), |l| l.raw().to_owned());
+            let l = sc.level().map_or_else(|| "-".to_owned(), |l| l.raw().to_owned());
             (t, l)
         }
         Err(_) => ("<unavailable>".to_owned(), "-".to_owned()),
@@ -482,7 +473,10 @@ fn render_user_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
     // confined.  NIST SP 800-53 AC-3 — access enforcement awareness.
     let is_unconfined = ctx_type.contains("unconfined_t");
     let (domain_display, domain_style) = if is_unconfined {
-        (format!("{ctx_type} \u{26A0}"), Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD))
+        (
+            format!("{ctx_type} \u{26A0}"),
+            Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+        )
     } else {
         (ctx_type, theme.data_value)
     };
@@ -529,9 +523,7 @@ fn render_label_value_rows(
     let label_cell_width = 1 + max_label + 3;
 
     // Value budget = area width − label cell width − 1 cell safety margin.
-    let value_budget = (area.width as usize)
-        .saturating_sub(label_cell_width)
-        .saturating_sub(1);
+    let value_budget = (area.width as usize).saturating_sub(label_cell_width).saturating_sub(1);
 
     let lines: Vec<Line<'static>> = rows
         .iter()
@@ -555,12 +547,7 @@ fn render_label_value_rows(
 /// with `…` when it overflows; the metadata line (mode, owner:group,
 /// SELinux type, marking) is aligned under the path with a leading
 /// indent matching the `Directory : ` label width.
-fn render_directory_info_lines(
-    frame: &mut Frame,
-    area: Rect,
-    app: &DirViewerApp,
-    theme: &Theme,
-) {
+fn render_directory_info_lines(frame: &mut Frame, area: Rect, app: &DirViewerApp, theme: &Theme) {
     let dir_label = " Directory : ";
     let mount_icon = if app.dir_meta().is_mountpoint {
         format!("{ICON_MOUNT} ")
@@ -591,13 +578,18 @@ fn render_directory_info_lines(
     // Indent matches the label width so the metadata aligns under the
     // path value.
     let indent = " ".repeat(label_width);
-    let dir_meta_line = Line::from(Span::styled(
-        format!(
-            "{indent}{}  {}:{}  {}  {}",
-            dm.mode, dm.owner, dm.group, dm.selinux_type, dm.marking,
-        ),
-        theme.data_key,
-    ));
+    let meta_str = format!(
+        "{indent}{}  {}:{}  {}  {}",
+        dm.mode, dm.owner, dm.group, dm.selinux_type, dm.marking,
+    );
+    // Truncate on the right so long owner/group/type strings do not
+    // overflow the header area.
+    let meta_display = if meta_str.len() > area.width as usize {
+        truncate_right(&meta_str, area.width as usize)
+    } else {
+        meta_str
+    };
+    let dir_meta_line = Line::from(Span::styled(meta_display, theme.data_key));
 
     frame.render_widget(Paragraph::new(vec![dir_line, dir_meta_line]), area);
 }
@@ -622,11 +614,8 @@ fn indicator_text(v: &IndicatorValue) -> String {
 /// Mirrors the `render_logo` function from `umrs-ui/src/layout.rs`.
 /// Lines are styled with `theme.wizard` (green).
 fn render_wizard_logo(frame: &mut Frame, area: Rect, theme: &Theme) {
-    let lines: Vec<Line<'_>> = WIZARD_SMALL
-        .lines
-        .iter()
-        .map(|l| Line::from(Span::styled(*l, theme.wizard)))
-        .collect();
+    let lines: Vec<Line<'_>> =
+        WIZARD_SMALL.lines.iter().map(|l| Line::from(Span::styled(*l, theme.wizard))).collect();
 
     let block = Block::default()
         .borders(Borders::ALL)
@@ -644,8 +633,7 @@ fn render_wizard_logo(frame: &mut Frame, area: Rect, theme: &Theme) {
 ///
 /// The 4-char prefix accounts for: 2-char highlight symbol zone (`► ` or `  `)
 /// that ratatui prepends to every `List` item.
-const COL_HEADER_TEXT: &str =
-    "   IOV  MODE         OWNER:GROUP      MODIFIED             NAME";
+const COL_HEADER_TEXT: &str = "   IOV  MODE         OWNER:GROUP      MODIFIED             NAME";
 
 /// Render the `├───┤` horizontal divider using the T-connector characters.
 ///
@@ -678,9 +666,7 @@ fn render_divider(frame: &mut Frame, area: Rect, parent_area: Rect, theme: &Them
 ///
 /// NIST SP 800-53 AU-3 — labeled columns improve audit record readability.
 fn render_col_headers(frame: &mut Frame, area: Rect, _theme: &Theme) {
-    let header_style = Style::default()
-        .fg(Color::Cyan)
-        .add_modifier(Modifier::BOLD);
+    let header_style = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
 
     let line = Line::from(Span::styled(COL_HEADER_TEXT, header_style));
     frame.render_widget(Paragraph::new(vec![line]), area);
@@ -715,11 +701,49 @@ fn render_listing(
 ) {
     let display = &state.tree.display_list;
 
+    // Check if the directory is empty (only the parent `.` entry exists).
+    let real_entry_count = display
+        .iter()
+        .filter(|e| {
+            state
+                .tree
+                .node_ref(&e.path)
+                .is_none_or(|n| n.metadata.get("is_parent_nav").map(String::as_str) != Some("true"))
+        })
+        .count();
+
     // Build items with blank spacer lines before group headers for visual
     // separation.  Track the mapping from display_list index to items index
     // so that `selected_index` highlights the correct item.
     let mut items: Vec<ListItem<'_>> = Vec::with_capacity(display.len().saturating_add(8));
     let mut selected_item_index: Option<usize> = None;
+
+    // Show an empty-directory indicator after the parent entry.
+    if real_entry_count == 0 {
+        // Render the parent `.` entry first so the user can navigate back.
+        for (i, entry) in display.iter().enumerate() {
+            if i == state.selected_index {
+                selected_item_index = Some(items.len());
+            }
+            items.push(build_listing_item(
+                entry, state, theme, us_catalog, ca_catalog,
+            ));
+        }
+        items.push(ListItem::new(Line::from("")));
+        items.push(ListItem::new(Line::from(Span::styled(
+            "  (empty directory)",
+            Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
+        ))));
+
+        let block = Block::default().borders(Borders::NONE);
+        let mut list_state = ListState::default();
+        if let Some(idx) = selected_item_index {
+            list_state.select(Some(idx));
+        }
+        let list = List::new(items).block(block).highlight_style(theme.list_selection);
+        frame.render_stateful_widget(list, area, &mut list_state);
+        return;
+    }
 
     for (i, entry) in display.iter().enumerate() {
         let node = state.tree.node_ref(&entry.path);
@@ -736,7 +760,9 @@ fn render_listing(
             selected_item_index = Some(items.len());
         }
 
-        items.push(build_listing_item(entry, state, theme, us_catalog, ca_catalog));
+        items.push(build_listing_item(
+            entry, state, theme, us_catalog, ca_catalog,
+        ));
     }
 
     let block = Block::default().borders(Borders::NONE);
@@ -749,9 +775,7 @@ fn render_listing(
     // No highlight_symbol — color-only selection (matches umrs-label).
     // Removes the 2-char blank prefix on non-selected rows that pushes
     // group headers and file entries away from the left edge.
-    let list = List::new(items)
-        .block(block)
-        .highlight_style(theme.list_selection);
+    let list = List::new(items).block(block).highlight_style(theme.list_selection);
 
     frame.render_stateful_widget(list, area, &mut list_state);
 }
@@ -810,21 +834,20 @@ fn build_group_header_item<'a>(
     us_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
     ca_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
 ) -> ListItem<'a> {
-    let chevron = if node.expanded { CHEVRON_OPEN } else { CHEVRON_CLOSED };
+    let chevron = if node.expanded {
+        CHEVRON_OPEN
+    } else {
+        CHEVRON_CLOSED
+    };
 
     // The label is "{selinux_type} :: {marking}" — split it back out.
-    let (selinux_type, marking) = node
-        .label
-        .split_once(" :: ")
-        .unwrap_or((&node.label, ""));
+    let (selinux_type, marking) = node.label.split_once(" :: ").unwrap_or((&node.label, ""));
 
     let is_restricted = selinux_type == "<restricted>";
 
     if is_restricted {
         // Restricted: dim italic + underline, like the CLI.
-        let restricted_style = Style::default()
-            .fg(Color::DarkGray)
-            .add_modifier(Modifier::ITALIC);
+        let restricted_style = Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC);
         let text = format!(" {chevron} {selinux_type:<19} :: {marking}");
         let fill = " ".repeat(80usize.saturating_sub(text.chars().count()));
         let span = Span::styled(format!("{text}{fill}"), restricted_style);
@@ -875,10 +898,7 @@ fn build_group_header_item<'a>(
     );
 
     // Transition 🭬: type_bg color pointing into marking_bg.
-    let trans1 = Span::styled(
-        ICON_BANNER,
-        Style::default().fg(type_bg).bg(marking_bg),
-    );
+    let trans1 = Span::styled(ICON_BANNER, Style::default().fg(type_bg).bg(marking_bg));
 
     // Marking block: white text on marking_bg for clean contrast with the
     // CUI palette background.
@@ -888,16 +908,13 @@ fn build_group_header_item<'a>(
     );
 
     // Transition 🭬: marking_bg color pointing into the default background.
-    let trans2 = Span::styled(
-        ICON_BANNER,
-        Style::default().fg(marking_bg),
-    );
+    let trans2 = Span::styled(ICON_BANNER, Style::default().fg(marking_bg));
 
     // Underlined fill extending to the right.
     //let fill_width = 80usize.saturating_sub(2 + 22 + 1 + 20 + 1 + 1);
     //let fill_span = Span::styled(
-        //" ".repeat(fill_width),
-        //Style::default().add_modifier(Modifier::UNDERLINED),
+    //" ".repeat(fill_width),
+    //Style::default().add_modifier(Modifier::UNDERLINED),
     //);
     let fill_span = Span::styled(" ", Style::default());
 
@@ -929,9 +946,7 @@ fn build_group_header_item<'a>(
 /// record fields; all are present in every file entry row.
 #[expect(
     clippy::too_many_lines,
-    reason = "columnar composition: each IOV/mode/owner/mtime/name/summary/chevron \
-              span is expressed inline for readability; splitting into helpers would \
-              fragment the column layout across multiple functions"
+    reason = "columnar row builder is a single logical unit; splitting sub-functions would obscure column alignment"
 )]
 fn build_file_entry_item<'a>(
     node: &umrs_ui::viewer::tree::TreeNode,
@@ -946,9 +961,7 @@ fn build_file_entry_item<'a>(
     if meta.get("is_parent_nav").map(String::as_str) == Some("true") {
         let path_display = meta.get("path").map(String::as_str).unwrap_or("..");
         let text = format!(" {ICON_PARENT} parent directory  ({path_display})");
-        let style = Style::default()
-            .fg(Color::Cyan)
-            .add_modifier(Modifier::BOLD);
+        let style = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
         return ListItem::new(Line::from(Span::styled(text, style)));
     }
 
@@ -975,15 +988,21 @@ fn build_file_entry_item<'a>(
     // Owner:Group — from metadata "owner" and "group" keys (numeric ids).
     let owner = meta.get("owner").map(String::as_str).unwrap_or("?");
     let grp = meta.get("group").map(String::as_str).unwrap_or("?");
-    let uid_gid = format!("{owner}:{grp}");
+    let uid_gid_raw = format!("{owner}:{grp}");
+    let uid_gid = if uid_gid_raw.len() > 16 {
+        truncate_right(&uid_gid_raw, 16)
+    } else {
+        uid_gid_raw
+    };
 
     // Mtime — format from stored epoch seconds.
     let mtime = meta.get("mtime_secs").map_or_else(String::new, |s| {
-        s.parse::<i64>().ok().and_then(|secs| {
-            Local.timestamp_opt(secs, 0).single()
-        }).map_or_else(String::new, |dt: DateTime<Local>| {
-            dt.format("%Y-%m-%d %H:%M").to_string()
-        })
+        s.parse::<i64>()
+            .ok()
+            .and_then(|secs| Local.timestamp_opt(secs, 0).single())
+            .map_or_else(String::new, |dt: DateTime<Local>| {
+                dt.format("%Y-%m-%d %H:%M").to_string()
+            })
     });
 
     // Name — from entry label (already includes trailing "/" for dirs).
@@ -1012,9 +1031,7 @@ fn build_file_entry_item<'a>(
         String::new()
     };
     let sibling_kind_suffix = if is_sibling {
-        meta.get("sibling_kind")
-            .map(|k| format!(" [{k}]"))
-            .unwrap_or_default()
+        meta.get("sibling_kind").map(|k| format!(" [{k}]")).unwrap_or_default()
     } else {
         String::new()
     };
@@ -1070,9 +1087,7 @@ fn build_file_entry_item<'a>(
     if is_cuddled_base {
         spans.push(Span::styled(
             cuddle_summary,
-            Style::default()
-                .fg(Color::DarkGray)
-                .add_modifier(Modifier::ITALIC | Modifier::DIM),
+            Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC | Modifier::DIM),
         ));
         spans.push(Span::styled(
             format!(" {cuddle_chevron}"),
@@ -1089,20 +1104,13 @@ fn build_file_entry_item<'a>(
 /// scan-speed without disturbing the I/V column alignment.
 ///
 /// NIST SP 800-53 AU-3, SI-7 — posture markers are audit-relevant.
-fn append_iov_spans(
-    spans: &mut Vec<Span<'_>>,
-    iov_i: bool,
-    iov_o: Option<&str>,
-    iov_v: bool,
-) {
+fn append_iov_spans(spans: &mut Vec<Span<'_>>, iov_i: bool, iov_o: Option<&str>, iov_v: bool) {
     // Placeholder for a clear slot: shared `ICON_PLACEHOLDER` (· U+00B7
     // MIDDLE DOT).  Rendered dark-gray + DIM so it stays present for column
     // alignment without competing with lit markers.
     let placeholder = Span::styled(
         ICON_PLACEHOLDER,
-        Style::default()
-            .fg(Color::DarkGray)
-            .add_modifier(Modifier::DIM),
+        Style::default().fg(Color::DarkGray).add_modifier(Modifier::DIM),
     );
 
     spans.push(if iov_i {
@@ -1115,10 +1123,7 @@ fn append_iov_spans(
             ICON_FLAG.to_owned(),
             Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
         ),
-        Some("warning") => Span::styled(
-            ICON_FLAG.to_owned(),
-            Style::default().fg(Color::Yellow),
-        ),
+        Some("warning") => Span::styled(ICON_FLAG.to_owned(), Style::default().fg(Color::Yellow)),
         _ => placeholder.clone(),
     });
     spans.push(if iov_v {
@@ -1197,12 +1202,7 @@ fn render_goto_bar(frame: &mut Frame, area: Rect, goto: &GotoBar, theme: &Theme)
 ///
 /// NIST SP 800-53 AU-3 — scan timing and counts are always visible.
 /// NIST SP 800-53 SA-5 — inline key legend reduces reliance on external docs.
-fn render_status_bar(
-    frame: &mut Frame,
-    area: Rect,
-    app: &DirViewerApp,
-    theme: &Theme,
-) {
+fn render_status_bar(frame: &mut Frame, area: Rect, app: &DirViewerApp, theme: &Theme) {
     use umrs_core::console::symbols::icons;
 
     let status = app.status();
@@ -1220,9 +1220,7 @@ fn render_status_bar(
     let combined = status_chars.saturating_add(legend_chars);
 
     let padded = if combined <= bar_width {
-        let pad = bar_width
-            .saturating_sub(status_chars)
-            .saturating_sub(legend_chars);
+        let pad = bar_width.saturating_sub(status_chars).saturating_sub(legend_chars);
         format!("{status_text}{}{KEY_LEGEND}", " ".repeat(pad))
     } else if status_chars < bar_width {
         let pad = bar_width.saturating_sub(status_chars);
@@ -1231,12 +1229,9 @@ fn render_status_bar(
         status_text.chars().take(bar_width).collect()
     };
 
-    // Blue background + bold white text — matches the original status bar style.
-    let _ = theme; // theme.status_text is white+bold; we add the blue bg explicitly.
-    let style = Style::default()
-        .fg(Color::White)
-        .bg(Color::Blue)
-        .add_modifier(Modifier::BOLD);
+    // Level-colored background — consistent with umrs-ui shared status bar.
+    let bg = umrs_ui::theme::status_bg_color(status.level);
+    let style = Style::default().bg(bg).patch(theme.status_text);
 
     let line = Line::from(Span::styled(padded, style));
     frame.render_widget(Paragraph::new(line), area);
@@ -1268,14 +1263,17 @@ pub fn render_permission_denied(
     let x = area.x + (area.width.saturating_sub(dialog_width)) / 2;
     let y = area.y + (area.height.saturating_sub(dialog_height)) / 2;
 
-    let dialog_area = Rect { x, y, width: dialog_width, height: dialog_height };
+    let dialog_area = Rect {
+        x,
+        y,
+        width: dialog_width,
+        height: dialog_height,
+    };
 
     // Clear the area behind the dialog.
     frame.render_widget(Clear, dialog_area);
 
-    let border_style = Style::default()
-        .fg(Color::Red)
-        .add_modifier(Modifier::BOLD);
+    let border_style = Style::default().fg(Color::Red).add_modifier(Modifier::BOLD);
 
     let block = Block::default()
         .borders(Borders::ALL)
@@ -1288,9 +1286,7 @@ pub fn render_permission_denied(
         ));
 
     let _ = theme;
-    let path_style = Style::default()
-        .fg(Color::White)
-        .add_modifier(Modifier::BOLD);
+    let path_style = Style::default().fg(Color::White).add_modifier(Modifier::BOLD);
     let msg_style = Style::default().fg(Color::Rgb(180, 180, 180));
     let hint_style = Style::default().fg(Color::DarkGray);
 
@@ -1301,12 +1297,14 @@ pub fn render_permission_denied(
         Line::from(Span::styled(
             "You do not have access to this restricted directory.",
             msg_style,
-        )).alignment(Alignment::Center),
+        ))
+        .alignment(Alignment::Center),
         Line::from(""),
         Line::from(Span::styled(
             "Press \u{23CE} or \u{238b}\u{20e3} to dismiss",
             hint_style,
-        )).alignment(Alignment::Center),
+        ))
+        .alignment(Alignment::Center),
     ];
 
     let paragraph = Paragraph::new(lines).block(block);
@@ -1320,7 +1318,7 @@ pub fn render_permission_denied(
 /// Render the `?` help popup.
 ///
 /// Centered modal, ~70% width, with a two-tab header (Navigation / Columns).
-/// `Tab` or `←/→` switches tabs; `?` or `Esc` dismisses.  All background input is blocked while 
+/// `Tab` or `←/→` switches tabs; `?` or `Esc` dismisses.  All background input is blocked while
 /// the overlay is open.
 pub fn render_help_overlay(frame: &mut Frame, area: Rect, overlay: &HelpOverlay, theme: &Theme) {
     use ratatui::layout::Alignment;
@@ -1329,7 +1327,12 @@ pub fn render_help_overlay(frame: &mut Frame, area: Rect, overlay: &HelpOverlay,
     let dialog_height = 22_u16.min(area.height.saturating_sub(2));
     let x = area.x + (area.width.saturating_sub(dialog_width)) / 2;
     let y = area.y + (area.height.saturating_sub(dialog_height)) / 2;
-    let dialog_area = Rect { x, y, width: dialog_width, height: dialog_height };
+    let dialog_area = Rect {
+        x,
+        y,
+        width: dialog_width,
+        height: dialog_height,
+    };
 
     frame.render_widget(Clear, dialog_area);
 
@@ -1362,10 +1365,7 @@ pub fn render_help_overlay(frame: &mut Frame, area: Rect, overlay: &HelpOverlay,
     };
 
     // Tab header: two pills, active one highlighted.
-    let active = Style::default()
-        .fg(Color::Black)
-        .bg(Color::Cyan)
-        .add_modifier(Modifier::BOLD);
+    let active = Style::default().fg(Color::Black).bg(Color::Cyan).add_modifier(Modifier::BOLD);
     let inactive = Style::default().fg(Color::DarkGray);
     let (nav_style, col_style) = match overlay.tab {
         HelpTab::Navigation => (active, inactive),
@@ -1417,7 +1417,10 @@ fn help_navigation_lines<'a>() -> Vec<Line<'a>> {
 
     vec![
         Line::from(""),
-        row(format!("{ARROW_UP} {ARROW_DOWN}"), "Move selection up / down"),
+        row(
+            format!("{ARROW_UP} {ARROW_DOWN}"),
+            "Move selection up / down",
+        ),
         row("PgUp / PgDn".to_owned(), "Page up / down (10 rows)"),
         row(
             format!("{ARROW_LEFT} {ARROW_RIGHT}"),
@@ -1493,7 +1496,10 @@ fn help_columns_lines<'a>() -> Vec<Line<'a>> {
         Line::from(""),
         Line::from(Span::styled("  Name decorations", text_style)),
         Line::from(""),
-        row(ICON_ENCRYPTED.to_owned(), "Encrypted directory (LUKS / fscrypt)"),
+        row(
+            ICON_ENCRYPTED.to_owned(),
+            "Encrypted directory (LUKS / fscrypt)",
+        ),
         row(ICON_MOUNT.to_owned(), "Mount point"),
         row(ICON_DIR.to_owned(), "Directory"),
         row(ICON_SYMLINK.to_owned(), "Symbolic link"),

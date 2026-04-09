@@ -200,7 +200,10 @@ impl HardLinkCount {
     pub fn from_u64(raw: u64) -> Self {
         // Saturating cast: .min() guarantees the value fits in u32; the cast
         // is therefore infallible but clippy can't see through the clamp.
-        #[expect(clippy::cast_possible_truncation, reason = "value is clamped to u32::MAX by .min() so the cast is infallible; clippy cannot see through the clamp")]
+        #[expect(
+            clippy::cast_possible_truncation,
+            reason = "value is clamped to u32::MAX by .min() so the cast is infallible; clippy cannot see through the clamp"
+        )]
         Self(raw.min(u64::from(u32::MAX)) as u32)
     }
 

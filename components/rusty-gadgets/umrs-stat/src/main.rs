@@ -41,11 +41,10 @@ use std::time::Duration;
 use clap::Parser;
 use crossterm::event::{self, Event};
 use umrs_core::i18n;
-use umrs_platform::detect::OsDetector;
 use umrs_selinux::secure_dirent::SecureDirent;
 use umrs_stat::FileStatApp;
 use umrs_ui::app::{AuditCardApp, AuditCardState, DataRow, StatusMessage, TabDef};
-use umrs_ui::indicators::build_header_context;
+use umrs_ui::indicators::{build_header_context, detect_os_name};
 use umrs_ui::keymap::KeyMap;
 use umrs_ui::layout::render_audit_card;
 use umrs_ui::theme::Theme;
@@ -182,23 +181,10 @@ fn main() {
     let keymap = KeyMap::default();
     let _no_color = std::env::var("NO_COLOR").is_ok();
     let theme = Theme::default();
-    let os_name = if let Some(rel) = OsDetector::default()
-        .detect()
-        .ok()
-        .and_then(|r| r.os_release)
-    {
-        let name = rel.name.as_str();
-        match rel.version_id.as_ref() {
-            Some(v) => format!("{name} {}", v.as_str()),
-            None => name.to_owned(),
-        }
-    } else {
-        "unavailable".to_owned()
-    };
     let ctx = build_header_context(
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"),
-        os_name,
+        detect_os_name(),
     );
 
     let mut terminal = ratatui::init();

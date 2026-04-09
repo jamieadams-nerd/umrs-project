@@ -97,18 +97,40 @@ pub fn is_sibling(base_name: &str, candidate: &str) -> bool {
     }
     let bytes = candidate.as_bytes();
     let sep = bytes[base_name.len()];
-    match sep {
+    let is_sep = match sep {
         b'.' | b'_' => true,
         b'-' => {
             // Only treat `-` as a sibling separator when followed by a digit.
             // This keeps date/rotation suffixes (`-20260301`, `-1`) while
             // rejecting named siblings (`jvm-common` under `jvm`).
-            bytes
-                .get(base_name.len().saturating_add(1))
-                .is_some_and(u8::is_ascii_digit)
+            bytes.get(base_name.len().saturating_add(1)).is_some_and(u8::is_ascii_digit)
         }
         _ => false,
+    };
+    if !is_sep {
+        return false;
     }
+
+    // Reject suffixes that represent independent files, not variants.
+    // Example: `issue` and `issue.net` are distinct files in /etc/.
+    let suffix = &candidate[base_name.len()..];
+    !is_independent_suffix(suffix)
+}
+
+/// Return `true` if `suffix` (including leading separator) represents an
+/// independent file rather than a variant of the base.
+///
+/// Certain dot-separated suffixes are part of the filename's identity, not
+/// rotation/backup indicators.  `.net` is the canonical example: `/etc/issue`
+/// and `/etc/issue.net` are completely different files.
+///
+/// The list is intentionally small and conservative — only add entries for
+/// suffixes that are demonstrably independent filenames in real deployments.
+fn is_independent_suffix(suffix: &str) -> bool {
+    matches!(
+        suffix,
+        ".net" | ".local" | ".conf" | ".d" | ".allow" | ".deny" | ".encrypted"
+    )
 }
 
 /// Classify the suffix of a candidate name relative to its base.

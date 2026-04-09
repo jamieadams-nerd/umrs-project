@@ -58,6 +58,9 @@
 
 use std::path::{Path, PathBuf};
 
+use crate::kattrs::procfs::ProcfsText;
+use crate::kattrs::traits::SecureReader;
+
 // ===========================================================================
 // Constants
 // ===========================================================================
@@ -117,6 +120,14 @@ pub fn read_configured_cmdline() -> Option<String> {
 /// Returns `None` if the directory is absent or unreadable (graceful degrade).
 /// Returns `Some(empty)` if the directory exists but contains no `.conf` files.
 fn collect_bls_entries() -> Option<Vec<PathBuf>> {
+    // DIRECT-IO-EXCEPTION: std::fs::read_dir on /boot/loader/entries/. No
+    // SecureReadDir abstraction exists in umrs-platform; the System State Read
+    // Prohibition Rule covers read_to_string and File::open, not directory
+    // enumeration for boot entry discovery. /boot/loader/entries/ is a regular
+    // FAT/ext4 filesystem path (not a pseudo-filesystem), so PROC_SUPER_MAGIC /
+    // SYSFS_MAGIC verification does not apply. BLS entries are advisory configured
+    // state — the live /proc/cmdline (read via SecureReader) is always authoritative.
+    // NIST SP 800-53 CM-6; NIST SP 800-53 SI-7.
     let dir = Path::new(BLS_ENTRIES_DIR);
     let entries = match std::fs::read_dir(dir) {
         Ok(e) => e,
@@ -193,28 +204,28 @@ fn select_entry(entries: &[PathBuf]) -> Option<&PathBuf> {
 /// Read the running kernel's osrelease string from
 /// `/proc/sys/kernel/osrelease`.
 ///
-/// This is NOT a provenance-verified read because the osrelease value is used
-/// only for heuristic BLS entry selection — not for a security assertion. The
-/// live cmdline (from `/proc/cmdline` via `CmdlineReader`) is the authoritative
-/// source; the osrelease value only influences which BLS entry is compared.
+/// Routed through `ProcfsText` + `SecureReader` (fd-anchored `fstatfs` against
+/// `PROC_SUPER_MAGIC`) for provenance verification. The osrelease value is used
+/// for heuristic BLS entry selection — not for a security assertion — but the
+/// System State Read Prohibition Rule requires all `/proc/` reads to use the
+/// platform's secure read path regardless of how the result is consumed.
 ///
-/// # Security note — unverified procfs read
+/// NIST SP 800-53 SI-7: Software and Information Integrity.
+/// NIST SP 800-218 SSDF PW.4: Verify the integrity of software during execution.
+/// NSA RTB RAIN: Non-bypassable — all `/proc/` reads route through `SecureReader`.
 ///
-/// This read does not go through `SecureReader` / `PROC_SUPER_MAGIC`. On an
-/// enforcing SELinux system, `/proc/sys/kernel/osrelease` is labeled `proc_t`
-/// and is writable only by the kernel — userspace cannot inject a false value
-/// through the procfs VFS layer. The unverified read is therefore safe under
-/// the project's target deployment (SELinux enforcing, integrity lockdown).
-/// If the posture probe is ever deployed without SELinux enforcing, this read
-/// should be upgraded to `ProcfsText` + `PROC_SUPER_MAGIC` to remove the
-/// deployment assumption. This dependency is documented here so reviewers have
-/// explicit context.
-///
-/// NIST SP 800-53 SI-7; NIST SP 800-218 SSDF PW.4; NSA RTB RAIN.
-///
-/// Returns `None` if unreadable (permission, absent node).
+/// Returns `None` if unreadable (permission, absent node, magic mismatch).
 fn read_kernel_osrelease() -> Option<String> {
-    match std::fs::read_to_string(KERNEL_OSRELEASE) {
+    let node = match ProcfsText::new(PathBuf::from(KERNEL_OSRELEASE)) {
+        Ok(n) => n,
+        Err(e) => {
+            log::debug!(
+                "posture: bootcmdline: cannot construct ProcfsText for {KERNEL_OSRELEASE}: {e}"
+            );
+            return None;
+        }
+    };
+    match SecureReader::<ProcfsText>::new().read_generic_text(&node) {
         Ok(s) => Some(s.trim().to_owned()),
         Err(e) => {
             log::debug!("posture: bootcmdline: cannot read {KERNEL_OSRELEASE}: {e}");
@@ -292,6 +303,13 @@ pub fn parse_bls_content<'a>(content: &'a str, field: &str) -> Option<&'a str> {
 /// security failure); the worst outcome is a transient memory spike. For
 /// correctness on realistic BLS files, the current approach is sufficient.
 fn parse_bls_field(entry_path: &Path, field: &str) -> Option<String> {
+    // DIRECT-IO-EXCEPTION: std::fs::read_to_string on a BLS entry file under
+    // /boot/loader/entries/. /boot/ is a regular filesystem path (not a
+    // pseudo-filesystem), so PROC_SUPER_MAGIC / SYSFS_MAGIC verification does not
+    // apply. BLS entry content is advisory configured state — the live /proc/cmdline
+    // read via SecureReader is always authoritative. The path is supplied by
+    // collect_bls_entries() which enumerates only .conf files from the known
+    // BLS directory. NIST SP 800-53 CM-6; NIST SP 800-53 SI-7.
     let content = match std::fs::read_to_string(entry_path) {
         Ok(c) => c,
         Err(e) => {
