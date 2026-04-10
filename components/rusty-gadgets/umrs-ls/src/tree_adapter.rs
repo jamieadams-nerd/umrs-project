@@ -111,7 +111,7 @@ const RESTRICTED_TYPE: &str = "<restricted>";
 ///
 /// NIST SP 800-53 AC-3 / AC-4 / AU-3 / NSA RTB Deterministic Execution.
 #[must_use = "the returned TreeModel must be displayed; constructing and discarding it wastes work"]
-pub fn build_tree(listing: &DirListing, current_path: &Path) -> TreeModel {
+pub fn build_tree(listing: &DirListing, current_path: &Path, dir_encrypted: bool) -> TreeModel {
     #[cfg(debug_assertions)]
     let start = Instant::now();
 
@@ -150,7 +150,7 @@ pub fn build_tree(listing: &DirListing, current_path: &Path) -> TreeModel {
         group_node.children.reserve(file_groups.len());
 
         for fg in &file_groups {
-            let child = build_file_group_node(fg);
+            let child = build_file_group_node(fg, dir_encrypted);
             group_node.children.push(child);
         }
 
@@ -239,10 +239,15 @@ fn make_parent_nav_entry(parent_path: &Path) -> TreeNode {
 /// - If the group has no siblings, returns a leaf node.
 /// - If the group has siblings, returns a branch node (expanded by default)
 ///   with the siblings as leaf children.
-fn build_file_group_node(fg: &FileGroup) -> TreeNode {
+///
+/// `dir_encrypted` is inherited from the containing directory's mount
+/// point and applied to every entry's `iov_e` metadata — files sitting
+/// inside an encrypted mount all receive the green check regardless of
+/// whether they carry individual encryption xattrs.
+fn build_file_group_node(fg: &FileGroup, dir_encrypted: bool) -> TreeNode {
     if fg.siblings.is_empty() {
         // Standalone file — leaf node.
-        entry_leaf_node(&fg.base)
+        entry_leaf_node(&fg.base, dir_encrypted)
     } else {
         // Cuddled base — branch node, expanded by default.
         let summary = sibling_summary(fg);
@@ -255,14 +260,14 @@ fn build_file_group_node(fg: &FileGroup) -> TreeNode {
         // The operator can expand with ← → to see individual siblings.
 
         // Base-level metadata.
-        populate_entry_metadata(&mut node.metadata, &fg.base);
+        populate_entry_metadata(&mut node.metadata, &fg.base, dir_encrypted);
         node.metadata.insert("sibling_count".to_owned(), sibling_count.to_string());
         node.metadata.insert("sibling_summary".to_owned(), summary);
 
         // Sibling leaf children.
         node.children.reserve(fg.siblings.len());
         for sibling in &fg.siblings {
-            let mut child = entry_leaf_node(&sibling.entry);
+            let mut child = entry_leaf_node(&sibling.entry, dir_encrypted);
             child.metadata.insert(
                 "sibling_kind".to_owned(),
                 sibling_kind_str(&sibling.kind).to_owned(),
@@ -275,11 +280,11 @@ fn build_file_group_node(fg: &FileGroup) -> TreeNode {
 }
 
 /// Construct a leaf node for a single [`ListEntry`].
-fn entry_leaf_node(entry: &ListEntry) -> TreeNode {
+fn entry_leaf_node(entry: &ListEntry, dir_encrypted: bool) -> TreeNode {
     let label = entry_label(entry);
     let detail = entry_detail(entry);
     let mut node = TreeNode::leaf(label, detail);
-    populate_entry_metadata(&mut node.metadata, entry);
+    populate_entry_metadata(&mut node.metadata, entry, dir_encrypted);
     node
 }
 
@@ -309,10 +314,23 @@ fn entry_detail(entry: &ListEntry) -> String {
 /// - `selinux_context` (full context string, if labeled)
 /// - `selinux_type` (type component)
 /// - `marking` (MCS marking or sentinel)
+/// - `iov_i`, `iov_o`, `iov_v`, `iov_e` (posture markers for the IOVE column)
+///
+/// `dir_encrypted` is inherited from the containing mount point's at-rest
+/// encryption status; files inside an encrypted mount receive `iov_e`
+/// `"encrypted"` regardless of whether the entry itself carries encryption
+/// metadata.  When the entry is not encrypted but its marking requires it
+/// (any MCS category present), `iov_e` is set to `"required_missing"` so
+/// the renderer can raise a red compliance ballot.
 ///
 /// NIST SP 800-53 AU-3 — every node carries complete audit record fields.
 /// NIST SP 800-53 AC-3 / AC-4 — SELinux context and mode bits are preserved.
-fn populate_entry_metadata(meta: &mut BTreeMap<String, String>, entry: &ListEntry) {
+/// NIST SP 800-53 SC-28 — at-rest encryption state is recorded per entry.
+fn populate_entry_metadata(
+    meta: &mut BTreeMap<String, String>,
+    entry: &ListEntry,
+    dir_encrypted: bool,
+) {
     let dirent = &entry.dirent;
 
     meta.insert("name".to_owned(), dirent.name.as_str().to_owned());
@@ -393,6 +411,33 @@ fn populate_entry_metadata(meta: &mut BTreeMap<String, String>, entry: &ListEntr
         meta.insert("iov_o".to_owned(), tier.to_owned());
     }
 
+    // IOV-E — at-rest encryption column.
+    //
+    // The entry is considered encrypted if either its own mount point is
+    // encrypted (rare — only directory nodes that are themselves mount
+    // points carry this) or the containing directory's mount is encrypted
+    // (inherited via `dir_encrypted`).  When an entry is not encrypted but
+    // its marking has any MCS category, encryption is required by policy
+    // (NIST SP 800-171 r3 §3.13.11 for CUI; TB/CCCS ITSP.40.111 for
+    // Protected B/C) and the tier is set to `required_missing` so the
+    // renderer can raise a red ballot.
+    //
+    // Tier values:
+    //   "encrypted"        → green check — at-rest protection present
+    //   "required_missing" → red ballot  — CUI/Protected on unencrypted FS
+    //   absent             → dim placeholder (unmarked file, no requirement)
+    //
+    // NIST SP 800-53 SC-28 / SI-7 — at-rest posture is audit-relevant.
+    let entry_encrypted = entry.dirent.has_encryption() || dir_encrypted;
+    if entry_encrypted {
+        meta.insert("iov_e".to_owned(), "encrypted".to_owned());
+    } else {
+        let marking_for_check = meta.get("marking").map(String::as_str).unwrap_or("");
+        if marking_requires_encryption(marking_for_check) {
+            meta.insert("iov_e".to_owned(), "required_missing".to_owned());
+        }
+    }
+
     // Mtime — stored as seconds since epoch for display in the TUI listing.
     // Stored on the node so the renderer can format it without I/O.
     // NIST SP 800-53 AU-3 — modification time is a required audit record field.
@@ -401,6 +446,27 @@ fn populate_entry_metadata(meta: &mut BTreeMap<String, String>, entry: &ListEntr
     {
         meta.insert("mtime_secs".to_owned(), dur.as_secs().to_string());
     }
+}
+
+/// True if the marking string contains at least one MCS category, which
+/// means the entry is CUI, Protected A/B/C, or another classification
+/// that mandates at-rest encryption.
+///
+/// The heuristic is intentionally simple: any occurrence of `":c"` in the
+/// rendered level string means the level carries a category set.  Pure
+/// sensitivity-only markings (`"s0"`, `"s1"`, `"s0-s3"`) have no
+/// categories and do not trigger the requirement.  This matches the
+/// `labeling_mcs.md` axiom that a file's controlled status is determined
+/// by category membership, not sensitivity level alone.
+///
+/// Returns `false` for the sentinel strings `"<no-level>"`, `"<unlabeled>"`,
+/// `"<parse-error>"`, and `"<unverifiable>"` — an unlabeled entry cannot
+/// be known to require encryption from the marking alone.
+///
+/// NIST SP 800-171 r3 §3.13.11; CCCS ITSP.40.111; TB Directive on
+/// Security Management.
+fn marking_requires_encryption(marking: &str) -> bool {
+    marking.contains(":c")
 }
 
 /// Extract display strings from a `SecureDirent`'s SELinux label state.

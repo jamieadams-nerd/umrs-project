@@ -1,0 +1,87 @@
+
+
+Same problem — `jadams` is running as `unconfined_u`, and `unconfined_u` can't transition to `user_r`. SELinux won't allow a role transition across user boundaries.
+
+You need to either map `jadams` to `staff_u` (which can transition roles) or accept that the context switch has to happen at login time.
+
+## Quickest fix: map jadams to `staff_u`
+
+```bash
+sudo semanage login -a -s staff_u jadams
+sudo restorecon -RFv /home/jadams
+```
+
+Then log out and back in (real login, not sudo), and retry:
+```bash
+sudo -u umrs-agent -r user_r -t user_t /bin/bash
+id -Z
+```
+
+`staff_u` is allowed to transition to other roles via sudo, which is its whole purpose.
+
+## Alternatively: map jadams to `sysadm_u`
+
+If `jadams` needs broader admin rights anyway:
+```bash
+sudo semanage login -a -s sysadm_u jadams
+```
+
+---
+
+The core constraint: **SELinux role transitions are only permitted from SELinux users that have those roles in their allowed set.** `unconfined_u` has no allowed transitions by design in targeted policy. `staff_u` does.
+
+
+
+
+
+
+
+
+
+
+Good instinct. On RHEL10 with targeted policy, regular users land in `unconfined_t` by default. You want `umrs-agent` mapped to a confined SELinux user.
+
+## Step 1: Choose an SELinux user
+
+Targeted policy ships these confined options:
+
+| SELinux User | Good for |
+|---|---|
+| `user_u` | Minimal rights, no sudo, no su |
+| `staff_u` | Can transition to `sysadm_r` via sudo |
+| `sysadm_u` | Full admin, still confined |
+| `guest_u` | Very restricted, no networking |
+
+For a service/agent account, `user_u` is the right starting point — no privilege escalation paths.
+
+## Step 2: Map the Linux user to an SELinux user
+
+```bash
+semanage login -a -s user_u umrs-agent
+```
+
+Verify:
+```bash
+semanage login -l | grep umrs-agent
+```
+
+## Step 3: Relabel the home directory
+
+```bash
+restorecon -RFv /home/umrs-agent
+```
+
+## Step 4: Confirm at login
+
+```bash
+su - umrs-agent -c "id -Z"
+# Should show: user_u:user_r:user_t:s0
+```
+
+---
+
+**If you eventually move to MLS policy** (which is your target), `user_u` maps cleanly — you'd add `-r s0` or a range like `-r s0-s0:c0.c1023` when you do `semanage login -a`. The groundwork you lay now carries forward.
+
+What role does `umrs-agent` actually need to perform? That may refine the SELinux user choice.
+
+

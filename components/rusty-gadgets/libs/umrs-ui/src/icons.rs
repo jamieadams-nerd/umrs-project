@@ -167,6 +167,20 @@ pub const ICON_FLAG_OUTLINE: &str = "\u{2690}";
 /// without the visual noise of a `-`.
 pub const ICON_PLACEHOLDER: &str = "\u{00B7}";
 
+/// Check mark (✓ — U+2713 CHECK MARK).
+///
+/// Used in posture columns to mark a positive state — e.g., the `E` slot
+/// of IOVE when at-rest encryption is detected on the containing mount
+/// point.  Single display column.
+pub const ICON_CHECK: &str = "\u{2713}";
+
+/// Ballot X (✗ — U+2717 BALLOT X).
+///
+/// Used in posture columns to mark a negative state that is a compliance
+/// violation — e.g., the `E` slot of IOVE when a marked (CUI/Protected)
+/// entry sits on unencrypted storage.  Single display column.
+pub const ICON_CROSS: &str = "\u{2717}";
+
 // ===========================================================================
 // Configuration & activity
 // Gears, trucks, and activity glyphs for future tools that visualise

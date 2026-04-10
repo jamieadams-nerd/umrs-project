@@ -311,7 +311,11 @@
       "Read(//home/jadams/.rustup/toolchains/**)",
       "Bash(rustup which:*)",
       "Bash(cp umrs-c2pa.toml /tmp/test-c2pa.toml)",
-      "Bash(sed -i 's|config/C2PA-TRUST-LIST.pem|/tmp/clean-trust-list.pem|' /tmp/test-c2pa.toml)"
+      "Bash(sed -i 's|config/C2PA-TRUST-LIST.pem|/tmp/clean-trust-list.pem|' /tmp/test-c2pa.toml)",
+      "Read(//home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustix-1.1.4/src/time/**)",
+      "Bash(git -C /DEVELOPMENT/umrs-project log --oneline -5)",
+      "Bash(git -C /DEVELOPMENT/umrs-project stash list)",
+      "Bash(git:*)"
     ]
   },
   "enabledPlugins": {

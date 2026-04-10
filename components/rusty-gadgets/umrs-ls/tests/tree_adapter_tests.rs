@@ -92,7 +92,7 @@ fn make_listing(groups: Vec<(&str, &str, Vec<ListEntry>)>) -> DirListing {
 #[test]
 fn empty_listing_has_only_parent_nav() {
     let listing = make_listing(vec![]);
-    let model = build_tree(&listing, Path::new("/home/user"));
+    let model = build_tree(&listing, Path::new("/home/user"), false);
 
     // Only the parent nav entry (no "." entry).
     assert_eq!(model.roots.len(), 1, "expected exactly 1 root (parent nav)");
@@ -115,7 +115,7 @@ fn single_group_with_files_produces_expanded_branch() {
         make_entry("gamma.conf", 300),
     ];
     let listing = make_listing(vec![("httpd_t", "s0", entries)]);
-    let model = build_tree(&listing, Path::new("/var/www"));
+    let model = build_tree(&listing, Path::new("/var/www"), false);
 
     // 1 parent nav + 1 group = 2 roots.
     assert_eq!(model.roots.len(), 2);
@@ -158,7 +158,7 @@ fn cuddled_siblings_produce_expanded_branch_with_leaf_children() {
         make_entry("known_hosts.old", 1024),
     ];
     let listing = make_listing(vec![("admin_home_t", "s0", entries)]);
-    let model = build_tree(&listing, Path::new("/root"));
+    let model = build_tree(&listing, Path::new("/root"), false);
 
     let group_node = &model.roots[1];
     // The grouper should produce one FileGroup with 2 siblings.
@@ -208,7 +208,7 @@ fn restricted_group_starts_expanded() {
         ("httpd_t", "s0", vec![make_entry("index.html", 100)]),
         ("<restricted>", "<restricted>", entries),
     ]);
-    let model = build_tree(&listing, Path::new("/home/user"));
+    let model = build_tree(&listing, Path::new("/home/user"), false);
 
     // Find the <restricted> group — it must be last.
     let last = model.roots.last().expect("at least one root beyond nav");
@@ -231,7 +231,7 @@ fn restricted_group_starts_expanded() {
 fn parent_nav_is_always_first_root() {
     let entries = vec![make_entry("file.txt", 512)];
     let listing = make_listing(vec![("unlabeled_t", "s0", entries)]);
-    let model = build_tree(&listing, Path::new("/some/dir"));
+    let model = build_tree(&listing, Path::new("/some/dir"), false);
 
     assert!(
         model.roots[0].label.contains("parent directory"),
@@ -253,7 +253,7 @@ fn parent_nav_is_always_first_root() {
 fn directory_entries_have_is_dir_true_metadata() {
     let entries = vec![make_dir_entry(".ssh"), make_entry("authorized_keys", 256)];
     let listing = make_listing(vec![("admin_home_t", "s0", entries)]);
-    let model = build_tree(&listing, Path::new("/root"));
+    let model = build_tree(&listing, Path::new("/root"), false);
 
     let group_node = &model.roots[1];
     // 2 children: .ssh/ (dir) and authorized_keys (file).
@@ -329,7 +329,7 @@ fn compute_stats_counts_files_and_directories() {
 fn group_header_nodes_carry_kind_and_marking_metadata() {
     let entries = vec![make_entry("secret.conf", 512)];
     let listing = make_listing(vec![("httpd_t", "s0:c1,c5", entries)]);
-    let model = build_tree(&listing, Path::new("/etc/httpd"));
+    let model = build_tree(&listing, Path::new("/etc/httpd"), false);
 
     // roots[0] = parent nav, roots[1] = SELinux group.
     assert_eq!(model.roots.len(), 2);

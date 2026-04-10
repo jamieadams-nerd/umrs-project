@@ -72,8 +72,9 @@ use crate::viewer_app::DirViewerApp;
 
 use umrs_ui::icons::{
     ARROW_DOWN, ARROW_LEFT, ARROW_RIGHT, ARROW_UP, CHEVRON_CLOSED, CHEVRON_CUDDLE_CLOSED,
-    CHEVRON_CUDDLE_OPEN, CHEVRON_OPEN, ICON_BANNER, ICON_CURSOR, ICON_DIR, ICON_ENCRYPTED,
-    ICON_FLAG, ICON_MOUNT, ICON_PARENT, ICON_PLACEHOLDER, ICON_SIBLING, ICON_SYMLINK, PROMPT_ARROW,
+    CHEVRON_CUDDLE_OPEN, CHEVRON_OPEN, ICON_BANNER, ICON_CHECK, ICON_CROSS, ICON_CURSOR, ICON_DIR,
+    ICON_ENCRYPTED, ICON_FLAG, ICON_MOUNT, ICON_PARENT, ICON_PLACEHOLDER, ICON_SIBLING,
+    ICON_SYMLINK, PROMPT_ARROW,
 };
 
 // ---------------------------------------------------------------------------
@@ -289,7 +290,7 @@ pub fn render_dir_browser(
     };
 
     // ── Column headers ───────────────────────────────────────────────────
-    render_col_headers(frame, col_header_area, theme);
+    render_col_headers(frame, col_header_area, state, theme);
 
     // ── Divider: ├───┤ under column headers ─────────────────────────────
     render_divider(frame, div1_area, display_panel_area, theme);
@@ -578,18 +579,47 @@ fn render_directory_info_lines(frame: &mut Frame, area: Rect, app: &DirViewerApp
     // Indent matches the label width so the metadata aligns under the
     // path value.
     let indent = " ".repeat(label_width);
-    let meta_str = format!(
-        "{indent}{}  {}:{}  {}  {}",
+    let meta_prefix = format!(
+        "{indent}{}  {}:{}  {}  {}  ",
         dm.mode, dm.owner, dm.group, dm.selinux_type, dm.marking,
     );
-    // Truncate on the right so long owner/group/type strings do not
-    // overflow the header area.
-    let meta_display = if meta_str.len() > area.width as usize {
-        truncate_right(&meta_str, area.width as usize)
+
+    // Encryption status — rendered as a styled suffix so the check/cross
+    // and the word carry their own color regardless of the rest of the
+    // line.  Green check + "Encrypted (source)" when any at-rest protection
+    // is detected on the containing mount point; red bold cross +
+    // "Unencrypted" otherwise.  NIST SP 800-53 SC-28.
+    let (enc_icon, enc_text, enc_style) = if dm.is_encrypted() {
+        (
+            ICON_CHECK,
+            format!(" Encrypted ({})", dm.encryption_label()),
+            Style::default().fg(Color::Green).add_modifier(Modifier::BOLD),
+        )
     } else {
-        meta_str
+        (
+            ICON_CROSS,
+            " Unencrypted".to_owned(),
+            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+        )
     };
-    let dir_meta_line = Line::from(Span::styled(meta_display, theme.data_key));
+
+    // Truncate on the right so long owner/group/type strings do not
+    // overflow the header area.  The encryption suffix is appended after
+    // truncation so it always stays visible.
+    let width = area.width as usize;
+    let enc_width = display_width(enc_icon) + display_width(&enc_text);
+    let prefix_budget = width.saturating_sub(enc_width);
+    let prefix_display = if meta_prefix.len() > prefix_budget {
+        truncate_right(&meta_prefix, prefix_budget)
+    } else {
+        meta_prefix
+    };
+
+    let dir_meta_line = Line::from(vec![
+        Span::styled(prefix_display, theme.data_key),
+        Span::styled(enc_icon, enc_style),
+        Span::styled(enc_text, enc_style),
+    ]);
 
     frame.render_widget(Paragraph::new(vec![dir_line, dir_meta_line]), area);
 }
@@ -633,7 +663,8 @@ fn render_wizard_logo(frame: &mut Frame, area: Rect, theme: &Theme) {
 ///
 /// The 4-char prefix accounts for: 2-char highlight symbol zone (`► ` or `  `)
 /// that ratatui prepends to every `List` item.
-const COL_HEADER_TEXT: &str = "   IOV  MODE         OWNER:GROUP      MODIFIED             NAME";
+const COL_HEADER_TEXT: &str =
+    "   IOVE  MODE         OWNER:GROUP      MODIFIED             NAME";
 
 /// Render the `├───┤` horizontal divider using the T-connector characters.
 ///
@@ -662,14 +693,128 @@ fn render_divider(frame: &mut Frame, area: Rect, parent_area: Rect, theme: &Them
 
 /// Render the column header row (single line, no border).
 ///
-/// Bold cyan text — a visual anchor between the dividers.
+/// Bold cyan column labels at the left, and a flush-right posture summary
+/// showing warning and risk flag counts for the whole directory.  Counts
+/// are aggregated across every file in the tree regardless of current
+/// expansion or filter state — cuddled children collapsed under their
+/// base still contribute to the tally so the operator sees true posture
+/// at a glance.
 ///
 /// NIST SP 800-53 AU-3 — labeled columns improve audit record readability.
-fn render_col_headers(frame: &mut Frame, area: Rect, _theme: &Theme) {
+/// NIST SP 800-53 SI-7 — surfaces integrity-relevant observations without
+/// requiring the operator to expand every group.
+fn render_col_headers(frame: &mut Frame, area: Rect, state: &ViewerState, _theme: &Theme) {
     let header_style = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
 
-    let line = Line::from(Span::styled(COL_HEADER_TEXT, header_style));
+    let (risk, warn) = count_posture_flags(state);
+
+    let mut spans: Vec<Span<'static>> = Vec::with_capacity(10);
+    spans.push(Span::styled(COL_HEADER_TEXT, header_style));
+
+    // Build the flush-right posture summary and compute its display width
+    // so we can pad between the last column label and the summary.
+    let (right_spans, right_width) = build_posture_summary_spans(warn, risk);
+    let left_width = COL_HEADER_TEXT.chars().count();
+    let total = area.width as usize;
+
+    // Reserve one trailing column for visual breathing room on the right.
+    let pad = total
+        .saturating_sub(left_width)
+        .saturating_sub(right_width)
+        .saturating_sub(1);
+    if pad > 0 {
+        spans.push(Span::raw(" ".repeat(pad)));
+    }
+    spans.extend(right_spans);
+
+    let line = Line::from(spans);
     frame.render_widget(Paragraph::new(vec![line]), area);
+}
+
+/// Count Risk- and Warning-kind security observations across every file in
+/// the directory tree, regardless of expansion or filter state.
+///
+/// Walks `state.tree.roots` recursively and tallies nodes whose `iov_o`
+/// metadata key marks the entry as `risk` or `warning`.  This mirrors the
+/// classification used by `append_iov_spans` in the listing renderer, so
+/// the summary count and the individual row markers always agree.
+///
+/// Returns `(risk_count, warn_count)`.
+///
+/// NIST SP 800-53 AU-3, SI-7 — posture aggregation is audit-relevant.
+fn count_posture_flags(state: &ViewerState) -> (usize, usize) {
+    fn walk(node: &umrs_ui::viewer::tree::TreeNode, risk: &mut usize, warn: &mut usize) {
+        match node.metadata.get("iov_o").map(String::as_str) {
+            Some("risk") => *risk += 1,
+            Some("warning") => *warn += 1,
+            _ => {}
+        }
+        for child in &node.children {
+            walk(child, risk, warn);
+        }
+    }
+    let mut risk = 0usize;
+    let mut warn = 0usize;
+    for root in &state.tree.roots {
+        walk(root, &mut risk, &mut warn);
+    }
+    (risk, warn)
+}
+
+/// Build the flush-right posture summary spans for the column header row.
+///
+/// Format: `{label} {warn}⚑ / {risk}⚑` where the yellow flag counts
+/// Warning-kind observations and the red bold flag counts Risk-kind.
+/// The label is `WARNING:` in red bold when any risk is present, yellow
+/// bold when only warnings are present, and a dim green `CLEAN:` when
+/// the directory is posture-clean.
+///
+/// Returns the spans and their total display width in columns so the
+/// caller can right-flush the group with the correct padding.
+fn build_posture_summary_spans(warn: usize, risk: usize) -> (Vec<Span<'static>>, usize) {
+    let (label, label_style) = if risk > 0 {
+        (
+            "WARNING: ",
+            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+        )
+    } else if warn > 0 {
+        (
+            "WARNING: ",
+            Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+        )
+    } else {
+        (
+            "CLEAN: ",
+            Style::default().fg(Color::Green).add_modifier(Modifier::DIM),
+        )
+    };
+
+    let warn_num = format!("{warn} ");
+    let risk_num = format!("{risk} ");
+    let sep = " / ";
+
+    // Display width: label + warn count + 1 col flag + separator + risk count + 1 col flag.
+    let width = label.chars().count()
+        + warn_num.chars().count()
+        + 1
+        + sep.chars().count()
+        + risk_num.chars().count()
+        + 1;
+
+    let warn_flag_style = Style::default().fg(Color::Yellow);
+    let risk_flag_style = Style::default().fg(Color::Red).add_modifier(Modifier::BOLD);
+    let sep_style = Style::default().fg(Color::DarkGray);
+
+    let spans = vec![
+        Span::styled(label, label_style),
+        Span::raw(warn_num),
+        Span::styled(ICON_FLAG, warn_flag_style),
+        Span::styled(sep, sep_style),
+        Span::raw(risk_num),
+        Span::styled(ICON_FLAG, risk_flag_style),
+    ];
+
+    (spans, width)
 }
 
 // ---------------------------------------------------------------------------
@@ -971,16 +1116,21 @@ fn build_file_entry_item<'a>(
     let is_sibling = meta.contains_key("sibling_kind");
     let base_indent = "   ";
 
-    // IOV posture markers — read from metadata keys populated by
-    // `tree_adapter::populate_entry_metadata`.  Each flag is rendered as a
-    // separate styled span so the live state (red I, flag O, green V) is
-    // visible without recomputing `InodeSecurityFlags` in the render path.
+    // IOVE posture markers — read from metadata keys populated by
+    // `tree_adapter::populate_entry_metadata`.  Each flag is rendered as
+    // a separate styled span so the live state (red I, flag O, green V,
+    // encryption E) is visible without recomputing `InodeSecurityFlags`
+    // or re-probing the mount table in the render path.
     //
-    // NIST SP 800-53 AU-3, SI-7 — posture markers are audit-relevant.
+    // NIST SP 800-53 AU-3, SI-7, SC-28 — posture markers are audit-relevant.
     let iov_i = meta.contains_key("iov_i");
     // `iov_o` is a tiered string: "risk" or "warning". Absent means clear.
     let iov_o = meta.get("iov_o").map(String::as_str);
     let iov_v = meta.contains_key("iov_v");
+    // `iov_e` is a tiered string: "encrypted" or "required_missing". Absent
+    // means the entry has no marking requiring encryption and no at-rest
+    // protection to report — render a dim placeholder.
+    let iov_e = meta.get("iov_e").map(String::as_str);
 
     // Mode — from metadata "mode" key (e.g., "-rwxr-xr-x").
     let mode = meta.get("mode").map(String::as_str).unwrap_or("----------");
@@ -1074,8 +1224,8 @@ fn build_file_entry_item<'a>(
         base_indent.to_owned(),
         Style::default().fg(Color::DarkGray),
     ));
-    append_iov_spans(&mut spans, iov_i, iov_o, iov_v);
-    spans.push(Span::raw(" ")); // gap between IOV and MODE, matching header
+    append_iov_spans(&mut spans, iov_i, iov_o, iov_v, iov_e);
+    spans.push(Span::raw(" ")); // gap between IOVE and MODE, matching header
 
     spans.push(Span::styled(format!("{mode:<12} "), theme.data_value));
     spans.push(Span::styled(format!("{uid_gid:<16} "), theme.data_key));
@@ -1097,14 +1247,29 @@ fn build_file_entry_item<'a>(
     ListItem::new(Line::from(spans))
 }
 
-/// Append the three IOV posture spans (`I`, `O`, `V`) plus a trailing space
-/// to `spans`.  Lit flags use color + optional glyph; clear flags render as
-/// dim `-`.  The `O` marker uses `ICON_FLAG` (⚑) when a Risk-kind security
-/// observation is present, making posture issues visually prominent at
-/// scan-speed without disturbing the I/V column alignment.
+/// Append the four IOVE posture spans (`I`, `O`, `V`, `E`) plus a trailing
+/// space to `spans`.  Lit flags use color + optional glyph; clear slots
+/// render as dim `·` placeholders.
 ///
-/// NIST SP 800-53 AU-3, SI-7 — posture markers are audit-relevant.
-fn append_iov_spans(spans: &mut Vec<Span<'_>>, iov_i: bool, iov_o: Option<&str>, iov_v: bool) {
+/// - `I` — immutable bit set (red).
+/// - `O` — highest-severity security observation: `ICON_FLAG` (⚑) in red
+///   bold for `Risk`, yellow for `Warning`.
+/// - `V` — IMA signature present (green).
+/// - `E` — at-rest encryption state: green `ICON_CHECK` (✓) when the
+///   containing mount is encrypted; red bold `ICON_CROSS` (✗) when the
+///   entry carries a marking with MCS categories (CUI / Protected) but
+///   sits on unencrypted storage — a compliance violation per
+///   NIST SP 800-171 r3 §3.13.11 / CCCS ITSP.40.111; dim placeholder
+///   otherwise.
+///
+/// NIST SP 800-53 AU-3, SI-7, SC-28 — posture markers are audit-relevant.
+fn append_iov_spans(
+    spans: &mut Vec<Span<'_>>,
+    iov_i: bool,
+    iov_o: Option<&str>,
+    iov_v: bool,
+    iov_e: Option<&str>,
+) {
     // Placeholder for a clear slot: shared `ICON_PLACEHOLDER` (· U+00B7
     // MIDDLE DOT).  Rendered dark-gray + DIM so it stays present for column
     // alignment without competing with lit markers.
@@ -1129,7 +1294,15 @@ fn append_iov_spans(spans: &mut Vec<Span<'_>>, iov_i: bool, iov_o: Option<&str>,
     spans.push(if iov_v {
         Span::styled("V", Style::default().fg(Color::Green))
     } else {
-        placeholder
+        placeholder.clone()
+    });
+    spans.push(match iov_e {
+        Some("encrypted") => Span::styled(ICON_CHECK, Style::default().fg(Color::Green)),
+        Some("required_missing") => Span::styled(
+            ICON_CROSS,
+            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+        ),
+        _ => placeholder,
     });
     spans.push(Span::raw(" "));
 }
@@ -1454,7 +1627,7 @@ fn help_columns_lines<'a>() -> Vec<Line<'a>> {
     vec![
         Line::from(""),
         Line::from(Span::styled(
-            "  IOV posture column — three single-character slots",
+            "  IOVE posture column — four single-character slots",
             text_style,
         )),
         Line::from(""),
@@ -1480,6 +1653,25 @@ fn help_columns_lines<'a>() -> Vec<Line<'a>> {
             Span::raw("    "),
             Span::styled("V", Style::default().fg(Color::Green)),
             Span::styled("  IMA hash present (integrity signed)", text_style),
+        ]),
+        Line::from(vec![
+            Span::raw("    "),
+            Span::styled(ICON_CHECK, Style::default().fg(Color::Green)),
+            Span::styled(
+                "  at-rest encryption present (LUKS / fscrypt)",
+                text_style,
+            ),
+        ]),
+        Line::from(vec![
+            Span::raw("    "),
+            Span::styled(
+                ICON_CROSS,
+                Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+            ),
+            Span::styled(
+                "  CUI / Protected marking on unencrypted storage",
+                text_style,
+            ),
         ]),
         Line::from(vec![
             Span::raw("    "),

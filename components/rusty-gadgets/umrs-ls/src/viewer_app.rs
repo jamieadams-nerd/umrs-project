@@ -45,6 +45,7 @@ use std::path::{Path, PathBuf};
 #[cfg(debug_assertions)]
 use std::time::Instant;
 
+use umrs_selinux::fs_encrypt::{EncryptionSource, detect_mount_encryption};
 use umrs_selinux::secure_dirent::SecureDirent;
 use umrs_selinux::utils::dirlist::{DirListing, list_directory};
 use umrs_ui::app::{StatusLevel, StatusMessage, TabDef};
@@ -78,6 +79,17 @@ pub struct DirMeta {
     pub marking: String,
     /// Whether this directory is a mount point.
     pub is_mountpoint: bool,
+    /// At-rest encryption source of the containing mount point, if any.
+    ///
+    /// `None` means the directory's backing mount point is not encrypted.
+    /// `Some("LUKS")` means the block device is LUKS/dm-crypt protected.
+    /// `Some(fs)` means a filesystem-layer encryption is in use (e.g.,
+    /// `"ecryptfs"`, `"fuse.gocryptfs"`).
+    ///
+    /// NIST SP 800-53 SC-28 — at-rest protection posture of the listed
+    /// directory is surfaced on every frame so the operator can see it
+    /// alongside the marking.
+    pub encryption: Option<String>,
 }
 
 impl DirMeta {
@@ -97,6 +109,7 @@ impl DirMeta {
             let group = resolve_groupname(gid);
             let (selinux_type, marking) = extract_selinux_short(&d);
             let is_mountpoint = d.is_mountpoint;
+            let encryption = detect_enclosing_encryption(path);
             return Self {
                 mode,
                 owner,
@@ -104,6 +117,7 @@ impl DirMeta {
                 selinux_type,
                 marking,
                 is_mountpoint,
+                encryption,
             };
         }
 
@@ -146,6 +160,8 @@ impl DirMeta {
                 std::fs::symlink_metadata(parent).map_or(true, |pm| pm.dev() != meta.dev())
             });
 
+        let encryption = detect_enclosing_encryption(path);
+
         Self {
             mode,
             owner,
@@ -153,6 +169,7 @@ impl DirMeta {
             selinux_type,
             marking,
             is_mountpoint,
+            encryption,
         }
     }
 
@@ -165,8 +182,58 @@ impl DirMeta {
             selinux_type: "?".to_owned(),
             marking: "?".to_owned(),
             is_mountpoint: false,
+            encryption: None,
         }
     }
+
+    /// True if the containing mount point has any at-rest encryption.
+    ///
+    /// NIST SP 800-53 SC-28 — used by the listing renderer to inherit
+    /// encryption state to every file in the directory.
+    #[must_use = "encryption state drives the IOVE column; discarding it hides compliance gaps"]
+    pub const fn is_encrypted(&self) -> bool {
+        self.encryption.is_some()
+    }
+
+    /// Human-readable label for the at-rest encryption state.
+    ///
+    /// Returns `"LUKS"` for LUKS/dm-crypt, the filesystem type name for
+    /// filesystem-layer encryption (e.g., `"ecryptfs"`), or `"unencrypted"`
+    /// when no at-rest protection is detected on the containing mount.
+    #[must_use = "encryption label is rendered in the directory header; discarding it leaves the display blank"]
+    pub fn encryption_label(&self) -> &str {
+        self.encryption.as_deref().unwrap_or("unencrypted")
+    }
+}
+
+/// Walk from `path` upward, calling [`detect_mount_encryption`] at each
+/// ancestor until a mount point is hit.  Returns the encryption source of
+/// the containing mount point, or `None` if the path is on an unencrypted
+/// filesystem.
+///
+/// `detect_mount_encryption` only matches exact mount point paths in
+/// `/proc/mounts`, so non-mount ancestors return [`EncryptionSource::None`]
+/// and the walk continues upward.  The walk is bounded by path depth — at
+/// most a handful of `/proc/mounts` parses per directory navigation.
+///
+/// Fail-closed: any unexpected condition returns `None` so the IOVE column
+/// does not fabricate encryption state that is not provable.
+///
+/// NIST SP 800-53 SC-28 — at-rest encryption detection.
+/// NIST SP 800-53 SI-7 — each probe routes through the provenance-verified
+/// reader inside `detect_mount_encryption`.
+fn detect_enclosing_encryption(path: &Path) -> Option<String> {
+    let mut current: Option<&Path> = Some(path);
+    while let Some(p) = current {
+        match detect_mount_encryption(p) {
+            EncryptionSource::LuksDevice => return Some("LUKS".to_owned()),
+            EncryptionSource::EncryptedFilesystem(fs) => return Some(fs),
+            EncryptionSource::None => {
+                current = p.parent();
+            }
+        }
+    }
+    None
 }
 
 /// Directory viewer application state for the `umrs-ls` TUI.
@@ -279,13 +346,14 @@ impl DirViewerApp {
 
         let listing = list_directory(path)?;
         let stats = compute_stats(&listing);
-        let tree = build_tree(&listing, path);
+        let new_dir_meta = DirMeta::from_path(path);
+        let tree = build_tree(&listing, path, new_dir_meta.is_encrypted());
 
         // Commit only after all fallible operations succeed.
         self.current_path = path.to_path_buf();
         self.listing = listing;
         self.stats = stats;
-        self.dir_meta = DirMeta::from_path(path);
+        self.dir_meta = new_dir_meta;
 
         #[cfg(debug_assertions)]
         {
@@ -334,7 +402,7 @@ impl DirViewerApp {
     /// from the listing; see `tree_adapter::build_tree` for details.
     #[must_use = "the returned TreeModel must be loaded into ViewerState; discarding it leaves the display empty"]
     pub fn build_current_tree(&self) -> TreeModel {
-        build_tree(&self.listing, &self.current_path)
+        build_tree(&self.listing, &self.current_path, self.dir_meta.is_encrypted())
     }
 }
 
