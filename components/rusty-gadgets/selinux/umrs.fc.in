@@ -1,0 +1,15 @@
+############################################
+# UMRS file context template
+#
+# @PREFIX@ is substituted by the Makefile at build time
+# (demonstration default: /opt/umrs). Do NOT edit umrs.fc
+# directly -- it is a generated artifact.
+############################################
+
+@PREFIX@(/.*)?                    gen_context(system_u:object_r:usr_t,s0)
+@PREFIX@/bin(/.*)?                gen_context(system_u:object_r:umrs_bin_t,s0)
+@PREFIX@/etc(/.*)?                gen_context(system_u:object_r:umrs_config_ro_t,s0)
+@PREFIX@/share/templates(/.*)?    gen_context(system_u:object_r:umrs_config_ro_t,s0)
+@PREFIX@/share/umrs(/.*)?         gen_context(system_u:object_r:umrs_data_rw_t,s0)
+@PREFIX@/var/lib(/.*)?            gen_context(system_u:object_r:umrs_data_rw_t,s0)
+@PREFIX@/var/log(/.*)?            gen_context(system_u:object_r:umrs_log_rw_t,s0)

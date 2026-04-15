@@ -40,7 +40,7 @@ Verify PDF: `head -c 4 <file>` must show `%PDF`.
 - `.claude/references/fedramp/` — FedRAMP accreditation docs (downloaded 2026-03-15: CSP playbook, Agency playbook, SSP/SAP/SAR templates)
 - `.claude/references/nist/sp800-18r1.pdf` — NIST SP 800-18 Rev 1 (downloaded 2026-03-15)
 - `.claude/references/nist/sp800-90B.pdf` — NIST SP 800-90B (downloaded 2026-03-18; SHA-256: 9b0dd77131ade3617a91cd8457fa09e0dc354c273bb2220a6afeaca16e5defe7)
-- Last version check: 2026-03-12 (next due 2026-04-12)
+- Last version check: 2026-04-12 (next due 2026-05-12)
 
 ### .claude/references/ (technical reference collections for RAG)
 Collections and status as of 2026-03-15:
@@ -139,6 +139,8 @@ Existing reports:
   Topics: SP 800-172 (APT/CMMC L3); SP 800-161r1 WITHDRAWN (superseded by upd1); SP 800-60 Vol 1 INCOMPLETE
 - `.claude/references/reports/five-eyes-case-study-research.md` (2026-04-03)
   Topics: 50 new failure cases across US, CA, UK, AU, NZ — see project_case_study_corpus.md for summary
+- `.claude/references/reports/2026-04-12-env-attack-prevention.md` (2026-04-12)
+  Topics: env var attack CVEs (CVE-2023-4911, CVE-2024-48990/48992, Shellshock), CERT ENV rules, CWEs, glibc AT_SECURE, Rust 2024 set_var unsafe, Tier 1/2/3 variable tables, rust-developer reading list
 
 ## Retrieval Patterns (learned 2026-03-11)
 
@@ -193,13 +195,23 @@ Helper scripts: `.claude/references/scripts/extract_termium.py`, `.claude/refere
   `.claude/references/scripts/parse_termium_glossary3.py`, `.claude/references/scripts/parse_cccs_bilingual.py`,
   `.claude/references/scripts/verify_corpus.py` — retain for re-extraction runs
 
+## umrs-c2pa TRUSTED Fixture Gap (2026-04-13)
+
+Status: NO TRUSTED fixture exists. 5 files in `tests/fixtures/trusted/` are all UNVERIFIED or ERROR.
+Root cause: Adobe rotated issuing CA on 2025-11-19; all existing images predate rotation.
+Full analysis: `c2pa-test-image-acquisition.md`
+Fastest fix for Jamie: Generate image at https://firefly.adobe.com (post-rotation, embedded manifest)
+Alternative: Any Google Pixel 10 photo — Google C2PA Root CA G3 in trust list, No rotation issue.
+Verification command: `cd umrs-c2pa && cargo run tests/fixtures/trusted/<new-photo.jpg>`
+
 ## Pending Items
+- **umrs-c2pa TRUSTED fixture** — Jamie action required (see above + `c2pa-test-image-acquisition.md`)
 - audit-logging collection: [reference_audit_logging_collection.md](reference_audit_logging_collection.md) — 7 docs in `.claude/research/audit-logging/`; not yet ingested; see SOURCE.md for checksums
 - Stanford CS147: MANUAL DOWNLOAD — 20 PDFs; see `.claude/references/hci-courses/stanford-cs147/SOURCE.md`
 - RAG ingestion pending: accreditation-artifacts, tui-cli, info-theory-foundations, all 2026-03-22 Tier 1 collections
 - OSCAL v1.1.2 schemas: DOWNLOADED (2026-03-23) — 8 JSON schemas + 6 FedRAMP Rev5 profiles in `.claude/references/oscal-schemas/`; manifest updated; RAG ingestion BLOCKED — needs `Bash(RAG_CHROMA_PATH=... python ingest.py --collection oscal-schemas 2>&1)` added to settings.json allowlist
 - DISA RHEL 10 STIG: NOT YET PUBLISHED as of 2026-03-17; monitor public.cyber.mil
-- Version check due 2026-04-12
+- Version check due 2026-05-12
 - Full pending list: see `research-priorities.md` in this directory
 - CPU corpus: see `cpu-corpus-state.md` for phase state
 - TERMIUM Military/Security subject ZIP: manual download needed (resource 99a220a8 at open.canada.ca)

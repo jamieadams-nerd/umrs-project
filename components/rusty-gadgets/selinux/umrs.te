@@ -1,0 +1,151 @@
+############################################
+# UMRS base custody policy module
+#
+# Module:  umrs
+# Version: 1.2
+#
+# Purpose:
+#   Declare the SELinux types and attributes that label UMRS-owned
+#   binaries, configuration, data, and log files under the installation
+#   prefix (demonstration default: /opt/umrs/). Phase 1 is label-only;
+#   this module does not make any enforcement claims about CUI handling.
+#
+# False-root prefix:
+#   UMRS is installed under a configurable prefix. The shipped file
+#   context template is umrs.fc.in; the Makefile substitutes @PREFIX@
+#   (demonstration default /opt/umrs) to produce umrs.fc before packaging.
+#   No prefix path is hardcoded in this .te module. Types are path-free
+#   by design (SELinux decisions are label-based, not path-based).
+#
+# Controls:
+#   NIST SP 800-53 CM-5 (Access Restrictions for Change)
+#   NIST SP 800-53 CM-6 (Configuration Settings)
+#   NIST SP 800-53 AC-3 (Access Enforcement)
+#   NIST SP 800-53 AC-6 (Least Privilege)
+#   NIST SP 800-53 SI-7 (Software, Firmware, and Information Integrity)
+#   NSA RTB: Non-Bypassability (neverallow guardrail vs unconfined_t)
+############################################
+policy_module(umrs, 1.2)
+
+########################################
+# External dependencies
+########################################
+
+gen_require(`
+    type unconfined_t;
+    type staff_t;
+')
+
+########################################
+# UMRS custody attributes
+#
+# Attributes group related concrete types so interfaces and
+# neverallow guardrails stay stable as types are added.
+########################################
+
+attribute umrs_exec_type;
+attribute umrs_data_type;
+attribute umrs_config_type;
+attribute umrs_log_type;
+
+########################################
+# Executable type
+#
+# Single shared binary type for Phase A. Per-tool exec types
+# (e.g., umrs_ls_exec_t) are Phase B scaffolding; they will be
+# bound to umrs_exec_type without touching callers.
+########################################
+
+type umrs_bin_t;
+files_type(umrs_bin_t)
+corecmd_executable_file(umrs_bin_t)
+typeattribute umrs_bin_t umrs_exec_type;
+
+########################################
+# Configuration types
+#
+# umrs_config_ro_t - baseline site configuration shipped in the
+#                    package; never written at runtime.
+# umrs_config_rw_t - operator-editable site overrides; written
+#                    by umrs-admin group members via DAC, and (in
+#                    a future actor domain) via umrs_manage_config.
+########################################
+
+type umrs_config_ro_t;
+files_type(umrs_config_ro_t)
+typeattribute umrs_config_ro_t umrs_config_type;
+
+type umrs_config_rw_t;
+files_type(umrs_config_rw_t)
+typeattribute umrs_config_rw_t umrs_config_type;
+
+########################################
+# Data types
+#
+# Phase A ships a single writable data type for /opt/umrs/var/lib/.
+# Vault intake/staging/archive data types are Phase B.
+########################################
+
+type umrs_data_rw_t;
+files_type(umrs_data_rw_t)
+typeattribute umrs_data_rw_t umrs_data_type;
+
+########################################
+# Log type
+#
+# Declared for Phase A layout completeness. Current recommendation
+# is journald-only for the demonstration; this type remains declared
+# so /opt/umrs/var/log/ is label-ready if local spooling is later
+# enabled.
+########################################
+
+type umrs_log_rw_t;
+files_type(umrs_log_rw_t)
+typeattribute umrs_log_rw_t umrs_log_type;
+
+########################################
+# Baseline restrictions (targeted policy)
+#
+# UMRS custody and UMRS executables must not be reachable from
+# unconfined domains. Operators running UMRS tools are expected
+# to be mapped (via `semanage login -m -s user_u <login>`) to a
+# confined login user; running UMRS tools from unconfined_t is
+# not a supported configuration.
+#
+# Controls: NSA RTB Non-Bypassability; NIST SP 800-53 AC-3, AC-6.
+########################################
+
+neverallow unconfined_t umrs_exec_type:file *;
+
+neverallow unconfined_t umrs_data_type:dir  *;
+neverallow unconfined_t umrs_data_type:file *;
+
+neverallow unconfined_t umrs_config_type:dir  *;
+neverallow unconfined_t umrs_config_type:file *;
+
+neverallow unconfined_t umrs_log_type:dir  *;
+neverallow unconfined_t umrs_log_type:file *;
+
+########################################
+# Confined operator access (Phase A)
+#
+# staff_t is the first confined operator class permitted to
+# interact with UMRS custody. Phase A grants:
+#
+#   - execute UMRS binaries (umrs_exec_type)
+#   - read  UMRS config     (umrs_config_type)
+#
+# Phase B will add vault data access (umrs_read_data /
+# umrs_manage_data) under an actor domain transition. No data
+# or log grants are issued here.
+#
+# Jamie's axiom: "I never want a user with unconfined access to
+# read the vault." The neverallow block above remains intact; it
+# is the whole point. staff_t is confined, not unconfined.
+#
+# Controls: NIST SP 800-53 AC-6 (Least Privilege), AC-3.
+########################################
+
+umrs_exec(staff_t)
+umrs_read_config(staff_t)
+

@@ -4077,6 +4077,7 @@ dependencies = [
 name = "umrs-label"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "crossterm 0.28.1",
  "log",
  "nix 0.27.1",

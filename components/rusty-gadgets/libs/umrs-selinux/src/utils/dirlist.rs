@@ -49,7 +49,7 @@ pub struct GroupKey {
     /// SELinux type component — e.g., `bin_t`, `httpd_t`, `<unlabeled>`.
     pub selinux_type: String,
     /// setrans translation when available; raw level string otherwise.
-    /// E.g., `CUI//LEI/INV`, `s0`, `<no-level>`.
+    /// E.g., `CUI//INV/LEI` (alphabetized combined marking), `s0`, `<no-level>`.
     pub marking: String,
 }
 

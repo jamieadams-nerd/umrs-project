@@ -2,7 +2,7 @@ Technical Brief: UMRS High-Assurance Vernacular Translation
 Module: umrs_selinux::mcs::setrans
 Standard Compliance: NIST 800-53 AC-4, AU-3; NSA RTB (Redundancy & Determinism)
 1. The Problem: The Vernacular vs. Ground Truth
-In SELinux, the "Ground Truth" stored on disk is often a raw bitmask (e.g., s0:c90,c99). While mathematically sound for the kernel, it is illegible to human operators and auditors who require regulatory markings (e.g., CUI//LEI/INV). Traditional systems rely on the mcstransd daemon, which introduces a non-anchored userspace dependency.
+In SELinux, the "Ground Truth" stored on disk is often a raw bitmask (e.g., s0:c90,c99). While mathematically sound for the kernel, it is illegible to human operators and auditors who require regulatory markings (e.g., CUI//INV/LEI). Traditional systems rely on the mcstransd daemon, which introduces a non-anchored userspace dependency.
 2. The UMRS Solution: TPI-Vetted Translation
 The setrans module implements a high-performance, redundant translation engine that ingests the system's setrans.conf and maps kernel bitmasks to human-readable markings with Two-Path Integrity (TPI).
 A. Redundant Ingestion (The TPI Gate)

@@ -1,6 +1,10 @@
 # Security Engineer — Persistent Memory
 # Alias: Knox (pending Jamie confirmation — alias TBD per cross-team notes 2026-03-21)
 
+## Permissions
+See `.claude/agent-memory/security-engineer/permissions.md` — **sudo semodule granted 2026-04-13**.
+Other sudo operations (semanage, restorecon, useradd, /opt/umrs writes) still require Jamie.
+
 ## Cross-Team Channel
 To notify the tech-writer or senior-tech-writer of compliance findings that require doc
 updates, new control mappings, or audit gaps: write an entry to
@@ -19,6 +23,9 @@ senior-tech-writer). Read the file at session start for entries addressed to you
 ## SELinux Type Naming Conventions (umrs-platform)
 - No dedicated SELinux types written yet for the OS detection subsystem.
 - First policy artifact authoring: defer until coder closes F-01/F-02/F-03.
+
+## SELinux Corpus Familiarization (2026-04-13)
+- [selinux-corpus-notes-2026-04-13.md](selinux-corpus-notes-2026-04-13.md) — Read-only pass on all .te/.if/.fc/READMEs ahead of discussion with Jamie. Current state: only base `umrs.te` (labeling-only, no allow rules, no domains, 8 neverallow guardrails); `cui_lei.te` + `umrs_cui.te` moved to archive/; Makefile still lists retired modules; RW types declared but no .fc entry labels anything RW; `umrs_httpd_t` has no interface. No findings filed.
 
 ## Established DAC/MAC Patterns
 
@@ -132,7 +139,7 @@ protection, but the SELinux dependency must be documented (Finding B-01).
   /usr/bin (RPM-managed) with full SELinux type enforcement, fapolicyd, and AIDE.
 - Current binary inventory: umrs-ls, umrs-os-detect-tui, umrs-file-stat
   (renaming in progress: umrs-file-stat→umrs-stat, umrs-tui main→umrs-uname).
-- Existing policy artifacts in components/platforms/rhel10/umrs-selinux/policy/:
+- Existing policy artifacts in components/rusty-gadgets/selinux/:
   umrs.te / umrs.fc / umrs.if — defines data custody types (config/data/log/httpd).
   umrs_cui.te / umrs_cui.if — CUI custody types hierarchy.
   cui_lei.te / cui_lei.fc / cui_lei.if — LEI subcategory types.

@@ -81,6 +81,7 @@ Detailed rules are externalized. Do not duplicate rule content in this file.
 | `rust_design_rules.md` | Coding standards, clippy, citations, annotations | Rust code |
 | `high_assurance_pattern_rules.md` | HA patterns, must-use, validation, measurement | Rust code |
 | `test_structure_rules.md` | Test placement (no inline tests) | Rust code |
+| `env_sanitization_rules.md` | Env tier classification, scrub, `init_tool`, Command::env_clear | `umrs-core::init`, process env, child spawns |
 | **SELinux & labeling** | | |
 | `selinux.md` | SELinux axioms, trust gates, context format, Phase 1 | `umrs-selinux`, security contexts |
 | `labeling_mcs.md` | MCS labeling, CUI catalogs, setrans.conf, Five Eyes | `umrs-labels`, MCS categories |

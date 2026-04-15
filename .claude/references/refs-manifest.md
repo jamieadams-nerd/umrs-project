@@ -1578,6 +1578,73 @@ Relevant for Five Eyes label equivalency mapping.
 
 ---
 
+## Research Reports
+
+Research reports synthesized from multiple sources by the researcher agent.
+
+---
+
+### Environment-Variable Attack Prevention Reference
+
+```
+name: Environment-Variable Attack Prevention Reference
+path: .claude/references/reports/2026-04-12-env-attack-prevention.md
+version: 1.0
+source_url: synthesized — see sources cited within report
+date_retrieved: 2026-04-12
+sha256: 77b7dc12320284472c9440825e481abf4a194253aec5eb05101ed60096050d16
+relevance: umrs-core::init, scrub_env, SanitizedEnv, ScrubReport, umrs-env, CM-7, SI-7, SI-10, AC-3, SC-3, IA-5, SC-28
+status: downloaded
+```
+
+Covers: CVE-2023-4911 (GLIBC_TUNABLES), CVE-2024-48990/48992 (needrestart PYTHONPATH/RUBYLIB),
+CVE-2014-6271 (Shellshock), Shellshock-adjacent vectors (BASH_ENV, ENV, IFS), PATH trojans,
+LD_PRELOAD/LD_LIBRARY_PATH attack class (ATT&CK T1574.006/007), NLSPATH historical overflows,
+JAVA_TOOL_OPTIONS injection, cross-interpreter attack chains (elttam 2020). Authoritative coding
+guidance: CERT ENV01-C through ENV34-C, CWE-526/454/807/427/15, OWASP ASVS V14. NIST SP 800-53
+control mappings (CM-7, AC-3, SI-7, SI-10, SC-3, IA-5, SC-28), NIST SP 800-218 SSDF PW.4.1,
+NSA RTB RAIN/Fail-Closed. glibc AT_SECURE full variable list (22 vars), no_new_privs,
+systemd UnsetEnvironment/PrivateTmp/ProtectProc/NoNewPrivileges, SELinux domain-transition
+stripping, AppArmor uppercase exec modes. Rust 2024 edition set_var/remove_var unsafe change.
+Secrets-in-env critique vs NIST IA-5/SC-28. Complete Tier 1/2/3 variable classification table.
+Prioritized reading list for rust-developer (Phase 1a). RAG ingestion candidate shortlist.
+
+---
+
+---
+
+## C2PA Test Fixture Records
+
+Test fixtures for `umrs-c2pa` trust validation. All from approved sources.
+Full provenance in `components/rusty-gadgets/umrs-c2pa/tests/fixtures/trusted/SOURCE.md`.
+
+### crater-lake-cr.jpg — Adobe Lightroom Signed (Remote Manifest)
+
+```
+name: crater-lake-cr.jpg — C2PA test fixture (Adobe Lightroom, remote manifest)
+path: components/rusty-gadgets/umrs-c2pa/tests/fixtures/trusted/crater-lake-cr.jpg
+version: downloaded 2026-04-13
+source_url: https://contentauth.github.io/example-assets/images/crater-lake-cr.jpg
+date_retrieved: 2026-04-13
+sha256: eef052cf93d336862017f34f61b853b61474e519a7d07863caadb72130d5826c
+relevance: umrs-c2pa, C2PA trust validation, remote manifest error path testing
+status: downloaded
+```
+
+File is a real JPEG (618K, ffd8ff magic). Signed by Adobe Lightroom (post-2025-11-19 era,
+retrieved from contentauth/example-assets repo updated 2026-01-29). However, the manifest
+is stored externally at cai-manifests.adobe.com rather than embedded in the file.
+`umrs-c2pa` does not implement remote manifest fetching — this file produces an error
+when inspected rather than a TRUSTED result. Retained as a test case for the remote
+manifest error path. License: MIT (contentauth/example-assets).
+
+**Trust result when inspected:**
+`Error: must fetch remote manifests from url https://cai-manifests.adobe.com/manifests/urn-uuid-3ad678ce-1d4e-4bc0-a9ea-62185b89c815`
+
+**Not a TRUSTED fixture.** See SOURCE.md for the path to acquiring a TRUSTED fixture.
+
+---
+
 ## Pending Documents
 
 The following documents are referenced in CLAUDE.md but not yet downloaded.

@@ -1,6 +1,6 @@
 # UMRS ROADMAP
 
-**Updated:** 2026-04-02
+**Updated:** 2026-04-12
 
 High-assurance Rust platform for system security on Linux.
 Typed, provenance-verified answers about what a system is, what it runs, and whether it meets policy.
@@ -136,6 +136,18 @@ applies consistently across all sites.
 
 ## Milestones
 
+### Recently Delivered (post-M1, feeding M2/M3/M3.5)
+- [x] umrs-ls TUI Phases 1-3 with file cuddling, shared popups, Knox security review (2026-04-09)
+- [x] umrs-label TUI Security Label Registry browser (2026-04)
+- [x] Shared umrs-ui foundation crate — popup infrastructure, theming scaffolding (2026-04)
+- [x] Secure I/O enforcement pass: binary crates routed through umrs-platform/umrs-selinux abstractions (2026-04)
+- [x] Performance baseline + optimization pass on umrs-platform, umrs-selinux, umrs-core (2026-04)
+- [x] Supply chain audit + dependency cleanup (2026-04)
+- [x] Five Eyes failure case study corpus established (2026-04)
+- [x] Knox security review 2026-04-09 — 3 errors fixed, 12 concerns logged
+- [x] xtask staging pipeline — `stage`/`clean` commands, Makefile integration (2026-04-12)
+- [x] CUI taxonomy rebuild — unified JSON schema, rules, Rust types (2026-04)
+
 ### M1 — Solid Foundation — COMPLETE (2026-03-23) (G1, G2, G8)
 - [x] OS detection with trust tiers
 - [x] SELinux modeling (SecurityContext, MLS, CategorySet, SecureDirent)
@@ -175,6 +187,8 @@ applies consistently across all sites.
 First release uses `~/.local/bin` to lower the barrier and get people interested.
 Full deployment moves binaries into OS-standard locations with proper access controls.
 
+- [x] xtask staging pipeline — pre-installation checkpoint bundling binaries, scripts, configs (2026-04-12)
+- [ ] Installer that consumes `staging/` and places artifacts under OS-standard paths
 - [ ] Install to `/usr/local/bin` or `/usr/bin` (RPM-managed)
 - [ ] SELinux type enforcement: define `umrs_exec_t`, domain transitions, file contexts
 - [ ] fapolicyd trust entries (STIG-compliant hosts block `~/.local/bin` by default — CCE-89813-0)
@@ -228,10 +242,15 @@ are escalated.
 
 | Tool | Crate | Purpose | Status | Operates On |
 |---|---|---|---|---|
-| `umrs-ls` | `umrs-ls` | Security-enriched directory listing — SELinux labels, xattrs, security observations | Functional | Files, directories |
+| `umrs-ls` | `umrs-ls` | Security-enriched directory listing — SELinux labels, xattrs, security observations, interactive TUI with file cuddling, shared popups | Functional + TUI (Phases 1-3 done; 4/5 remain) | Files, directories |
+| `umrs-label` | `umrs-label` | Security Label Registry browser — CUI/Five Eyes label catalog TUI | Functional TUI | Label catalogs |
+| `umrs-stat` | `umrs-stat` | File stat with security enrichment (MIME, ELF, package provenance) | Functional CLI | Files |
+| `umrs-uname` | `umrs-uname` | OS / kernel identification with fr_CA localization | Functional | Host |
 | `umrs-state` | `umrs-state` | System state introspection — kernel posture, platform detection, security signals | Prototype | Host system |
 | `umrs-logspace` | `umrs-logspace` | Audit trail and logging — structured security event capture | Prototype | Audit events |
 | `umrs-c2pa` | `umrs-c2pa` | C2PA media provenance — chain-of-custody, trust list validation, CUI marking, SHA-256+SHA-384 dual digest (CNSA 2.0 ready) | Functional (43 tests, security-reviewed, EN+FR docs, i18n in progress) | Media files (JPEG, PNG, MP4, PDF) |
+| `umrs-ui` | `umrs-ui` (lib) | Shared TUI scaffolding — popup infrastructure, theming (light/dark), status displays | Functional | Used by umrs-ls, umrs-label |
+| `xtask` | `xtask` | Build tooling — stage/clean pipeline for binaries + scripts + configs into `staging/` pre-installation checkpoint | Functional (2026-04-12) | Workspace build output |
 
 ### Suggested Tool Enhancements
 

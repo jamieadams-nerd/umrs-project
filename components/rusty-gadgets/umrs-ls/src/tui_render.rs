@@ -663,8 +663,7 @@ fn render_wizard_logo(frame: &mut Frame, area: Rect, theme: &Theme) {
 ///
 /// The 4-char prefix accounts for: 2-char highlight symbol zone (`► ` or `  `)
 /// that ratatui prepends to every `List` item.
-const COL_HEADER_TEXT: &str =
-    "   IOVE  MODE         OWNER:GROUP      MODIFIED             NAME";
+const COL_HEADER_TEXT: &str = "   IOVE  MODE         OWNER:GROUP      MODIFIED             NAME";
 
 /// Render the `├───┤` horizontal divider using the T-connector characters.
 ///
@@ -718,10 +717,7 @@ fn render_col_headers(frame: &mut Frame, area: Rect, state: &ViewerState, _theme
     let total = area.width as usize;
 
     // Reserve one trailing column for visual breathing room on the right.
-    let pad = total
-        .saturating_sub(left_width)
-        .saturating_sub(right_width)
-        .saturating_sub(1);
+    let pad = total.saturating_sub(left_width).saturating_sub(right_width).saturating_sub(1);
     if pad > 0 {
         spans.push(Span::raw(" ".repeat(pad)));
     }
@@ -1657,10 +1653,7 @@ fn help_columns_lines<'a>() -> Vec<Line<'a>> {
         Line::from(vec![
             Span::raw("    "),
             Span::styled(ICON_CHECK, Style::default().fg(Color::Green)),
-            Span::styled(
-                "  at-rest encryption present (LUKS / fscrypt)",
-                text_style,
-            ),
+            Span::styled("  at-rest encryption present (LUKS / fscrypt)", text_style),
         ]),
         Line::from(vec![
             Span::raw("    "),

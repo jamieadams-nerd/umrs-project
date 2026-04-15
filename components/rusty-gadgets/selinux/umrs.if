@@ -1,0 +1,173 @@
+############################################
+## <summary>
+##   UMRS base custody interfaces.
+##
+##   Phase A provides: exec of UMRS binaries, read of config,
+##   manage of config (RW subset), read of data, manage of data,
+##   append of logs, and manage of logs. Actor-domain transitions
+##   are Phase B.
+## </summary>
+############################################
+
+
+############################################
+## <summary>
+##   Allow the caller domain to execute UMRS binaries
+##   (all types bearing the umrs_exec_type attribute).
+##   No automatic domain transition -- the caller executes
+##   in its own domain. This is the Phase A posture; actor
+##   domain transitions are Phase B.
+## </summary>
+## <param name="domain">
+##   <summary>Domain allowed to execute UMRS binaries.</summary>
+## </param>
+############################################
+interface(`umrs_exec',`
+    gen_require(`
+        attribute umrs_exec_type;
+        type umrs_bin_t;
+    ')
+
+    corecmd_search_bin($1)
+    allow $1 umrs_exec_type:dir  { search read open getattr };
+    allow $1 umrs_exec_type:file { read open getattr execute execute_no_trans map };
+')
+
+
+############################################
+## <summary>
+##   Allow a domain to read UMRS config (RO and RW-read side).
+## </summary>
+## <param name="domain">
+##   <summary>Domain allowed to read UMRS config.</summary>
+## </param>
+############################################
+interface(`umrs_read_config',`
+    gen_require(`
+        type umrs_config_ro_t;
+        type umrs_config_rw_t;
+    ')
+
+    ####################################
+    # Read-only config
+    ####################################
+    allow $1 umrs_config_ro_t:dir  { read search open getattr };
+    allow $1 umrs_config_ro_t:file { read open getattr };
+
+    ####################################
+    # RW config (read side only)
+    ####################################
+    allow $1 umrs_config_rw_t:dir  { read search open getattr };
+    allow $1 umrs_config_rw_t:file { read open getattr };
+')
+
+
+############################################
+## <summary>
+##   Allow a domain to manage UMRS RW config.
+## </summary>
+## <param name="domain">
+##   <summary>Domain allowed to manage UMRS RW config.</summary>
+## </param>
+############################################
+interface(`umrs_manage_config',`
+    gen_require(`
+        type umrs_config_rw_t;
+    ')
+
+    allow $1 umrs_config_rw_t:dir {
+        create read write add_name remove_name
+        search open getattr setattr
+    };
+
+    allow $1 umrs_config_rw_t:file {
+        create read write append open
+        getattr setattr unlink
+    };
+')
+
+
+############################################
+## <summary>
+##   Allow a domain to read UMRS data.
+## </summary>
+## <param name="domain">
+##   <summary>Domain allowed to read UMRS data.</summary>
+## </param>
+############################################
+interface(`umrs_read_data',`
+    gen_require(`
+        type umrs_data_rw_t;
+    ')
+
+    allow $1 umrs_data_rw_t:dir  { read search open getattr };
+    allow $1 umrs_data_rw_t:file { read open getattr };
+')
+
+
+############################################
+## <summary>
+##   Allow a domain to manage UMRS data.
+## </summary>
+## <param name="domain">
+##   <summary>Domain allowed to manage UMRS data.</summary>
+## </param>
+############################################
+interface(`umrs_manage_data',`
+    gen_require(`
+        type umrs_data_rw_t;
+    ')
+
+    allow $1 umrs_data_rw_t:dir {
+        create read write add_name remove_name
+        search open getattr setattr
+    };
+
+    allow $1 umrs_data_rw_t:file {
+        create read write append open
+        getattr setattr unlink
+    };
+')
+
+
+############################################
+## <summary>
+##   Allow a domain to append to UMRS logs.
+## </summary>
+## <param name="domain">
+##   <summary>Domain allowed to append to UMRS logs.</summary>
+## </param>
+############################################
+interface(`umrs_append_logs',`
+    gen_require(`
+        type umrs_log_rw_t;
+    ')
+
+    allow $1 umrs_log_rw_t:dir  { search open getattr };
+    allow $1 umrs_log_rw_t:file { append open getattr };
+')
+
+
+############################################
+## <summary>
+##   Allow full management of UMRS logs.
+## </summary>
+## <param name="domain">
+##   <summary>Domain allowed to manage UMRS logs.</summary>
+## </param>
+############################################
+interface(`umrs_manage_logs',`
+    gen_require(`
+        type umrs_log_rw_t;
+    ')
+
+    allow $1 umrs_log_rw_t:dir {
+        create read write add_name remove_name
+        search open getattr setattr
+    };
+
+    allow $1 umrs_log_rw_t:file {
+        create read write append open
+        getattr setattr unlink
+    };
+')

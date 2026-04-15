@@ -402,7 +402,11 @@ impl DirViewerApp {
     /// from the listing; see `tree_adapter::build_tree` for details.
     #[must_use = "the returned TreeModel must be loaded into ViewerState; discarding it leaves the display empty"]
     pub fn build_current_tree(&self) -> TreeModel {
-        build_tree(&self.listing, &self.current_path, self.dir_meta.is_encrypted())
+        build_tree(
+            &self.listing,
+            &self.current_path,
+            self.dir_meta.is_encrypted(),
+        )
     }
 }
 

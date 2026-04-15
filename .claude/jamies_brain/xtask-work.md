@@ -47,6 +47,7 @@ Never hardcode paths. Never use relative paths from cwd.
 
 ## Staging Layout
 
+workspace_root/
     staging/
       bin/        ← compiled binaries + end-user scripts, merged
       config/     ← all config/ contents from any crate, merged

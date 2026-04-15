@@ -1,0 +1,121 @@
+############################################
+## <summary>
+##   UMRS CUI custody interfaces
+##
+##   Provides controlled access to
+##   CUI-classified custody domains.
+##
+##   Builds upon base UMRS custody model.
+## </summary>
+############################################
+
+
+############################################
+## Read access to CUI data
+############################################
+interface(`umrs_cui_read_data',`
+    gen_require(`
+        attribute cui_data_type;
+    ')
+
+    allow $1 cui_data_type:dir  { read search open getattr };
+    allow $1 cui_data_type:file { read open getattr };
+')
+
+
+############################################
+## Manage (read/write) CUI data
+############################################
+interface(`umrs_cui_manage_data',`
+    gen_require(`
+        type cui_data_rw_t;
+    ')
+
+    ####################################
+    # Directory control
+    ####################################
+    allow $1 cui_data_rw_t:dir {
+        create read write add_name remove_name
+        search open getattr setattr
+    };
+
+    ####################################
+    # File control
+    ####################################
+    allow $1 cui_data_rw_t:file {
+        create read write append open
+        getattr setattr unlink
+    };
+')
+
+
+############################################
+## Read access to CUI configuration
+############################################
+interface(`umrs_cui_read_config',`
+    gen_require(`
+        attribute cui_config_type;
+    ')
+
+    allow $1 cui_config_type:dir  { read search open getattr };
+    allow $1 cui_config_type:file { read open getattr };
+')
+
+
+############################################
+## Manage CUI configuration
+############################################
+interface(`umrs_cui_manage_config',`
+    gen_require(`
+        type cui_config_rw_t;
+    ')
+
+    ####################################
+    # Directory control
+    ####################################
+    allow $1 cui_config_rw_t:dir {
+        create read write add_name remove_name
+        search open getattr setattr
+    };
+
+    ####################################
+    # File control
+    ####################################
+    allow $1 cui_config_rw_t:file {
+        create read write append open
+        getattr setattr unlink
+    };
+')
+
+
+############################################
+## Append to CUI logs
+############################################
+interface(`umrs_cui_append_logs',`
+    gen_require(`
+        type cui_log_rw_t;
+    ')
+
+    allow $1 cui_log_rw_t:file { append open getattr };
+')
+
+
+############################################
+## Full management of CUI logs
+############################################
+interface(`umrs_cui_manage_logs',`
+    gen_require(`
+        type cui_log_rw_t;
+    ')
+
+    allow $1 cui_log_rw_t:dir {
+        create read write add_name remove_name
+        search open getattr setattr
+    };
+
+    allow $1 cui_log_rw_t:file {
+        create read write append open
+        getattr setattr unlink
+    };
+')
+

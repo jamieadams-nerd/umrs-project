@@ -1,3 +1,22 @@
+//! xtask — workspace-level build automation for components/rusty-gadgets/.
+//!
+//! Provides sub-commands for formatting, linting, testing, staging, and
+//! cleaning build artifacts. Invoked as `cargo xtask <cmd>`.
+//!
+//! ## Compliance
+//!
+//! - `NIST SP 800-53 SA-11` — Developer Testing and Evaluation: the `fmt`,
+//!   `clippy`, and `test` commands enforce code quality gates.
+//! - `NIST SP 800-53 SA-12` — Supply Chain Protection: the `stage` command
+//!   assembles the pre-installation checkpoint used by the IMA signing step.
+//! - `NIST SP 800-218 SSDF PW.4` — Module documentation check (`doc-check`)
+//!   enforces documentation completeness at build time.
+
+#![forbid(unsafe_code)]
+
+mod clean;
+mod stage;
+
 use anyhow::{Context, Result, bail};
 use std::env;
 use std::fs;
@@ -8,9 +27,10 @@ use std::process::{Command, Stdio};
 /// doc blocks. Flags files that have no `//!` line at all — the most common
 /// class of documentation debt.
 ///
-/// NIST SP 800-53 SA-11 / NIST SP 800-218 SSDF PW.4.
+/// `NIST SP 800-53 SA-11` / `NIST SP 800-218 SSDF PW.4`.
 fn doc_check() -> Result<()> {
-    let workspace_root = Path::new(env!("CARGO_MANIFEST_DIR")).parent().unwrap();
+    let workspace_root =
+        Path::new(env!("CARGO_MANIFEST_DIR")).parent().expect("xtask has no parent directory");
     let mut missing = Vec::new();
 
     // Walk each workspace member's src/ directory
@@ -58,7 +78,7 @@ fn check_dir_for_module_docs(dir: &Path, missing: &mut Vec<std::path::PathBuf>) 
     Ok(())
 }
 
-fn run(cmd: &mut Command) -> Result<()> {
+pub(crate) fn run_cmd(cmd: &mut Command) -> Result<()> {
     eprintln!("[xtask] {:?}", cmd);
     let status = cmd
         .stdin(Stdio::inherit())
@@ -79,26 +99,35 @@ fn main() -> Result<()> {
 
     match sub.as_str() {
         "fmt" => {
-            run(Command::new("cargo").arg("fmt").arg("--all"))?;
+            run_cmd(Command::new("cargo").arg("fmt").arg("--all"))?;
         }
         "clippy" => {
-            run(Command::new("cargo")
-                .arg("clippy")
-                .arg("--workspace")
-                .arg("--all-targets")
-                .arg("--")
-                .arg("-D")
-                .arg("warnings"))?;
+            run_cmd(
+                Command::new("cargo")
+                    .arg("clippy")
+                    .arg("--workspace")
+                    .arg("--all-targets")
+                    .arg("--")
+                    .arg("-D")
+                    .arg("warnings"),
+            )?;
         }
         "test" => {
-            run(Command::new("cargo").arg("test").arg("--workspace"))?;
+            run_cmd(Command::new("cargo").arg("test").arg("--workspace"))?;
         }
         "robots" => {
             // Example: run your robot generator crate (adjust args as needed)
-            run(Command::new("cargo").args(["run", "-p", "robotgen", "--"]))?;
+            run_cmd(Command::new("cargo").args(["run", "-p", "robotgen", "--"]))?;
         }
         "doc-check" => {
             doc_check()?;
+        }
+        "stage" => {
+            let release = args.any(|a| a == "--release");
+            stage::run(release)?;
+        }
+        "clean" => {
+            clean::run()?;
         }
         "help" | "-h" | "--help" => {
             eprintln!(
@@ -109,7 +138,9 @@ fn main() -> Result<()> {
                  \tclippy\n\
                  \ttest\n\
                  \tdoc-check\n\
-                 \trobots\n"
+                 \trobots\n\
+                 \tstage [--release]\n\
+                 \tclean\n"
             );
         }
         other => bail!("unknown xtask command: {other}"),

@@ -61,7 +61,7 @@ and are invisible to that audit.
 
 ## Section 2 — SELinux Policy Files in `components/platforms/rhel10/` — CCE Annotation Status
 
-Three policy modules exist under `components/platforms/rhel10/umrs-selinux/policy/`:
+Three policy modules exist under `components/rusty-gadgets/selinux/`:
 
 - `umrs.te` + `umrs.fc` + `umrs.if` — base UMRS custody types
 - `umrs_cui.te` + `umrs_cui.fc` + `umrs_cui.if` — CUI custody extension
@@ -156,7 +156,7 @@ on hardened hosts. Without it, UMRS silently fails to execute.
 ## Section 4 — Missing Binary File Context (HIGH)
 
 ```
-File: components/platforms/rhel10/umrs-selinux/policy/umrs.fc
+File: components/rusty-gadgets/selinux/umrs.fc
 Location: entire file
 Finding: No file context entry exists for UMRS binary paths. No umrs_exec_t type is defined
          in umrs.te. The domain transition from user_t or staff_t into a confined UMRS execution

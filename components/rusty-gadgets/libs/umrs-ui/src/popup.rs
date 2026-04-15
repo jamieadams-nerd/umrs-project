@@ -363,7 +363,7 @@ pub fn render_audit_card_popup(
             // Prefix the Observations tab with a flag icon when findings exist.
             // NIST SP 800-53 CA-7 — visual cue ensures findings are not overlooked.
             let display_name = if *name == "Observations" && obs_count > 0 {
-                format!(" [\u{2691} {name}] ")  // ⚑ flag
+                format!(" [\u{2691} {name}] ") // ⚑ flag
             } else {
                 format!(" [{name}] ")
             };

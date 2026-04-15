@@ -33,7 +33,7 @@ use umrs_core::i18n;
 
 use crate::c2pa::{
     ingest::IngestResult,
-    manifest::{ChainEntry, TrustStatus},
+    manifest::{ChainEntry, TrustFinding, TrustStatus},
     signer::describe_algorithm,
 };
 
@@ -116,14 +116,38 @@ pub fn print_chain(
                 }
                 (TrustStatus::Untrusted, false) => {
                     let label = format!("{}", entry.trust_status);
-                    footnote_set.entry(label).or_insert_with(|| {
-                        i18n::tr(
+                    // If we have a structured trust finding, use its explanation
+                    // instead of the generic UNVERIFIED footnote. This gives the
+                    // operator actionable context rather than a generic message.
+                    let explanation = match &entry.trust_finding {
+                        Some(TrustFinding::IssuerRotationMismatch {
+                            image_signed,
+                            trust_cert_not_before,
+                            subject_cn,
+                        }) => {
+                            format!(
+                                "{}\n\t{} {image_signed}\n\t{} {trust_cert_not_before} (CN: {subject_cn})\n\t{}",
+                                i18n::tr(
+                                    "Certificate rotation mismatch — image signed before trust list \
+                                     certificate became valid."
+                                ),
+                                i18n::tr("Image signed      :"),
+                                i18n::tr("Trust cert valid  :"),
+                                i18n::tr(
+                                    "This is likely a CA rotation event, not tampering. \
+                                     To resolve: obtain images signed after the rotation date, \
+                                     or add the pre-rotation issuing CA to user_anchors."
+                                ),
+                            )
+                        }
+                        None => i18n::tr(
                             "Signature is valid but the signer's CA is not in your trust list. \n\
                            \tThis does not mean the file is untrustworthy — the signer may use \n\
                            \ta CA that is not yet in the C2PA official trust list (e.g., OpenAI). \n\
                            \tTo resolve, add the signer's root CA to trust_anchors or allowed_list.",
-                        )
-                    });
+                        ),
+                    };
+                    footnote_set.entry(label).or_insert(explanation);
                     format!("*[{}]", entry.trust_status)
                 }
                 _ => format!("[{}]", entry.trust_status),

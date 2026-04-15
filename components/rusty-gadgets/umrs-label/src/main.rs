@@ -31,6 +31,9 @@
 //!   hostname, OS, SELinux mode, and FIPS state on every rendered frame.
 //! - **NIST SP 800-53 AC-3**: The browser is unconditionally read-only; no
 //!   catalog mutation is possible through the interface.
+//! - **NIST SP 800-53 SI-10**: Input Validation — clap validates all CLI
+//!   arguments at entry, rejecting unknown flags and enforcing type constraints
+//!   before any catalog I/O or TUI initialization occurs.
 //!
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]
@@ -46,6 +49,7 @@ use std::collections::BTreeMap;
 use std::io::{self, IsTerminal as _};
 use std::time::Duration;
 
+use clap::Parser;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
 
 use umrs_labels::cui::catalog;
@@ -57,6 +61,63 @@ use umrs_ui::theme::Theme;
 use umrs_ui::viewer::ViewerState;
 
 // ---------------------------------------------------------------------------
+// CLI argument definition
+// ---------------------------------------------------------------------------
+
+/// Browse and display the UMRS security label registry.
+///
+/// Loads CUI (Controlled Unclassified Information) and Canadian Protected
+/// label catalogs from JSON files and renders them as an interactive TUI
+/// browser or a plain text listing.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-10**: Input Validation — clap validates all arguments
+///   at process entry, rejecting unknown flags before any catalog I/O occurs.
+/// - **NIST SP 800-53 AC-3**: The browser is unconditionally read-only.
+#[derive(Parser)]
+#[command(
+    name = "umrs-label",
+    version,
+    about = "Browse and display the UMRS security label registry (CUI and Canadian Protected catalogs)",
+    long_about = "Browse and display the UMRS security label registry.\n\n\
+        Loads CUI (Controlled Unclassified Information) and Canadian Protected \
+        label catalogs from JSON files and renders them as an interactive TUI \
+        browser or a plain text listing.\n\n\
+        When stdout is a terminal the interactive TUI launches automatically. \
+        Use --cli to force plain-text output or pipe to another program."
+)]
+struct Args {
+    /// Path to the US CUI label catalog JSON file.
+    ///
+    /// Defaults to `config/us/US-CUI-LABELS.json` relative to the current
+    /// working directory.
+    #[arg(long, default_value = "config/us/US-CUI-LABELS.json")]
+    us_catalog: String,
+
+    /// Path to the Canadian Protected label catalog JSON file.
+    ///
+    /// Defaults to `config/ca/CANADIAN-PROTECTED.json` relative to the
+    /// current working directory. The Canadian catalog is optional; if the
+    /// file is absent the tool continues with US CUI labels only.
+    #[arg(long, default_value = "config/ca/CANADIAN-PROTECTED.json")]
+    ca_catalog: String,
+
+    /// Force plain-text CLI output instead of the interactive TUI.
+    ///
+    /// This flag is implied when stdout is not a terminal (e.g., when piping
+    /// output to another program).
+    #[arg(long)]
+    cli: bool,
+
+    /// Emit machine-readable JSON output.
+    ///
+    /// JSON output support is reserved for a future implementation phase.
+    #[arg(long)]
+    json: bool,
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -66,19 +127,12 @@ fn main() {
         log::set_max_level(log::LevelFilter::Info);
     }
 
-    // TODO: Consider adopting clap for structured argument parsing with
-    // automatic --help, --version, and validation. Current manual parsing
-    // is functional but does not reject unknown flags.
-    let args: Vec<String> = std::env::args().collect();
+    let args = Args::parse();
 
-    let json_mode = args.contains(&"--json".to_owned());
-    let cli_mode = args.contains(&"--cli".to_owned());
-
-    // Parse catalog path overrides.
-    let us_catalog_path = arg_value(&args, "--us-catalog")
-        .unwrap_or_else(|| "config/us/US-CUI-LABELS.json".to_owned());
-    let ca_catalog_path = arg_value(&args, "--ca-catalog")
-        .unwrap_or_else(|| "config/ca/CANADIAN-PROTECTED.json".to_owned());
+    let json_mode = args.json;
+    let cli_mode = args.cli;
+    let us_catalog_path = args.us_catalog;
+    let ca_catalog_path = args.ca_catalog;
 
     // Load US catalog (required).
     let us_catalog = catalog::load_catalog(&us_catalog_path).unwrap_or_else(|e| {
@@ -240,12 +294,16 @@ fn run_tui(us_catalog: catalog::Catalog, ca_catalog: Option<catalog::Catalog>) {
     );
 
     // NO_COLOR environment variable compliance (https://no-color.org/).
-    // When set (to any value), color output must be suppressed.
-    // TODO(umrs-ui): Theme::no_color() variant needed; currently falls back to
-    //   default. The check is present so the env var is honoured as soon as the
-    //   theme variant is implemented.
-    let _no_color = std::env::var("NO_COLOR").is_ok();
-    let theme = Theme::default();
+    // When set (to any non-empty value or even empty string), color output must
+    // be suppressed. `var_os` is used so the value is never decoded — presence
+    // alone is the signal, consistent with the NO_COLOR specification.
+    // NIST SP 800-53 SI-11 / WCAG 1.4.1 — accessible output in color-restricted
+    // environments (audit pipelines, screen readers, legacy terminals).
+    let theme = if std::env::var_os("NO_COLOR").is_some() {
+        Theme::no_color()
+    } else {
+        Theme::dark()
+    };
 
     // Snapshot the security posture header once at startup.  OS name is read
     // through the umrs-platform OsDetector pipeline, which routes through
@@ -661,20 +719,3 @@ fn render_help_overlay(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, 
     frame.render_widget(ratatui::widgets::Paragraph::new(lines), inner);
 }
 
-// ---------------------------------------------------------------------------
-// Utility helpers
-// ---------------------------------------------------------------------------
-
-/// Extract the value following `--flag=<value>` or `--flag <value>` from args.
-fn arg_value(args: &[String], flag: &str) -> Option<String> {
-    let prefix = format!("{flag}=");
-    for (i, arg) in args.iter().enumerate() {
-        if let Some(v) = arg.strip_prefix(&prefix) {
-            return Some(v.to_owned());
-        }
-        if arg == flag {
-            return args.get(i + 1).cloned();
-        }
-    }
-    None
-}

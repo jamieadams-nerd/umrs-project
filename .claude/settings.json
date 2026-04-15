@@ -315,7 +315,19 @@
       "Read(//home/jadams/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustix-1.1.4/src/time/**)",
       "Bash(git -C /DEVELOPMENT/umrs-project log --oneline -5)",
       "Bash(git -C /DEVELOPMENT/umrs-project stash list)",
-      "Bash(git:*)"
+      "Bash(git:*)",
+      "Read(//srv/UMRS_TEST_VAULT/**)",
+      "Bash(sudo -u umrs-admin -i whoami)",
+      "Bash(sudo -u umrs-admin -i bash -c \"chcat --help 2>&1 | head -15\")",
+      "Bash(sudo:*)",
+      "Bash(echo \"[2026-04-12 00:00] [rust-developer] implement xtask staging pipeline \\(stage/clean commands + Makefile + .gitignore + tests\\) [Read,Write,Edit,Bash] [outcome: success] [pre-existing mcs_translator failures in umrs-selinux unrelated to this work]\")",
+      "WebFetch(domain:wiki.sei.cmu.edu)",
+      "WebFetch(domain:cwe.mitre.org)",
+      "WebFetch(domain:cmu-sei.github.io)",
+      "WebFetch(domain:attack.mitre.org)",
+      "WebFetch(domain:www.elttam.com)",
+      "WebFetch(domain:nvd.nist.gov)",
+      "WebFetch(domain:www.defensive-security.com)"
     ]
   },
   "enabledPlugins": {

@@ -22,7 +22,7 @@ transitions occur. Moving to system-installed changes the trust boundary.
 
 ## Current State — What Exists
 
-The policy foundation at `components/platforms/rhel10/umrs-selinux/policy/` is solid:
+The policy foundation at `components/rusty-gadgets/selinux/` is solid:
 
 - `umrs.te` — 7 file types grouped under attributes, `neverallow` guardrails
 - `umrs.fc` — 5 filesystem path mappings (data, config, log, share, httpd)

@@ -1,0 +1,152 @@
+// SPDX-License-Identifier: MIT
+// Template: UMRS man page section layout.
+// Copy this file to <crate>/man/<tool>.1.adoc and fill in each section.
+// French version goes to <crate>/man/fr_CA/<tool>.1.adoc — same structure,
+// translated prose. Section names remain in English per groff man(7) convention.
+//
+// Build: asciidoctor -b manpage <tool>.1.adoc -o <tool>.1
+// See: components/rusty-gadgets/docs/man-page-conventions.md
+= umrs-toolname(1)
+:doctype: manpage
+:manmanual: UMRS Tools
+:mansource: umrs-toolname 0.1.0
+// Replace 0.1.0 with the crate version from Cargo.toml.
+// The date below is updated on each release. Use ISO 8601 format.
+:revdate: 2026-04-13
+
+== NAME
+
+umrs-toolname - one-line description matching the --help first line
+
+// The NAME line must be in exactly this form: "name - description".
+// The dash is a plain ASCII hyphen. Do not use an em dash.
+
+== SYNOPSIS
+
+// List every distinct invocation form, one per line.
+// Use .B for the command name and .RI / argument notation to mark
+// optional vs required arguments. In AsciiDoc manpage backend, use
+// bold for command names and italic for argument placeholders.
+
+*umrs-toolname* [_OPTIONS_] _FILE_
+
+*umrs-toolname* [_OPTIONS_] *--flag* _VALUE_ _FILE_
+
+// If the tool has subcommands, list each:
+// *umrs-toolname* *subcommand* [_OPTIONS_]
+
+== DESCRIPTION
+
+// 2-4 paragraphs. Cover:
+// 1. What the tool does.
+// 2. The security posture context: what trust claims it makes or verifies,
+//    what labels or contexts it reads or writes.
+// 3. Phase constraints if applicable (Phase 1 = labeling only, no enforcement).
+//    Follow cui_phase1_language.md — no "enforces" language until MLS is live.
+
+umrs-toolname does X.
+
+In a UMRS deployment, the tool reads Y from Z and presents it to the operator.
+Under Phase 1 (targeted SELinux policy), labels are visible and tracked but
+mandatory access control enforcement is not active.
+
+== OPTIONS
+
+// Group options by function when there are more than 8. Otherwise list flat.
+// Use a definition list: term:: description on the next line.
+
+*-h*, *--help*::
+  Print a help message and exit.
+
+*-V*, *--version*::
+  Print the version string and exit.
+
+*--json*::
+  Emit output as machine-readable JSON on stdout.
+  Diagnostic messages continue to go to stderr.
+
+// Add tool-specific options here.
+// Format: *--flag* _VALUE_:: on one line, description on the next.
+
+// Template placeholder — replace with actual options:
+*--option* _VALUE_::
+  Description of what this option does. State the default value if one
+  exists: default is `VALUE`.
+
+== EXIT CODES
+
+// Always include the full table. Exit codes follow secure_bash_rules.md.
+// Add tool-specific codes (7+) as needed.
+
+[cols="1,5", options="header"]
+|===
+| Code | Meaning
+| 0    | Success — no action required
+| 1    | General runtime error
+| 2    | Usage error — invalid arguments or missing required input
+| 3    | Precondition failure — required file, service, or dependency absent
+| 4    | Policy failure — a security policy check failed
+| 5    | Policy warning — a policy check found a non-conformance
+| 6    | Partial success — some operations succeeded, some failed
+|===
+
+// Add tool-specific codes below code 6 if needed:
+// | 7    | Tool-specific meaning
+
+== FILES
+
+// List every file the tool reads, writes, or creates.
+// Omit this section only if the tool reads no external files and writes
+// no output files (rare for UMRS tools).
+
+_/etc/umrs/..._::
+  Description of the file and how it is used.
+
+_~/.config/umrs/..._::
+  Per-user configuration, if applicable.
+
+// Replace the placeholders with actual paths.
+
+== ENVIRONMENT
+
+// List every environment variable that affects tool behaviour.
+// Omit this section if no environment variables are consulted.
+
+*NO_COLOR*::
+  When set to any non-empty value, disables ANSI colour output.
+  All UMRS TUI tools honour this variable unconditionally.
+
+*LANG*, *LC_ALL*, *LC_MESSAGES*::
+  Locale variables. Set to `fr_CA.UTF-8` to switch the tool to
+  Canadian French output.
+
+// Add tool-specific variables here.
+
+== COMPLIANCE
+
+// List the NIST SP 800-53 and other controls the tool's output or
+// behaviour directly supports. This section is required for all UMRS
+// man pages — it is part of the auditable documentation artifact.
+// Use canonical citation form: "NIST SP 800-53 XX-N".
+
+*NIST SP 800-53 XX-N* — Control Name::
+  Brief statement of how the tool supports this control.
+
+*NIST SP 800-53 SA-22* — Unsupported System Components::
+  This man page is the operator-facing documentation artifact for
+  umrs-toolname. Its presence in the deployed package satisfies the
+  documentation requirement for installed components.
+
+// Replace XX-N with the actual control(s). Add rows as needed.
+
+== SEE ALSO
+
+// Cross-references to related UMRS tools and relevant man pages.
+// Use man(section) format: umrs-ls(1), semanage(8), etc.
+
+// Template placeholders — replace with actual cross-references:
+*umrs-ls*(1), *umrs-stat*(1), *semanage*(8), *ls*(1)
+
+== AUTHOR
+
+The UMRS Project.

@@ -11,10 +11,11 @@ use umrs_c2pa::c2pa::{
     build_c2pa_settings,
     config::UmrsConfig,
     ingest::{ingest_file, sha256_hex, sha384_hex},
-    manifest::{TrustStatus, has_manifest, read_chain},
+    manifest::{TrustFinding, TrustStatus, has_manifest, read_chain},
     signer::{ALLOWED_ALGORITHMS, describe_algorithm, parse_algorithm},
     validate::{CheckStatus, validate_config},
 };
+use umrs_c2pa::c2pa::inspect_rotation_mismatch;
 
 // ── helpers ────────────────────────────────────────────────────────────────────
 
@@ -675,6 +676,111 @@ fn test_build_settings_with_real_pem_file() {
         result.is_ok(),
         "build_c2pa_settings should succeed with a real trust anchor PEM: {:?}",
         result.err()
+    );
+}
+
+// ── IssuerRotationMismatch classification ────────────────────────────────────
+
+/// Build a minimal self-signed PEM certificate with the given CN.
+///
+/// The `Not Before` date is set to the current time (`days_from_now(0)`),
+/// giving tests a stable anchor: any signing timestamp before "now" is in
+/// the past, and any timestamp after "now" is in the future.
+///
+/// Returns the certificate as a PEM-encoded `String`.
+fn make_cert_pem(cn: &str) -> String {
+    use openssl::asn1::Asn1Time;
+    use openssl::bn::{BigNum, MsbOption};
+    use openssl::ec::{EcGroup, EcKey};
+    use openssl::hash::MessageDigest;
+    use openssl::nid::Nid;
+    use openssl::pkey::PKey;
+    use openssl::x509::{X509Builder, X509NameBuilder};
+
+    let group = EcGroup::from_curve_name(Nid::X9_62_PRIME256V1).expect("EC group");
+    let ec_key = EcKey::generate(&group).expect("EC keygen");
+    let pkey = PKey::from_ec_key(ec_key).expect("PKey");
+
+    let mut name_builder = X509NameBuilder::new().expect("name builder");
+    name_builder.append_entry_by_nid(Nid::COMMONNAME, cn).expect("CN");
+    let name = name_builder.build();
+
+    let mut builder = X509Builder::new().expect("X509 builder");
+    builder.set_version(2).expect("version");
+    builder.set_subject_name(&name).expect("subject");
+    builder.set_issuer_name(&name).expect("issuer");
+    builder.set_pubkey(&pkey).expect("pubkey");
+
+    let not_before = Asn1Time::days_from_now(0).expect("not_before");
+    let not_after = Asn1Time::days_from_now(1).expect("not_after");
+    builder.set_not_before(&not_before).expect("set not_before");
+    builder.set_not_after(&not_after).expect("set not_after");
+
+    let mut serial_bn = BigNum::new().expect("serial BigNum");
+    serial_bn.pseudo_rand(64, MsbOption::MAYBE_ZERO, false).expect("serial rand");
+    let serial = serial_bn.to_asn1_integer().expect("serial ASN1");
+    builder.set_serial_number(&serial).expect("serial");
+
+    builder.sign(&pkey, MessageDigest::sha256()).expect("sign");
+    let cert = builder.build();
+    String::from_utf8(cert.to_pem().expect("to_pem")).expect("utf8")
+}
+
+/// `inspect_rotation_mismatch` returns `Some(IssuerRotationMismatch)` when
+/// the signing timestamp is before the trust cert's `Not Before` date.
+///
+/// Scenario: cert Not Before = now (generated with `days_from_now(0)`),
+/// signing timestamp = 2020-01-01 (well in the past).
+/// Expected: mismatch detected — image was signed before the CA existed.
+#[test]
+fn test_rotation_mismatch_signed_before_not_before() {
+    let cn = "Test Rotation CA";
+    let pem = make_cert_pem(cn);
+
+    // Signing timestamp far in the past — before the cert's Not Before date.
+    let signed_at = "2020-01-01T00:00:00Z";
+
+    let finding = inspect_rotation_mismatch(signed_at, cn, &pem);
+
+    assert!(
+        finding.is_some(),
+        "Expected Some(IssuerRotationMismatch) when image was signed before \
+         the trust cert's Not Before date, got None"
+    );
+
+    if let Some(TrustFinding::IssuerRotationMismatch { image_signed, subject_cn, .. }) = finding {
+        assert_eq!(
+            image_signed, signed_at,
+            "image_signed must echo the input timestamp"
+        );
+        assert_eq!(
+            subject_cn, cn,
+            "subject_cn must match the cert's Common Name"
+        );
+    } else {
+        panic!("finding was Some but not IssuerRotationMismatch — variant mismatch");
+    }
+}
+
+/// `inspect_rotation_mismatch` returns `None` when the signing timestamp is
+/// at or after the trust cert's `Not Before` date — no rotation mismatch.
+///
+/// Scenario: cert Not Before = now, signing timestamp = 2099-01-01 (future).
+/// Expected: no mismatch — the cert was already valid when the image was signed.
+#[test]
+fn test_rotation_mismatch_signed_after_not_before_returns_none() {
+    let cn = "Test Rotation CA";
+    let pem = make_cert_pem(cn);
+
+    // Signing timestamp far in the future — after the cert's Not Before date.
+    let signed_at = "2099-01-01T00:00:00Z";
+
+    let finding = inspect_rotation_mismatch(signed_at, cn, &pem);
+
+    assert!(
+        finding.is_none(),
+        "Expected None when image was signed after the trust cert's Not Before \
+         date, but got: {finding:?}"
     );
 }
 

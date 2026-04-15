@@ -10,10 +10,36 @@
 //! The default theme uses a "high-tech" dark palette: cyan borders,
 //! green wizard logo, bright key labels, and level-keyed status colors.
 //!
+//! Three constructors are provided:
+//!
+//! - [`Theme::dark()`] — high-contrast palette for dark terminal backgrounds.
+//! - [`Theme::light()`] — placeholder; currently returns the dark palette.
+//! - [`Theme::no_color()`] — no ANSI color codes; honors the `NO_COLOR`
+//!   environment variable ([`https://no-color.org/`]). Text modifiers
+//!   (bold, dim, reversed) are retained for structural readability.
+//!
+//! Call sites MUST select the theme based on the `NO_COLOR` environment
+//! variable before constructing the terminal:
+//!
+//! ```rust,ignore
+//! let theme = if std::env::var_os("NO_COLOR").is_some() {
+//!     Theme::no_color()
+//! } else {
+//!     Theme::dark()
+//! };
+//! ```
+//!
 //! ## Compliance
 //!
 //! - **NIST SP 800-53 AU-3**: Security state (trust level, status) must be
 //!   visually unambiguous. Color choices map directly to severity tiers.
+//! - **NIST SP 800-53 SI-11**: Error and status information must remain
+//!   meaningful when color is unavailable; structural modifiers carry the
+//!   semantic hierarchy in `no_color` mode.
+//! - **WCAG 1.4.1**: Information must not be conveyed by color alone.
+//!   Text-symbol prefixes (✓ / ✗) provide color-independent semantics
+//!   for indicator values; `no_color` mode is the proof that the design
+//!   satisfies this criterion.
 
 use ratatui::style::{Color, Modifier, Style};
 
@@ -218,6 +244,67 @@ impl Theme {
         // TODO(theming): implement a real light palette.  Placeholder
         // returns the dark theme so the API is stable today.
         Self::default_dark()
+    }
+
+    /// No-color theme — honors the `NO_COLOR` environment variable.
+    ///
+    /// Every style field uses only text modifiers (bold, dim, reversed) and
+    /// carries **no foreground or background color**. The terminal produces
+    /// no ANSI color-select sequences when ratatui renders any widget styled
+    /// with this theme.
+    ///
+    /// Text modifiers are retained deliberately:
+    /// - `BOLD` preserves heading hierarchy.
+    /// - `DIM` preserves the visual distinction between key and value columns.
+    /// - `REVERSED` on `list_selection` inverts the terminal's own text and
+    ///   background colors, which are host-controlled and contain no ANSI
+    ///   color code from this crate.
+    ///
+    /// Dialog border styles that previously distinguished severity by color
+    /// (info = cyan, error = red, warning = yellow) all collapse to the same
+    /// neutral style.  Callers that need severity discrimination in no-color
+    /// mode must use textual labels in dialog titles.
+    ///
+    /// ## Compliance
+    ///
+    /// - **NIST SP 800-53 SI-11**: Meaningful output in environments where
+    ///   ANSI color is disabled (e.g., audit log pipelines, screen readers,
+    ///   legacy terminals). Structural modifiers carry semantic hierarchy.
+    /// - **WCAG 1.4.1**: Information must not be conveyed by color alone.
+    ///   This theme enforces that requirement at the palette layer.
+    #[must_use = "theme is consumed by render functions"]
+    pub fn no_color() -> Self {
+        let plain = Style::default();
+        let bold = Style::default().add_modifier(Modifier::BOLD);
+        let dim = Style::default().add_modifier(Modifier::DIM);
+        let bold_dim = Style::default().add_modifier(Modifier::BOLD | Modifier::DIM);
+        let reversed = Style::default().add_modifier(Modifier::REVERSED);
+
+        Self {
+            border: plain,
+            tab_active: bold,
+            tab_inactive: dim,
+            data_key: dim,
+            data_value: plain,
+            header_name: bold,
+            header_field: plain,
+            wizard: plain,
+            status_text: bold,
+            indicator_active: bold,
+            indicator_inactive: dim,
+            indicator_unavailable: bold_dim,
+            list_selection: reversed,
+            group_title: bold,
+            // All dialog border severities collapse to the same neutral style
+            // in no-color mode.  Dialog titles must carry textual severity labels.
+            dialog_info_border: plain,
+            dialog_error_border: bold,
+            dialog_security_border: bold,
+            dialog_button_focused: reversed,
+            dialog_button_unfocused: dim,
+            dialog_title: bold,
+            dialog_message: plain,
+        }
     }
 
     /// Internal constructor for the dark palette — shared by `Default`,

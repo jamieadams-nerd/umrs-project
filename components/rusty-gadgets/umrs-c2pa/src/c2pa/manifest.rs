@@ -11,6 +11,7 @@
 //!
 //! - [`ChainEntry`] — a single entry in the chain of custody
 //! - [`TrustStatus`] — trust evaluation result for a chain entry
+//! - [`TrustFinding`] — structured diagnostic detail for UNVERIFIED entries
 //! - [`read_chain`] — read and parse the full chain from a file
 //! - [`manifest_json`] — raw manifest store as pretty-printed JSON
 //! - [`chain_json`] — UMRS-parsed chain as JSON (for programmatic consumers)
@@ -23,23 +24,37 @@
 //! `read_chain` walks this graph depth-first, oldest-first, with a cycle guard
 //! to prevent infinite loops in malformed stores.
 //!
+//! ## Trust Finding Classification
+//!
+//! When a chain entry resolves to `TrustStatus::Untrusted`, the optional
+//! `ChainEntry::trust_finding` field carries a [`TrustFinding`] that refines
+//! the diagnosis. For example, [`TrustFinding::IssuerRotationMismatch`] fires
+//! when the image was signed before the trust-list issuing CA's `Not Before`
+//! date — a temporal certificate rotation event, not evidence of tampering.
+//!
+//! This classification is a **diagnostic signal only** — it does not change the
+//! `UNVERIFIED` status. The operator must decide how to resolve the mismatch.
+//!
 //! ## Compliance
 //!
 //! - **NIST SP 800-53 AU-10**: Non-repudiation — the chain walk surfaces every
 //!   signing event across the full provenance history of a file.
 //! - **NIST SP 800-53 AU-3**: Audit Record Content — `ChainEntry` carries
-//!   signer identity, issuer, timestamp, algorithm, and security marking.
+//!   signer identity, issuer, timestamp, algorithm, security marking, and
+//!   structured trust findings for programmatic audit consumption.
 //! - **NIST SP 800-53 SI-7**: Software, Firmware, and Information Integrity —
 //!   `TrustStatus::Invalid` is set whenever the c2pa SDK reports a hash
 //!   mismatch or signature verification failure, making tampering visible.
 
 use std::path::Path;
 
+use chrono::{DateTime, FixedOffset};
 use serde::Serialize;
 
 use crate::c2pa::{config::UmrsConfig, error::InspectError, trust::build_c2pa_settings};
 #[allow(unused_imports)]
 use crate::verbose;
+
 
 /// Trust evaluation for a single entry in the chain of custody.
 ///
@@ -93,6 +108,63 @@ impl std::fmt::Display for TrustStatus {
     }
 }
 
+/// Structured diagnostic detail for an `UNVERIFIED` chain entry.
+///
+/// When a chain entry resolves to `TrustStatus::Untrusted`, this enum carries
+/// the specific reason, if one can be determined. This is a **diagnostic signal**
+/// that helps operators distinguish benign mismatch conditions (e.g., certificate
+/// rotation) from potentially concerning ones (e.g., unknown CA). The `UNVERIFIED`
+/// status is not altered — only the explanation is refined.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Audit Record Content — findings are structured
+///   enum variants, not log strings, enabling programmatic filtering and
+///   matching by audit consumers.
+/// - **NIST SP 800-53 SI-7**: Software, Firmware, and Information Integrity —
+///   the `IssuerRotationMismatch` variant makes temporal CA rotation visible
+///   as a first-class finding rather than an opaque `UNVERIFIED` result.
+#[must_use = "TrustFinding carries the diagnostic reason for UNVERIFIED; \
+              discarding it means the operator sees no explanation of why trust failed"]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(tag = "kind")]
+pub enum TrustFinding {
+    /// The image was signed before the trust-list issuing CA's `Not Before`
+    /// date. This is a temporal certificate rotation mismatch, not evidence
+    /// of tampering. The CA in the trust list is the *replacement* cert issued
+    /// after Adobe (or another vendor) rotated their issuing CA. Images signed
+    /// before the rotation carry the old cert, which is not in the trust list.
+    ///
+    /// **Operator action:** Obtain images signed after the CA rotation date
+    /// (after `trust_cert_not_before`), or add the old issuing CA to
+    /// `user_anchors` to validate pre-rotation images.
+    IssuerRotationMismatch {
+        /// Signing timestamp extracted from the manifest (RFC 3339 / UTC string).
+        image_signed: String,
+        /// `Not Before` date of the matching trust-list cert (human-readable).
+        trust_cert_not_before: String,
+        /// Subject CN of the trust-list cert that was temporally mismatched.
+        subject_cn: String,
+    },
+}
+
+impl std::fmt::Display for TrustFinding {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::IssuerRotationMismatch {
+                image_signed,
+                trust_cert_not_before,
+                subject_cn,
+            } => write!(
+                f,
+                "Image signed {image_signed} before trust list certificate \
+                 became valid {trust_cert_not_before} (CN: {subject_cn}) \
+                 — likely certificate rotation, not tampering"
+            ),
+        }
+    }
+}
+
 /// A single entry in the chain of custody, extracted from one manifest
 /// in the manifest store.
 #[derive(Debug, Clone, Serialize)]
@@ -109,6 +181,13 @@ pub struct ChainEntry {
     /// Trust evaluation for this entry.
     pub trust_status: TrustStatus,
 
+    /// Structured diagnostic for `UNVERIFIED` entries, when a specific
+    /// cause can be determined (e.g., [`TrustFinding::IssuerRotationMismatch`]).
+    /// `None` for `TRUSTED`, `INVALID`, `REVOKED`, and `NO_TRUST_LIST` entries,
+    /// and for `UNVERIFIED` entries where no specific cause is identified.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub trust_finding: Option<TrustFinding>,
+
     /// Signing algorithm used (e.g. "es256").
     pub algorithm: String,
 
@@ -122,6 +201,213 @@ pub struct ChainEntry {
     pub security_label: Option<String>,
 }
 
+/// A parsed trust-anchor certificate record — subject CN and `Not Before` date.
+///
+/// Used by [`classify_rotation_mismatches`] to compare signing timestamps
+/// against the trust-list certs' validity windows.
+#[derive(Debug, Clone)]
+struct AnchorCertInfo {
+    subject_cn: String,
+    not_before_str: String,
+    not_before_dt: Option<DateTime<FixedOffset>>,
+}
+
+/// Extract the CN (Common Name) from an `X509NameRef` via its entry iterator.
+///
+/// Uses the structured openssl API to find entries with the `CN` NID,
+/// avoiding the need to parse a formatted subject string. Returns the
+/// first CN value found, or `None` if the name has no CN entry.
+fn extract_cn_from_name(name: &openssl::x509::X509NameRef) -> Option<String> {
+    use openssl::nid::Nid;
+    let entries = name.entries_by_nid(Nid::COMMONNAME);
+    for entry in entries {
+        if let Ok(data) = entry.data().as_utf8() {
+            return Some(data.to_string());
+        }
+    }
+    None
+}
+
+/// Parse an OpenSSL-format `Not Before` string (e.g. `"Nov 19 18:29:44 2025 GMT"`)
+/// into a `DateTime<FixedOffset>`.
+///
+/// Returns `None` if the string cannot be parsed — callers treat `None` as
+/// "unable to compare" and skip the rotation check for this cert.
+fn parse_openssl_time(s: &str) -> Option<DateTime<FixedOffset>> {
+    // OpenSSL Asn1Time::to_string() produces "Mmm DD HH:MM:SS YYYY GMT"
+    // e.g. "Nov 19 18:29:44 2025 GMT"
+    let s_trimmed = s.trim().trim_end_matches(" GMT").trim();
+    // Parse with a known format
+    DateTime::parse_from_str(&format!("{s_trimmed} +0000"), "%b %e %T %Y %z")
+        .or_else(|_| DateTime::parse_from_str(&format!("{s_trimmed} +0000"), "%b  %e %T %Y %z"))
+        .ok()
+}
+
+/// Extract `AnchorCertInfo` records from a PEM bundle string.
+///
+/// Iterates each certificate in the bundle and extracts the subject CN and
+/// `Not Before` date. Certs that cannot be parsed are silently skipped —
+/// the trust anchor file has already been validated by OpenSSL when the
+/// SDK loaded it; any cert we cannot parse here is simply unavailable for
+/// rotation mismatch classification (a diagnostic gap, not a security gap).
+fn extract_anchor_certs(pem: &str) -> Vec<AnchorCertInfo> {
+    let mut result = Vec::new();
+    let Ok(certs) = openssl::x509::X509::stack_from_pem(pem.as_bytes()) else {
+        return result;
+    };
+    for cert in &certs {
+        let subject_cn = extract_cn_from_name(cert.subject_name()).unwrap_or_default();
+        if subject_cn.is_empty() {
+            continue;
+        }
+        let not_before_str = cert.not_before().to_string();
+        let not_before_dt = parse_openssl_time(&not_before_str);
+        result.push(AnchorCertInfo { subject_cn, not_before_str, not_before_dt });
+    }
+    result
+}
+
+/// Classify rotation mismatches for `Untrusted` chain entries.
+///
+/// For each entry with `TrustStatus::Untrusted` and a known `signed_at`
+/// timestamp, checks whether any trust-anchor cert shares the same issuer
+/// CN and has a `Not Before` date **after** the signing timestamp. If so,
+/// the entry's `trust_finding` is set to
+/// [`TrustFinding::IssuerRotationMismatch`].
+///
+/// This is a post-processing pass that runs after the full chain walk
+/// and trust status assignment. It does not alter `trust_status` — only
+/// the diagnostic field.
+///
+/// ## Fail-closed behaviour
+///
+/// If any step in the classification fails (timestamp unparseable, no matching
+/// cert), the entry's `trust_finding` remains `None`. The operator still sees
+/// `UNVERIFIED`; they just get no additional explanation. This is the correct
+/// fail-closed posture: unknown does not become trusted.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Audit Record Content — structured findings
+///   enable audit consumers to distinguish rotation mismatches from genuinely
+///   unknown CAs without parsing log strings.
+/// - **NIST SP 800-53 SI-7**: Software, Firmware, and Information Integrity —
+///   the classification never changes `UNVERIFIED` to `TRUSTED`; it only
+///   adds context.
+fn classify_rotation_mismatches(entries: &mut [ChainEntry], anchor_certs: &[AnchorCertInfo]) {
+    #[cfg(debug_assertions)]
+    let start = std::time::Instant::now();
+
+    for entry in entries.iter_mut() {
+        if entry.trust_status != TrustStatus::Untrusted {
+            continue;
+        }
+        let Some(ref signed_at_str) = entry.signed_at else {
+            continue;
+        };
+
+        // Parse the signing timestamp from the manifest (RFC 3339).
+        let Ok(signed_dt) = DateTime::parse_from_rfc3339(signed_at_str) else {
+            continue;
+        };
+
+        // Look for a trust-anchor cert whose CN resembles the issuer
+        // and whose Not Before is after the signing date.
+        for anchor in anchor_certs {
+            let Some(not_before_dt) = anchor.not_before_dt else {
+                continue;
+            };
+
+            // A rotation mismatch requires:
+            //   1. The trust cert's Not Before is after the signing date
+            //   2. The entry's issuer CN overlaps the trust cert's CN
+            //      (exact or substring match, since the entry issuer comes from
+            //      the manifest's parsed issuer string, which may be abbreviated)
+            let is_after_signing = not_before_dt > signed_dt;
+            let cn_overlaps = entry.issuer.contains(anchor.subject_cn.as_str())
+                || anchor.subject_cn.contains(entry.issuer.as_str());
+
+            if is_after_signing && cn_overlaps {
+                log::warn!(
+                    target: "umrs",
+                    "IssuerRotationMismatch: image signed {signed_at_str} \
+                     before trust cert Not Before {} (CN: {})",
+                    anchor.not_before_str,
+                    anchor.subject_cn,
+                );
+                entry.trust_finding = Some(TrustFinding::IssuerRotationMismatch {
+                    image_signed: signed_at_str.clone(),
+                    trust_cert_not_before: anchor.not_before_str.clone(),
+                    subject_cn: anchor.subject_cn.clone(),
+                });
+                break;
+            }
+        }
+    }
+
+    #[cfg(debug_assertions)]
+    log::debug!(
+        target: "umrs",
+        "IssuerRotationMismatch classification completed in {} µs",
+        start.elapsed().as_micros()
+    );
+}
+
+/// Inspect a single (signing timestamp, issuer, trust anchor PEM) combination
+/// for a certificate rotation mismatch.
+///
+/// This function exposes the rotation mismatch detection logic as a standalone
+/// public API. It is the primary entry point for integration tests and for
+/// callers that want to classify a known-untrusted result without re-reading a
+/// full chain.
+///
+/// Returns `Some(TrustFinding::IssuerRotationMismatch)` when:
+/// - `signed_at_rfc3339` is a valid RFC 3339 timestamp
+/// - `anchor_pem` contains at least one cert whose CN overlaps `issuer_cn`
+/// - That cert's `Not Before` is after `signed_at_rfc3339`
+///
+/// Returns `None` if:
+/// - The timestamp cannot be parsed
+/// - No matching cert is found in `anchor_pem`
+/// - The matching cert's `Not Before` is before the signing date
+///   (no temporal mismatch)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Audit Record Content — the returned finding is
+///   a structured enum variant, not a log string, enabling programmatic audit
+///   consumption.
+/// - **NIST SP 800-53 SI-7**: Software, Firmware, and Information Integrity —
+///   the function is fail-closed: `None` never elevates trust.
+#[must_use = "The returned TrustFinding explains why trust validation failed; \
+              discarding it means the operator sees no explanation for UNVERIFIED"]
+pub fn inspect_rotation_mismatch(
+    signed_at_rfc3339: &str,
+    issuer_cn: &str,
+    anchor_pem: &str,
+) -> Option<TrustFinding> {
+    let signed_dt = DateTime::parse_from_rfc3339(signed_at_rfc3339).ok()?;
+    let anchor_certs = extract_anchor_certs(anchor_pem);
+
+    for anchor in &anchor_certs {
+        let Some(not_before_dt) = anchor.not_before_dt else {
+            continue;
+        };
+        let is_after_signing = not_before_dt > signed_dt;
+        let cn_overlaps = issuer_cn.contains(anchor.subject_cn.as_str())
+            || anchor.subject_cn.contains(issuer_cn);
+
+        if is_after_signing && cn_overlaps {
+            return Some(TrustFinding::IssuerRotationMismatch {
+                image_signed: signed_at_rfc3339.to_string(),
+                trust_cert_not_before: anchor.not_before_str.clone(),
+                subject_cn: anchor.subject_cn.clone(),
+            });
+        }
+    }
+    None
+}
+
 /// Read the chain of custody from a file's C2PA manifest store.
 ///
 /// Builds c2pa SDK `Settings` from the configured trust list paths, creates a
@@ -130,6 +416,9 @@ pub struct ChainEntry {
 ///
 /// Returns entries ordered oldest-first (deepest ingredient → active manifest).
 /// Returns an empty `Vec` if the file has no manifest.
+///
+/// For `Untrusted` entries, the `trust_finding` field is populated when a
+/// specific cause can be identified (e.g., [`TrustFinding::IssuerRotationMismatch`]).
 ///
 /// # Errors
 ///
@@ -171,7 +460,50 @@ pub fn read_chain(path: &Path, config: &UmrsConfig) -> Result<Vec<ChainEntry>, I
     let mut entries: Vec<ChainEntry> = Vec::new();
     collect_entries(&store_json, &mut entries);
     verbose!("Found {} chain entries", entries.len());
+
+    // Post-process: classify rotation mismatches for any Untrusted entries.
+    // Only attempt if trust is configured — without a trust list we have no
+    // anchor certs to compare against.
+    if config.trust.verify_trust && config.has_trust_config() {
+        let anchor_pem = read_anchor_pem_for_classification(config);
+        if !anchor_pem.is_empty() {
+            let anchor_certs = extract_anchor_certs(&anchor_pem);
+            classify_rotation_mismatches(&mut entries, &anchor_certs);
+        }
+    }
+
     Ok(entries)
+}
+
+/// Read the trust anchor PEM content for rotation mismatch classification.
+///
+/// Attempts to read `trust_anchors` (and `user_anchors`) from disk. Returns
+/// an empty string on any I/O error — classification silently degrades to
+/// "no finding" rather than failing the whole chain read, which has already
+/// succeeded. The PEM is used only for CN/date comparisons; it is never
+/// passed back to the SDK.
+///
+/// This is distinct from `trust::read_pem` because we do not need `O_NOFOLLOW`
+/// security here: we are not injecting this content into a cryptographic
+/// trust decision. The SDK has already performed that decision using the
+/// content read via `trust::build_c2pa_settings`. This secondary read is
+/// purely diagnostic — it cannot elevate trust.
+fn read_anchor_pem_for_classification(config: &UmrsConfig) -> String {
+    let mut pem = String::new();
+    if let Some(path) = &config.trust.trust_anchors
+        && let Ok(content) = std::fs::read_to_string(path)
+    {
+        pem.push_str(&content);
+    }
+    if let Some(path) = &config.trust.user_anchors
+        && let Ok(content) = std::fs::read_to_string(path)
+    {
+        if !pem.is_empty() && !pem.ends_with('\n') {
+            pem.push('\n');
+        }
+        pem.push_str(&content);
+    }
+    pem
 }
 
 /// Returns `true` if the file contains any C2PA manifest data.
@@ -460,6 +792,7 @@ fn extract_entry(manifest: &serde_json::Value) -> ChainEntry {
         issuer,
         signed_at,
         trust_status,
+        trust_finding: None,
         algorithm,
         generator,
         generator_version,

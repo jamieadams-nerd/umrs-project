@@ -4,6 +4,7 @@
 
 ## Topic Files
 
+- [Env sanitization familiarization](env_sanitization.md) — Tier 1/2/3 lists, AT_SECURE caveat, Rust 2024 snapshot-at-startup constraint, CWE↔NIST map, impl questions
 - [Coding conventions](coding_conventions.md) — source file headers (SPDX), use ordering, no doc tests, test tags (TEST-ID/REQUIREMENT/COMPLIANCE), i18n coding rule
 - [Phase 1 / Phase 2 positioning](phase1_phase2_positioning.md) — Targeted policy = labeling fidelity + awareness, NOT enforcement; MLS adds enforcement (Phase 2)
 - [Info theory foundations familiarization](info_theory_foundations_familiarization.md) — Shannon, MacKay, MDL, Kolmogorov, Dijkstra, A*, HNSW, spectral clustering, AC; RAG + MLS + posture design implications
@@ -186,6 +187,13 @@ Changes in `umrs-tui/src/`:
 - `status_bar.rs`: KEY_LEGEND const + right-aligned key legend; elided on narrow terminals
 - Internal Rust types (`SubstrateAnchored` enum variant etc.) NOT renamed — display layer only
 
+## xtask Staging Pipeline (2026-04-12)
+
+`cargo xtask stage [--release]` and `cargo xtask clean` implemented in `xtask/src/stage.rs` + `clean.rs`.
+Dispatch in `main.rs`. Tests in `xtask/tests/stage_test.rs` (8 tests, all pass).
+`staging/` added to `components/rusty-gadgets/.gitignore`. Makefile at workspace root.
+Scripts in `scripts/` MUST be committed with `git add --chmod=+x`.
+
 ## umrs-c2pa Security Review Remediation (2026-04-01)
 
 Fixed all Knox + Herb findings. Key patterns applied:
@@ -267,3 +275,7 @@ Tests: `catalog_tests.rs` 38 tests all pass. `setrans_tests.rs` has 7 pre-existi
 Callers in `main.rs` use `.en()` on `LocaleText` fields. `examples/labels.rs` uses `Display` impl directly (format strings).
 
 `umrs-ui/src/marking_detail.rs` `MarkingDetailData` retains separate `name_en/name_fr/description_en/description_fr` String fields — these are a display DTO populated by callers using `.en()` and `.fr()`; they are NOT changed.
+
+## Theme::no_color() (added 2026-04-13)
+
+`Theme::no_color()` added to `libs/umrs-ui/src/theme.rs`. All 21 Style fields carry modifiers only (BOLD/DIM/REVERSED), no fg/bg Color. Use `std::env::var_os("NO_COLOR").is_some()` (not `var().is_ok()`) — presence is the signal, value is irrelevant. All three TUI tools now select the theme correctly: `umrs-label`, `umrs-stat`, `umrs-uname`. Tests in `theme_tests.rs` (13 new no_color_* tests). NIST SP 800-53 SI-11 + WCAG 1.4.1.

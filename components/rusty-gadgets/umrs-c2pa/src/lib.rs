@@ -13,6 +13,7 @@
 //! - [`c2pa::InspectError`] — all errors produced by this library
 //! - [`c2pa::manifest::ChainEntry`] — a single entry in the chain of custody
 //! - [`c2pa::manifest::TrustStatus`] — trust evaluation for a chain entry
+//! - [`c2pa::manifest::TrustFinding`] — structured diagnostic for UNVERIFIED entries
 //! - [`c2pa::ingest::IngestResult`] — result of ingesting a file into UMRS
 //!
 //! ## Compliance

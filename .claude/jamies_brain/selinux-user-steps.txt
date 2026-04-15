@@ -1,36 +1,53 @@
+Good question. Here's the clean approach — do this right the first time.
 
+## Plan
 
-Same problem — `jadams` is running as `unconfined_u`, and `unconfined_u` can't transition to `user_r`. SELinux won't allow a role transition across user boundaries.
+Create a proper confined SELinux user for `umrs-agent` without touching `jadams`, and give Claude Code a way to switch into that context for testing.
 
-You need to either map `jadams` to `staff_u` (which can transition roles) or accept that the context switch has to happen at login time.
-
-## Quickest fix: map jadams to `staff_u`
+## Step 1: Fix `umrs-agent` shell temporarily
 
 ```bash
-sudo semanage login -a -s staff_u jadams
-sudo restorecon -RFv /home/jadams
+sudo usermod -s /bin/bash umrs-agent
 ```
 
-Then log out and back in (real login, not sudo), and retry:
+## Step 2: Set the fcontext for home first
+
 ```bash
-sudo -u umrs-agent -r user_r -t user_t /bin/bash
+sudo semanage fcontext -a -t user_home_dir_t "/home/umrs-agent(/.*)?"
+sudo restorecon -RFv /home/umrs-agent
+```
+
+## Step 3: Map to `user_u`
+
+```bash
+sudo semanage login -m -s user_u umrs-agent
+# or -a if not already there
+```
+
+## Step 4: Fix the sudo rule for jadams
+
+```bash
+# /etc/sudoers.d/umrs-agent
+jadams ALL=(umrs-agent) NOPASSWD: /bin/bash
+```
+
+## Step 5: Test transition via su
+
+```bash
+su - umrs-agent
 id -Z
+# Should show: user_u:user_r:user_t:SystemLow
 ```
 
-`staff_u` is allowed to transition to other roles via sudo, which is its whole purpose.
+## Step 6: Lock it back down
 
-## Alternatively: map jadams to `sysadm_u`
-
-If `jadams` needs broader admin rights anyway:
 ```bash
-sudo semanage login -a -s sysadm_u jadams
+sudo usermod -s /sbin/nologin umrs-agent
 ```
 
 ---
 
-The core constraint: **SELinux role transitions are only permitted from SELinux users that have those roles in their allowed set.** `unconfined_u` has no allowed transitions by design in targeted policy. `staff_u` does.
-
-
+The key difference from last time: **use `su -` not `sudo -u`** for the initial verification — PAM fires correctly that way. Does `umrs-agent` have a home directory already?
 
 
 

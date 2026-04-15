@@ -4,49 +4,90 @@ description: Where to find real-world C2PA-signed images for trust chain testing
 type: reference
 ---
 
-## Purpose
+## Current Status (2026-04-13)
 
-umrs-c2pa needs real vendor-signed images to test trust chain validation.
-Self-signed and test certs only exercise the UNVERIFIED path. We need images
-that resolve as TRUSTED against the official C2PA trust list.
+5 files are in `tests/fixtures/trusted/`. ALL are UNVERIFIED or ERROR. No TRUSTED fixture
+exists yet. The trust gap is documented and the path to resolution is clear.
 
-## Acquisition Sources (by likelihood of C2PA manifests)
+### Why existing fixtures fail
 
-### Flickr
-Best bet. Photojournalists and serious photographers upload from C2PA-enabled
-cameras. Search for images tagged "content credentials" or "leica m11-p".
+| File | Signing date | Status | Root cause |
+|---|---|---|---|
+| `Firefly_tabby_cat.jpg` | 2025-10-23 | UNVERIFIED | Pre-rotation Adobe issuing CA |
+| `car-es-Ps-Cr.jpg` | 2025-10-23 | UNVERIFIED | Pre-rotation Adobe issuing CA |
+| `cloudscape-ACA-Cr.jpeg` | 2025-10-23 | UNVERIFIED | Pre-rotation Adobe issuing CA |
+| `ChatGPT_Image.png` | no TSA | UNVERIFIED | OpenAI CA not on official C2PA TL |
+| `crater-lake-cr.jpg` | n/a | ERROR | Remote manifest (cai-manifests.adobe.com) — umrs-c2pa does not fetch remote manifests |
 
-### 500px
-Professional photographers, higher likelihood of Leica/Sony Alpha gear with
-C2PA enabled.
+Adobe rotated their issuing CA on 2025-11-19. The trust list has the NEW cert.
+All existing Adobe-signed example images predate the rotation. The mismatch
+is temporal, not a bug.
 
-### Adobe Stock / Behance
-Adobe actively pushes Content Credentials on their platforms. Exports from
-Photoshop/Firefly with credentials attached are common.
+### Fastest path to TRUSTED (recommended to Jamie)
 
-### Associated Press / Reuters photo feeds
-AP and Reuters are active C2PA members piloting credentialed photojournalism.
-Public-facing sites occasionally have credentialed images.
+**Option A — Adobe Firefly (fastest):**
+Go to https://firefly.adobe.com, generate any image with Content Credentials enabled
+(the default). Download the JPEG. Fresh Firefly images (post-2025-11-19) carry the
+new issuing CA and will verify TRUSTED immediately.
 
-## Verification Method
+**Option B — Google Pixel 10 photo:**
+Any photo taken on a Pixel 10 (launched Aug/Sep 2025) will use Google's signing chain
+which chains to `Google C2PA Root CA G3` (in our trust list, Not Before ~2025-05-08).
+No rotation mismatch — Google's hierarchy is a fresh deployment. A Pixel 10 photo
+taken any time after the phone was purchased will verify as TRUSTED.
 
-Use the Content Authenticity Initiative online verifier at
-`contentcredentials.org/verify` — drag and drop to confirm a valid manifest
-exists before downloading. No toolchain needed.
+**Option C — git clone c2pa-org/public-testfiles with LFS:**
+```bash
+git lfs install
+git clone https://github.com/c2pa-org/public-testfiles.git /tmp/c2pa-public-testfiles
+ls /tmp/c2pa-public-testfiles/image/jpeg/google-*.jpg
+```
+The repo was updated 2026-03-16. Google-prefixed files (if any) should chain to
+Google C2PA Root CA G3 and verify TRUSTED.
 
-## Target Vendors (different cert chains and algorithms)
+### Why Google Pixel 10 photos are ideal
 
-| Vendor | Root CA | Why it matters |
-|---|---|---|
-| Adobe | Adobe root | Definitely in C2PA-TRUST-LIST.pem. Should be first TRUSTED result. |
-| Leica | D-Trust (Bundesdruckerei) | Hardware camera trust chain. |
-| Sony | Sony root (α9 III, α1 II) | Different camera manufacturer chain. |
-| OpenAI/Truepic | Truepic root | Already have images (jamie_desk.png) — need to determine if root is in trust list. |
+The trust list (downloaded 2026-04-01) contains the COMPLETE Google C2PA hierarchy:
+- `Google C2PA Root CA G3` (root, Not Before: 2025-05-08)
+- `Google C2PA Mobile A 1P ICA G3` + L1 (issuing for camera A path)
+- `Google C2PA Mobile B 1P ICA G3` + L1 (issuing for camera B path)
+- `Google C2PA Media Services 1P ICA G3` (issuing for Google Photos edits)
 
-## Output
+Google deployed this hierarchy fresh for Pixel 10. No rotation issue exists.
+Any Pixel 10 photo carries the full chain to Google C2PA Root CA G3.
 
-Place acquired images in `umrs-c2pa/tests/fixtures/trusted/` with a `SOURCE.md`
-documenting provenance, download date, and verification status for each file.
+### Expected TRUSTED output
+
+```
+Chain of Custody — <photo.jpg>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1   [TRUSTED]    Google Pixel Camera
+                    Signed at : <date>+00:00 UTC
+                    Issuer    : Google LLC
+                    Alg       : ES256 ECDSA / P-256 / SHA-256
+                    Generator : Google Pixel Camera <model>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Verification command (from umrs-c2pa crate directory)
+
+```bash
+cd /DEVELOPMENT/umrs-project/components/rusty-gadgets/umrs-c2pa
+cargo run tests/fixtures/trusted/<new-photo.jpg>
+```
+
+(umrs-c2pa.toml must be in the working directory — it contains trust list paths)
+
+## Original source notes
+
+### Acquisition Sources (for future reference)
+
+- **Adobe Firefly** (https://firefly.adobe.com) — post-2025-11-19 images work
+- **Google Pixel 10** photos — any date after phone launch (Aug/Sep 2025)
+- **contentauth.github.io/example-assets/** — current images may be remote-manifest only
+- **c2pa-org/public-testfiles** (git-lfs required) — google-YYYYMMDD-*.jpg files
+- **DigiCert / SSL.com signed content** — both CAs are in trust list
+- **Leica M11-P or Z-cameras** — Leica CA not in current trust list (was ITL only)
 
 ## Why real images matter
 

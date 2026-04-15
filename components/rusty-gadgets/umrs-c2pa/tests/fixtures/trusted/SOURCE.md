@@ -5,16 +5,18 @@ trust validation tests. These fixtures should verify as `TRUSTED` (or better-cha
 as trusted against a specific trust list) rather than `UNVERIFIED`.
 
 **Created:** 2026-04-07
-**Acquisition status:** DOWNLOADED 2026-04-07 — 4 files verified
+**Updated:** 2026-04-13
+**Acquisition status:** 5 files downloaded — ALL UNVERIFIED or ERROR — TRUSTED fixture still needed
 
 ## Downloaded Files
 
-| Filename | Magic | Size | SHA-256 | Trust list | Source |
-|---|---|---|---|---|---|
-| `Firefly_tabby_cat.jpg` | ffd8ff (JPEG) | 1023K | `bdc5c19d4211d9c9f9f8dce5bf4e4dec29e9b32e308ff12a60979481e928154f` | Official 2025 (Adobe) | contentauth/example-assets (MIT) |
-| `car-es-Ps-Cr.jpg` | ffd8ff (JPEG) | 567K | `17c9e5b9f40ef79bb8e8af4adf36fe2be54d9c4a7f96f29813e6c3850ab8caa8` | Official 2025 (Adobe) | contentauth/example-assets (MIT) |
-| `cloudscape-ACA-Cr.jpeg` | ffd8ff (JPEG) | 663K | `eefaa04e4e2fe6d04a0473dc01ac64763281e666fadacf8e54db5cbe898c64cd` | Official 2025 (Adobe) | contentauth/example-assets (MIT) |
-| `ChatGPT_Image.png` | 89504e (PNG) | 2.1M | `7cd57b4a33f05e4ce7f63de18751f59f4b3ea8c55c281204e0cd6d1f621e466f` | ITL (Microsoft/OpenAI) | contentauth/example-assets (MIT) |
+| Filename | Magic | Size | SHA-256 | Downloaded | Trust result | Source |
+|---|---|---|---|---|---|---|
+| `Firefly_tabby_cat.jpg` | ffd8ff (JPEG) | 1023K | `bdc5c19d4211d9c9f9f8dce5bf4e4dec29e9b32e308ff12a60979481e928154f` | 2026-04-07 | UNVERIFIED (pre-rotation Adobe CA) | contentauth/example-assets (MIT) |
+| `car-es-Ps-Cr.jpg` | ffd8ff (JPEG) | 567K | `17c9e5b9f40ef79bb8e8af4adf36fe2be54d9c4a7f96f29813e6c3850ab8caa8` | 2026-04-07 | UNVERIFIED (pre-rotation Adobe CA) | contentauth/example-assets (MIT) |
+| `cloudscape-ACA-Cr.jpeg` | ffd8ff (JPEG) | 663K | `eefaa04e4e2fe6d04a0473dc01ac64763281e666fadacf8e54db5cbe898c64cd` | 2026-04-07 | UNVERIFIED (pre-rotation Adobe CA) | contentauth/example-assets (MIT) |
+| `ChatGPT_Image.png` | 89504e (PNG) | 2.1M | `7cd57b4a33f05e4ce7f63de18751f59f4b3ea8c55c281204e0cd6d1f621e466f` | 2026-04-07 | UNVERIFIED (OpenAI CA not on official C2PA TL) | contentauth/example-assets (MIT) |
+| `crater-lake-cr.jpg` | ffd8ff (JPEG) | 618K | `eef052cf93d336862017f34f61b853b61474e519a7d07863caadb72130d5826c` | 2026-04-13 | ERROR: remote manifest — not a TRUSTED fixture | contentauth/example-assets (MIT) |
 
 **Truepic images NOT downloaded:** c2pa.org/public-testfiles uses Git LFS — `curl` returns HTML redirect or LFS pointer, not the actual JPEG. Would require `git clone` with LFS enabled. Deferred.
 
@@ -237,18 +239,129 @@ c2patool truepic-20230212-camera.jpg trust --trust_anchors "${C2PATOOL_TRUST_ANC
 
 ---
 
-## Files downloaded (fill in after download)
+## Files downloaded and verified
 
-| Filename | Download date | SHA-256 | Trust list | Verified TRUSTED? |
-|---|---|---|---|---|
-| `Firefly_tabby_cat.jpg` | — | — | Official C2PA TL | PENDING |
-| `car-es-Ps-Cr.jpg` | — | — | Official C2PA TL | PENDING |
-| `cloudscape-ACA-Cr.jpeg` | — | — | Official C2PA TL | PENDING |
-| `crater-lake-cr.jpg` | — | — | Official C2PA TL | PENDING |
-| `ChatGPT_Image.png` | — | — | Verify first | PENDING |
-| `truepic-20230212-camera.jpg` | — | — | Legacy ITL | PENDING |
-| `truepic-20230212-landscape.jpg` | — | — | Legacy ITL | PENDING |
-| `truepic-20230212-library.jpg` | — | — | Legacy ITL | PENDING |
+| Filename | Download date | SHA-256 | Signing date | Verified TRUSTED? | Notes |
+|---|---|---|---|---|---|
+| `Firefly_tabby_cat.jpg` | 2026-04-07 | `bdc5c19d4211d9c9f9f8dce5bf4e4dec29e9b32e308ff12a60979481e928154f` | 2025-10-23 | UNVERIFIED | Pre-rotation Adobe CA |
+| `car-es-Ps-Cr.jpg` | 2026-04-07 | `17c9e5b9f40ef79bb8e8af4adf36fe2be54d9c4a7f96f29813e6c3850ab8caa8` | 2025-10-23 | UNVERIFIED | Pre-rotation Adobe CA |
+| `cloudscape-ACA-Cr.jpeg` | 2026-04-07 | `eefaa04e4e2fe6d04a0473dc01ac64763281e666fadacf8e54db5cbe898c64cd` | 2025-10-23 | UNVERIFIED | Pre-rotation Adobe CA |
+| `ChatGPT_Image.png` | 2026-04-07 | `7cd57b4a33f05e4ce7f63de18751f59f4b3ea8c55c281204e0cd6d1f621e466f` | no TSA | UNVERIFIED | OpenAI/Truepic CA, not on official C2PA TL |
+| `crater-lake-cr.jpg` | 2026-04-13 | `eef052cf93d336862017f34f61b853b61474e519a7d07863caadb72130d5826c` | REMOTE | ERROR | Remote manifest (cai-manifests.adobe.com) — umrs-c2pa does not fetch remote manifests |
+
+Truepic files NOT downloaded: `c2pa-org/public-testfiles` uses Git LFS — curl returns
+HTML redirect or LFS pointer, not the actual JPEG. Deferred.
+
+---
+
+## Verification results (session 2026-04-07, confirmed 2026-04-13)
+
+All four 2026-04-07 downloads produce UNVERIFIED when inspected with
+`cargo run -p umrs-c2pa -- <file>` from the crate directory with trust
+config loaded from `umrs-c2pa.toml` (31 trust anchors: 18 signing + 13 TSA).
+
+Root cause: all three Adobe-signed images (Firefly, Photoshop, Lightroom) were
+signed on 2025-10-23, one month BEFORE Adobe rotated their issuing CA on
+2025-11-19. The trust list (downloaded 2026-04-01) has the NEW Adobe issuing CA.
+The images carry the OLD Adobe issuing CA. Different serial numbers, different
+key material — the SDK correctly rejects them.
+
+See `docs/TRUST-INVESTIGATION-2026-04-07.md` for full cert chain analysis.
+
+---
+
+## Why crater-lake-cr.jpg cannot be used
+
+`crater-lake-cr.jpg` was downloaded on 2026-04-13 from the `contentauth/example-assets`
+repository (updated 2026-01-29, post-rotation). It is a real JPEG (618K, `ffd8ff` magic).
+However, it stores its C2PA manifest externally in Adobe's Content Credentials cloud:
+
+```
+Error: must fetch remote manifests from url
+https://cai-manifests.adobe.com/manifests/urn-uuid-3ad678ce-1d4e-4bc0-a9ea-62185b89c815
+```
+
+Adobe's newer Lightroom/Photoshop cloud workflow externalizes the manifest rather than
+embedding it in the JPEG. The c2pa-rs SDK supports remote manifest fetching via a
+URL callback, but `umrs-c2pa` does not currently implement this. The image cannot
+be verified as TRUSTED until remote manifest support is added.
+
+Status: kept in `trusted/` as a test case for the "remote manifest" error path.
+It is NOT a TRUSTED fixture.
+
+---
+
+## Path to TRUSTED: Google Pixel 10 photos
+
+### Why Pixel 10 photos will work
+
+The trust list contains the complete Google C2PA signing hierarchy:
+
+```
+Google C2PA Root CA G3               (root — Not Before: ~2025-05 based on PEM analysis)
+  Google C2PA Mobile A 1P ICA G3     (intermediate)
+    Google C2PA Mobile A 1P ICA G3 L1  (issuing CA for Pixel 10 camera)
+  Google C2PA Mobile B 1P ICA G3     (intermediate, variant B)
+    Google C2PA Mobile B 1P ICA G3 L1  (issuing CA variant B)
+  Google C2PA Media Services 1P ICA G3  (issuing CA for Google Photos edits)
+```
+
+Google's C2PA hierarchy was deployed fresh for Pixel 10 (launched ~Aug/Sep 2025).
+There was no CA rotation event — Google's hierarchy was new from the start. Any Pixel 10
+photo signed after the phone's launch (Aug/Sep 2025) will chain correctly to
+`Google C2PA Root CA G3`, which IS in the trust list. No mismatch exists.
+
+The Adobe rotation mismatch is specific to Adobe. It does not affect Google.
+
+### How to acquire a TRUSTED Pixel 10 fixture
+
+Option 1 — Jamie takes a photo on a Pixel 10 (any date after phone purchase):
+```bash
+# Copy photo from phone, then:
+sha256sum <photo.jpg>
+cd /DEVELOPMENT/umrs-project/components/rusty-gadgets/umrs-c2pa
+cargo run tests/fixtures/trusted/<photo.jpg>
+# Should show TRUSTED
+```
+
+Option 2 — Download from the public-testfiles repository (requires git-lfs):
+```bash
+# Install git-lfs first
+git lfs install
+git clone https://github.com/c2pa-org/public-testfiles.git /tmp/c2pa-public-testfiles
+# Look for google-YYYYMMDD-*.jpg files
+ls /tmp/c2pa-public-testfiles/image/jpeg/google-*.jpg 2>/dev/null || \
+ls /tmp/c2pa-public-testfiles/image/jpeg/ | grep -i google
+```
+
+Option 3 — Use Adobe Firefly (fresh generation, post-rotation):
+1. Go to https://firefly.adobe.com
+2. Generate any image with Content Credentials enabled (the default)
+3. Download the JPEG
+4. Run `cargo run tests/fixtures/trusted/<new-firefly.jpg>` from crate directory
+5. Post-2025-11-19 Firefly images carry the new Adobe issuing CA and should verify TRUSTED
+
+Option 4 — Use `contentcredentials.org/verify` to identify a current-era signed image:
+1. Visit https://contentcredentials.org/verify
+2. Inspect any image from a known-trusted source (e.g., a Pixel 10 photo shared online)
+3. If it shows "Verified", download it and run through umrs-c2pa
+
+### Expected TRUSTED output
+
+A successful Pixel 10 verification should look like:
+
+```
+Chain of Custody — <photo.jpg>
+SHA-256: <hash>
+SHA-384: <hash>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1   [TRUSTED]    Google Pixel Camera
+                    Signed at : <date after 2025-08>+00:00 UTC
+                    Issuer    : Google LLC
+                    Alg       : ES256  ECDSA / P-256 / SHA-256
+                    Generator : Google Pixel Camera <model>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
 ---
 
@@ -265,11 +378,24 @@ c2patool truepic-20230212-camera.jpg trust --trust_anchors "${C2PATOOL_TRUST_ANC
 
 ---
 
-## Acquisition notes
+## Acquisition session notes
 
 **Session 2026-04-07:** Bash curl was blocked by sandbox. The `trusted/` directory was
-created. This SOURCE.md was written based on web research. Files have NOT yet been
-downloaded. Jamie: run the download commands above when Bash is available in a
-tool-unrestricted session.
+created. SOURCE.md was written based on web research. The 4 listed files (Firefly, car-es,
+cloudscape, ChatGPT) were downloaded by Jamie in the same session.
+
+**Session 2026-04-13 (Librarian — fixture acquisition task):**
+- Confirmed all 4 existing fixtures produce UNVERIFIED (pre-rotation Adobe CA)
+- Downloaded `crater-lake-cr.jpg` (618K, real JPEG) — but discovered it uses remote
+  manifest; cannot be verified with current umrs-c2pa implementation
+- Cannot download new fixtures: curl/WebFetch blocked in current sandbox session
+- Identified Google Pixel 10 photos as the correct TRUSTED fixture path
+- Documented full Google CA hierarchy analysis above
+- Recommended 4 acquisition options for Jamie (see "Path to TRUSTED" section above)
+
+**Next action required (Jamie):** Run one of the 4 acquisition options above.
+The fastest path is Adobe Firefly (Option 3) — generate any image with Content
+Credentials at https://firefly.adobe.com. Fresh Firefly images (post-2025-11-19)
+carry the new issuing CA and will verify as TRUSTED immediately.
 
 **Researcher:** The Librarian (T. Librarian)

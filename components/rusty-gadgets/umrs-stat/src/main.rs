@@ -179,8 +179,14 @@ fn main() {
 
     let mut state = AuditCardState::new(app.tabs().len());
     let keymap = KeyMap::default();
-    let _no_color = std::env::var("NO_COLOR").is_ok();
-    let theme = Theme::default();
+    // NO_COLOR environment variable compliance (https://no-color.org/).
+    // Presence alone is the signal; the value is not decoded (`var_os`).
+    // NIST SP 800-53 SI-11 / WCAG 1.4.1 — meaningful output without color.
+    let theme = if std::env::var_os("NO_COLOR").is_some() {
+        Theme::no_color()
+    } else {
+        Theme::dark()
+    };
     let ctx = build_header_context(
         env!("CARGO_PKG_NAME"),
         env!("CARGO_PKG_VERSION"),
