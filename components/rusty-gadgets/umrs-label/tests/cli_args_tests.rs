@@ -41,10 +41,7 @@ fn help_exits_zero_with_output() {
     );
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    assert!(
-        !stdout.is_empty(),
-        "--help should produce output on stdout"
-    );
+    assert!(!stdout.is_empty(), "--help should produce output on stdout");
     assert!(
         stdout.contains("umrs-label"),
         "--help output should contain the binary name"

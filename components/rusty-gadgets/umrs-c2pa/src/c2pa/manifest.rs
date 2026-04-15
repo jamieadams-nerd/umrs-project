@@ -55,7 +55,6 @@ use crate::c2pa::{config::UmrsConfig, error::InspectError, trust::build_c2pa_set
 #[allow(unused_imports)]
 use crate::verbose;
 
-
 /// Trust evaluation for a single entry in the chain of custody.
 ///
 /// | Status        | Display         | Meaning |
@@ -262,7 +261,11 @@ fn extract_anchor_certs(pem: &str) -> Vec<AnchorCertInfo> {
         }
         let not_before_str = cert.not_before().to_string();
         let not_before_dt = parse_openssl_time(&not_before_str);
-        result.push(AnchorCertInfo { subject_cn, not_before_str, not_before_dt });
+        result.push(AnchorCertInfo {
+            subject_cn,
+            not_before_str,
+            not_before_dt,
+        });
     }
     result
 }
@@ -394,8 +397,8 @@ pub fn inspect_rotation_mismatch(
             continue;
         };
         let is_after_signing = not_before_dt > signed_dt;
-        let cn_overlaps = issuer_cn.contains(anchor.subject_cn.as_str())
-            || anchor.subject_cn.contains(issuer_cn);
+        let cn_overlaps =
+            issuer_cn.contains(anchor.subject_cn.as_str()) || anchor.subject_cn.contains(issuer_cn);
 
         if is_after_signing && cn_overlaps {
             return Some(TrustFinding::IssuerRotationMismatch {

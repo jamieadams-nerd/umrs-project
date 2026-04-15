@@ -47,7 +47,7 @@
     </p>
     <list>
       <item><p><em>SELinux type</em> — the type component of the verified security context (e.g., <code>bin_t</code>, <code>httpd_sys_content_t</code>, <code>&lt;unlabeled&gt;</code>).</p></item>
-      <item><p><em>marking</em> — the setrans-translated sensitivity/category string when <cmd>mcstransd</cmd> is running, or the raw MLS level string otherwise (e.g., <code>CUI//LEI/INV</code>, <code>s0</code>, <code>&lt;no-level&gt;</code>).</p></item>
+      <item><p><em>marking</em> — the setrans-translated sensitivity/category string when <cmd>mcstransd</cmd> is running, or the raw MLS level string otherwise (e.g., <code>CUI//INV</code>, <code>s0</code>, <code>&lt;no-level&gt;</code>).</p></item>
     </list>
 
     <p>

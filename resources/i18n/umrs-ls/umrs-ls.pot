@@ -1,14 +1,14 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE umrs-ls'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the umrs-ls package.
+# Copyright (C) 2026 Jamie Adams (a.k.a. Imodium Operator)
+# This file is distributed under the same license as the UMRS Project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: umrs-ls VERSION\n"
+"Project-Id-Version: umrs-ls\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 15:36+0000\n"
+"POT-Creation-Date: 2026-04-15 00:00+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,36 +17,42 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+# NOTE: Hand-crafted 2026-04-15 (updated from 2026-03-11 — line numbers changed).
+# Re-run xtr once available:
+#   xtr --package-name umrs-ls \
+#       --output resources/i18n/umrs-ls/umrs-ls.pot \
+#       $(find components/rusty-gadgets/umrs-ls/src -name '*.rs' | sort)
+
 #. Translate the static label, then append the count in parentheses.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:175
+#: components/rusty-gadgets/umrs-ls/src/main.rs:458
 msgid "access denied"
 msgstr ""
 
-#. Wrap translations in Cow::Owned
-#: components/rusty-gadgets/umrs-ls/src/main.rs:257
+#. Column headers — wrap translations in Cow::Owned.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1459
 msgid "MODE"
 msgstr ""
 
-#: components/rusty-gadgets/umrs-ls/src/main.rs:258
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1460
 msgid "MARKING"
 msgstr ""
 
-#: components/rusty-gadgets/umrs-ls/src/main.rs:259
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1461
 msgid "OWNER:GROUP"
 msgstr ""
 
-#: components/rusty-gadgets/umrs-ls/src/main.rs:260
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1462
 msgid "SIZE"
 msgstr ""
 
-#: components/rusty-gadgets/umrs-ls/src/main.rs:261
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1463
 msgid "MODIFIED"
 msgstr ""
 
-#: components/rusty-gadgets/umrs-ls/src/main.rs:262
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1464
 msgid "NAME"
 msgstr ""
 
-#: components/rusty-gadgets/umrs-ls/src/main.rs:467
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1656
 msgid "<restricted>"
 msgstr ""

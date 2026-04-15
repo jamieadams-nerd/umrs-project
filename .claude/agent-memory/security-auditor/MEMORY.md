@@ -166,6 +166,10 @@ Canadian catalog: `mcs_category_range: "c300-c399"` (flat string, correct key).
 `CatalogMetadata` maps `mcs_category_range`, so US catalog always shows `None` for this field.
 TUI silently drops MCS range row for US catalog metadata panel.
 
+## CUI LEI/INV Anti-Pattern Distribution (2026-04-15)
+- [CUI LEI/INV audit](pattern_cui_lei_inv.md) — 21 actionable occurrences; active setrans.conf + labels-backup.json highest priority; blog uses it as shorthand too
+- Full report: `code/2026-04-15-cui-lei-inv-audit.md`
+
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings
 - `2026-03-11-os-detection-umrs-platform-surface-audit.md` — detect pipeline

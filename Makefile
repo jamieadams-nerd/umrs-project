@@ -76,8 +76,8 @@ clean: docs-clean
 # ------------------------------------------------------------
 
 I18N_BASE_DIR       := resources/i18n
-I18N_TEXT_DOMAINS   := umrs-logspace umrs-ps umrs-df umrs-ls umrs-state umrs-uname umrs-platform umrs-c2pa
-I18N_ACTIVE_DOMAINS := umrs-ls umrs-state umrs-logspace umrs-uname umrs-platform umrs-c2pa
+I18N_TEXT_DOMAINS   := umrs-logspace umrs-ps umrs-df umrs-ls umrs-state umrs-uname umrs-platform umrs-c2pa umrs-stat
+I18N_ACTIVE_DOMAINS := umrs-ls umrs-state umrs-logspace umrs-uname umrs-platform umrs-c2pa umrs-stat
 I18N_LOCALES        := en_US fr_FR en_GB en_AU en_NZ
 
 # Internal helper: hyphen-to-underscore for variable name lookup.
@@ -94,6 +94,7 @@ I18N_SRC_DIR_umrs_logspace := components/rusty-gadgets/umrs-logspace/src
 I18N_SRC_DIR_umrs_uname    := components/rusty-gadgets/umrs-uname/src
 I18N_SRC_DIR_umrs_platform := components/rusty-gadgets/umrs-platform/src
 I18N_SRC_DIR_umrs_c2pa     := components/rusty-gadgets/umrs-c2pa/src
+I18N_SRC_DIR_umrs_stat     := components/rusty-gadgets/umrs-stat/src
 
 # Active locales per domain (locales with committed .po files ready for compilation).
 # The generic I18N_LOCALES list above is for i18n-setup scaffolding only.
@@ -104,6 +105,7 @@ I18N_ACTIVE_LOCALES_umrs_logspace := fr_CA
 I18N_ACTIVE_LOCALES_umrs_uname    := fr_CA
 I18N_ACTIVE_LOCALES_umrs_platform := fr_CA
 I18N_ACTIVE_LOCALES_umrs_c2pa     := fr_CA
+I18N_ACTIVE_LOCALES_umrs_stat     := fr_CA
 
 I18N_POT_EXT := .pot
 I18N_PO_EXT  := .po

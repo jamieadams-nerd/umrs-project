@@ -1,0 +1,177 @@
+.\" SPDX-License-Identifier: MIT
+.\" Copyright (c) 2025 Jamie Adams
+.\" Traduction française (Canada) — umrs-translator (Claude Code), 2026-04-15
+.TH UMRS-LABEL 1 "2026-04-15" "umrs-label 0.1.0" "Outils UMRS"
+.SH NOM
+umrs-label \- parcourir et afficher le registre des étiquettes de sécurité UMRS
+.SH SYNOPSIS
+.B umrs-label
+.RB [ \-\-us\-catalog
+.IR CHEMIN ]
+.RB [ \-\-ca\-catalog
+.IR CHEMIN ]
+.RB [ \-\-cli ]
+.RB [ \-\-json ]
+.br
+.B umrs-label
+.BR \-\-help
+.SH DESCRIPTION
+.B umrs-label
+charge les catalogues d'étiquettes CUI (informations non classifiées contrôlées)
+et Protégé Canada depuis des fichiers JSON et les présente sous forme
+de navigateur interactif.
+.PP
+Lorsque la sortie standard est un terminal, le TUI interactif se lance
+automatiquement.
+Utilisez
+.B \-\-cli
+pour forcer une sortie texte brut, ou redirigez la sortie vers un autre programme.
+.PP
+L'outil est inconditionnellement en lecture seule.
+Aucune modification du catalogue n'est possible via cette interface.
+.PP
+Le TUI présente une disposition à deux panneaux : un arbre des étiquettes
+à gauche, organisé par groupe d'index, et un panneau de détails à droite
+affichant la définition complète du marquage, la désignation (de base ou spécifié),
+les instructions de traitement et les avertissements obligatoires
+pour l'entrée sélectionnée.
+.SH OPTIONS
+.TP
+.BI \-\-us\-catalog " CHEMIN"
+Chemin vers le fichier JSON du catalogue d'étiquettes CUI américain.
+Par défaut :
+.IR config/us/US-CUI-LABELS.json .
+.TP
+.BI \-\-ca\-catalog " CHEMIN"
+Chemin vers le fichier JSON du catalogue d'étiquettes Protégé Canada.
+Par défaut :
+.IR config/ca/CANADIAN-PROTECTED.json .
+Le catalogue canadien est facultatif ; s'il est absent, l'outil continue
+avec les seules étiquettes CUI américaines.
+.TP
+.B \-\-cli
+Forcer une sortie CLI en texte brut plutôt que le TUI interactif.
+Activé implicitement lorsque la sortie standard n'est pas un terminal.
+.TP
+.B \-\-json
+Émettre une sortie JSON lisible par machine.
+Réservé à une phase d'implémentation future ; non encore implémenté.
+.TP
+.BR \-h ", " \-\-help
+Afficher le message d'aide.
+.TP
+.BR \-V ", " \-\-version
+Afficher la version.
+.SH NAVIGATION TUI
+.TP
+.BR j " / " k " ou " \(ua " / " \(da
+Se déplacer vers le haut ou le bas dans le panneau actif.
+.TP
+.BR h " / " l " ou " \(la " / " \(ra
+Réduire ou développer le nœud sélectionné.
+.TP
+.BR Tab
+Basculer le focus entre le panneau arbre et le panneau de détails.
+.TP
+.BR Entrée " ou " Espace
+Afficher les détails / basculer l'arborescence.
+.TP
+.BR /
+Rechercher et filtrer l'arbre du catalogue.
+.TP
+.BR Échap
+Annuler la recherche.
+.TP
+.BR ?
+Afficher ou masquer l'aide clavier.
+.TP
+.BR q
+Quitter.
+.SH FORMAT DES FICHIERS DE CATALOGUE
+Les catalogues sont des fichiers JSON.
+La clé de premier niveau est
+.BR "markings" .
+Chaque clé d'entrée est la chaîne complète du marquage de bannière
+(par exemple,
+.IR "CUI//SP-CTI" ).
+Les champs comprennent
+.IR name ,
+.IR abbrv_name ,
+.IR index_group ,
+.IR designation ,
+.IR level ,
+.IR required_warning_statement
+et
+.IR required_dissemination_control .
+.PP
+Consultez
+.I docs/FIELD-REFERENCE.md
+dans l'arborescence source de
+.B umrs-label
+pour la spécification complète des champs.
+.SH CODES DE SORTIE
+.TP
+.B 0
+Succès.
+.TP
+.B 1
+Échec d'initialisation du terminal ou erreur d'exécution.
+.TP
+.B 2
+Erreur d'utilisation ou fichier de catalogue requis introuvable.
+.SH CONSIDÉRATIONS DE SÉCURITÉ
+.IP \(bu 2
+Les fichiers JSON du catalogue sont chargés en lecture seule.
+Aucun chemin d'écriture n'existe dans cet outil.
+.IP \(bu 2
+Les couleurs de palette CUI n'utilisent jamais le rouge ni l'orange,
+réservés respectivement à SECRET et TRÈS SECRET sur les systèmes classifiés.
+.IP \(bu 2
+CUI de base est une norme de traitement, non un niveau d'accès.
+L'affichage de toutes les catégories de base dans le navigateur
+n'implique pas l'autorisation d'accéder aux données de quelque catégorie que ce soit.
+.SH CONFORMITÉ
+.TP
+.B NIST SP 800-53 AC-16
+Attributs de sécurité \(em affichage exact de tous les champs de marquage CUI,
+y compris la désignation, les instructions de traitement
+et les avertissements obligatoires.
+.TP
+.B NIST SP 800-53 AC-3
+Le navigateur est inconditionnellement en lecture seule ;
+aucune modification du catalogue n'est possible.
+.TP
+.B NIST SP 800-53 AU-3
+L'en-tête TUI affiche le nom d'hôte, le système d'exploitation,
+le mode SELinux et l'état FIPS à chaque image rendue.
+.TP
+.B NIST SP 800-53 SI-10
+Validation des entrées \(em clap valide tous les arguments CLI à l'entrée,
+rejetant les options inconnues avant tout accès aux fichiers de catalogue.
+.SH FICHIERS
+.TP
+.I config/us/US-CUI-LABELS.json
+Catalogue d'étiquettes CUI américain par défaut
+(chemin relatif au répertoire de travail).
+.TP
+.I config/ca/CANADIAN-PROTECTED.json
+Catalogue d'étiquettes Protégé Canada par défaut
+(chemin relatif au répertoire de travail, facultatif).
+.SH NORMES
+.TP
+.B Registre CUI de la NARA
+Registre des informations non classifiées contrôlées de la National Archives
+and Records Administration
+.RI ( https://www.archives.gov/cui )
+.TP
+.B Conseil du Trésor du Canada
+Politique sur la sécurité du gouvernement \(em définitions des étiquettes
+Protégé Canada
+.SH AUTEURS
+Jamie Adams (alias Imodium Operator)
+.SH LICENCE
+Licence MIT.
+Consultez le fichier LICENSE.
+.SH VOIR AUSSI
+.BR umrs-stat (1),
+.BR umrs-ls (1)

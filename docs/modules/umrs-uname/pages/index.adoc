@@ -1,0 +1,259 @@
+= umrs-uname — System Security Posture Audit Card
+:description: Overview of the umrs-uname tool: OS identity, kernel security posture, \
+    and platform trust evidence in an interactive audit card.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 CM-8, CA-7, SI-7, AU-3
+// NSA RTB RAIN — Non-Bypassability, Trust Anchoring
+
+`umrs-uname` is a security overlay of the classic `uname` command.
+Where `uname` reports the kernel version string, `umrs-uname` reports whether
+the kernel is running in a hardened, integrity-verified state — and shows
+the evidence behind that conclusion.
+
+The tool runs the UMRS platform detection pipeline at startup, collects a live
+snapshot of kernel security posture, and displays the results in an interactive
+three-tab audit card.
+
+.Primary audiences
+* *Security operators* — verify system posture before CUI processing.
+* *Security auditors* — review the evidence chain behind a trust classification.
+* *Developers* — understand how platform detection and posture probing work in practice.
+
+'''
+
+== Data Sources
+
+`umrs-uname` reads no external configuration files.
+All data comes from kernel interfaces and the local package database,
+accessed through the provenance-verified platform abstraction layer.
+
+[mermaid]
+....
+flowchart LR
+    subgraph proc["procfs — /proc (ProcfsText, magic-verified)"]
+        OS_RELEASE["/etc/os-release\n(OS identity via OsDetector)"]
+        BOOT_ID["/proc/sys/kernel/random/boot_id\n(unique per-boot identifier)"]
+        SYSCTL_LIVE["/proc/sys/…\n(live sysctl values: ASLR, kptr_restrict,\nunprivileged BPF, ptrace, perf, dmesg)"]
+        MOUNTS["/proc/mounts\n(mount topology)"]
+        MOUNTINFO["/proc/self/mountinfo\n(detailed mount table)"]
+    end
+
+    subgraph sysfs["sysfs — /sys (SysfsText, magic-verified)"]
+        SELINUX_ENFORCE["/sys/fs/selinux/enforce\n(SELinux enforcement mode)"]
+        SELINUX_MLS["/sys/fs/selinux/mls\n(MLS policy active flag)"]
+        LOCKDOWN["/sys/kernel/security/lockdown\n(kernel lockdown mode)"]
+        FIPS["/proc/sys/crypto/fips_enabled\n(FIPS mode state)"]
+        KEXEC["/proc/sys/kernel/kexec_load_disabled"]
+        MODULE_SIG["/proc/sys/kernel/modules_disabled\n/proc/sys/kernel/module.sig_enforce"]
+        USERNS["/proc/sys/user/max_user_namespaces\n/proc/sys/kernel/unprivileged_userns_clone"]
+        SYSRQ["/proc/sys/kernel/sysrq"]
+    end
+
+    subgraph sysctl_conf["Configured sysctl (sysctl.d)"]
+        SYSCTL_D["/etc/sysctl.d/*.conf\n/usr/lib/sysctl.d/*.conf\n(intended configuration)"]
+    end
+
+    subgraph pkgdb["Package Database"]
+        RPM["RPM database\n(platform identity facts)"]
+        DPKG["dpkg database\n(platform identity facts)"]
+    end
+
+    TOOL["umrs-uname"]
+
+    OS_RELEASE -- "TOCTOU-safe OsDetector\n(fd-anchored, ownership verified)" --> TOOL
+    BOOT_ID --> TOOL
+    SYSCTL_LIVE -- "PostureSnapshot\n(per-indicator SecureReader)" --> TOOL
+    MOUNTS --> TOOL
+    MOUNTINFO -- "mount topology cross-check\n(T2 trust gate)" --> TOOL
+    SELINUX_ENFORCE --> TOOL
+    SELINUX_MLS --> TOOL
+    LOCKDOWN --> TOOL
+    FIPS --> TOOL
+    KEXEC --> TOOL
+    MODULE_SIG --> TOOL
+    USERNS --> TOOL
+    SYSRQ --> TOOL
+    SYSCTL_D -- "contradiction detection\n(live vs. configured)" --> TOOL
+    RPM -- "T3/T4 trust gates\n(package digest + facts)" --> TOOL
+    DPKG -- "T3/T4 trust gates\n(package digest + facts)" --> TOOL
+....
+
+.Data source descriptions
+[cols="2,4", options="header"]
+|===
+| Source | What `umrs-uname` reads from it
+
+| `/etc/os-release`
+| OS identity fields: `ID`, `NAME`, `VERSION_ID`, `PRETTY_NAME`, `CPE_NAME`.
+  Read via `OsDetector` with fd-anchored I/O and ownership verification.
+  The T4 trust tier requires this file to pass ownership and package digest verification.
+
+| `/proc/sys/kernel/random/boot_id`
+| Per-boot unique identifier.
+  Displayed in Tab 0 for log correlation.
+
+| Live sysctl nodes (`/proc/sys/…`)
+| Kernel hardening indicator values: ASLR level, kptr_restrict, unprivileged BPF,
+  ptrace scope, perf counters, dmesg restriction, sysrq, user namespace limit, and others.
+  Each node is read via a typed `StaticSource` with filesystem magic verification.
+  These are the live values the running kernel is using.
+
+| `/etc/sysctl.d/` and `/usr/lib/sysctl.d/`
+| Intended configuration values.
+  The posture engine compares each live indicator against its configured value.
+  Disagreement produces a contradiction — either DRIFT, NOT PERSISTED, or UNVERIFIABLE.
+
+| `/sys/fs/selinux/enforce` and `/sys/fs/selinux/mls`
+| SELinux enforcement mode and MLS flag.
+  Read via `SelinuxEnforce` and `SelinuxMls` — typed `StaticSource` implementations
+  with sysfs magic verification.
+
+| `/sys/kernel/security/lockdown`
+| Kernel lockdown mode: none, integrity, or confidentiality.
+
+| `/proc/sys/crypto/fips_enabled`
+| FIPS mode state.
+
+| Module-related sysctl nodes
+| `kexec_load_disabled`, `modules_disabled`, `module.sig_enforce`.
+  These gates determine whether the running kernel can be replaced or extended.
+
+| RPM / dpkg database
+| Platform identity facts used to compute the T3 and T4 trust tiers.
+  At T3, two or more independent package database facts must agree on the platform identity.
+  At T4, the os-release ownership and a package digest are both verified.
+
+|===
+
+NOTE: Every read from `/proc` and `/sys` passes through filesystem magic verification.
+The tool cannot be deceived by a regular file mounted at a procfs or sysfs path.
+This is the non-bypassability property required by NSA RTB RAIN.
+
+'''
+
+== Quick Reference
+
+[source,shell]
+----
+# Run the posture audit card (no arguments required)
+umrs-uname
+----
+
+.Key bindings
+[cols="2,4", options="header"]
+|===
+| Key | Action
+
+| `Tab` / `Right`
+| Next tab
+
+| `Shift-Tab` / `Left`
+| Previous tab
+
+| `j` / `Down`
+| Scroll down
+
+| `k` / `Up`
+| Scroll up
+
+| `?` or `F1`
+| Open contextual help for the current tab
+
+| `q` or `Esc`
+| Quit
+
+|===
+
+For the complete tab reference, trust tier definitions, and contradiction type descriptions,
+see xref:umrs-tools:umrs-uname.adoc[umrs-uname — System Security Posture Audit Card].
+
+'''
+
+== Trust Tier Summary
+
+[cols="1,2,4", options="header"]
+|===
+| Tier | Label | What was confirmed
+
+| T0
+| Untrusted
+| No kernel anchor established.
+
+| T1
+| Kernel Anchored
+| `/proc` verified as real procfs via filesystem magic number and PID coherence.
+
+| T2
+| Environment Anchored
+| Mount topology cross-checked: `mountinfo` vs. `statfs`.
+
+| T3
+| Platform Verified
+| Platform identity confirmed; two or more independent package database facts agreed.
+
+| T4
+| Integrity Anchored
+| `/etc/os-release` ownership and installed package digest both verified.
+
+|===
+
+'''
+
+== Security Design
+
+*Non-bypassable source verification* — every read from `/proc` and `/sys` is preceded
+by a filesystem magic number check.
+The tool cannot be deceived by a bind-mounted regular file at a procfs path.
+(NSA RTB RAIN, Non-Bypassability)
+
+*Fail-closed trust* — if the detection pipeline fails a hard gate, the trust tier is
+T0 (Untrusted).
+The failure is shown in Tab 0; posture data is still collected and shown in Tab 1.
+
+*Evidence, not assertion* — the trust tier is computed from the evidence chain,
+not asserted by the tool.
+The full evidence chain is available for review in Tab 2.
+
+*Contradiction detection* — the posture engine compares every live sysctl value against
+the configured value in `sysctl.d`.
+Contradictions are typed data: DRIFT, NOT PERSISTED, or UNVERIFIABLE.
+They can be counted, filtered, and matched programmatically.
+(NIST SP 800-53 CM-6, CA-7)
+
+'''
+
+== Compliance
+
+[cols="1,3", options="header"]
+|===
+| Control | How `umrs-uname` satisfies it
+
+| NIST SP 800-53 CM-8
+| Platform identity tab provides component inventory data:
+  distro, version, CPE name, and package substrate.
+
+| NIST SP 800-53 CA-7
+| Kernel Security tab provides live posture at any point in time;
+  contradiction detection surfaces configuration drift.
+
+| NIST SP 800-53 SI-7
+| Trust tier is computed from independently verified evidence;
+  T4 requires verified os-release ownership and package digest.
+
+| NIST SP 800-53 AU-3
+| Evidence chain is labeled, grouped, and includes source type
+  and verification code for each record.
+
+|===
+
+'''
+
+== See Also
+
+* xref:umrs-tools:umrs-uname.adoc[umrs-uname — full reference page] — complete tab reference, trust tiers, evidence chain detail
+* xref:devel:os-detection-deep-dive.adoc[OS Detection Deep Dive] — full treatment of the detection pipeline
+* xref:devel:posture-probe.adoc[Posture Probe] — how kernel indicators are collected and classified
+* xref:devel:update-checklists.adoc[Kernel Update Checklist] — keeping the indicator catalog current
+* xref:umrs-stat:index.adoc[umrs-stat] — companion tool for file-level security inspection

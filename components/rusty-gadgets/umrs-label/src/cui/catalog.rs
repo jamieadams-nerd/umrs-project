@@ -212,6 +212,62 @@ impl Catalog {
         self.markings.iter()
     }
 
+    /// Look up a marking by a raw MCS level string (e.g., `"s1:c300"`, `"s2:c301"`).
+    ///
+    /// This is a fallback lookup for catalog entries whose JSON keys (e.g.,
+    /// `"PROTECTED-A"`) do not appear as translated labels in `setrans.conf`.
+    /// When `setrans.conf` has no entry for a given MCS category (c300–c399 for
+    /// Canadian Protected designations), the group header carries the raw level
+    /// string rather than a human-readable marking. This method finds the catalog
+    /// entry whose `level` and `category_base` match the components of the raw
+    /// level string, allowing the popup to resolve correctly.
+    ///
+    /// Parsing rules:
+    /// - `raw_level` is split on `:` to extract `(sensitivity, categories)`.
+    /// - `sensitivity` is compared against `Marking::level` (e.g., `"s1"`).
+    /// - The first category token in `categories` is compared against
+    ///   `Marking::category_base` (e.g., `"c300"`).
+    /// - Returns the first matching `(key, marking)` pair, or `None`.
+    ///
+    /// This method performs a linear scan over the catalog. It is intended for
+    /// small catalogs (e.g., three Canadian tiers) where a hash lookup by display
+    /// string is insufficient. It is not intended for the US CUI catalog where
+    /// setrans.conf provides complete translations.
+    ///
+    /// Fail-closed: returns `None` on any parse ambiguity rather than guessing.
+    ///
+    /// ## Compliance
+    ///
+    /// - **NIST SP 800-53 AC-16**: Security Attributes — enables correct popup
+    ///   resolution for Canadian Protected markings when setrans translations
+    ///   are absent.
+    #[must_use = "returns None if no matching entry is found; check before use"]
+    pub fn marking_by_mcs_level(&self, raw_level: &str) -> Option<(&String, &Marking)> {
+        // Split on ':' to separate sensitivity from category list.
+        // "s1:c300" → sensitivity = "s1", categories = "c300"
+        // "s1" (no colon) → no categories, cannot match a category-based entry.
+        let (sensitivity, categories) = raw_level.split_once(':')?;
+
+        // Extract the first category token (before any comma or range separator).
+        // "c300" → "c300"
+        // "c300,c303" → "c300"  (first base category)
+        let first_category = categories.split([',', '.']).next()?;
+
+        // Trim whitespace — defensive, since raw level strings are kernel-sourced
+        // and should not contain whitespace, but be explicit.
+        let sensitivity = sensitivity.trim();
+        let first_category = first_category.trim();
+
+        if sensitivity.is_empty() || first_category.is_empty() {
+            return None;
+        }
+
+        self.markings.iter().find(|(_, m)| {
+            m.level.as_deref() == Some(sensitivity)
+                && m.category_base.as_deref() == Some(first_category)
+        })
+    }
+
     /// Iterate all dissemination controls as `(key, control)` pairs.
     ///
     /// Returns an empty iterator for catalogs that have no dissemination controls

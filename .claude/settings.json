@@ -327,7 +327,17 @@
       "WebFetch(domain:attack.mitre.org)",
       "WebFetch(domain:www.elttam.com)",
       "WebFetch(domain:nvd.nist.gov)",
-      "WebFetch(domain:www.defensive-security.com)"
+      "WebFetch(domain:www.defensive-security.com)",
+      "Bash(awk '{print $NF}')",
+      "Bash(getent group:*)",
+      "Bash(ssh:*)",
+      "Bash(./scripts/umrs-install.sh:*)",
+      "Bash(awk '/^umrs/ {print $1}')",
+      "Bash(set -e)",
+      "Bash(logger -t umrs-install -p auth.notice \"removed legacy modules cui_lei, umrs_cui, umrs\")",
+      "Bash(logger -t umrs-install -p auth.notice \"installed umrs policy module\")",
+      "Read(//var/lib/selinux/targeted/active/**)",
+      "Read(//etc/selinux/targeted/contexts/files/**)"
     ]
   },
   "enabledPlugins": {

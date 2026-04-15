@@ -1,0 +1,204 @@
+.\" SPDX-License-Identifier: MIT
+.\" Copyright (c) 2025 Jamie Adams
+.TH UMRS-LS 1 "2026-04-15" "umrs-ls 0.1.0" "UMRS Tools"
+.SH NAME
+umrs-ls \- security-focused directory listing with SELinux context and CUI markings
+.SH SYNOPSIS
+.B umrs-ls
+.RI [ PATH ]
+.RB [ \-\-color ]
+.RB [ \-\-no\-iov ]
+.RB [ \-\-no\-mtime ]
+.RB [ \-\-with\-size ]
+.RB [ \-\-with\-inode ]
+.RB [ \-\-flat ]
+.RB [ \-\-cli ]
+.RB [ \-\-json ]
+.SH DESCRIPTION
+.B umrs-ls
+displays directory entries enriched with SELinux security context,
+CUI security marking, POSIX ownership, and security observations.
+.PP
+Output is grouped by
+.I (SELinux type, security marking)
+pair.
+The type and marking appear in group headers and are not repeated for
+every row.
+.PP
+By default, related files (log rotations, signatures, checksums, backups)
+are
+.I cuddled
+under their base file \(em one summary line replaces the individual sibling
+rows.
+Pass
+.B \-\-flat
+to disable cuddling and show every entry on its own row.
+.PP
+When stdout is a terminal, the interactive TUI directory browser launches
+automatically.
+Use
+.B \-\-cli
+to force columnar text output.
+.SH OPTIONS
+.TP
+.RI [ PATH ]
+Directory to list.
+Default: current directory
+.RB ( . ).
+.TP
+.B \-\-color
+Enable ANSI color output.
+Has no effect if the
+.B NO_COLOR
+environment variable is set.
+.TP
+.B \-\-no\-iov
+Omit the security observations column (IOV = Integrity Observation Vector).
+.TP
+.B \-\-no\-mtime
+Omit the last-modified time column.
+.TP
+.B \-\-with\-size
+Include a file-size column (hidden by default).
+.TP
+.B \-\-with\-inode
+Include an inode number column (hidden by default).
+.TP
+.B \-\-flat
+Disable cuddling; show every entry on its own row.
+.TP
+.B \-\-cli
+Force plain-text columnar output instead of the interactive TUI.
+Implied when stdout is not a terminal.
+.TP
+.B \-\-json
+Emit machine-readable JSON output.
+Always bypasses the TUI.
+.TP
+.BR \-h ", " \-\-help
+Print help.
+Not implemented with clap; use
+.B \-\-version
+to verify the binary.
+.SH OUTPUT FORMAT
+.SS CLI mode
+Entries are printed in groups separated by a header line showing the
+SELinux type and CUI marking for that group.
+Each row displays MODE, OWNER:GROUP, MODIFIED, NAME,
+and security observations.
+The SIZE and inode columns are hidden unless requested with
+.B \-\-with\-size
+and
+.BR \-\-with\-inode .
+.SS TUI mode
+An interactive two-panel browser.
+Left panel shows the directory tree; right panel shows the SELinux label
+and CUI marking detail popup for the selected entry.
+Press
+.BR Enter
+on a file to open the security detail popup.
+.SS JSON mode
+Outputs a JSON document containing grouped directory entries.
+Each group carries the SELinux type, marking, and an array of entries
+with full metadata.
+.SH TUI NAVIGATION
+.TP
+.BR j " / " k " or " \(ua " / " \(da
+Move up or down in the directory listing.
+.TP
+.BR Enter
+Open the security detail popup for the selected entry.
+.TP
+.BR Tab " / " Shift\-Tab
+Switch focus between panels.
+.TP
+.BR /
+Search within the listing.
+.TP
+.BR q " or " Esc
+Quit or close popup.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+Directory read error or terminal initialization failure.
+.TP
+.B 2
+Usage error.
+.SH SECURITY CONSIDERATIONS
+.IP \(bu 2
+All directory reads are fd-anchored via
+.B SecureDirent
+with filesystem-magic verification (PROC_SUPER_MAGIC for
+.I /proc
+entries).
+This eliminates TOCTOU vulnerabilities in directory traversal
+(NSA RTB RAIN).
+.IP \(bu 2
+SELinux security contexts are read from the
+.I security.selinux
+xattr on each entry's anchored file descriptor.
+If SELinux is disabled in the kernel, the MARKING column shows
+.IR N/A .
+.IP \(bu 2
+Color output is suppressed when
+.B NO_COLOR
+is set, regardless of the
+.B \-\-color
+flag.
+This prevents ANSI escape sequences from reaching downstream programs.
+.IP \(bu 2
+Access-denied entries are counted and reported as a group footer
+rather than silently omitted.
+.SH COMPLIANCE
+.TP
+.B NIST SP 800-53 AC-3
+Access Enforcement \(em every entry displays the SELinux label
+used in access decisions.
+.TP
+.B NIST SP 800-53 AC-4
+Information Flow Enforcement \(em MCS markings and security observations
+surface information-flow boundary violations.
+.TP
+.B NIST SP 800-53 AU-3
+Audit Record Content \(em all identity, label, and observation fields
+required for audit are included in the output.
+.TP
+.B NSA RTB RAIN
+Non-Bypassability and TOCTOU safety \(em all directory reads are
+fd-anchored via
+.BR SecureDirent .
+.SH ENVIRONMENT
+.TP
+.B NO_COLOR
+When set (any value), color output is disabled unconditionally.
+.TP
+.B LANG
+Controls the locale for translated output.
+Set to
+.B fr_CA.UTF-8
+for French (Canada).
+.TP
+.B LC_ALL
+Overrides all locale categories.
+Supersedes
+.BR LANG .
+.TP
+.B UMRS_LOCALEDIR
+Override locale directory (development testing only).
+.SH FILES
+.TP
+.I /usr/share/locale/fr_CA/LC_MESSAGES/umrs-ls.mo
+French (Canada) message catalog.
+.SH AUTHORS
+Jamie Adams (a.k.a. Imodium Operator)
+.SH LICENSE
+MIT License.
+See LICENSE file.
+.SH SEE ALSO
+.BR ls (1),
+.BR umrs-stat (1),
+.BR umrs-label (1),
+.BR stat (1)

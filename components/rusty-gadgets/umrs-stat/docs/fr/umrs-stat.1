@@ -1,0 +1,144 @@
+.\" SPDX-License-Identifier: MIT
+.\" Copyright (c) 2025 Jamie Adams
+.\" Traduction française (Canada) — umrs-translator (Claude Code), 2026-04-15
+.TH UMRS-STAT 1 "2026-04-15" "umrs-stat 0.1.0" "Outils UMRS"
+.SH NOM
+umrs-stat \- afficher les attributs de sécurité d'un fichier sous forme de fiche d'audit interactive
+.SH SYNOPSIS
+.B umrs-stat
+.RI [ OPTIONS ]
+.I CHEMIN
+.SH DESCRIPTION
+.B umrs-stat
+lit les attributs de sécurité d'un fichier et les présente sous la forme
+d'une fiche d'audit interactive à trois onglets dans le terminal.
+.PP
+La fiche affiche :
+.PP
+.IP "Onglet Identité" 16
+Chemin, nom, type, type MIME et taille du fichier.
+.IP "Onglet Sécurité" 16
+Marquage de sécurité (contexte SELinux et étiquette de classification CUI),
+état du chiffrement (fscrypt, eCryptfs, adossé à LUKS)
+et état de mesure et de vérification IMA/EVM.
+.IP "Onglet Observations" 16
+Observations de sécurité énumérées (bits setuid/setgid,
+droits en écriture pour tous, exposition aux liens symboliques)
+avec un compte et un résumé de sévérité.
+.PP
+Tous les attributs sont lus via la couche d'abstraction vérifiée
+par provenance de
+.BR umrs-platform .
+Aucun appel direct à
+.BR stat (2)
+ou
+.BR open (2)
+sur des chemins sensibles n'est effectué en dehors du code de bibliothèque validé.
+.SH OPTIONS
+.TP
+.I CHEMIN
+Chemin du fichier dont les attributs de sécurité seront inspectés.
+Obligatoire.
+.TP
+.B \-\-json
+Émettre une sortie JSON lisible par machine au lieu du TUI interactif.
+Réservé à une phase d'implémentation future ; non encore implémenté.
+.TP
+.BR \-h ", " \-\-help
+Afficher le message d'aide.
+.TP
+.BR \-V ", " \-\-version
+Afficher la version.
+.SH NAVIGATION TUI
+.TP
+.BR Tab " / " Shift\-Tab
+Passer d'un onglet d'audit à l'autre.
+.TP
+.BR j " / " k " ou " \(ua " / " \(da
+Faire défiler l'onglet actif.
+.TP
+.BR q " ou " Esc
+Quitter.
+.TP
+.B ?
+Afficher l'aide contextuelle pour l'onglet actif.
+.SH CODES DE SORTIE
+.TP
+.B 0
+Succès.
+.TP
+.B 1
+Fichier introuvable, erreur de lecture ou échec d'initialisation du terminal.
+.TP
+.B 2
+Erreur d'utilisation (arguments invalides).
+.SH CONSIDÉRATIONS DE SÉCURITÉ
+.IP \(bu 2
+Toutes les lectures de fichiers sont acheminées via les lecteurs vérifiés
+par provenance de
+.BR umrs-platform .
+Cela inclut la vérification de la signature du système de fichiers
+(via
+.B fstatfs
+sur un descripteur de fichier ancré) et la protection contre les attaques TOCTOU.
+.IP \(bu 2
+L'outil ne modifie aucun attribut de fichier.
+Il est inconditionnellement en lecture seule.
+.IP \(bu 2
+L'état IMA/EVM est lu depuis l'attribut étendu
+.I security.ima
+et l'attribut étendu
+.IR security.evm ,
+en utilisant
+.B O_NOFOLLOW
+pour prévenir les attaques par substitution de liens symboliques.
+.IP \(bu 2
+Le contexte SELinux est lu depuis l'attribut étendu
+.I security.selinux
+sur le descripteur de fichier résolu.
+Si SELinux est désactivé dans le noyau, le champ Marquage affiche
+.IR N/A .
+.SH CONFORMITÉ
+.TP
+.B NIST SP 800-53 AU-3
+Contenu des enregistrements d'audit \(em l'opérateur fournit explicitement
+le chemin cible ; l'outil s'auto-identifie via le nom et le sujet du rapport
+dans tous les modes de sortie.
+.TP
+.B NIST SP 800-53 CM-6
+Le mode de sortie est contrôlé par l'opérateur via
+.BR \-\-json  ;
+aucune inférence implicite de configuration n'a lieu.
+.TP
+.B NIST SP 800-53 SI-7
+Intégrité des logiciels et des informations \(em l'état IMA/EVM fournit
+des preuves d'intégrité mesurées par le noyau pour le fichier inspecté.
+.SH FICHIERS
+.TP
+.I /usr/share/locale/fr_CA/LC_MESSAGES/umrs-stat.mo
+Catalogue de messages en français (Canada).
+.SH VARIABLES D'ENVIRONNEMENT
+.TP
+.B LANG
+Contrôle la locale pour la traduction des messages.
+Définissez à
+.B fr_CA.UTF-8
+pour recevoir la sortie en français (Canada).
+.TP
+.B LC_ALL
+Remplace toutes les catégories de locale.
+Prend le dessus sur
+.BR LANG .
+.TP
+.B UMRS_LOCALEDIR
+Remplace le répertoire des locales (tests de développement uniquement).
+.SH VOIR AUSSI
+.BR umrs-ls (1),
+.BR umrs-label (1),
+.BR stat (1),
+.BR ls (1)
+.SH AUTEURS
+Jamie Adams (alias Imodium Operator)
+.SH LICENCE
+Licence MIT.
+Consultez le fichier LICENSE.

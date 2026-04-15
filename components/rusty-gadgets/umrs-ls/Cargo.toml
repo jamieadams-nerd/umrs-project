@@ -21,6 +21,7 @@ umrs-label    = { path = "../umrs-label" }
 umrs-stat     = { path = "../umrs-stat" }
 
 chrono       = "0.4"
+clap         = { version = "4", features = ["derive"] }
 tree_magic_mini = "3"
 nix          = { version = "0.27", features = ["user", "fs"] }
 log          = { version = "0.4", features = ["release_max_level_info"] }

@@ -1,0 +1,171 @@
+# French translation of umrs-stat
+# This file is distributed under the same license as the UMRS Project
+# MIT License
+# Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
+#
+# Initial translation provided by a specialized Claude Code "umrs-translator".
+# The agent was assisted by a technical corpus derived from various GNU
+# tools via the Translation Project (https://translationproject.org).
+#
+# NOTE: This translation is AI-generated and may contain nuances
+# requiring human verification.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-stat\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-15 00:00+0000\n"
+"PO-Revision-Date: 2026-04-15 00:00+0000\n"
+"Last-Translator: umrs-translator (Claude Code)\n"
+"Language-Team: fr_CA\n"
+"Language: fr_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# ---------------------------------------------------------------------------
+# Page/report title
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Title of the file security audit page/card.
+# "Audit de sécurité" — Termium corpus: "audit" is attested as masculine noun.
+# "fichier" — coreutils corpus: "File" → "Fichier".
+#: components/rusty-gadgets/umrs-stat/src/main.rs:78
+msgid "File Security Audit"
+msgstr "Audit de sécurité du fichier"
+
+# ---------------------------------------------------------------------------
+# Identity tab — file metadata rows
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Row label for the file path.
+# "Chemin" — standard fr_CA for filesystem path. No Termium entry for bare "path".
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:282
+msgid "Path"
+msgstr "Chemin"
+
+# TRANSLATOR: Row label for the filename.
+# "Nom du fichier" — coreutils pattern (e.g., "basename" context); standard fr_CA.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:284
+msgid "Filename"
+msgstr "Nom du fichier"
+
+# TRANSLATOR: Row label for the file type (regular, directory, symlink, etc.).
+# "Type de fichier" — standard fr_CA; coreutils: "Type" → "Type".
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:288
+msgid "File type"
+msgstr "Type de fichier"
+
+# TRANSLATOR: Row label for the MIME type.
+# "MIME" is a specification acronym — kept as-is.
+# "type MIME" — standard fr_CA technical term; no Termium entry found.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:309
+msgid "MIME type"
+msgstr "Type MIME"
+
+# TRANSLATOR: Row label for the file size.
+# "Taille" — coreutils corpus: msgid "Size" → msgstr "Taille". Corpus-mandated.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:329
+msgid "Size"
+msgstr "Taille"
+
+# ---------------------------------------------------------------------------
+# Security section group titles
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Section group title for the marking subsection.
+# "Marquage" — UMRS decision: established for security marking display context.
+# See vocabulary-fr_CA.md. (Termium: "cote de sécurité" — too long for a group title.)
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:389
+msgid "Marking"
+msgstr "Marquage"
+
+# TRANSLATOR: Section group title for the encryption subsection.
+# "Chiffrement" — Termium Plus: encryption.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:406
+msgid "Encryption"
+msgstr "Chiffrement"
+
+# TRANSLATOR: IMA/EVM is a specification acronym (Integrity Measurement Architecture /
+# Extended Verification Module). Kept English in all locales per translation boundary rule.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:461
+msgid "IMA/EVM"
+msgstr "IMA/EVM"
+
+# ---------------------------------------------------------------------------
+# Observations tab
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Column header for the count of security findings.
+# "Nombre" — coreutils corpus: "Count" → "Nombre". Corpus-mandated.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:534
+msgid "Count"
+msgstr "Nombre"
+
+# TRANSLATOR: Column/section header for security findings.
+# "Constats" — UMRS decision: established fr_CA for security findings in audit context.
+# ANSSI and Termium use "constat" (masculine) for a security finding or audit finding.
+# See vocabulary-fr_CA.md.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:541
+msgid "Findings"
+msgstr "Constats"
+
+# TRANSLATOR: Status message when no security observations are present.
+# "observations de sécurité" — consistent with "Observations" tab label.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:542
+msgid "No security observations"
+msgstr "Aucune observation de sécurité"
+
+# ---------------------------------------------------------------------------
+# Status and error messages
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Status message displayed when the file has no security concerns.
+# "préoccupation" — standard fr_CA for "concern" in a security posture context.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:133
+msgid "No security concerns"
+msgstr "Aucune préoccupation de sécurité"
+
+# TRANSLATOR: Error message — file could not be read.
+# "Impossible de lire le fichier" — coreutils corpus pattern.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:569
+msgid "Failed to read file"
+msgstr "Impossible de lire le fichier"
+
+# TRANSLATOR: Status shown when no data is available for display.
+# "Aucune donnée disponible" — standard fr_CA.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:578
+msgid "No data available"
+msgstr "Aucune donnée disponible"
+
+# TRANSLATOR: Error message — could not read file attributes/metadata.
+# "attributs" — standard fr_CA for file attributes; bash corpus attests.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:718
+msgid "Failed to read file attributes"
+msgstr "Impossible de lire les attributs du fichier"
+
+# ---------------------------------------------------------------------------
+# Tab labels
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Tab label for the file identity/metadata view.
+# "Identité" — Termium Plus: identity.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:662
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:706
+msgid "Identity"
+msgstr "Identité"
+
+# TRANSLATOR: Tab label for the security posture view.
+# "Sécurité" — Termium Plus: security.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:663
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:707
+msgid "Security"
+msgstr "Sécurité"
+
+# TRANSLATOR: Tab label for the security observations/findings view.
+# "Observations" — standard fr_CA; no corpus substitution needed.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:664
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:708
+msgid "Observations"
+msgstr "Observations"

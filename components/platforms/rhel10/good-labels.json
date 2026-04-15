@@ -260,7 +260,7 @@
       "handling_group_id": "",
       "other": {}
     },
-    "CUI//LEI/INV": {
+    "CUI//INV": {
       "name": "Investigation",
       "abbrv_name": "INV",
       "description": "Investigation",

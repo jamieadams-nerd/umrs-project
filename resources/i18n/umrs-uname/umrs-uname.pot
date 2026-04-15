@@ -332,19 +332,57 @@ msgstr ""
 msgid "Catalog Baseline"
 msgstr ""
 
-#: components/rusty-gadgets/umrs-uname/src/main.rs:699
+#: components/rusty-gadgets/umrs-uname/src/main.rs:693
 msgid "Catalog baseline matches running kernel"
+msgstr ""
+
+#. TRANSLATOR: Fragment — running kernel is newer than the catalog baseline.
+#. Used in: "{r} <this fragment> ({b}) — <some indicators may have changed>"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:686
+msgid "is newer than catalog baseline"
+msgstr ""
+
+#. TRANSLATOR: Fragment — running kernel is older than the catalog baseline.
+#. Used in: "{r} <this fragment> ({b}) — <update your kernel>"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:700
+msgid "is older than catalog baseline"
+msgstr ""
+
+#. TRANSLATOR: Fragment appended after "is newer than catalog baseline".
+#: components/rusty-gadgets/umrs-uname/src/main.rs:687
+msgid "some indicators may have changed"
+msgstr ""
+
+#. TRANSLATOR: Fragment appended after "is older than catalog baseline".
+#: components/rusty-gadgets/umrs-uname/src/main.rs:701
+msgid "update your kernel"
+msgstr ""
+
+#. TRANSLATOR: Label for the baseline row when kernel version cannot be parsed.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:679
+msgid "baseline"
 msgstr ""
 
 # ---------------------------------------------------------------------------
 # Kernel contradiction rows
 # ---------------------------------------------------------------------------
 
-#: components/rusty-gadgets/umrs-uname/src/main.rs:628
+#: components/rusty-gadgets/umrs-uname/src/main.rs:620
 msgid "None"
 msgstr ""
 
-#: components/rusty-gadgets/umrs-uname/src/main.rs:638
+#. TRANSLATOR: Count fragment — "{count} — configuration/kernel disagreements detected"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:625
+msgid "configuration/kernel disagreements detected"
+msgstr ""
+
+#. TRANSLATOR: Separator between two contradiction source identifiers.
+#. Used in: "[{idx}] {source_a} vs {source_b}"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:567
+msgid "vs"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-uname/src/main.rs:631
 msgid "Contradictions"
 msgstr ""
 

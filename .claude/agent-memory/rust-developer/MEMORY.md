@@ -4,6 +4,7 @@
 
 ## Topic Files
 
+- [CLI clap migration (2026-04-15)](cli_clap_migration.md) — umrs-ls clap migration, verbose macro pattern, /opt/umrs defaults, doc sync needed
 - [Env sanitization familiarization](env_sanitization.md) — Tier 1/2/3 lists, AT_SECURE caveat, Rust 2024 snapshot-at-startup constraint, CWE↔NIST map, impl questions
 - [Coding conventions](coding_conventions.md) — source file headers (SPDX), use ordering, no doc tests, test tags (TEST-ID/REQUIREMENT/COMPLIANCE), i18n coding rule
 - [Phase 1 / Phase 2 positioning](phase1_phase2_positioning.md) — Targeted policy = labeling fidelity + awareness, NOT enforcement; MLS adds enforcement (Phase 2)

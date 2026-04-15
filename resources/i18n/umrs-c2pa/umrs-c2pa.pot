@@ -1,0 +1,541 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Jamie Adams (a.k.a. Imodium Operator)
+# This file is distributed under the same license as the UMRS Project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-c2pa\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-15 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+# NOTE: Hand-crafted 2026-04-15. Re-run xtr once available:
+#   xtr --package-name umrs-c2pa \
+#       --output resources/i18n/umrs-c2pa/umrs-c2pa.pot \
+#       $(find components/rusty-gadgets/umrs-c2pa/src -name '*.rs' | sort)
+
+# ---------------------------------------------------------------------------
+# Configuration loading (src/main.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:181
+msgid "Failed to load config:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:188
+msgid "No config file at"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:189
+msgid "using defaults"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# File operation errors (src/main.rs, src/c2pa/validate.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:284
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:197
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:289
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:471
+msgid "File not found:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:310
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:312
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:323
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:325
+msgid "Failed to hash file:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:340
+msgid "Ingest failed for:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:352
+msgid "Failed to read chain from signed output"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:381
+msgid "Failed to read chain from:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:435
+msgid "Failed to write config to:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:561
+msgid "Failed to create directory:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:568
+msgid "Credential generation failed"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:583
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:592
+msgid "already exists at"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:585
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:594
+msgid "Remove it first or choose a different --output directory."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:599
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:635
+msgid "Failed to write"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:620
+msgid "Failed to create key file:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:627
+msgid "Failed to write key to:"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Verbose progress messages (src/main.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:298
+msgid "Reading raw manifest store as JSON..."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:301
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:316
+msgid "No manifest or read error:"
+msgstr ""
+
+#. SHA-256 and SHA-384 are specification vocabulary (FIPS/CNSA 2.0) — kept English in all locales.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:308
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:321
+msgid "Computing SHA-256 and SHA-384 digests..."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:313
+msgid "Reading chain of custody as JSON..."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:332
+msgid "Signing mode — ingesting file into UMRS chain of custody..."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:335
+msgid "Security marking:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:343
+msgid "Signed output written to:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:349
+msgid "Reading chain of custody from signed output..."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:374
+msgid "Read-only mode — inspecting existing chain of custody..."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:405
+msgid "Running configuration preflight checks..."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:441
+msgid "Config template written to:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:552
+msgid "Generating credentials in:"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Credential generation output (src/main.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:649
+msgid "Generated CSR + private key"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:653
+msgid "Generated self-signed certificate + private key"
+msgstr ""
+
+#. "Algorithm" — the display label for the signing algorithm field.
+#. Specification vocabulary; algorithm identifiers (es256, etc.) are not translated.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:658
+msgid "Algorithm"
+msgstr ""
+
+#. "Subject" — the X.509 certificate Subject field label.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:665
+msgid "Subject"
+msgstr ""
+
+#. "Validity" — the certificate validity period label.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:676
+msgid "Validity"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:684
+msgid "Submit the CSR to your Certificate Authority for signing."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:688
+msgid "Keep the private key safe — it cannot be regenerated."
+msgstr ""
+
+#. UNVERIFIED is specification vocabulary (C2PA TrustStatus) — kept English in all locales.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:693
+msgid "Self-signed certificates will show as UNVERIFIED by external validators."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:697
+msgid "For trusted status, submit a CSR to a recognized CA"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:701
+msgid "or add your org's root to the trust anchors."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:705
+msgid "Files written"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:711
+msgid "Next step — add these to your"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:718
+msgid "After your CA signs the CSR, replace signing.csr with the signed cert"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:729
+msgid "Then run:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:739
+msgid "Validating configured signing credentials..."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:747
+msgid "Credential Validation"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:775
+msgid "To generate new credentials:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:779
+msgid "All checks passed."
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Chain of custody report (src/c2pa/report.rs)
+# ---------------------------------------------------------------------------
+
+#. "Chain of Custody" — Termium Plus (information security): "garde".
+#. Full phrase: "Chaîne de garde" is not attested; "garde" alone is the Termium entry.
+#. UMRS decision: use "Chaîne de possession" (consistent with fr_CA forensics usage).
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:60
+msgid "Chain of Custody"
+msgstr ""
+
+#. SHA-256 and SHA-384 are specification vocabulary — kept English in all locales.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:61
+msgid "SHA-256"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:62
+msgid "SHA-384"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:66
+msgid "(no C2PA manifest found)"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:106
+msgid "Self-signed certificate — not issued by a trusted CA"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:113
+msgid "No trust list configured — trust could not be evaluated"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:131
+msgid ""
+"Certificate rotation mismatch — image signed before trust list certificate "
+"became valid."
+msgstr ""
+
+#. These are fixed-width padded display labels. Translator: preserve trailing spaces.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:134
+msgid "Image signed      :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:135
+msgid "Trust cert valid  :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:137
+msgid ""
+"This is likely a CA rotation event, not tampering. To resolve: obtain "
+"images signed after the rotation date, or add the pre-rotation issuing CA "
+"to user_anchors."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:143
+msgid ""
+"Signature is valid but the signer's CA is not in your trust list. \n"
+"\tThis does not mean the file is untrustworthy — the signer may use \n"
+"\ta CA that is not yet in the C2PA official trust list (e.g., OpenAI). \n"
+"\tTo resolve, add the signer's root CA to trust_anchors or allowed_list."
+msgstr ""
+
+#. Fixed-width padded display labels. Translator: preserve trailing spaces exactly.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:162
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:168
+msgid "Signed at :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:169
+msgid "no timestamp provided"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:178
+msgid "Issuer    :"
+msgstr ""
+
+#. "Alg" = Algorithm. Specification identifier — abbreviated display label.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:187
+msgid "Alg       :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:199
+msgid "Generator :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:205
+msgid "Marking   :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:227
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:233
+msgid "Hash consistency :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:228
+msgid "file unchanged across all signing events"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:234
+msgid "no prior manifest (first signature)"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:237
+msgid "UMRS action      :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:240
+msgid "UMRS output      :"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:246
+msgid "UMRS identity    :"
+msgstr ""
+
+#. UNTRUSTED is specification vocabulary (C2PA TrustStatus) — kept English in all locales.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:247
+msgid "ephemeral self-signed cert (test mode — UNTRUSTED)"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:292
+msgid "All checks passed. Configuration is ready."
+msgstr ""
+
+#. Plural forms for check summary.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:282
+msgid "All checks passed ({} warning). Configuration is ready."
+msgid_plural "All checks passed ({} warnings). Configuration is ready."
+msgstr[0] ""
+msgstr[1] ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:296
+msgid "{} check failed. Configuration is NOT ready."
+msgid_plural "{} checks failed. Configuration is NOT ready."
+msgstr[0] ""
+msgstr[1] ""
+
+# ---------------------------------------------------------------------------
+# Validation messages (src/c2pa/validate.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:146
+msgid "Skipped — requires both cert and key files to be readable"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:166
+msgid ""
+"ed25519 is not reliably available on FIPS-enabled systems. Recommended: "
+"es256, es384, or es512."
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:180
+msgid "Field is empty"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:199
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:291
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:473
+msgid "Cannot read:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:208
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:300
+msgid "Valid PEM at"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:214
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:306
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:497
+msgid "File is not valid PEM:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:240
+msgid "Private key has unsafe permissions"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:242
+msgid "expected 0600 or 0400. Run: chmod 0600"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:257
+msgid "Permissions"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:258
+msgid "secure"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:269
+msgid "Private key owner"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:271
+msgid "does not match process"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:280
+msgid "Cannot stat key file:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:347
+msgid "is not allowed. Use one of:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:363
+msgid "TSA endpoint reachable:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:367
+msgid "TSA endpoint did not respond:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:376
+msgid "configured"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:377
+msgid "but network feature is disabled"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:378
+msgid "timestamps will be unsigned"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:413
+msgid "File exists:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:425
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:449
+msgid "Cannot stat:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:437
+msgid "EKU config found:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:460
+msgid "OCSP responder configured:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:461
+msgid "not yet implemented — skeleton only"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:535
+msgid "Trust file is world-writable (mode)"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:537
+msgid "any local user could inject CA certificates"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:538
+msgid "Run: chmod o-w"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Error types (src/c2pa/error.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:56
+msgid "IO error:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:57
+msgid "C2PA error:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:58
+msgid "Config error:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:59
+msgid "Signing error:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:60
+msgid "Hash error:"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:65
+msgid "is not in the FIPS-safe allowed set"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:72
+msgid "Refusing to overwrite previously signed file:"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Credential config validation (src/c2pa/creds.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/creds.rs:239
+msgid "cert_chain is set but private_key is missing"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/creds.rs:246
+msgid "private_key is set but cert_chain is missing"
+msgstr ""

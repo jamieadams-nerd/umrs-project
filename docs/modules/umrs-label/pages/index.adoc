@@ -1,0 +1,220 @@
+= umrs-label — Security Label Registry Browser
+:description: Overview of the umrs-label tool: interactive browser for UMRS CUI and \
+    Canadian Protected label catalogs.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 AC-3, AC-16, AU-3, SI-10
+
+`umrs-label` displays and browses the UMRS security label registry — the CUI
+(Controlled Unclassified Information) catalog and the Canadian Protected catalog.
+Operators use it to look up marking details, handling requirements, warning statements,
+and MCS category assignments for any label on the system.
+
+The tool has two output modes.
+In TUI mode (default when stdout is a terminal), it presents an interactive tree browser
+with a detail panel, search, and a security posture header showing hostname, OS,
+SELinux mode, and FIPS state.
+In CLI mode (`--cli` or when stdout is not a terminal), it renders a human-readable
+grouped text listing.
+
+The browser is read-only.
+No catalog mutation is possible through the interface.
+(NIST SP 800-53 AC-3)
+
+'''
+
+== Configuration and Data Files
+
+`umrs-label` reads JSON catalog files that define the label registry.
+No runtime configuration file is required.
+Catalog paths default to the `config/` subdirectory of the current working directory
+and can be overridden with `--us-catalog` and `--ca-catalog`.
+
+[mermaid]
+....
+flowchart LR
+    subgraph us_config["US CUI Catalog (config/us/)"]
+        US_LABELS["US-CUI-LABELS.json\n(CUI markings, designations,\nhandling instructions,\nwarning statements)"]
+        US_PALETTE["US-CUI-PALETTE.json\n(marking display colors)"]
+        US_HANDLING["US-CUI-HANDLING.json\n(handling requirement details)"]
+    end
+
+    subgraph ca_config["Canadian Protected Catalog (config/ca/)"]
+        CA_LABELS["CANADIAN-PROTECTED.json\n(Protected A/B/C markings,\nTB policy terms)"]
+    end
+
+    subgraph shared_config["Shared Config"]
+        LEVELS["LEVELS.json\n(sensitivity level definitions\ns0–s3 across Five Eyes)"]
+    end
+
+    subgraph kernel_state["Live Kernel State (via umrs-platform)"]
+        SELINUX_STATE["/sys/fs/selinux/enforce\n(SELinux mode)"]
+        OS_RELEASE["/etc/os-release\n(OS identity via OsDetector)"]
+        FIPS_STATE["/proc/sys/crypto/fips_enabled\n(FIPS mode state)"]
+    end
+
+    TOOL["umrs-label"]
+
+    US_LABELS --> TOOL
+    US_PALETTE --> TOOL
+    US_HANDLING --> TOOL
+    CA_LABELS --> TOOL
+    LEVELS --> TOOL
+    SELINUX_STATE -- "TUI header context\n(umrs-platform + SecureReader)" --> TOOL
+    OS_RELEASE -- "TUI header context\n(TOCTOU-safe OsDetector)" --> TOOL
+    FIPS_STATE -- "TUI header context\n(SecureReader)" --> TOOL
+....
+
+.Catalog file roles
+[cols="2,4", options="header"]
+|===
+| File | Role
+
+| `US-CUI-LABELS.json`
+| Primary US CUI catalog.
+  Contains the `markings` object with one entry per CUI marking.
+  Each entry carries: `name`, `abbrv_name`, `index_group`, `designation`,
+  `level`, `required_warning_statement`, and `required_dissemination_control`.
+  Path defaults to `config/us/US-CUI-LABELS.json`.
+  Override with `--us-catalog`.
+
+| `CANADIAN-PROTECTED.json`
+| Canadian Protected catalog (Protected A, B, C).
+  Uses the same `markings` structure as the US catalog.
+  Labels use Treasury Board terminology.
+  Path defaults to `config/ca/CANADIAN-PROTECTED.json`.
+  Override with `--ca-catalog`.
+  Optional: the tool continues if this file is absent.
+
+| `LEVELS.json`
+| Shared sensitivity level definitions mapping level identifiers (`s0`–`s3`)
+  to human-readable descriptions across all Five Eyes national contexts.
+
+| `US-CUI-PALETTE.json`
+| Display color palette for US CUI markings.
+  Used by the TUI tree to apply per-marking colors.
+  CUI palette colors do not use red or orange, which are reserved for
+  classified tiers in Five Eyes systems.
+
+| `US-CUI-HANDLING.json`
+| Detailed handling requirement text for each CUI category.
+  Displayed in the detail panel when an operator selects a marking.
+
+| `/sys/fs/selinux/enforce`
+| Live SELinux enforcement mode — read via `SecureReader` (sysfs magic verified).
+  Populates the SELinux mode field in the TUI security posture header.
+
+| `/etc/os-release`
+| OS identity — read via the TOCTOU-safe `OsDetector` platform abstraction.
+  Populates the OS name field in the TUI header.
+
+| `/proc/sys/crypto/fips_enabled`
+| FIPS mode state — read via `SecureReader` (procfs magic verified).
+  Populates the FIPS state field in the TUI header.
+
+|===
+
+NOTE: All kernel-state reads route through the `umrs-platform` abstraction layer.
+Direct `std::fs` reads are not used.
+Filesystem magic verification is applied to every `/proc` and `/sys` read.
+
+'''
+
+== Quick Reference
+
+[source,shell]
+----
+# Browse all labels in TUI mode (default when stdout is a TTY)
+umrs-label
+
+# CLI text listing
+umrs-label --cli
+
+# Use a custom catalog path
+umrs-label --us-catalog /etc/umrs/catalogs/US-CUI-LABELS.json
+
+# Show help
+umrs-label --help
+----
+
+.TUI key bindings
+[cols="2,4", options="header"]
+|===
+| Key | Action
+
+| `↑` / `↓` or `j` / `k`
+| Navigate the label tree
+
+| `Enter` or `Space`
+| Expand / collapse a node
+
+| `/`
+| Open search
+
+| `Tab`
+| Switch between tree and detail panel
+
+| `q` or `Esc`
+| Quit
+
+|===
+
+'''
+
+== Security Design
+
+*Read-only interface* — the browser cannot create, edit, or delete catalog entries.
+The catalog files are opened for reading only.
+No write path exists in the interface.
+(NIST SP 800-53 AC-3)
+
+*Validated input* — all CLI arguments are validated by clap at entry, before any catalog
+I/O or TUI initialization occurs.
+Unknown flags cause immediate rejection with a usage error.
+(NIST SP 800-53 SI-10)
+
+*Security posture header* — the TUI header shows SELinux mode and FIPS state on every
+rendered frame.
+Operators can see the platform's security posture without leaving the tool.
+(NIST SP 800-53 AU-3)
+
+*CUI palette color policy* — marking display colors do not use red or orange.
+In Five Eyes classified environments, red signifies SECRET and orange signifies
+TOP SECRET.
+Using these colors for unclassified CUI markings would create dangerous visual
+confusion for operators who work across classification levels.
+
+'''
+
+== Compliance
+
+[cols="1,3", options="header"]
+|===
+| Control | How `umrs-label` satisfies it
+
+| NIST SP 800-53 AC-3
+| The browser is unconditionally read-only.
+  No catalog mutation is possible through the interface.
+
+| NIST SP 800-53 AC-16
+| Accurate display of all CUI marking fields including designation,
+  handling requirements, and required warning statements.
+
+| NIST SP 800-53 AU-3
+| TUI header carries hostname, OS, SELinux mode, and FIPS state on every
+  rendered frame — providing self-identifying session context.
+
+| NIST SP 800-53 SI-10
+| Input validation via clap at process entry; unknown flags rejected before
+  any catalog I/O.
+
+|===
+
+'''
+
+== See Also
+
+* xref:cui-labeling:index.adoc[CUI Labeling] — CUI taxonomy, banner syntax, marking rules
+* xref:umrs-ls:index.adoc[umrs-ls] — directory listing that displays marking from each file's MCS label
+* xref:security-concepts:index.adoc[Security Concepts] — MCS categories, sensitivity levels, setrans translations

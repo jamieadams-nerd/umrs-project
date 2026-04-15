@@ -71,6 +71,8 @@ use std::io::{self, IsTerminal as _};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
+use clap::Parser;
+
 use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use serde::Serialize;
 
@@ -257,31 +259,66 @@ fn try_load_catalog(candidates: &[&str]) -> Option<Catalog> {
 /// Returns `(us_catalog, ca_catalog)` where each is `Option<Catalog>`.
 /// Missing or unreadable files yield `None` — the popup degrades gracefully.
 ///
-/// Path resolution tries two locations in order: a path relative to the
-/// current working directory (production install convention), and a path
-/// relative to the `umrs-label` crate directory (development via `cargo run`).
+/// Path resolution uses the documented override chain:
+///   1. `UMRS_CONFIG_DIR` environment variable
+///   2. `/opt/umrs/etc/umrs/`  (install default)
+///   3. CWD-relative `config/` subtree (development via `cargo run`)
+///   4. `../umrs-label/config/` (workspace-relative dev fallback)
 ///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AC-16**: Security Attributes — catalog data drives the
 ///   label detail popup; loading errors surface as absent popup content, not
 ///   panics.
+/// - **NIST SP 800-53 CM-6**: Configuration Settings — catalog path resolves
+///   under the documented install root before any other location.
 fn load_catalogs() -> (Option<Catalog>, Option<Catalog>) {
-    let us = try_load_catalog(&[
-        "config/us/US-CUI-LABELS.json",
-        "../umrs-label/config/us/US-CUI-LABELS.json",
-    ]);
-    let ca = try_load_catalog(&[
-        "config/ca/CANADIAN-PROTECTED.json",
-        "../umrs-label/config/ca/CANADIAN-PROTECTED.json",
-    ]);
+    // Build the candidate list honoring the UMRS_CONFIG_DIR override chain.
+    let config_dir_entry: Option<String> = std::env::var("UMRS_CONFIG_DIR").ok();
+
+    let us_candidates: Vec<String> = {
+        let mut v = Vec::with_capacity(4);
+        if let Some(ref dir) = config_dir_entry {
+            v.push(format!("{dir}/us/US-CUI-LABELS.json"));
+        }
+        v.push("/opt/umrs/etc/umrs/us/US-CUI-LABELS.json".to_owned());
+        v.push("config/us/US-CUI-LABELS.json".to_owned());
+        v.push("../umrs-label/config/us/US-CUI-LABELS.json".to_owned());
+        v
+    };
+
+    let ca_candidates: Vec<String> = {
+        let mut v = Vec::with_capacity(4);
+        if let Some(ref dir) = config_dir_entry {
+            v.push(format!("{dir}/ca/CANADIAN-PROTECTED.json"));
+        }
+        v.push("/opt/umrs/etc/umrs/ca/CANADIAN-PROTECTED.json".to_owned());
+        v.push("config/ca/CANADIAN-PROTECTED.json".to_owned());
+        v.push("../umrs-label/config/ca/CANADIAN-PROTECTED.json".to_owned());
+        v
+    };
+
+    let us = try_load_catalog(&us_candidates.iter().map(String::as_str).collect::<Vec<_>>());
+    let ca = try_load_catalog(&ca_candidates.iter().map(String::as_str).collect::<Vec<_>>());
     (us, ca)
 }
 
 /// Look up a marking string in the loaded catalogs and build a detail popup.
 ///
-/// Tries the US catalog first, then the Canadian catalog. Returns `None` when
-/// neither catalog contains an entry for `marking`.
+/// Tries the US catalog first, then the Canadian catalog. For each catalog,
+/// two lookup strategies are attempted in order:
+///
+/// 1. **Direct key lookup** — the marking string is the JSON catalog key
+///    (e.g., `"CUI//LEI"`, `"PROTECTED-A"`). This covers US CUI markings
+///    translated by `setrans.conf`.
+/// 2. **MCS level fallback** — the marking string is a raw MCS level
+///    (e.g., `"s1:c300"`). Used when `setrans.conf` has no translation for
+///    a category, which is the case for Canadian Protected designations
+///    (c300–c302). `Catalog::marking_by_mcs_level` finds the entry whose
+///    `level` and `category_base` match the level components.
+///
+/// Returns `None` when neither catalog contains a matching entry for `marking`
+/// under either strategy.
 ///
 /// ## Compliance
 ///
@@ -292,17 +329,27 @@ fn lookup_marking_detail(
     us_catalog: Option<&Catalog>,
     ca_catalog: Option<&Catalog>,
 ) -> Option<MarkingDetailData> {
-    if let Some(cat) = us_catalog
-        && let Some(m) = cat.marking(marking)
-    {
-        let flag = cat.country_flag().unwrap_or_default();
-        return Some(marking_to_detail(marking, m, &flag));
+    // US catalog — direct key, then MCS level fallback.
+    if let Some(cat) = us_catalog {
+        if let Some(m) = cat.marking(marking) {
+            let flag = cat.country_flag().unwrap_or_default();
+            return Some(marking_to_detail(marking, m, &flag));
+        }
+        if let Some((key, m)) = cat.marking_by_mcs_level(marking) {
+            let flag = cat.country_flag().unwrap_or_default();
+            return Some(marking_to_detail(key, m, &flag));
+        }
     }
-    if let Some(cat) = ca_catalog
-        && let Some(m) = cat.marking(marking)
-    {
-        let flag = cat.country_flag().unwrap_or_default();
-        return Some(marking_to_detail(marking, m, &flag));
+    // Canadian catalog — direct key, then MCS level fallback.
+    if let Some(cat) = ca_catalog {
+        if let Some(m) = cat.marking(marking) {
+            let flag = cat.country_flag().unwrap_or_default();
+            return Some(marking_to_detail(marking, m, &flag));
+        }
+        if let Some((key, m)) = cat.marking_by_mcs_level(marking) {
+            let flag = cat.country_flag().unwrap_or_default();
+            return Some(marking_to_detail(key, m, &flag));
+        }
     }
     None
 }
@@ -311,22 +358,113 @@ fn lookup_marking_detail(
 ///
 /// Returns `None` for system-level markings (SystemLow, etc.) that have
 /// no catalog entry — they use the default palette color.
+///
+/// Applies the same two-strategy lookup as [`lookup_marking_detail`]: direct
+/// key lookup first, then MCS level fallback for raw level strings (e.g.,
+/// `"s1:c300"`) that arise when `setrans.conf` has no translation.
 fn find_index_group_for_marking(
     marking: &str,
     us_catalog: Option<&Catalog>,
     ca_catalog: Option<&Catalog>,
 ) -> Option<String> {
-    if let Some(cat) = us_catalog
-        && let Some(m) = cat.marking(marking)
-    {
-        return m.index_group.clone();
+    if let Some(cat) = us_catalog {
+        if let Some(m) = cat.marking(marking) {
+            return m.index_group.clone();
+        }
+        if let Some((_, m)) = cat.marking_by_mcs_level(marking) {
+            return m.index_group.clone();
+        }
     }
-    if let Some(cat) = ca_catalog
-        && let Some(m) = cat.marking(marking)
-    {
-        return m.index_group.clone();
+    if let Some(cat) = ca_catalog {
+        if let Some(m) = cat.marking(marking) {
+            return m.index_group.clone();
+        }
+        if let Some((_, m)) = cat.marking_by_mcs_level(marking) {
+            return m.index_group.clone();
+        }
     }
     None
+}
+
+// ============================================================================
+// CLI argument definition
+// ============================================================================
+
+/// Security-focused directory listing with SELinux context, MCS markings,
+/// and POSIX ownership.
+///
+/// Files are grouped by `(SELinux type, security marking)`. Related files
+/// (rotations, signatures, checksums) are cuddled under their base file by
+/// default; use `--flat` to show every entry on its own row.
+///
+/// ## Output Modes
+///
+/// - **TUI** (default when stdout is a TTY): interactive browser with
+///   tree navigation, search, and directory traversal.
+/// - **CLI** (`--cli` or non-TTY): columnar text listing.
+/// - **JSON** (`--json`): machine-readable grouped output.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: Every entry displays the SELinux label used in
+///   access decisions.
+/// - **NIST SP 800-53 SI-10**: clap validates all arguments at entry, rejecting
+///   unknown flags before any directory I/O occurs.
+// CLI flag structs are naturally bool-heavy; this is not a state machine.
+// Each bool corresponds to exactly one independent command-line flag.
+#[expect(clippy::struct_excessive_bools, reason = "CLI flags — not a state machine")]
+#[derive(Parser)]
+#[command(name = "umrs-ls", version, about, long_about = None)]
+struct Args {
+    /// Directory to list (default: current directory).
+    #[arg(value_name = "PATH", default_value = ".")]
+    path: PathBuf,
+
+    /// Force plain-text CLI output instead of the interactive TUI.
+    ///
+    /// Implied when stdout is not a terminal.
+    #[arg(long)]
+    cli: bool,
+
+    /// Emit machine-readable JSON output.
+    #[arg(long)]
+    json: bool,
+
+    /// Disable sibling cuddling — show every entry on its own row.
+    #[arg(long)]
+    flat: bool,
+
+    /// Show security observation flags (IOV) in the listing.
+    ///
+    /// IOV flags are shown by default; use `--no-iov` to suppress them.
+    #[arg(long)]
+    no_iov: bool,
+
+    /// Suppress the modification time column.
+    #[arg(long)]
+    no_mtime: bool,
+
+    /// Add a file size column.
+    #[arg(long)]
+    with_size: bool,
+
+    /// Add an inode number column.
+    #[arg(long)]
+    with_inode: bool,
+
+    /// Enable ANSI color output.
+    ///
+    /// Off by default. Has no effect when `NO_COLOR` is set.
+    #[arg(long)]
+    color: bool,
+
+    /// Show step-by-step progress on stderr.
+    ///
+    /// Narrates catalog paths, catalog counts, and trust-gate results so
+    /// operators can diagnose slow starts without enabling debug logging.
+    /// NIST SP 800-53 SI-11.
+    #[arg(long, short)]
+    verbose: bool,
 }
 
 fn main() -> io::Result<()> {
@@ -337,28 +475,50 @@ fn main() -> io::Result<()> {
 
     i18n::init("umrs-ls");
 
-    let args: Vec<String> = std::env::args().collect();
+    let args = Args::parse();
 
-    // First non-flag argument after the binary name is the target path.
-    let target =
-        args.iter().skip(1).find(|a| !a.starts_with("--")).map(String::as_str).unwrap_or(".");
+    // Enable verbose progress output to stderr when --verbose / -v is passed.
+    // All verbose output goes to stderr so it does not interfere with --json
+    // or piped stdout. NIST SP 800-53 SI-11.
+    let verbose = args.verbose;
+    macro_rules! verbose {
+        ($($arg:tt)*) => {
+            if verbose {
+                eprintln!("  [umrs-ls] {}", format_args!($($arg)*));
+            }
+        };
+    }
 
-    let json_mode = args.contains(&"--json".to_owned());
-    let cli_mode = args.contains(&"--cli".to_owned());
-    let flat_mode = args.contains(&"--flat".to_owned());
+    let target = args.path.to_str().unwrap_or(".");
+    verbose!("Target: {}", target);
+
+    let json_mode = args.json;
+    let cli_mode = args.cli;
+    let flat_mode = args.flat;
 
     // Mode selection:
     //   --json              → JSON output, always (no TUI, no ANSI table)
     //   --cli or non-TTY   → CLI columnar text output
     //   otherwise          → TUI interactive viewer
     if json_mode {
-        return run_json(&args, target);
+        verbose!("Mode: JSON");
+        return run_json(target);
     }
 
     if cli_mode || !io::stdout().is_terminal() {
-        return run_cli(&args, target, flat_mode);
+        verbose!("Mode: CLI");
+        return run_cli(
+            target,
+            flat_mode,
+            args.no_iov,
+            args.no_mtime,
+            args.with_size,
+            args.with_inode,
+            args.color,
+        );
     }
 
+    verbose!("Mode: TUI");
     run_tui(target, flat_mode)
 }
 
@@ -367,10 +527,11 @@ fn main() -> io::Result<()> {
 // ============================================================================
 
 /// Emit a JSON listing for `target` and return.
-fn run_json(args: &[String], target: &str) -> io::Result<()> {
-    // flat_mode has no effect on JSON output but we accept the flag for
-    // forward-compatibility — callers may pass it without knowing the mode.
-    let _ = args; // consumed only for flag detection in main()
+///
+/// `--flat` has no effect on JSON output — the grouped structure is always
+/// emitted. The flag is accepted for forward-compatibility so callers can
+/// pass it without knowing the mode.
+fn run_json(target: &str) -> io::Result<()> {
     let listing = list_directory(Path::new(target))?;
     emit_json(
         &listing.groups,
@@ -391,24 +552,40 @@ fn run_json(args: &[String], target: &str) -> io::Result<()> {
 ///
 /// NIST SP 800-53 AU-3 — all identity, label, and observation fields required
 /// for audit are included in the tabular output.
-fn run_cli(args: &[String], target: &str, flat_mode: bool) -> io::Result<()> {
+// Each parameter is a direct CLI flag. Wrapping in a sub-struct would obscure
+// the 1:1 mapping to user-visible flags without adding safety.
+#[expect(
+    clippy::fn_params_excessive_bools,
+    reason = "each bool is a distinct CLI flag — not overloaded state"
+)]
+fn run_cli(
+    target: &str,
+    flat_mode: bool,
+    no_iov: bool,
+    no_mtime: bool,
+    with_size: bool,
+    with_inode: bool,
+    color: bool,
+) -> io::Result<()> {
     // SelinuxType and Marking appear in the group header — omit from rows.
     let mut cols = ColumnSet::default().without(Column::SelinuxType).without(Column::Marking);
 
-    if args.contains(&"--no-iov".to_owned()) {
+    if no_iov {
         cols = cols.without(Column::Iov);
     }
-    if args.contains(&"--no-mtime".to_owned()) {
+    if no_mtime {
         cols = cols.without(Column::Mtime);
     }
-    if args.contains(&"--with-size".to_owned()) {
+    if with_size {
         cols = cols.with(Column::Size);
     }
-    if args.contains(&"--with-inode".to_owned()) {
+    if with_inode {
         cols = cols.with(Column::Inode);
     }
 
-    let use_color = args.contains(&"--color".to_owned()) && std::env::var("NO_COLOR").is_err();
+    // NO_COLOR compliance: honor the env var regardless of --color flag.
+    // `var_os` — presence is the signal, value is irrelevant (NIST SP 800-53 SI-11).
+    let use_color = color && std::env::var_os("NO_COLOR").is_none();
     let cfg = DisplayConfig::build(use_color);
 
     let listing = list_directory(Path::new(target))?;

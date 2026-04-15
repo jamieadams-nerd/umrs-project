@@ -1,7 +1,7 @@
 # M3 Translation Preparation
 
 **Date:** 2026-03-21
-**Status:** in-progress — umrs-c2pa wrapping active (2026-04-02); D1-D5 all resolved; pipeline proven on umrs-uname
+**Status:** in-progress — fr_CA .mo compiled for umrs-ls/umrs-stat/umrs-uname/umrs-c2pa (2026-04-15); umrs-label blocked on Rust wrapping (task #11); .mo output path reconciliation pending (task #12); Henri validation pending (task #10)
 **Author:** Simone (umrs-translator)
 **ROADMAP Goals:** G3 (CUI & Five Eyes)
 **Milestones:** M3 (CUI Ready)

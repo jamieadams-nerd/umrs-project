@@ -7,6 +7,7 @@
 use std::path::Path;
 
 // Re-export the library under test.
+use umrs_c2pa::c2pa::inspect_rotation_mismatch;
 use umrs_c2pa::c2pa::{
     build_c2pa_settings,
     config::UmrsConfig,
@@ -15,7 +16,6 @@ use umrs_c2pa::c2pa::{
     signer::{ALLOWED_ALGORITHMS, describe_algorithm, parse_algorithm},
     validate::{CheckStatus, validate_config},
 };
-use umrs_c2pa::c2pa::inspect_rotation_mismatch;
 
 // ── helpers ────────────────────────────────────────────────────────────────────
 
@@ -748,7 +748,12 @@ fn test_rotation_mismatch_signed_before_not_before() {
          the trust cert's Not Before date, got None"
     );
 
-    if let Some(TrustFinding::IssuerRotationMismatch { image_signed, subject_cn, .. }) = finding {
+    if let Some(TrustFinding::IssuerRotationMismatch {
+        image_signed,
+        subject_cn,
+        ..
+    }) = finding
+    {
         assert_eq!(
             image_signed, signed_at,
             "image_signed must echo the input timestamp"

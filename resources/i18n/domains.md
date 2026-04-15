@@ -19,7 +19,9 @@ Incorrect = entry is wrong and should be removed or corrected.
 | `umrs-uname` | binary | `umrs-uname` | `resources/i18n/umrs-uname/` | Active | OS detection TUI; fr_CA compiled; help text overlays not yet translated |
 | `umrs-state` | binary | `umrs-state` | `resources/i18n/umrs-state/` | Active | State management tool; fr_CA compiled |
 | `umrs-logspace` | binary | `umrs-logspace` | `resources/i18n/umrs-logspace/` | Active | Log storage tool; fr_CA compiled |
-| `umrs-stat` | binary | `umrs-stat` | *(missing)* | Blocking gap | Calls i18n::init("umrs-stat") but no domain directory, .pot, or fr_CA.po exist; ~20 strings also unwrapped |
+| `umrs-stat` | binary | `umrs-stat` | `resources/i18n/umrs-stat/` | Pending — Makefile gap | .pot and fr_CA.po created 2026-04-15; NOT in Makefile I18N_TEXT_DOMAINS / I18N_ACTIVE_DOMAINS; .mo not compiled; Jamie must add Makefile entries before compile targets work |
+| `umrs-c2pa` | binary | `umrs-c2pa` | `resources/i18n/umrs-c2pa/` | Pending — Makefile gap | .pot and fr_CA.po created 2026-04-15 (74 msgids + 2 plural pairs); NOT in Makefile; .mo not compiled; Jamie must add Makefile entries; Henri review pending on "marquage de sécurité" vs "cote de sécurité" |
+| `umrs-label` | binary | `umrs-label` | *(missing)* | Blocked — no wrapping | ZERO i18n wrapping in source; no i18n::init(), no use umrs_core::i18n; 11 strings identified; blocker report filed for Rusty at .claude/reports/i18n/2026-04-15-umrs-label-inventory.md |
 | `umrs-ui` | library | *(no domain — Option A)* | *(none)* | Decision pending | Strings in data_panel.rs and header.rs resolved in calling binary's domain; pending Jamie decision on Option A vs Option B |
 | `umrs-df` | binary | `umrs-df` | `resources/i18n/umrs-df/` | Reserved | Placeholder; crate not yet in workspace; .pot and all .po files are 0 bytes |
 | `umrs-ps` | binary | `umrs-ps` | `resources/i18n/umrs-ps/` | Reserved | Placeholder; crate not yet in workspace; .pot and all .po files are 0 bytes |

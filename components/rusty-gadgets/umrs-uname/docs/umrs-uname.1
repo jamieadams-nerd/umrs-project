@@ -1,0 +1,179 @@
+.\" SPDX-License-Identifier: MIT
+.\" Copyright (c) 2025 Jamie Adams
+.TH UMRS-UNAME 1 "2026-04-15" "umrs-uname 0.1.0" "UMRS Tools"
+.SH NAME
+umrs-uname \- OS detection audit card with kernel security posture and trust evidence
+.SH SYNOPSIS
+.B umrs-uname
+.SH DESCRIPTION
+.B umrs-uname
+runs the
+.B umrs-platform
+OS detection pipeline and displays the result as a three-tab interactive
+audit card in the terminal.
+.PP
+The card displays:
+.PP
+.IP "OS Information tab" 20
+OS release fields from
+.IR /etc/os-release ,
+platform identity, distribution, kernel version, architecture, and boot ID.
+.IP "Kernel Security tab" 20
+Live kernel security posture indicators collected from
+.BR /proc/ " and " /sys/
+nodes at startup: boot integrity state, FIPS cryptographic mode, lockdown
+mode, module loading, and kernel hardening assessment from the posture catalog.
+.IP "Trust / Evidence tab" 20
+Label trust classification (T0\(emT4), confidence tier, downgrade reasons,
+detected contradictions between configured and live kernel values, and the
+full ordered evidence chain with per-record source kind and verification status.
+Always the rightmost tab.
+.PP
+All attributes are read via the
+.B umrs-platform
+provenance-verified abstraction layer.
+No direct
+.BR stat (2)
+or
+.BR open (2)
+calls on security-relevant paths occur outside of vetted library code.
+.PP
+.B umrs-uname
+takes no arguments.
+The tool runs, detects, and presents results immediately.
+.SH TUI NAVIGATION
+.TP
+.BR Tab " / " \(ra
+Advance to the next tab.
+.TP
+.BR Shift\-Tab " / " \(la
+Return to the previous tab.
+.TP
+.BR j " / " k " or " \(ua " / " \(da
+Scroll within the active tab.
+.TP
+.BR q " or " Esc
+Quit.
+.TP
+.B ?
+Show the keyboard help overlay for the active tab.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+OS detection hard-gate failure or terminal initialization failure.
+.SH SECURITY CONSIDERATIONS
+.IP \(bu 2
+All system reads are routed through
+.B umrs-platform
+provenance-checked readers.
+This includes filesystem-magic verification (via
+.B fstatfs
+on an anchored file descriptor) and TOCTOU protection.
+.IP \(bu 2
+The OS Information tab reads
+.I /etc/os-release
+via the
+.B OsDetector
+pipeline, which includes ownership verification and package database cross-checks.
+Detection fails closed if any trust gate is not satisfied.
+.IP \(bu 2
+The Kernel Security tab reads posture indicators from
+.BR /proc/ " and " /sys/
+nodes using the
+.B PostureSnapshot
+engine.
+Each indicator is compared against the UMRS kernel catalog baseline and
+contradictions are surfaced on the Trust / Evidence tab.
+.IP \(bu 2
+The Trust / Evidence tab displays the
+.B TrustLevel
+assigned by the detection pipeline (T0\(emT4).
+T4 (Integrity Anchored) requires
+.I os-release
+ownership verification plus installed package digest confirmation.
+.IP \(bu 2
+The tool does not modify any system state.
+It is unconditionally read-only.
+.IP \(bu 2
+When
+.B NO_COLOR
+is set, the tool renders in monochrome mode, maintaining all information
+content without ANSI color codes (WCAG 1.4.1).
+.SH TRUST LEVELS
+.TP
+.B T0 — Untrusted
+No kernel anchor established.
+.TP
+.B T1 — Kernel Anchored
+.BR /proc
+filesystem verified via PROC_SUPER_MAGIC and PID coherence.
+.TP
+.B T2 — Environment Anchored
+Mount topology cross-checked (mountinfo vs statfs).
+.TP
+.B T3 — Platform Verified
+Platform identity confirmed; two or more independent package facts corroborated.
+.TP
+.B T4 — Integrity Anchored
+.IR os-release
+ownership plus installed digest verified.
+Highest trust level available.
+.SH COMPLIANCE
+.TP
+.B NIST SP 800-53 CM-8
+Component Inventory \(em platform identity, kernel version, distribution,
+and architecture are collected and displayed for inventory records.
+.TP
+.B NIST SP 800-53 CA-7
+Continuous Monitoring \(em kernel security posture indicators are collected
+at startup and compared against the UMRS catalog baseline.
+.TP
+.B NIST SP 800-53 SI-7
+Software and Information Integrity \(em label trust classification (T0\(emT4)
+and the evidence chain provide kernel-anchored integrity evidence.
+.TP
+.B NIST SP 800-53 AU-3
+Audit Record Content \(em the Trust / Evidence tab displays the full
+evidence chain with source kind, verification status, and contradiction
+records in a format suitable for audit review.
+.SH ENVIRONMENT
+.TP
+.B NO_COLOR
+When set (any value), color output is disabled unconditionally.
+.TP
+.B LANG
+Controls the locale for translated output.
+Set to
+.B fr_CA.UTF-8
+for French (Canada).
+.TP
+.B LC_ALL
+Overrides all locale categories.
+Supersedes
+.BR LANG .
+.TP
+.B UMRS_LOCALEDIR
+Override locale directory (development testing only).
+.SH FILES
+.TP
+.I /etc/os-release
+Primary OS identification source.
+Read via the
+.B OsDetector
+pipeline with provenance verification.
+.TP
+.I /usr/share/locale/fr_CA/LC_MESSAGES/umrs-uname.mo
+French (Canada) message catalog.
+.SH AUTHORS
+Jamie Adams (a.k.a. Imodium Operator)
+.SH LICENSE
+MIT License.
+See LICENSE file.
+.SH SEE ALSO
+.BR uname (1),
+.BR umrs-stat (1),
+.BR umrs-ls (1),
+.BR os-release (5)

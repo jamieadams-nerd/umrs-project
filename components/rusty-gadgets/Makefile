@@ -12,52 +12,18 @@
 
 .PHONY: build release clean-staging man-pages install install-dry-run install-verify
 
-# man-pages — compile all AsciiDoc man page sources to groff/troff format.
+# man-pages — DEPRECATED. Man pages are now authored as pre-built troff under
+#   <crate>/docs/*.1       (English)
+#   <crate>/docs/fr/*.1    (Canadian French)
+# and copied directly into the staging tree by `cargo xtask stage`.
 #
-# Source discovery:
-#   English:         <crate>/man/*.1.adoc
-#   Canadian French: <crate>/man/fr_CA/*.1.adoc
-#
-# Output layout:
-#   staging/share/man/man1/          ← English .1 pages
-#   staging/share/man/fr_CA/man1/    ← Canadian French .1 pages
-#
-# Requirements: asciidoctor must be on PATH.
-#   RHEL 10:  sudo dnf install rubygem-asciidoctor
-#   Ubuntu:   sudo apt install asciidoctor
-#
-# Verification after build:
-#   man -l staging/share/man/man1/umrs-ls.1
-#   man -l staging/share/man/fr_CA/man1/umrs-ls.1
-#
-# See docs/man-page-conventions.md for authoring conventions and section layout.
+# Run `cargo xtask stage` to assemble the staging bundle including man pages
+# and compiled gettext catalogs. This target is preserved as a no-op to avoid
+# breaking any external caller that still invokes it; it will be removed once
+# all callers are updated.
 man-pages:
-	@command -v asciidoctor >/dev/null 2>&1 || \
-		{ echo "[man] ERROR: asciidoctor not found — install rubygem-asciidoctor (RHEL) or asciidoctor (Ubuntu)" >&2; exit 3; }
-	@mkdir -p staging/share/man/man1
-	@mkdir -p staging/share/man/fr_CA/man1
-	@found=0; \
-	for src in */man/*.1.adoc; do \
-		[ -f "$$src" ] || continue; \
-		tool=$$(basename "$$src" .adoc); \
-		asciidoctor -b manpage "$$src" -o "staging/share/man/man1/$$tool" 2>&1 \
-			&& echo "[man] compiled: staging/share/man/man1/$$tool" \
-			|| { echo "[man] ERROR: failed to compile $$src" >&2; exit 1; }; \
-		found=$$((found + 1)); \
-	done; \
-	for src in */man/fr_CA/*.1.adoc; do \
-		[ -f "$$src" ] || continue; \
-		tool=$$(basename "$$src" .adoc); \
-		asciidoctor -b manpage "$$src" -o "staging/share/man/fr_CA/man1/$$tool" 2>&1 \
-			&& echo "[man] compiled: staging/share/man/fr_CA/man1/$$tool" \
-			|| { echo "[man] ERROR: failed to compile $$src" >&2; exit 1; }; \
-		found=$$((found + 1)); \
-	done; \
-	if [ "$$found" -eq 0 ]; then \
-		echo "[man] no *.1.adoc sources found — nothing to compile"; \
-	else \
-		echo "[man] man page compilation complete ($$found page(s))"; \
-	fi
+	@echo "[man] make man-pages is DEPRECATED — use 'cargo xtask stage' instead"
+	@echo "[man] man page sources are now pre-built troff under <crate>/docs/*.1"
 
 build:
 	cargo build --workspace

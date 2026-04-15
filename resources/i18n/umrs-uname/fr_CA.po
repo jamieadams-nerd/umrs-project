@@ -425,9 +425,37 @@ msgid "Catalog Baseline"
 msgstr "Base de référence du catalogue"
 
 # TRANSLATOR: Positive result — running kernel matches the catalog version.
-#: components/rusty-gadgets/umrs-uname/src/main.rs:699
+#: components/rusty-gadgets/umrs-uname/src/main.rs:693
 msgid "Catalog baseline matches running kernel"
 msgstr "La base de référence du catalogue correspond au noyau actif"
+
+# TRANSLATOR: Fragment when running kernel is newer than baseline.
+# Used in: "{r} <this> ({b}) — <some indicators may have changed>"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:686
+msgid "is newer than catalog baseline"
+msgstr "est plus récent que la base de référence du catalogue"
+
+# TRANSLATOR: Fragment when running kernel is older than baseline.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:700
+msgid "is older than catalog baseline"
+msgstr "est plus ancien que la base de référence du catalogue"
+
+# TRANSLATOR: Fragment appended after "is newer than catalog baseline".
+#: components/rusty-gadgets/umrs-uname/src/main.rs:687
+msgid "some indicators may have changed"
+msgstr "certains indicateurs ont peut-être changé"
+
+# TRANSLATOR: Fragment appended after "is older than catalog baseline".
+# "mettez à jour votre noyau" — UMRS vocabulary; attested in vocabulary-fr_CA.md.
+#: components/rusty-gadgets/umrs-uname/src/main.rs:701
+msgid "update your kernel"
+msgstr "mettez à jour votre noyau"
+
+# TRANSLATOR: Label for baseline row when version cannot be parsed.
+# "base de référence" = baseline (UMRS decision).
+#: components/rusty-gadgets/umrs-uname/src/main.rs:679
+msgid "baseline"
+msgstr "base de référence"
 
 # ---------------------------------------------------------------------------
 # Kernel contradiction rows
@@ -435,9 +463,20 @@ msgstr "La base de référence du catalogue correspond au noyau actif"
 
 # TRANSLATOR: Value shown when the contradiction count is zero (positive).
 # "Aucune" (feminine) agrees with "Contradictions" (feminine plural).
-#: components/rusty-gadgets/umrs-uname/src/main.rs:628
+#: components/rusty-gadgets/umrs-uname/src/main.rs:620
 msgid "None"
 msgstr "Aucune"
+
+# TRANSLATOR: Count fragment. Used in: "{count} — configuration/kernel disagreements detected"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:625
+msgid "configuration/kernel disagreements detected"
+msgstr "désaccords configuration/noyau détectés"
+
+# TRANSLATOR: Separator between two source identifiers in a contradiction row.
+# Used in: "[{idx}] {source_a} vs {source_b}"
+#: components/rusty-gadgets/umrs-uname/src/main.rs:567
+msgid "vs"
+msgstr "c."
 
 
 # TRANSLATOR: Positive result — running kernel and persisted config agree.

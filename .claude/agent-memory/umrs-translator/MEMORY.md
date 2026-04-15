@@ -24,12 +24,14 @@ Full registry: `resources/i18n/domains.md`
 
 | Domain | .pot | fr_CA.po | fr_CA.mo | Notes |
 |---|---|---|---|---|
-| umrs-ls | hand-crafted 2026-03-10 | translated | compiled | re-run xtr when installed |
+| umrs-ls | refreshed 2026-04-15 | updated 2026-04-15 | compiled (stale) | line numbers corrected to main.rs:458/1459/1656; re-run xtr + recompile when xtr installed |
 | umrs-state | xtr 2026-03-10 | translated 2026-03-11 | compiled | |
 | umrs-logspace | xtr 2026-03-10 | translated 2026-03-10 | compiled | msgid colon moved to format string |
-| umrs-uname | hand-crafted 2026-03-23 | rescan 2026-03-23 | compiled clean | 16 new gaps found; 4 wrapped, 8 need dev refactor |
+| umrs-uname | gaps filled 2026-04-15 | 7 new msgstrs 2026-04-15 | compiled (stale — recompile needed) | 7 fragment msgids added: newer/older/baseline/vs/disagreements |
 | umrs-platform | hand-crafted 2026-03-23 | translated 2026-03-23 | NOT compiled | display.rs scope only |
-| umrs-c2pa | inventory 2026-04-01 | NOT STARTED | NOT compiled | 74 strings inventoried; 5 design decisions pending; fr man page written |
+| umrs-c2pa | created 2026-04-15 | created 2026-04-15 | NOT compiled | 74 msgids + 2 plural pairs; NOT in Makefile; Henri review pending on "marquage de sécurité" |
+| umrs-stat | created 2026-04-15 | created 2026-04-15 | NOT compiled | 24 msgids; NOT in Makefile — Jamie must add I18N_TEXT_DOMAINS entries |
+| umrs-label | BLOCKED | BLOCKED | BLOCKED | no wrapping in source; blocker report at .claude/reports/i18n/2026-04-15-umrs-label-inventory.md |
 
 ## umrs-uname BUG (open — developer action required)
 - `main.rs:1785` calls `i18n::init("umrs-uname")` — CONFIRMED FIXED in current source
@@ -51,13 +53,12 @@ Report: `resources/i18n/reports/2026-03-23-umrs-uname-rescan.md`
 - Corpus skill: invoke `french-lookup` Skill tool — do NOT grep corpus files directly
 - Corpus files: `.claude/references/corpus/*.po` (coreutils, grep, sed, tar, findutils, bash, cryptsetup)
 
-## umrs-c2pa i18n Status (updated 2026-04-02)
-- String inventory: [umrs-c2pa-string-inventory.md](umrs-c2pa-string-inventory.md) — 74 strings, 105 entries total, 5 design decisions pending
-- French man page: [fr-man-page.md](fr-man-page.md) — written to docs/fr/umrs-c2pa.1; Henri D3/D4 decisions applied
-- Man page last synced: 2026-04-02 — SHA-384 dual digest + enriched Algorithm field added
-- Design decisions D1–D5 block wrapping work (thiserror, composite summary, status tags, TrustStatus labels, column layout)
-- Henri must review TrustStatus labels (TRUSTED, UNVERIFIED, INVALID, REVOKED, NO TRUST LIST) before translation
-- NOTE: English man page (umrs-c2pa.1) not yet updated by Lucia as of 2026-04-02; FR page synced from feature spec. Re-verify when EN page ships.
+## umrs-c2pa i18n Status (updated 2026-04-15)
+- .pot and fr_CA.po created 2026-04-15 (74 msgids + 2 plural pairs, 100% translation coverage)
+- NOT in Makefile; .mo not compiled
+- Henri review pending: "marquage de sécurité" (Termium) vs "cote de sécurité" (earlier UMRS decision) — field label in C2PA manifest display
+- Henri review pending: "chaîne de possession" (C2PA report title) — vocabulary attested via Termium + OQLF GDT
+- Design decision D1–D5 notes: thiserror strings are inventoried but not yet wrapped (developer action required at display call site)
 
 ## Cargo.toml Entry (confirmed)
 - `gettext-rs = { version = "0.7", features = ["gettext-system"] }`
@@ -92,12 +93,11 @@ File: `components/rusty-gadgets/libs/umrs-core/src/i18n.rs`
 `#[error("...")]` strings: wrap at binary display boundary, not at annotation site.
 These are recorded in .pot for inventory; developer acts at the display call site.
 
-## umrs-stat: MISSING DOMAIN (blocking gap — 2026-03-25)
-- `umrs-stat/src/main.rs:748` calls `i18n::init("umrs-stat")` — NO domain directory exists
-- No .pot, no .po, no .mo. Operators on fr_CA systems get raw English msgids.
-- Not in Makefile I18N_TEXT_DOMAINS or I18N_ACTIVE_DOMAINS
-- Action: wrapping scan → wrapping report → onboard to pipeline
-- Full gap documentation: `.claude/reports/i18n-l10n-architecture.md` §Gap 1 and §Gap 3
+## umrs-stat: Domain Created (Makefile gap remaining — 2026-04-15)
+- .pot and fr_CA.po created 2026-04-15 (24 msgids, 100% translation coverage)
+- NOT in Makefile I18N_TEXT_DOMAINS or I18N_ACTIVE_DOMAINS — .mo cannot be compiled
+- Jamie must add: I18N_TEXT_DOMAINS, I18N_ACTIVE_DOMAINS, I18N_SRC_DIR_umrs_stat, I18N_ACTIVE_LOCALES_umrs_stat := fr_CA
+- Inventory report: `.claude/reports/i18n/2026-04-15-umrs-stat-inventory.md`
 
 ## umrs-ui: No Own Domain (architecture decision pending — 2026-03-25)
 - `umrs-ui/src/data_panel.rs` and `umrs-ui/src/header.rs` call `i18n::tr()` directly
@@ -167,6 +167,14 @@ umrs-uname/fr_CA.po require developer review:
 1. "DURCISSEMENT DU SYSTÈME DE FICHIERS" (group title) — 38 chars, within limit
 2. Curated note in build_kernel_security_summary_rows — longest translated line
    is 67 chars. Propose abbreviation if developer confirms hard limit is 66.
+
+## Man Pages Completed (2026-04-15)
+All four staged tools now have EN + fr_CA man pages:
+- umrs-stat: `docs/umrs-stat.1` + `docs/fr/umrs-stat.1`
+- umrs-label: `docs/umrs-label.1` + `docs/fr/umrs-label.1`
+- umrs-ls: `docs/umrs-ls.1` + `docs/fr/umrs-ls.1`
+- umrs-uname: `docs/umrs-uname.1` + `docs/fr/umrs-uname.1`
+umrs-c2pa man pages pre-existed and were not modified.
 
 ## Makefile Targets Added (2026-03-23)
 - umrs-uname and umrs-platform added to I18N_TEXT_DOMAINS, I18N_ACTIVE_DOMAINS

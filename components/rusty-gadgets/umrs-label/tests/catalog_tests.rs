@@ -532,3 +532,125 @@ fn catalog_country_flag_ca() {
     let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
     assert_eq!(cat.country_flag(), Some("🇨🇦".to_string()));
 }
+
+// ---------------------------------------------------------------------------
+// marking_by_mcs_level — Canadian Protected fallback lookup
+//
+// These tests cover the regression path where setrans.conf has no translation
+// for Canadian MCS categories (c300-c302), so the group header carries the
+// raw MCS level string rather than a human-readable marking key.
+// ---------------------------------------------------------------------------
+
+/// # TEST-ID: CAT-MCS-001
+/// # REQUIREMENT: marking_by_mcs_level resolves raw "s1:c300" to PROTECTED-A
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+#[test]
+fn ca_catalog_mcs_level_s1_c300_resolves_protected_a() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let result = cat.marking_by_mcs_level("s1:c300");
+    assert!(
+        result.is_some(),
+        "s1:c300 should resolve to a Canadian marking"
+    );
+    let (key, marking) = result.unwrap();
+    assert_eq!(key, "PROTECTED-A", "s1:c300 should map to PROTECTED-A");
+    assert_eq!(marking.abbrv_name.as_str(), "PA");
+}
+
+/// # TEST-ID: CAT-MCS-002
+/// # REQUIREMENT: marking_by_mcs_level resolves raw "s2:c301" to PROTECTED-B
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+#[test]
+fn ca_catalog_mcs_level_s2_c301_resolves_protected_b() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let result = cat.marking_by_mcs_level("s2:c301");
+    assert!(
+        result.is_some(),
+        "s2:c301 should resolve to a Canadian marking"
+    );
+    let (key, _) = result.unwrap();
+    assert_eq!(key, "PROTECTED-B", "s2:c301 should map to PROTECTED-B");
+}
+
+/// # TEST-ID: CAT-MCS-003
+/// # REQUIREMENT: marking_by_mcs_level resolves raw "s3:c302" to PROTECTED-C
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+#[test]
+fn ca_catalog_mcs_level_s3_c302_resolves_protected_c() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let result = cat.marking_by_mcs_level("s3:c302");
+    assert!(
+        result.is_some(),
+        "s3:c302 should resolve to a Canadian marking"
+    );
+    let (key, _) = result.unwrap();
+    assert_eq!(key, "PROTECTED-C", "s3:c302 should map to PROTECTED-C");
+}
+
+/// # TEST-ID: CAT-MCS-004
+/// # REQUIREMENT: marking_by_mcs_level returns None for raw level with no match
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+#[test]
+fn ca_catalog_mcs_level_no_match_returns_none() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    // s0:c0 is a US CUI base level, not in the Canadian catalog.
+    let result = cat.marking_by_mcs_level("s0:c0");
+    assert!(
+        result.is_none(),
+        "s0:c0 should not match any Canadian marking"
+    );
+}
+
+/// # TEST-ID: CAT-MCS-005
+/// # REQUIREMENT: marking_by_mcs_level returns None for plain sensitivity with no category
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+#[test]
+fn ca_catalog_mcs_level_no_category_returns_none() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    // Plain sensitivity-only level has no category to match against category_base.
+    let result = cat.marking_by_mcs_level("s1");
+    assert!(
+        result.is_none(),
+        "plain sensitivity-only level s1 should not match"
+    );
+}
+
+/// # TEST-ID: CAT-MCS-006
+/// # REQUIREMENT: marking_by_mcs_level returns None on empty input
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+#[test]
+fn ca_catalog_mcs_level_empty_returns_none() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let result = cat.marking_by_mcs_level("");
+    assert!(result.is_none(), "empty string should return None");
+}
+
+/// # TEST-ID: CAT-MCS-007
+/// # REQUIREMENT: US catalog does not return Canadian entries via mcs_level fallback
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+#[test]
+fn us_catalog_mcs_level_canadian_range_returns_none() {
+    // Canadian categories (c300+) are not in the US catalog.
+    let cat = catalog::load_catalog(us_catalog_path()).expect("US catalog load");
+    let result = cat.marking_by_mcs_level("s1:c300");
+    assert!(
+        result.is_none(),
+        "US catalog should not resolve s1:c300 (Canadian range)"
+    );
+}
+
+/// # TEST-ID: CAT-MCS-008
+/// # REQUIREMENT: marking_by_mcs_level accepts level with multiple categories
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+#[test]
+fn ca_catalog_mcs_level_compound_category_uses_first() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    // A compound level like "s1:c300,c303" — c300 is the base for Protected A.
+    let result = cat.marking_by_mcs_level("s1:c300,c303");
+    assert!(
+        result.is_some(),
+        "compound level s1:c300,c303 should resolve via first category c300"
+    );
+    let (key, _) = result.unwrap();
+    assert_eq!(key, "PROTECTED-A");
+}

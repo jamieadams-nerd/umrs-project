@@ -1,6 +1,6 @@
 # UMRS ROADMAP
 
-**Updated:** 2026-04-12
+**Updated:** 2026-04-15
 
 High-assurance Rust platform for system security on Linux.
 Typed, provenance-verified answers about what a system is, what it runs, and whether it meets policy.
@@ -147,6 +147,15 @@ applies consistently across all sites.
 - [x] Knox security review 2026-04-09 — 3 errors fixed, 12 concerns logged
 - [x] xtask staging pipeline — `stage`/`clean` commands, Makefile integration (2026-04-12)
 - [x] CUI taxonomy rebuild — unified JSON schema, rules, Rust types (2026-04)
+- [x] `/opt/umrs` install pipeline live — module v1.2 loaded, DAC applied, access model verified (2026-04-14)
+- [x] xtask + installer extended for man pages and locale catalogs — `usr_t` fcontext added (2026-04-15)
+- [x] Man pages written (EN + fr_CA) for all 5 staged tools: umrs-c2pa, umrs-label, umrs-ls, umrs-stat, umrs-uname (2026-04-15)
+- [x] Antora per-tool modules published for all 5 staged tools with JSON-source Mermaid diagrams (2026-04-15)
+- [x] umrs-ls Canadian group-header bug fixed — MCS-level fallback lookup added to `umrs-label::Catalog` (2026-04-15)
+- [x] CUI//LEI/INV anti-pattern cleanup — 21 occurrences fixed + staging mirrors refreshed (2026-04-15)
+- [x] Architectural rules recorded: default JSON config under `/opt/umrs/etc/umrs/`; universal `--verbose`/`-v` (2026-04-15)
+- [x] Consolidated CLI pass — all 5 tools have `--help`, `--version`, `--verbose`; umrs-ls + umrs-uname migrated to clap; all config defaults rooted at `/opt/umrs/etc/umrs/` (2026-04-15)
+- [x] umrs-label i18n wrapping (11 strings wrapped + `i18n::init` added) (2026-04-15)
 
 ### M1 — Solid Foundation — COMPLETE (2026-03-23) (G1, G2, G8)
 - [x] OS detection with trust tiers
@@ -175,7 +184,9 @@ applies consistently across all sites.
 - [x] umrs-c2pa gettext wrapping in progress (2026-04-02) — all design blockers cleared
 - [x] FIPS 180-4 and FIPS 186-5 downloaded to reference library (2026-04-02)
 - [x] Audit/logging research corpus acquisition started (CC Part 2, IDMEF, CEF, DFXML, CASE, ITU X.721)
-- [ ] French translations for remaining tool domains (umrs-ls, umrs-stat, umrs-platform)
+- [x] French translations compiled for umrs-ls, umrs-stat, umrs-uname, umrs-c2pa (fr_CA .mo, 2026-04-15)
+- [ ] umrs-label i18n — blocked on Rust-side wrapping (task #11 in-flight)
+- [ ] umrs-platform fr_CA translations
 - [ ] Extending label information to external systems:
       - Apache module which can read the SELinux label adn then add an http header to indicate
         the file being servied is CUI and deserves awareness.
@@ -188,8 +199,9 @@ First release uses `~/.local/bin` to lower the barrier and get people interested
 Full deployment moves binaries into OS-standard locations with proper access controls.
 
 - [x] xtask staging pipeline — pre-installation checkpoint bundling binaries, scripts, configs (2026-04-12)
-- [ ] Installer that consumes `staging/` and places artifacts under OS-standard paths
-- [ ] Install to `/usr/local/bin` or `/usr/bin` (RPM-managed)
+- [x] Installer consumes `staging/` and places artifacts under `/opt/umrs` — `umrs-install.sh` live (2026-04-14)
+- [x] Staging + installer extended for man pages (EN + fr_CA) and locale catalogs (2026-04-15)
+- [ ] Install to `/usr/local/bin` or `/usr/bin` (RPM-managed) — deferred; `/opt/umrs` custody container is the current canonical target
 - [ ] SELinux type enforcement: define `umrs_exec_t`, domain transitions, file contexts
 - [ ] fapolicyd trust entries (STIG-compliant hosts block `~/.local/bin` by default — CCE-89813-0)
 - [ ] AIDE monitoring rules for UMRS binaries (CCE-86441-3, CCE-90260-1)

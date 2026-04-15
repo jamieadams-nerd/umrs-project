@@ -1,0 +1,257 @@
+= umrs-ls — High-Assurance Directory Listing
+:description: Overview of the umrs-ls tool: inode-anchored, SELinux-aware directory \
+    listing grouped by security label, with IOV posture markers and encryption detection.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 AC-3, AC-4, AU-3, SC-28, SI-7
+// NSA RTB Non-Bypassability (RAIN), TOCTOU safety
+
+`umrs-ls` lists the contents of a directory and groups entries by their SELinux type
+and security marking.
+It is designed for operators and auditors who need to verify the security posture of
+filesystem objects — not just see their names.
+
+The key distinction from `/bin/ls -Z` is *how the security label is obtained*.
+Standard `ls` uses `lstat`, a path-based syscall.
+`umrs-ls` attempts to `open()` each object and anchors all subsequent metadata
+reads — including the SELinux xattr — to that single file descriptor.
+When `open()` is denied, the entry is marked `<restricted>` rather than silently
+falling back to an unverified path-based label.
+
+For the complete usage reference including IOV marker details, TPI parse behavior,
+and the threat model, see xref:umrs-tools:umrs-ls.adoc[umrs-ls — High-Assurance Directory Listing].
+
+'''
+
+== Data Sources
+
+`umrs-ls` reads optional external catalog files (for label detail popups) and queries
+kernel interfaces for encryption detection.
+All kernel reads are provenance-verified.
+
+[mermaid]
+....
+flowchart LR
+    subgraph catalogs["CUI Catalogs (optional, for detail popup)"]
+        US_LABELS["US-CUI-LABELS.json\n(candidate paths searched at startup)"]
+        CA_LABELS["CANADIAN-PROTECTED.json\n(candidate paths searched at startup)"]
+    end
+
+    subgraph selinux_config["SELinux Configuration (optional)"]
+        SECOLOR["/etc/selinux/{policy}/secolor.conf\n(type→color mapping, --color only)\nqueries active policy name from kernel"]
+    end
+
+    subgraph kernel_pseudo["Kernel Pseudo-Filesystems (via umrs-platform)"]
+        PROC_MOUNTS["/proc/mounts\n(mount topology for encryption detection)\nProcfsText, magic-verified"]
+        SYS_BLOCK["/sys/block/*/dm/uuid\n/sys/block/*/dm/type\n(LUKS dm-crypt detection)\nSysfsText, magic-verified"]
+    end
+
+    subgraph per_entry["Per-Entry — open fd (via SecureDirent)"]
+        XATTR["security.selinux xattr\n(fgetxattr — TPI dual-parser)"]
+        IMA_XATTR["security.ima xattr\n(IMA measurement hash)"]
+        INODE_FLAGS["ioctl FSGETXATTR\n(immutable / append-only flags)"]
+    end
+
+    TOOL["umrs-ls"]
+
+    US_LABELS -- "label detail popup\n(optional)" --> TOOL
+    CA_LABELS -- "label detail popup\n(optional)" --> TOOL
+    SECOLOR -- "group header colors\n(--color flag only)" --> TOOL
+    PROC_MOUNTS --> TOOL
+    SYS_BLOCK --> TOOL
+    XATTR --> TOOL
+    IMA_XATTR -- "V column of IOV marker" --> TOOL
+    INODE_FLAGS -- "I column of IOV marker" --> TOOL
+....
+
+.Data source descriptions
+[cols="2,4", options="header"]
+|===
+| Source | What `umrs-ls` reads from it
+
+| `US-CUI-LABELS.json`
+| US CUI catalog loaded at startup for the label detail popup.
+  When a user presses Enter on a marking, the popup shows the full catalog entry.
+  Searched at candidate paths; silently absent if not found.
+
+| `CANADIAN-PROTECTED.json`
+| Canadian Protected catalog for the detail popup.
+  Searched at candidate paths; silently absent if not found.
+
+| `secolor.conf`
+| Optional SELinux type-to-color mapping file.
+  The active policy name is queried from the kernel and used to construct the path.
+  The path is never hardcoded.
+  Used only when `--color` is specified.
+  Falls back to bold/underline formatting if absent or unreadable.
+
+| `/proc/mounts`
+| Mount table used to identify the backing device for each mount point entry.
+  Read via `ProcfsText` with procfs magic verification.
+
+| `/sys/block/*/dm/uuid` and `/sys/block/*/dm/type`
+| Device-mapper attributes used to detect LUKS dm-crypt encrypted backing devices.
+  Read via `SysfsText` with sysfs magic verification.
+  The lock icon appears only when these attributes confirm LUKS.
+
+| `security.selinux` xattr (per entry)
+| SELinux security context for each directory entry.
+  Read via `fgetxattr(fd, ...)` — never via path-based `getxattr`.
+  Verified by two independent parsers (TPI).
+
+| `security.ima` xattr (per entry)
+| IMA measurement hash presence.
+  Populates the `V` position of the IOV security-posture marker.
+
+| `ioctl(FSGETXATTR)` (per entry)
+| Inode flags including `FS_IMMUTABLE_FL`.
+  Populates the `I` position of the IOV security-posture marker.
+
+|===
+
+'''
+
+== Integration with umrs-stat and umrs-label
+
+`umrs-ls` shares code and data with `umrs-stat` and `umrs-label`.
+Understanding how these tools relate clarifies what each one contributes.
+
+[mermaid]
+....
+flowchart TB
+    subgraph library_layer["Library Layer"]
+        SECURE_DIRENT["umrs-selinux\nSecureDirent::from_path()\n• open() fd anchor\n• fgetxattr (security.selinux)\n• ioctl FSGETXATTR\n• security.ima xattr\n• fstat"]
+        DIRLIST["umrs-selinux::utils::dirlist\nlist_directory()\n• iterates directory\n• calls SecureDirent per entry\n• groups by (type, marking)\n• builds DirListing struct"]
+        XATTR_READER["umrs-selinux\nSecureXattrReader\n• TPI dual-parser gate\n• nom (Path A)\n• FromStr (Path B)\n• disagreement → TpiDisagreement"]
+        CATALOG_LIB["umrs-labels\nCatalog / load_catalog()\n• parses US-CUI-LABELS.json\n• parses CANADIAN-PROTECTED.json\n• provides label detail data"]
+        FS_ENCRYPT["umrs-selinux::fs_encrypt\ndetect_encryption()\n• /proc/mounts lookup\n• /sys/block dm-crypt check\n• returns EncryptionSource"]
+        SECOLOR_LIB["umrs-selinux\nSeColorConfig / load_default()\n• queries kernel for active policy\n• loads secolor.conf\n• maps type → RGB color"]
+    end
+
+    subgraph tool_umrs_ls["umrs-ls (display layer)"]
+        LS_RENDER["tui_render / grouping\n• consumes DirListing\n• renders IOV column\n• applies secolor colors\n• encryption icons\n• label detail popup\n• no fs I/O"]
+    end
+
+    subgraph tool_umrs_stat["umrs-stat"]
+        STAT_RENDER["viewer_app\n• consumes SecureDirent\n• renders 3-tab TUI\n• Observations tab\n• no fs I/O"]
+    end
+
+    subgraph shared_data["Shared Data Files"]
+        US_JSON["US-CUI-LABELS.json"]
+        CA_JSON["CANADIAN-PROTECTED.json"]
+        SECOLOR_FILE["/etc/selinux/{policy}/secolor.conf"]
+    end
+
+    SECURE_DIRENT --> XATTR_READER
+    SECURE_DIRENT --> DIRLIST
+    DIRLIST --> LS_RENDER
+    SECURE_DIRENT --> STAT_RENDER
+    CATALOG_LIB --> LS_RENDER
+    FS_ENCRYPT --> LS_RENDER
+    SECOLOR_LIB --> LS_RENDER
+    US_JSON --> CATALOG_LIB
+    CA_JSON --> CATALOG_LIB
+    SECOLOR_FILE --> SECOLOR_LIB
+....
+
+=== What each layer contributes
+
+`umrs-selinux::SecureDirent` is the shared inspection primitive.
+Both `umrs-ls` and `umrs-stat` call `SecureDirent::from_path()` to open a file and
+gather its security attributes through the resulting fd.
+Neither tool performs raw filesystem I/O directly.
+
+`umrs-selinux::utils::dirlist::list_directory()` handles directory traversal for `umrs-ls`.
+It calls `SecureDirent` on each entry and groups the results into a `DirListing` struct.
+The `DirListing` contains no display logic, no ANSI codes, and no formatted strings.
+`umrs-ls` consumes it and handles all rendering decisions.
+
+`umrs-labels::Catalog` is the shared label catalog abstraction.
+`umrs-ls` loads it for the label detail popup.
+`umrs-label` loads it for its full registry browser.
+The catalog library is the single source of truth for CUI marking data.
+
+`umrs-selinux::fs_encrypt` performs encryption detection.
+It is called by both `umrs-ls` (for the mount-point lock icon) and `umrs-stat`
+(for the Encryption Source field in Tab 1).
+
+`umrs-selinux::SecureXattrReader` applies the TPI dual-parser gate to every SELinux
+label read.
+This is not optional and cannot be bypassed by either tool's display layer.
+The `<restricted>` and `<unlabeled>` group labels in `umrs-ls` output are data values
+set by the library layer, not display decisions made by `umrs-ls`.
+
+'''
+
+== Quick Reference
+
+[source,shell]
+----
+# List current directory
+umrs-ls
+
+# List a specific directory
+umrs-ls /var/log
+
+# Enable true-color group headers using secolor.conf palette
+umrs-ls --color /var/log
+
+# Show file sizes
+umrs-ls --with-size /usr/bin
+
+# Suppress IOV column and modification time
+umrs-ls --no-iov --no-mtime /etc
+----
+
+For the complete column reference, IOV marker detail, `<restricted>` vs. `<unlabeled>`
+distinction, TPI behavior, and threat model, see
+xref:umrs-tools:umrs-ls.adoc[umrs-ls — High-Assurance Directory Listing].
+
+'''
+
+== Compliance
+
+[cols="1,3", options="header"]
+|===
+| Control | How `umrs-ls` satisfies it
+
+| NIST SP 800-53 AC-3
+| Entries where access was denied by DAC or MAC appear in the `<restricted>` group —
+  visible to the operator, not silently dropped.
+
+| NIST SP 800-53 AC-4
+| Information-flow labels (SELinux type and marking) drive the grouping structure.
+  Every entry is associated with its verified label, or explicitly marked `<restricted>`
+  when the label cannot be verified.
+
+| NIST SP 800-53 AU-3
+| Each row captures sufficient fields for an audit record: mode, ownership,
+  modification time, and security marking.
+
+| NIST SP 800-53 SC-28
+| Encryption posture per mount point is surfaced in the `NAME` column icon zone.
+  Absence of the lock icon is a gap indicator — not a guarantee of no encryption.
+
+| NIST SP 800-53 SI-7
+| IMA xattr presence reported in the `V` column;
+  immutable flag reported in the `I` column.
+  Both are read through the open fd.
+  SELinux label verified via TPI before acceptance.
+
+| NSA RTB RAIN (Non-Bypassability)
+| The `<restricted>` sentinel is set in the data layer and cannot be overridden
+  by a display option.
+  No flag exists to suppress `<restricted>` entries or substitute a path-derived label.
+
+|===
+
+'''
+
+== See Also
+
+* xref:umrs-tools:umrs-ls.adoc[umrs-ls — full reference page] — complete usage, IOV marker, `<restricted>` vs. `<unlabeled>`, TPI behavior, threat model
+* xref:umrs-stat:index.adoc[umrs-stat] — per-file security audit card (detailed view of a single entry)
+* xref:umrs-label:index.adoc[umrs-label] — label registry browser (catalog data source for the detail popup)
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Coding Patterns] — TOCTOU safety, TPI
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance]

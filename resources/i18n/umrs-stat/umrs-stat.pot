@@ -1,0 +1,137 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2026 Jamie Adams (a.k.a. Imodium Operator)
+# This file is distributed under the same license as the UMRS Project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-stat\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-15 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+# NOTE: Hand-crafted 2026-04-15. Re-run xtr once available.
+# Makefile changes required before extraction can run — see inventory report.
+# xtr invocation (after Makefile is updated):
+#   xtr --package-name umrs-stat \
+#       --output resources/i18n/umrs-stat/umrs-stat.pot \
+#       components/rusty-gadgets/umrs-stat/src/main.rs \
+#       components/rusty-gadgets/umrs-stat/src/lib.rs
+
+# ---------------------------------------------------------------------------
+# Page/report title (src/main.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-stat/src/main.rs:78
+msgid "File Security Audit"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Identity tab — file metadata rows (src/lib.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:282
+msgid "Path"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:284
+msgid "Filename"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:288
+msgid "File type"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:309
+msgid "MIME type"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:329
+msgid "Size"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Security section group titles (src/lib.rs)
+# ---------------------------------------------------------------------------
+
+#. Section group title prefix — e.g. " Marking" becomes a group header.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:389
+msgid "Marking"
+msgstr ""
+
+#. Section group title prefix for encryption subsection.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:406
+msgid "Encryption"
+msgstr ""
+
+#. Section group title for IMA/EVM subsection.
+#. IMA/EVM is a specification acronym (Integrity Measurement Architecture /
+#. Extended Verification Module) — kept English in all locales.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:461
+msgid "IMA/EVM"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Observations tab (src/lib.rs)
+# ---------------------------------------------------------------------------
+
+#. Column header for count of security observations.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:534
+msgid "Count"
+msgstr ""
+
+#. Column header for security findings list.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:541
+msgid "Findings"
+msgstr ""
+
+#. Status message when no security observations exist.
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:542
+msgid "No security observations"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Status and error messages (src/lib.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:133
+msgid "No security concerns"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:569
+msgid "Failed to read file"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:578
+msgid "No data available"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:718
+msgid "Failed to read file attributes"
+msgstr ""
+
+# ---------------------------------------------------------------------------
+# Tab labels (src/lib.rs)
+# ---------------------------------------------------------------------------
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:662
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:706
+msgid "Identity"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:663
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:707
+msgid "Security"
+msgstr ""
+
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:664
+#: components/rusty-gadgets/umrs-stat/src/lib.rs:708
+msgid "Observations"
+msgstr ""

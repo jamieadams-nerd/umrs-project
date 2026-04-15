@@ -1,0 +1,140 @@
+.\" SPDX-License-Identifier: MIT
+.\" Copyright (c) 2025 Jamie Adams
+.TH UMRS-STAT 1 "2026-04-15" "umrs-stat 0.1.0" "UMRS Tools"
+.SH NAME
+umrs-stat \- display security attributes of a file as an interactive audit card
+.SH SYNOPSIS
+.B umrs-stat
+.RI [ OPTIONS ]
+.I PATH
+.SH DESCRIPTION
+.B umrs-stat
+reads security-relevant attributes of a file and presents them as a
+three-tab interactive audit card in the terminal.
+.PP
+The card displays:
+.PP
+.IP "Identity tab" 12
+File path, name, type, MIME type, and size.
+.IP "Security tab" 12
+Security marking (SELinux context and CUI classification label),
+encryption status (fscrypt, eCryptfs, LUKS-backed), and IMA/EVM
+measurement and verification status.
+.IP "Observations tab" 12
+Enumerated security observations (setuid/setgid bits, world-writable
+permissions, symlink exposure) with a count and severity summary.
+.PP
+All attributes are read via the
+.B umrs-platform
+provenance-verified abstraction layer.
+No direct
+.BR stat (2)
+or
+.BR open (2)
+calls on security-relevant paths occur outside of vetted library code.
+.SH OPTIONS
+.TP
+.I PATH
+Path to the file whose security attributes will be inspected.
+Required.
+.TP
+.B \-\-json
+Emit machine-readable JSON output instead of the interactive TUI.
+Reserved for a future implementation phase; not yet implemented.
+.TP
+.BR \-h ", " \-\-help
+Print help message.
+.TP
+.BR \-V ", " \-\-version
+Print version.
+.SH TUI NAVIGATION
+.TP
+.BR Tab " / " Shift\-Tab
+Switch between the three audit tabs.
+.TP
+.BR j " / " k " or " \(ua " / " \(da
+Scroll within the active tab.
+.TP
+.BR q " or " Esc
+Quit.
+.TP
+.B ?
+Show contextual help for the active tab.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+File not found, read error, or terminal initialization failure.
+.TP
+.B 2
+Usage error (bad arguments).
+.SH SECURITY CONSIDERATIONS
+.IP \(bu 2
+All file reads are routed through
+.B umrs-platform
+provenance-checked readers.
+This includes filesystem-magic verification (via
+.B fstatfs
+on an anchored file descriptor) and TOCTOU protection.
+.IP \(bu 2
+The tool does not modify any file attribute.
+It is unconditionally read-only.
+.IP \(bu 2
+IMA/EVM status is read from the
+.I security.ima
+xattr and the
+.I security.evm
+xattr using
+.B O_NOFOLLOW
+to prevent symlink redirection attacks.
+.IP \(bu 2
+SELinux context is read from the
+.I security.selinux
+xattr on the resolved file descriptor.
+If SELinux is disabled in the kernel, the Marking field shows
+.IR N/A .
+.SH COMPLIANCE
+.TP
+.B NIST SP 800-53 AU-3
+Audit Record Content \(em the operator supplies the target path explicitly;
+the tool is self-identifying via report name and subject in all output modes.
+.TP
+.B NIST SP 800-53 CM-6
+Output mode is operator-controlled via
+.BR \-\-json ;
+no implicit configuration inference occurs.
+.TP
+.B NIST SP 800-53 SI-7
+Software and Information Integrity \(em IMA/EVM status provides
+kernel-measured integrity evidence for the inspected file.
+.SH FILES
+.TP
+.I /usr/share/locale/fr_CA/LC_MESSAGES/umrs-stat.mo
+French (Canada) message catalog.
+.SH ENVIRONMENT
+.TP
+.B LANG
+Controls the locale for message translation.
+Set to
+.B fr_CA.UTF-8
+to receive French (Canada) output.
+.TP
+.B LC_ALL
+Overrides all locale categories.
+Supersedes
+.BR LANG .
+.TP
+.B UMRS_LOCALEDIR
+Override the locale directory (development testing only).
+.SH SEE ALSO
+.BR umrs-ls (1),
+.BR umrs-label (1),
+.BR stat (1),
+.BR ls (1)
+.SH AUTHORS
+Jamie Adams (a.k.a. Imodium Operator)
+.SH LICENSE
+MIT License.
+See LICENSE file.

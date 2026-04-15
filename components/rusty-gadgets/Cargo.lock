@@ -4097,6 +4097,7 @@ name = "umrs-ls"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "clap",
  "crossterm 0.28.1",
  "gettext-rs",
  "log",
@@ -4187,6 +4188,7 @@ dependencies = [
 name = "umrs-uname"
 version = "0.1.0"
 dependencies = [
+ "clap",
  "crossterm 0.28.1",
  "log",
  "ratatui",

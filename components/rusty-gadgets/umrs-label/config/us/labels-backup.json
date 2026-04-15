@@ -670,11 +670,11 @@
       "required_warning_statement": null,
       "required_dissemination_control": null
     },
-    "CUI//LEI/INV": {
+    "CUI//INV": {
       "name": "Investigation",
       "abbrv_name": "INV",
       "description": "Active or closed investigative case records, evidence documentation, and operational law enforcement reporting.",
-      "parent_group": "LEI",
+      "parent_group": "",
       "handling_group_id": "",
       "other": {},
       "level": "s1",

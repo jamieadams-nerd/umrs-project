@@ -51,6 +51,7 @@ use std::time::Duration;
 
 use clap::Parser;
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
+use umrs_core::i18n;
 
 use umrs_labels::cui::catalog;
 use umrs_labels::tui::app::{DetailContent, LabelRegistryApp, Panel};
@@ -90,17 +91,17 @@ use umrs_ui::viewer::ViewerState;
 struct Args {
     /// Path to the US CUI label catalog JSON file.
     ///
-    /// Defaults to `config/us/US-CUI-LABELS.json` relative to the current
-    /// working directory.
-    #[arg(long, default_value = "config/us/US-CUI-LABELS.json")]
+    /// Default: `/opt/umrs/etc/umrs/us/US-CUI-LABELS.json`.
+    /// Override priority: `--us-catalog` flag → `UMRS_CONFIG_DIR` env var → default.
+    #[arg(long, default_value = "/opt/umrs/etc/umrs/us/US-CUI-LABELS.json")]
     us_catalog: String,
 
     /// Path to the Canadian Protected label catalog JSON file.
     ///
-    /// Defaults to `config/ca/CANADIAN-PROTECTED.json` relative to the
-    /// current working directory. The Canadian catalog is optional; if the
-    /// file is absent the tool continues with US CUI labels only.
-    #[arg(long, default_value = "config/ca/CANADIAN-PROTECTED.json")]
+    /// Default: `/opt/umrs/etc/umrs/ca/CANADIAN-PROTECTED.json`.
+    /// The Canadian catalog is optional; if the file is absent the tool
+    /// continues with US CUI labels only.
+    #[arg(long, default_value = "/opt/umrs/etc/umrs/ca/CANADIAN-PROTECTED.json")]
     ca_catalog: String,
 
     /// Force plain-text CLI output instead of the interactive TUI.
@@ -115,6 +116,14 @@ struct Args {
     /// JSON output support is reserved for a future implementation phase.
     #[arg(long)]
     json: bool,
+
+    /// Show step-by-step progress on stderr.
+    ///
+    /// Narrates config paths, catalog counts, locale resolution, and any
+    /// trust-gate results so operators can diagnose issues without enabling
+    /// debug logging. NIST SP 800-53 SI-11.
+    #[arg(long, short)]
+    verbose: bool,
 }
 
 // ---------------------------------------------------------------------------
@@ -122,6 +131,10 @@ struct Args {
 // ---------------------------------------------------------------------------
 
 fn main() {
+    // Initialize gettext catalog before any i18n::tr() calls.
+    // NIST SP 800-53 SI-11 — locale is resolved at startup, not on demand.
+    i18n::init("umrs-label");
+
     if let Ok(logger) = systemd_journal_logger::JournalLog::new() {
         let _ = logger.install();
         log::set_max_level(log::LevelFilter::Info);
@@ -129,22 +142,76 @@ fn main() {
 
     let args = Args::parse();
 
+    // Enable verbose progress output to stderr. All verbose output goes to
+    // stderr so it does not interfere with --json or piped stdout.
+    // NIST SP 800-53 SI-11.
+    let verbose = args.verbose;
+    macro_rules! verbose {
+        ($($arg:tt)*) => {
+            if verbose {
+                eprintln!("  [umrs-label] {}", format_args!($($arg)*));
+            }
+        };
+    }
+
     let json_mode = args.json;
     let cli_mode = args.cli;
-    let us_catalog_path = args.us_catalog;
-    let ca_catalog_path = args.ca_catalog;
+
+    // Resolve catalog paths using the documented override chain:
+    //   1. Explicit --us-catalog / --ca-catalog flags
+    //   2. UMRS_CONFIG_DIR environment variable  → <dir>/us/US-CUI-LABELS.json
+    //   3. /opt/umrs/etc/umrs/  (install default)
+    //   4. config/us/ in CWD   (development convenience)
+    //
+    // NIST SP 800-53 CM-6 — configuration path resolved before catalog I/O.
+    let default_us = "/opt/umrs/etc/umrs/us/US-CUI-LABELS.json";
+    let default_ca = "/opt/umrs/etc/umrs/ca/CANADIAN-PROTECTED.json";
+    let cwd_us = "config/us/US-CUI-LABELS.json";
+    let cwd_ca = "config/ca/CANADIAN-PROTECTED.json";
+
+    let us_catalog_path = if args.us_catalog != default_us {
+        // Explicit override.
+        args.us_catalog
+    } else if let Ok(dir) = std::env::var("UMRS_CONFIG_DIR") {
+        format!("{dir}/us/US-CUI-LABELS.json")
+    } else if std::path::Path::new(default_us).exists() {
+        default_us.to_owned()
+    } else {
+        cwd_us.to_owned()
+    };
+
+    let ca_catalog_path = if args.ca_catalog != default_ca {
+        args.ca_catalog
+    } else if let Ok(dir) = std::env::var("UMRS_CONFIG_DIR") {
+        format!("{dir}/ca/CANADIAN-PROTECTED.json")
+    } else if std::path::Path::new(default_ca).exists() {
+        default_ca.to_owned()
+    } else {
+        cwd_ca.to_owned()
+    };
+
+    verbose!("US catalog: {}", us_catalog_path);
+    verbose!("CA catalog: {}", ca_catalog_path);
 
     // Load US catalog (required).
     let us_catalog = catalog::load_catalog(&us_catalog_path).unwrap_or_else(|e| {
         eprintln!("[FAIL] Could not load US catalog: {e}");
         std::process::exit(2);
     });
+    verbose!(
+        "US catalog loaded: {} markings",
+        us_catalog.iter_markings().count()
+    );
 
     // Load Canadian catalog (optional — log a warning but continue if absent).
     let ca_catalog = match catalog::load_catalog(&ca_catalog_path) {
-        Ok(c) => Some(c),
+        Ok(c) => {
+            verbose!("CA catalog loaded: {} markings", c.iter_markings().count());
+            Some(c)
+        }
         Err(e) => {
             log::warn!("Canadian catalog unavailable: {e}");
+            verbose!("CA catalog unavailable: {e}");
             None
         }
     };
@@ -155,10 +222,12 @@ fn main() {
     }
 
     if cli_mode || !io::stdout().is_terminal() {
+        verbose!("Mode: CLI");
         run_cli(&us_catalog, ca_catalog.as_ref());
         return;
     }
 
+    verbose!("Mode: TUI");
     run_tui(us_catalog, ca_catalog);
 }
 
@@ -665,49 +734,49 @@ fn render_help_overlay(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, 
         ratatui::text::Line::from(""),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  ↑ / k        ", theme.header_field),
-            ratatui::text::Span::styled("Move up", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Move up"), theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  ↓ / j        ", theme.header_field),
-            ratatui::text::Span::styled("Move down", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Move down"), theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  ← / h        ", theme.header_field),
-            ratatui::text::Span::styled("Collapse node", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Collapse node"), theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  → / l        ", theme.header_field),
-            ratatui::text::Span::styled("Expand node", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Expand node"), theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  PgUp/PgDn    ", theme.header_field),
-            ratatui::text::Span::styled("Scroll active panel", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Scroll active panel"), theme.data_value),
         ]),
         ratatui::text::Line::from(""),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  Enter        ", theme.header_field),
-            ratatui::text::Span::styled("Show details / toggle branch", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Show details / toggle branch"), theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  Tab          ", theme.header_field),
-            ratatui::text::Span::styled("Switch focus (Tree ↔ Detail)", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Switch focus (Tree ↔ Detail)"), theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  /            ", theme.header_field),
-            ratatui::text::Span::styled("Search / filter catalog", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Search / filter catalog"), theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  Esc          ", theme.header_field),
-            ratatui::text::Span::styled("Cancel search", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Cancel search"), theme.data_value),
         ]),
         ratatui::text::Line::from(""),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  ?            ", theme.header_field),
-            ratatui::text::Span::styled("Toggle this help", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Toggle this help"), theme.data_value),
         ]),
         ratatui::text::Line::from(vec![
             ratatui::text::Span::styled("  q / Esc      ", theme.header_field),
-            ratatui::text::Span::styled("Quit", theme.data_value),
+            ratatui::text::Span::styled(i18n::tr("Quit"), theme.data_value),
         ]),
         ratatui::text::Line::from(""),
         ratatui::text::Line::from(ratatui::text::Span::styled(
@@ -718,4 +787,3 @@ fn render_help_overlay(frame: &mut ratatui::Frame, area: ratatui::layout::Rect, 
 
     frame.render_widget(ratatui::widgets::Paragraph::new(lines), inner);
 }
-

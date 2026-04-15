@@ -14,8 +14,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: umrs-ls\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 08:37+0000\n"
-"PO-Revision-Date: 2026-03-11 00:00+0000\n"
+"POT-Creation-Date: 2026-04-15 00:00+0000\n"
+"PO-Revision-Date: 2026-04-15 00:00+0000\n"
 "Last-Translator: umrs-translator (Claude Code)\n"
 "Language-Team: fr_CA\n"
 "Language: fr_CA\n"
@@ -29,7 +29,7 @@ msgstr ""
 # corpus match was found in the GNU tools corpus, but the phrase is widely attested
 # throughout POSIX documentation, ANSSI guidance, and OTAN/NATO francophone material.
 #. Translate the static label, then append the count in parentheses.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:175
+#: components/rusty-gadgets/umrs-ls/src/main.rs:458
 msgid "access denied"
 msgstr "accès refusé"
 
@@ -39,8 +39,8 @@ msgstr "accès refusé"
 # (e.g., "droits de %s", "modification des droits", "impossible de modifier les droits").
 # "DROITS" is therefore the corpus-informed choice for this header.
 # 6 characters — within the ≤8 target for column brevity.
-#. Wrap translations in Cow::Owned
-#: components/rusty-gadgets/umrs-ls/src/main.rs:257
+#. Column headers — wrap translations in Cow::Owned.
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1459
 msgid "MODE"
 msgstr "DROITS"
 
@@ -52,7 +52,7 @@ msgstr "DROITS"
 # the human-readable marking string, not the raw SELinux label.
 # Recorded as UMRS decision in vocabulary-fr_CA.md.
 # 8 characters — at the ≤8 target limit.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:258
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1460
 msgid "MARKING"
 msgstr "MARQUAGE"
 
@@ -62,7 +62,7 @@ msgstr "MARQUAGE"
 # "PROPRIO" is the coreutils-attested abbreviation for "propriétaire"; retained here
 # for consistency with the corpus. Full form "PROPRIÉTAIRE:GROUPE" exceeds column brevity target.
 # 13 characters — slightly over ≤8 target, but inherent to the two-field format.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:259
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1461
 msgid "OWNER:GROUP"
 msgstr "PROPRIO:GROUPE"
 
@@ -71,18 +71,18 @@ msgstr "PROPRIO:GROUPE"
 # Also attested in coreutils: msgid "Size" → msgstr "Taille".
 # "TAILLE" is the unambiguous corpus-mandated translation.
 # 6 characters — within the ≤8 target.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:260
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1462
 msgid "SIZE"
 msgstr "TAILLE"
 
 # TRANSLATOR: Column header for file last-modification timestamp (mtime).
-# No exact match for "MODIFIED" or "MODIFIED" found in the corpus.
+# No exact match for "MODIFIED" found in the corpus.
 # tar corpus maps "DATE" → "DATE" (not useful). The closest applicable term in
 # francophone technical usage is "MODIFIÉ" (past participle, meaning "last modified").
 # This is consistent with ANSSI and standard POSIX French documentation.
 # Recorded as UMRS decision in vocabulary-fr_CA.md.
 # 7 characters — within the ≤8 target.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:261
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1463
 msgid "MODIFIED"
 msgstr "MODIFIÉ"
 
@@ -90,7 +90,7 @@ msgstr "MODIFIÉ"
 # Corpus match (coreutils, who.c; tar, tar.c/genfile.c): msgid "NAME" → msgstr "NOM"
 # "NOM" is the unambiguous corpus-mandated translation.
 # 3 characters — well within the ≤8 target.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:262
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1464
 msgid "NAME"
 msgstr "NOM"
 
@@ -99,6 +99,6 @@ msgstr "NOM"
 # to match the source string convention (e.g., <restricted>, <inconnu>).
 # Corpus match (bash, builtins/common.c): msgid "restricted" → msgstr "restreint"
 # Applying corpus term in angle-bracket placeholder format: <restreint>.
-#: components/rusty-gadgets/umrs-ls/src/main.rs:467
+#: components/rusty-gadgets/umrs-ls/src/main.rs:1656
 msgid "<restricted>"
 msgstr "<restreint>"

@@ -38,6 +38,7 @@
 
 use std::time::Duration;
 
+use clap::Parser;
 use crossterm::event::{self, Event};
 use umrs_core::i18n;
 
@@ -1748,6 +1749,48 @@ fn handle_key_action(
 }
 
 // ---------------------------------------------------------------------------
+// CLI argument definition
+// ---------------------------------------------------------------------------
+
+/// OS detection audit card — displays platform identity, kernel security
+/// posture, and label trust as an interactive TUI card.
+///
+/// Three tabs present the data:
+/// - **OS Information**: os-release fields, platform identity, boot ID.
+/// - **Kernel Security**: live kernel security posture indicators, FIPS state.
+/// - **Trust / Evidence**: label trust, confidence tier, evidence chain.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**: Component inventory via platform identity.
+/// - **NIST SP 800-53 SI-7**: Software integrity via label trust / T4 gate.
+/// - **NIST SP 800-53 SI-10**: clap validates all arguments at entry, rejecting
+///   unknown flags before any kernel I/O occurs.
+#[derive(Parser)]
+#[command(name = "umrs-uname", version, about, long_about = None)]
+struct Args {
+    /// Emit machine-readable JSON output instead of the interactive TUI.
+    ///
+    /// JSON output support is reserved for a future implementation phase.
+    #[arg(long)]
+    json: bool,
+
+    /// Force plain-text CLI output instead of the interactive TUI.
+    ///
+    /// CLI text output support is reserved for a future implementation phase.
+    #[arg(long)]
+    cli: bool,
+
+    /// Show step-by-step progress on stderr.
+    ///
+    /// Narrates detection pipeline phases, posture collection counts, and
+    /// trust-gate results so operators can diagnose issues without enabling
+    /// debug logging. NIST SP 800-53 SI-11.
+    #[arg(long, short)]
+    verbose: bool,
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
 // ---------------------------------------------------------------------------
 
@@ -1758,6 +1801,33 @@ fn main() {
     // is found — no error surfaced to the user.
     i18n::init("umrs-uname");
 
+    // ── CLI arguments ─────────────────────────────────────────────────────
+    // Parse before logging init so --help / --version exit cleanly without
+    // journald noise. NIST SP 800-53 SI-10 — all arguments validated here.
+    let args = Args::parse();
+
+    // Enable verbose progress output to stderr when --verbose / -v is passed.
+    // All verbose output goes to stderr so it does not interfere with future
+    // --json or piped stdout modes. NIST SP 800-53 SI-11.
+    let verbose = args.verbose;
+    macro_rules! verbose {
+        ($($arg:tt)*) => {
+            if verbose {
+                eprintln!("  [umrs-uname] {}", format_args!($($arg)*));
+            }
+        };
+    }
+
+    // Handle reserved future modes — emit informational message and exit.
+    if args.json {
+        eprintln!("[INFO] --json output is not yet implemented for umrs-uname");
+        std::process::exit(0);
+    }
+    if args.cli {
+        eprintln!("[INFO] --cli output is not yet implemented for umrs-uname");
+        std::process::exit(0);
+    }
+
     // ── Logging ──────────────────────────────────────────────────────────
     // Best-effort journald logger. Failures are silently ignored — a TUI
     // should not write to stderr (would corrupt the terminal state).
@@ -1766,6 +1836,8 @@ fn main() {
         let _ = logger.install();
         log::set_max_level(log::LevelFilter::Info);
     }
+
+    verbose!("Starting OS detection pipeline");
 
     // ── Header context ───────────────────────────────────────────────────
     // Build before detection so that live security indicators (lockdown mode,
@@ -1785,26 +1857,39 @@ fn main() {
     // Used exclusively to populate the Kernel Security tab.
     //
     // NIST SP 800-53 CA-7: Continuous Monitoring — posture collected at startup.
+    verbose!("Collecting kernel security posture snapshot");
     let snap = PostureSnapshot::collect();
     log::info!(
         "posture snapshot: {}/{} indicators readable",
         snap.readable_count(),
         snap.reports.len()
     );
+    verbose!(
+        "Posture snapshot: {}/{} indicators readable",
+        snap.readable_count(),
+        snap.reports.len()
+    );
 
     // ── Detection ────────────────────────────────────────────────────────
+    verbose!("Running OS detection pipeline");
     let app: OsDetectApp = match OsDetector::default().detect() {
         Ok(result) => {
             log::info!("OS detection succeeded: {:?}", result.confidence.level());
+            verbose!(
+                "OS detection succeeded: trust level {:?}",
+                result.confidence.level()
+            );
             // Populate os_name from the detection result now that it is available.
             ctx.os_name = os_name_from_release(result.os_release.as_ref());
             OsDetectApp::from_result(&result, &ctx, &snap)
         }
         Err(ref e) => {
             log::warn!("OS detection hard-gate failure: {e}");
+            verbose!("OS detection hard-gate failure: {e}");
             OsDetectApp::from_error(e, &ctx, &snap)
         }
     };
+    verbose!("Launching TUI");
 
     // ── UI state ─────────────────────────────────────────────────────────
     let mut state = AuditCardState::new(app.tabs().len());

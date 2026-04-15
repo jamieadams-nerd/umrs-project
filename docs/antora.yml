@@ -12,6 +12,11 @@ nav:
   # - modules/deployment/nav.adoc
   # - modules/devel/nav.adoc
   - modules/patterns/nav.adoc
+  - modules/umrs-c2pa/nav.adoc
+  - modules/umrs-label/nav.adoc
+  - modules/umrs-ls/nav.adoc
+  - modules/umrs-stat/nav.adoc
+  - modules/umrs-uname/nav.adoc
   # - modules/umrs-tools/nav.adoc
   # - modules/operations/nav.adoc
   # - modules/logging-audit/nav.adoc

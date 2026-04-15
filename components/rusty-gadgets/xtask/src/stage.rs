@@ -26,19 +26,35 @@
 //!   config/         ← merged config files from all crates (subdirs preserved)
 //!   share/
 //!     man/
-//!       man1/       ← English man pages compiled from <crate>/man/*.1.adoc
-//!       fr_CA/
-//!         man1/     ← Canadian French man pages from <crate>/man/fr_CA/*.1.adoc
+//!       man1/       ← English man pages copied from <crate>/docs/*.1
+//!       fr/
+//!         man1/     ← Canadian French man pages from <crate>/docs/fr/*.1
+//!     locale/
+//!       <locale>/
+//!         LC_MESSAGES/
+//!                   ← compiled gettext catalogs copied from
+//!                     <crate>/locale/<locale>/LC_MESSAGES/*.mo
 //! ```
 //!
 //! ## Man page phase
 //!
-//! [`stage_man_pages`] runs as the final phase, after config staging.  It
-//! delegates to `make man-pages` in the workspace root, which discovers all
-//! `*/man/*.1.adoc` and `*/man/fr_CA/*.1.adoc` sources across crates and
-//! compiles them with `asciidoctor -b manpage`.  If `asciidoctor` is absent
-//! from `PATH`, the phase emits a warning and skips rather than aborting the
-//! pipeline — man pages are a documentation artifact, not a build product.
+//! [`stage_man_pages`] runs after config staging. It sweeps each binary crate
+//! for pre-built troff sources at `<crate>/docs/*.1` (English) and
+//! `<crate>/docs/fr/*.1` (Canadian French) and copies them into the staging
+//! layout. Man pages are authored and checked in as troff; no compilation
+//! step runs at stage time. Crates without docs emit no output and no error.
+//!
+//! ## Locale phase
+//!
+//! [`stage_locales`] sweeps each binary crate for compiled gettext catalogs
+//! at `<crate>/locale/<locale>/LC_MESSAGES/*.mo` and copies each into the
+//! matching staging path. The locale set is discovered at stage time from
+//! the filesystem — adding a new locale requires no code change.
+//!
+//! Man pages and `.mo` catalogs are independent artifact classes with
+//! different owners (documentation vs. translation). Staging does not
+//! require both to be present for a given crate; each is staged if it
+//! exists and skipped if it does not.
 //!
 //! ## Compliance
 //!
@@ -186,9 +202,7 @@ fn stage_binaries(workspace_root: &Path, release: bool) -> Result<()> {
     if !target_dir.exists() {
         // build_workspace() should have created this; reaching here means the
         // build succeeded but produced no target directory — treat as fatal.
-        bail!(
-            "target/{profile}/ not found after build — workspace may have no binary targets"
-        );
+        bail!("target/{profile}/ not found after build — workspace may have no binary targets");
     }
 
     let staging_bin = workspace_root.join("staging").join("bin");
@@ -394,78 +408,244 @@ fn stage_configs(workspace_root: &Path) -> Result<()> {
     Ok(())
 }
 
-/// Compiles AsciiDoc man page sources across all crates into
+/// Binary crates that may carry man pages and compiled locale catalogs.
+///
+/// Both artifact classes are optional per-crate: a crate with no `docs/*.1`
+/// files contributes no man pages; a crate with no populated
+/// `locale/<locale>/LC_MESSAGES/*.mo` contributes no catalogs.
+///
+/// Paths are relative to the workspace root.
+const DOC_CRATES: &[&str] = &["umrs-c2pa", "umrs-label", "umrs-ls", "umrs-stat", "umrs-uname"];
+
+/// Copies pre-built troff man pages from each binary crate into
 /// `staging/share/man/`.
 ///
-/// Delegates to `make man-pages` in the workspace root. That target discovers
-/// all `*/man/*.1.adoc` (English) and `*/man/fr_CA/*.1.adoc` (Canadian French)
-/// sources and compiles each with `asciidoctor -b manpage`.
+/// ## Source discovery
 ///
-/// ## Soft failure policy
+/// For each crate listed in [`DOC_CRATES`]:
 ///
-/// If `asciidoctor` is not installed, `make man-pages` exits with code 3 and
-/// emits a clear diagnostic. This function treats that outcome as a warning
-/// rather than a hard failure: the binary and config artifacts are more
-/// critical than documentation at the build boundary, and an absent
-/// `asciidoctor` on a developer workstation should not block a staging run.
+/// - English sources:  `<crate>/docs/*.1`
+/// - Canadian French:  `<crate>/docs/fr/*.1`
 ///
-/// CI and pre-release builds must install `asciidoctor` before staging.
-/// Missing man pages in a release bundle are a compliance gap under
-/// `NIST SP 800-53 SA-22`.
+/// Files matching these globs are assumed to be finished groff/troff man
+/// pages (as authored by Simone and committed to the tree). They are copied
+/// verbatim into `staging/share/man/man1/` and `staging/share/man/fr/man1/`
+/// respectively. No compilation runs at stage time.
+///
+/// ## Soft-failure policy
+///
+/// A crate without a `docs/` directory or without any `*.1` file is not an
+/// error. Man pages are authored asynchronously by the documentation team
+/// and not every crate will have them on every release.
+///
+/// ## Coupling with locale catalogs
+///
+/// Man pages and compiled gettext catalogs are independent artifact classes
+/// produced by different owners. Staging does NOT require a crate with a
+/// man page to also ship a `.mo` for each declared locale, and vice versa.
+/// Decoupling prevents the documentation pipeline from stalling whenever a
+/// translator is mid-pass.
 ///
 /// ## Compliance
 ///
-/// - `NIST SP 800-53 SA-22` — Unsupported System Components: man pages staged
-///   here are the operator-facing documentation artifact for each installed
-///   binary.
+/// - `NIST SP 800-53 SA-22` — Unsupported System Components: man pages are
+///   the operator-facing documentation artifact for each installed binary.
 /// - `NIST SP 800-53 CM-2` — Baseline Configuration: man pages are part of
 ///   the auditable deployment artifact set produced before IMA signing.
+/// - `NIST SP 800-53 CM-8` — Component Inventory: [`DOC_CRATES`] declares
+///   which crates contribute documentation artifacts.
 fn stage_man_pages(workspace_root: &Path) -> Result<()> {
-    let mut cmd = Command::new("make");
-    cmd.arg("man-pages").current_dir(workspace_root);
+    let en_dst = workspace_root.join("staging").join("share").join("man").join("man1");
+    let fr_dst = workspace_root.join("staging").join("share").join("man").join("fr").join("man1");
 
-    eprintln!("[stage] building man pages via make man-pages");
+    let mut total = 0usize;
 
-    // Use a spawned child so we can inspect the exit code and apply the
-    // soft-failure policy without crate::run_cmd()'s hard bail!().
-    let status = cmd
-        .stdin(std::process::Stdio::inherit())
-        .stdout(std::process::Stdio::inherit())
-        .stderr(std::process::Stdio::inherit())
-        .status();
-
-    match status {
-        Ok(s) if s.success() => {
-            eprintln!("[stage] man pages staged → staging/share/man/");
-            Ok(())
+    for &crate_rel in DOC_CRATES {
+        let docs_dir = workspace_root.join(crate_rel).join("docs");
+        if !docs_dir.is_dir() {
+            continue;
         }
-        Ok(s) => {
-            // Exit code 3 from make man-pages means asciidoctor is absent.
-            // Any other non-zero code is a real build failure.
-            let code = s.code().unwrap_or(1);
-            if code == 3 {
+
+        total = total.saturating_add(copy_troff_pages(&docs_dir, &en_dst, "man1")?);
+
+        let fr_dir = docs_dir.join("fr");
+        if fr_dir.is_dir() {
+            total = total.saturating_add(copy_troff_pages(&fr_dir, &fr_dst, "fr/man1")?);
+        }
+    }
+
+    if total == 0 {
+        eprintln!("[stage] no man pages found in any crate — skipping");
+    } else {
+        eprintln!("[stage] man pages staged → staging/share/man/ ({total} page(s))");
+    }
+
+    Ok(())
+}
+
+/// Copies every `*.1` file directly under `src_dir` (non-recursive) into
+/// `dst_dir`. Returns the number of pages copied.
+///
+/// Non-regular entries and files that do not end in `.1` are skipped
+/// silently. The destination is created if it does not exist.
+fn copy_troff_pages(src_dir: &Path, dst_dir: &Path, label: &str) -> Result<usize> {
+    let mut entries: Vec<_> = fs::read_dir(src_dir)
+        .with_context(|| format!("reading {}", src_dir.display()))?
+        .filter_map(std::result::Result::ok)
+        .collect();
+    entries.sort_by_key(std::fs::DirEntry::file_name);
+
+    let mut count = 0usize;
+    let mut created_dst = false;
+
+    for entry in entries {
+        let path = entry.path();
+
+        // Only regular files ending in .1 are staged as man pages.
+        let meta = match path.metadata() {
+            Ok(m) => m,
+            Err(_) => continue,
+        };
+        if !meta.is_file() {
+            continue;
+        }
+        if path.extension().and_then(|e| e.to_str()) != Some("1") {
+            continue;
+        }
+
+        if !created_dst {
+            fs::create_dir_all(dst_dir)
+                .with_context(|| format!("creating {}", dst_dir.display()))?;
+            created_dst = true;
+        }
+
+        let filename = match path.file_name() {
+            Some(n) => n,
+            None => continue,
+        };
+        let dst = dst_dir.join(filename);
+        fs::copy(&path, &dst)
+            .with_context(|| format!("copying {} to {}", path.display(), dst.display()))?;
+        count = count.saturating_add(1);
+        eprintln!("[stage] man ({label}): {}", filename.to_string_lossy());
+    }
+
+    Ok(count)
+}
+
+/// Copies compiled gettext catalogs from each binary crate into
+/// `staging/share/locale/<locale>/LC_MESSAGES/`.
+///
+/// ## Source discovery
+///
+/// For each crate listed in [`DOC_CRATES`], the set of locales is discovered
+/// at stage time by listing immediate subdirectories of `<crate>/locale/`.
+/// For each such locale, every `*.mo` file under `LC_MESSAGES/` is copied
+/// into `staging/share/locale/<locale>/LC_MESSAGES/`.
+///
+/// This means adding a new locale is purely a filesystem operation — no
+/// change to this code is required to stage it.
+///
+/// ## Empty catalogs are not errors
+///
+/// An empty `LC_MESSAGES/` directory is skipped silently. A missing `locale/`
+/// directory is skipped silently. The pipeline continues.
+///
+/// ## Filename collisions
+///
+/// Two crates compiling the same `<domain>.mo` filename into the same locale
+/// would collide in the staging layout. Today each crate uses a distinct
+/// domain name matching its binary name (e.g., `umrs-c2pa.mo`), so no
+/// collision is possible. If that convention ever changes, this function
+/// will overwrite silently — documented here so the symptom is understood.
+///
+/// ## Compliance
+///
+/// - `NIST SP 800-53 CM-2` — Baseline Configuration: compiled catalogs are
+///   part of the auditable deployment artifact set.
+/// - `NIST SP 800-53 CM-8` — Component Inventory: [`DOC_CRATES`] declares
+///   which crates contribute localization artifacts.
+fn stage_locales(workspace_root: &Path) -> Result<()> {
+    let locale_root = workspace_root.join("staging").join("share").join("locale");
+    let mut total = 0usize;
+
+    for &crate_rel in DOC_CRATES {
+        let crate_locale = workspace_root.join(crate_rel).join("locale");
+        if !crate_locale.is_dir() {
+            continue;
+        }
+
+        let locale_dirs = fs::read_dir(&crate_locale)
+            .with_context(|| format!("reading {}", crate_locale.display()))?;
+
+        for locale_entry in locale_dirs {
+            let locale_entry = locale_entry
+                .with_context(|| format!("reading entry in {}", crate_locale.display()))?;
+            let locale_path = locale_entry.path();
+            let meta = match locale_path.metadata() {
+                Ok(m) => m,
+                Err(_) => continue,
+            };
+            if !meta.is_dir() {
+                continue;
+            }
+
+            let locale_name = match locale_entry.file_name().into_string() {
+                Ok(s) => s,
+                Err(_) => continue,
+            };
+
+            let src_lc = locale_path.join("LC_MESSAGES");
+            if !src_lc.is_dir() {
+                continue;
+            }
+
+            let dst_lc = locale_root.join(&locale_name).join("LC_MESSAGES");
+
+            for mo_entry in
+                fs::read_dir(&src_lc).with_context(|| format!("reading {}", src_lc.display()))?
+            {
+                let mo_entry =
+                    mo_entry.with_context(|| format!("reading entry in {}", src_lc.display()))?;
+                let mo_path = mo_entry.path();
+                let mo_meta = match mo_path.metadata() {
+                    Ok(m) => m,
+                    Err(_) => continue,
+                };
+                if !mo_meta.is_file() {
+                    continue;
+                }
+                if mo_path.extension().and_then(|e| e.to_str()) != Some("mo") {
+                    continue;
+                }
+
+                fs::create_dir_all(&dst_lc)
+                    .with_context(|| format!("creating {}", dst_lc.display()))?;
+
+                let filename = match mo_path.file_name() {
+                    Some(n) => n,
+                    None => continue,
+                };
+                let dst = dst_lc.join(filename);
+                fs::copy(&mo_path, &dst).with_context(|| {
+                    format!("copying {} to {}", mo_path.display(), dst.display())
+                })?;
+                total = total.saturating_add(1);
                 eprintln!(
-                    "[stage] WARNING: asciidoctor not found — man pages were not compiled. \
-                     Install rubygem-asciidoctor (RHEL 10) or asciidoctor (Ubuntu) \
-                     before a release build. Missing man pages violate NIST SP 800-53 SA-22."
-                );
-                Ok(())
-            } else {
-                anyhow::bail!(
-                    "make man-pages failed with exit code {code} — \
-                     fix asciidoctor errors before staging"
+                    "[stage] locale ({locale_name}): {}",
+                    filename.to_string_lossy()
                 );
             }
         }
-        Err(e) => {
-            // make itself was not found — emit a warning and continue.
-            eprintln!(
-                "[stage] WARNING: could not invoke make ({e}) — \
-                 man pages skipped. Ensure make is installed."
-            );
-            Ok(())
-        }
     }
+
+    if total == 0 {
+        eprintln!("[stage] no compiled .mo catalogs found in any crate — skipping");
+    } else {
+        eprintln!("[stage] locale catalogs staged → staging/share/locale/ ({total} catalog(s))");
+    }
+
+    Ok(())
 }
 
 /// Builds the full workspace before staging.
@@ -490,7 +670,11 @@ fn build_workspace(release: bool) -> Result<()> {
     }
     eprintln!(
         "[stage] building workspace (profile: {})",
-        if release { "release" } else { "debug" }
+        if release {
+            "release"
+        } else {
+            "debug"
+        }
     );
     crate::run_cmd(&mut cmd)
 }
@@ -538,8 +722,10 @@ fn verify_staged_binaries(workspace_root: &Path) -> Result<()> {
 /// 3. Verifies every name in [`EXPECTED_BINARIES`] landed in `staging/bin/`.
 /// 4. Copies scripts from `scripts/` (if present) to `staging/bin/`.
 /// 5. Copies `config/` trees from all listed crates to `staging/config/`.
-/// 6. Compiles AsciiDoc man pages to `staging/share/man/` (soft failure if
-///    `asciidoctor` is absent — see [`stage_man_pages`]).
+/// 6. Copies pre-built troff man pages from `<crate>/docs/*.1` and
+///    `<crate>/docs/fr/*.1` into `staging/share/man/` (see [`stage_man_pages`]).
+/// 7. Copies compiled gettext catalogs from `<crate>/locale/<locale>/LC_MESSAGES/*.mo`
+///    into `staging/share/locale/` (see [`stage_locales`]).
 ///
 /// On `--release`, reads from `target/release/`; otherwise from `target/debug/`.
 /// The build step is mandatory and cannot be skipped.
@@ -557,6 +743,7 @@ pub fn run(release: bool) -> Result<()> {
     stage_scripts(&root)?;
     stage_configs(&root)?;
     stage_man_pages(&root)?;
+    stage_locales(&root)?;
 
     eprintln!("[stage] staging complete → {}/staging/", root.display());
     Ok(())

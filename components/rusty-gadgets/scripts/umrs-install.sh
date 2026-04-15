@@ -232,7 +232,8 @@ create_layout() {
         "${PREFIX}/bin"
         "${PREFIX}/etc"
         "${PREFIX}/share/man/man1"
-        "${PREFIX}/share/man/fr_CA/man1"
+        "${PREFIX}/share/man/fr/man1"
+        "${PREFIX}/share/locale"
         "${PREFIX}/share/templates"
         "${PREFIX}/share/umrs"
         "${PREFIX}/var/lib"
@@ -317,14 +318,35 @@ place_files() {
                     "${m}" "${PREFIX}/share/man/man1/$(basename -- "${m}")" || return 3
         done
     fi
-    if [[ -d "${STAGING_DIR}/share/man/fr_CA/man1" ]]; then
+    if [[ -d "${STAGING_DIR}/share/man/fr/man1" ]]; then
         local m
-        for m in "${STAGING_DIR}"/share/man/fr_CA/man1/*; do
+        for m in "${STAGING_DIR}"/share/man/fr/man1/*; do
             [[ -f "${m}" ]] || continue
-            sudo_or_echo "install fr_CA man $(basename -- "${m}")" \
+            sudo_or_echo "install fr man $(basename -- "${m}")" \
                 install -m 0644 -o root -g root -- \
-                    "${m}" "${PREFIX}/share/man/fr_CA/man1/$(basename -- "${m}")" || return 3
+                    "${m}" "${PREFIX}/share/man/fr/man1/$(basename -- "${m}")" || return 3
         done
+    fi
+
+    # Compiled gettext catalogs -- share/locale/<locale>/LC_MESSAGES/<domain>.mo.
+    # The locale set is discovered at install time by listing subdirectories of
+    # staging/share/locale/; no hardcoded locale list is required.
+    if [[ -d "${STAGING_DIR}/share/locale" ]]; then
+        local mo rel dst dst_dir
+        while IFS= read -r -d '' mo; do
+            rel="${mo#"${STAGING_DIR}"/share/locale/}"
+            dst="${PREFIX}/share/locale/${rel}"
+            dst_dir=$(dirname -- "${dst}")
+            sudo_or_echo "mkdir ${dst_dir}" \
+                mkdir -p -- "${dst_dir}" || return 3
+            sudo_or_echo "chown root:root ${dst_dir}" \
+                chown root:root "${dst_dir}" || return 3
+            sudo_or_echo "chmod 0755 ${dst_dir}" \
+                chmod 0755 "${dst_dir}" || return 3
+            sudo_or_echo "install locale/${rel}" \
+                install -m 0644 -o root -g root -- \
+                    "${mo}" "${dst}" || return 3
+        done < <(find "${STAGING_DIR}/share/locale" -type f -name '*.mo' -print0)
     fi
 
     _syslog "files placed under ${PREFIX}"

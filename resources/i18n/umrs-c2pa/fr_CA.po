@@ -1,0 +1,693 @@
+# French translation of umrs-c2pa
+# This file is distributed under the same license as the UMRS Project
+# MIT License
+# Copyright (c) 2025 Jamie Adams (a.k.a. Imodium Operator)
+#
+# Initial translation provided by a specialized Claude Code "umrs-translator".
+# The agent was assisted by a technical corpus derived from various GNU
+# tools via the Translation Project (https://translationproject.org).
+#
+# NOTE: This translation is AI-generated and may contain nuances
+# requiring human verification.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: umrs-c2pa\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-15 00:00+0000\n"
+"PO-Revision-Date: 2026-04-15 00:00+0000\n"
+"Last-Translator: umrs-translator (Claude Code)\n"
+"Language-Team: fr_CA\n"
+"Language: fr_CA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+# ---------------------------------------------------------------------------
+# Configuration loading
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Error prefix followed by a file path.
+# "Impossible de charger" — coreutils corpus: "impossible de lire/ouvrir/charger" pattern.
+# "config" kept as-is (universally understood technical term, no Termium entry for config file).
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:181
+msgid "Failed to load config:"
+msgstr "Impossible de charger la configuration :"
+
+# TRANSLATOR: Error prefix followed by a path. Displayed when no config file is found.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:188
+msgid "No config file at"
+msgstr "Aucun fichier de configuration à"
+
+# TRANSLATOR: Appended to the "No config file at <path>" message.
+# "par défaut" — corpus (coreutils, bash): standard fr_CA for "defaults".
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:189
+msgid "using defaults"
+msgstr "utilisation des paramètres par défaut"
+
+# ---------------------------------------------------------------------------
+# File operation errors
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Error prefix. "Fichier introuvable" — coreutils corpus attests this pattern.
+# Non-breaking space before colon (French typography rule).
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:284
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:197
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:289
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:471
+msgid "File not found:"
+msgstr "Fichier introuvable :"
+
+# TRANSLATOR: Error prefix + file path. "Impossible de hacher" — UMRS decision.
+# "hacher" for hashing: ANSSI and GDT use "hachage" for hash; verb form is "hacher".
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:310
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:312
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:323
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:325
+msgid "Failed to hash file:"
+msgstr "Impossible de calculer le condensé du fichier :"
+
+# TRANSLATOR: Error prefix + file path.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:340
+msgid "Ingest failed for:"
+msgstr "Échec de l'ingestion pour :"
+
+# TRANSLATOR: Error message (no path follows).
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:352
+msgid "Failed to read chain from signed output"
+msgstr "Impossible de lire la chaîne de possession depuis la sortie signée"
+
+# TRANSLATOR: Error prefix + file path.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:381
+msgid "Failed to read chain from:"
+msgstr "Impossible de lire la chaîne de possession depuis :"
+
+# TRANSLATOR: Error prefix + path.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:435
+msgid "Failed to write config to:"
+msgstr "Impossible d'écrire la configuration vers :"
+
+# TRANSLATOR: Error prefix + directory path.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:561
+msgid "Failed to create directory:"
+msgstr "Impossible de créer le répertoire :"
+
+# TRANSLATOR: Error message — credential generation failure.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:568
+msgid "Credential generation failed"
+msgstr "Échec de la génération des justificatifs"
+
+# TRANSLATOR: Error fragment — file path follows. E.g. "signing.pem already exists at /path".
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:583
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:592
+msgid "already exists at"
+msgstr "existe déjà à"
+
+# TRANSLATOR: Action instruction after "already exists" error.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:585
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:594
+msgid "Remove it first or choose a different --output directory."
+msgstr "Supprimez-le d'abord ou choisissez un répertoire --output différent."
+
+# TRANSLATOR: Error prefix + file path. "Impossible d'écrire" — coreutils corpus pattern.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:599
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:635
+msgid "Failed to write"
+msgstr "Impossible d'écrire"
+
+# TRANSLATOR: Error prefix + file path (key file creation failure).
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:620
+msgid "Failed to create key file:"
+msgstr "Impossible de créer le fichier de clé :"
+
+# TRANSLATOR: Error prefix + file path (key write failure).
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:627
+msgid "Failed to write key to:"
+msgstr "Impossible d'écrire la clé vers :"
+
+# ---------------------------------------------------------------------------
+# Verbose progress messages
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Verbose progress message. "manifeste" is established for C2PA manifest.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:298
+msgid "Reading raw manifest store as JSON..."
+msgstr "Lecture du dépôt de manifestes bruts en JSON..."
+
+# TRANSLATOR: Error prefix. "manifeste" or "lecture" error.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:301
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:316
+msgid "No manifest or read error:"
+msgstr "Aucun manifeste ou erreur de lecture :"
+
+# TRANSLATOR: SHA-256/SHA-384 are specification vocabulary — kept in English in all locales.
+# "condensés" — Termium / ANSSI / ISO: "condensé numérique" for cryptographic hash.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:308
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:321
+msgid "Computing SHA-256 and SHA-384 digests..."
+msgstr "Calcul des condensés SHA-256 et SHA-384..."
+
+# TRANSLATOR: Verbose progress — reading chain as JSON.
+# "chaîne de possession" — UMRS decision for "chain of custody" (see vocabulary-fr_CA.md).
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:313
+msgid "Reading chain of custody as JSON..."
+msgstr "Lecture de la chaîne de possession en JSON..."
+
+# TRANSLATOR: Verbose progress — ingest/signing mode.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:332
+msgid "Signing mode — ingesting file into UMRS chain of custody..."
+msgstr "Mode signature — ingestion du fichier dans la chaîne de possession UMRS..."
+
+# TRANSLATOR: Verbose label + marking string follows.
+# "cote de sécurité" — Termium Plus (public administration): security marking.
+# FLAG FOR HENRI: "cote de sécurité" (Termium) vs "marquage de sécurité" (OQLF).
+# Termium takes precedence; flagged for policy review.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:335
+msgid "Security marking:"
+msgstr "Cote de sécurité :"
+
+# TRANSLATOR: Success message + output path follows.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:343
+msgid "Signed output written to:"
+msgstr "Sortie signée écrite vers :"
+
+# TRANSLATOR: Verbose progress — reading chain from signed output.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:349
+msgid "Reading chain of custody from signed output..."
+msgstr "Lecture de la chaîne de possession depuis la sortie signée..."
+
+# TRANSLATOR: Verbose progress — read-only inspection mode.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:374
+msgid "Read-only mode — inspecting existing chain of custody..."
+msgstr "Mode lecture seule — inspection de la chaîne de possession existante..."
+
+# TRANSLATOR: Verbose progress — preflight validation.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:405
+msgid "Running configuration preflight checks..."
+msgstr "Exécution des vérifications préliminaires de configuration..."
+
+# TRANSLATOR: Success message + path follows.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:441
+msgid "Config template written to:"
+msgstr "Modèle de configuration écrit vers :"
+
+# TRANSLATOR: Progress — generating credentials in a directory.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:552
+msgid "Generating credentials in:"
+msgstr "Génération des justificatifs dans :"
+
+# ---------------------------------------------------------------------------
+# Credential generation output
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Success message — CSR generated. CSR is a well-known acronym, kept English.
+# "clé privée" — Termium Plus (information technology): private key.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:649
+msgid "Generated CSR + private key"
+msgstr "CSR + clé privée générés"
+
+# TRANSLATOR: Success message — self-signed cert generated.
+# "certificat auto-signé" — standard fr_CA PKI term.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:653
+msgid "Generated self-signed certificate + private key"
+msgstr "Certificat auto-signé + clé privée générés"
+
+# TRANSLATOR: Label for the algorithm field (e.g., es256).
+# Algorithm identifiers are specification vocabulary — not translated.
+# "Algorithme" — Termium Plus (information technology): algorithm.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:658
+msgid "Algorithm"
+msgstr "Algorithme"
+
+# TRANSLATOR: X.509 Subject field label.
+# "Sujet" — Termium Plus (information technology): Subject.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:665
+msgid "Subject"
+msgstr "Sujet"
+
+# TRANSLATOR: Certificate validity period label.
+# "Validité" — standard fr_CA PKI term; no Termium entry found; OQLF attests "validité".
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:676
+msgid "Validity"
+msgstr "Validité"
+
+# TRANSLATOR: Instruction for CSR workflows.
+# "Autorité de certification" — Termium Plus: certificate authority / certification authority.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:684
+msgid "Submit the CSR to your Certificate Authority for signing."
+msgstr "Soumettez le CSR à votre autorité de certification pour signature."
+
+# TRANSLATOR: Security advisory about private key handling.
+# "clé privée" — Termium Plus: private key. Em dash kept as literal character.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:688
+msgid "Keep the private key safe — it cannot be regenerated."
+msgstr "Conservez la clé privée en lieu sûr — elle ne peut pas être régénérée."
+
+# TRANSLATOR: Note — UNVERIFIED is C2PA TrustStatus specification vocabulary — kept English.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:693
+msgid "Self-signed certificates will show as UNVERIFIED by external validators."
+msgstr "Les certificats auto-signés s'affichent comme UNVERIFIED auprès des validateurs externes."
+
+# TRANSLATOR: Instruction fragment — CA submission guidance.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:697
+msgid "For trusted status, submit a CSR to a recognized CA"
+msgstr "Pour obtenir le statut de confiance, soumettez un CSR à une AC reconnue"
+
+# TRANSLATOR: Continuation of "For trusted status..." instruction.
+# "ancres de confiance" — UMRS decision; "trust anchor" not in Termium; see vocabulary-fr_CA.md.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:701
+msgid "or add your org's root to the trust anchors."
+msgstr "ou ajoutez la racine de votre organisation aux ancres de confiance."
+
+# TRANSLATOR: Section label for file listing.
+# "Fichiers écrits" — coreutils pattern: "Fichier" → "Fichier".
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:705
+msgid "Files written"
+msgstr "Fichiers écrits"
+
+# TRANSLATOR: Instruction fragment — "Next step — add these to your <filename>".
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:711
+msgid "Next step — add these to your"
+msgstr "Prochaine étape — ajoutez ces entrées à votre"
+
+# TRANSLATOR: Instruction for CSR post-signing step.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:718
+msgid "After your CA signs the CSR, replace signing.csr with the signed cert"
+msgstr "Une fois le CSR signé par votre AC, remplacez signing.csr par le certificat signé"
+
+# TRANSLATOR: Instruction fragment + command follows.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:729
+msgid "Then run:"
+msgstr "Ensuite, exécutez :"
+
+# TRANSLATOR: Verbose progress — credential validation starting.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:739
+msgid "Validating configured signing credentials..."
+msgstr "Validation des justificatifs de signature configurés..."
+
+# TRANSLATOR: Section header for credential validation output.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:747
+msgid "Credential Validation"
+msgstr "Validation des justificatifs"
+
+# TRANSLATOR: Instruction — shown when validation fails, points to generation.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:775
+msgid "To generate new credentials:"
+msgstr "Pour générer de nouveaux justificatifs :"
+
+# TRANSLATOR: Success message — all validation checks passed.
+#: components/rusty-gadgets/umrs-c2pa/src/main.rs:779
+msgid "All checks passed."
+msgstr "Toutes les vérifications ont réussi."
+
+# ---------------------------------------------------------------------------
+# Chain of custody report
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Section title for the chain of custody display.
+# "Chain of Custody" — Termium Plus (information security): "garde".
+# Full bilingual attestation: "custody" → "garde" (Termium). No "chaîne de garde" entry.
+# UMRS decision: "Chaîne de possession" — aligns with Canadian forensics/legal usage.
+# FLAG FOR HENRI: Confirm "Chaîne de possession" vs "Chaîne de garde" for this context.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:60
+msgid "Chain of Custody"
+msgstr "Chaîne de possession"
+
+# TRANSLATOR: SHA-256 and SHA-384 are FIPS/CNSA specification vocabulary — kept English.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:61
+msgid "SHA-256"
+msgstr "SHA-256"
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:62
+msgid "SHA-384"
+msgstr "SHA-384"
+
+# TRANSLATOR: Status message when a file has no C2PA manifest.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:66
+msgid "(no C2PA manifest found)"
+msgstr "(aucun manifeste C2PA trouvé)"
+
+# TRANSLATOR: Trust status description — self-signed cert.
+# TRUSTED/UNVERIFIED/INVALID etc. are C2PA TrustStatus vocabulary — kept English.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:106
+msgid "Self-signed certificate — not issued by a trusted CA"
+msgstr "Certificat auto-signé — non émis par une AC de confiance"
+
+# TRANSLATOR: Status — no trust list configured.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:113
+msgid "No trust list configured — trust could not be evaluated"
+msgstr "Aucune liste de confiance configurée — la confiance n'a pas pu être évaluée"
+
+# TRANSLATOR: Multi-line advisory about certificate rotation.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:131
+msgid ""
+"Certificate rotation mismatch — image signed before trust list certificate "
+"became valid."
+msgstr ""
+"Décalage de rotation de certificat — image signée avant que le certificat "
+"de la liste de confiance ne soit valide."
+
+# TRANSLATOR: Fixed-width padded display labels. Preserve trailing spaces.
+# "Image signée" for "Image signed".
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:134
+msgid "Image signed      :"
+msgstr "Image signée     :"
+
+# TRANSLATOR: "Cert de confiance valide" — trust cert validity date label.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:135
+msgid "Trust cert valid  :"
+msgstr "Cert confiance val:"
+
+# TRANSLATOR: Multi-line advisory — CA rotation guidance.
+# "user_anchors" is a configuration key — kept as-is.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:137
+msgid ""
+"This is likely a CA rotation event, not tampering. To resolve: obtain "
+"images signed after the rotation date, or add the pre-rotation issuing CA "
+"to user_anchors."
+msgstr ""
+"Il s'agit probablement d'une rotation d'AC, non d'une falsification. "
+"Pour résoudre : obtenez des images signées après la date de rotation, "
+"ou ajoutez l'AC émettrice d'avant rotation à user_anchors."
+
+# TRANSLATOR: Multi-line advisory — signer CA not in trust list.
+# "trust_anchors" and "allowed_list" are configuration keys — kept as-is.
+# "liste de confiance" — established fr_CA term for trust list.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:143
+msgid ""
+"Signature is valid but the signer's CA is not in your trust list. \n"
+"\tThis does not mean the file is untrustworthy — the signer may use \n"
+"\ta CA that is not yet in the C2PA official trust list (e.g., OpenAI). \n"
+"\tTo resolve, add the signer's root CA to trust_anchors or allowed_list."
+msgstr ""
+"La signature est valide, mais l'AC du signataire ne figure pas dans votre liste de confiance. \n"
+"\tCela ne signifie pas que le fichier n'est pas fiable — le signataire peut utiliser \n"
+"\tune AC qui ne figure pas encore dans la liste de confiance officielle C2PA (p. ex. OpenAI). \n"
+"\tPour résoudre, ajoutez l'AC racine du signataire à trust_anchors ou allowed_list."
+
+# TRANSLATOR: Fixed-width padded label. "Signé le" — standard fr_CA for "signed at".
+# Preserve trailing spaces to maintain column alignment.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:162
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:168
+msgid "Signed at :"
+msgstr "Signé le  :"
+
+# TRANSLATOR: Status — no timestamp in manifest.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:169
+msgid "no timestamp provided"
+msgstr "aucun horodatage fourni"
+
+# TRANSLATOR: Fixed-width padded label. "Émetteur" — standard fr_CA for certificate issuer.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:178
+msgid "Issuer    :"
+msgstr "Émetteur  :"
+
+# TRANSLATOR: "Alg" = Algorithm abbreviation for display label. Kept brief.
+# Algorithm identifiers (es256, etc.) are specification vocabulary — not translated.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:187
+msgid "Alg       :"
+msgstr "Alg       :"
+
+# TRANSLATOR: "Generator" label — the C2PA claim generator field.
+# "Générateur" — standard fr_CA for generator.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:199
+msgid "Generator :"
+msgstr "Générateur:"
+
+# TRANSLATOR: "Marking" label — security marking field.
+# "Marquage" — OQLF / UMRS vocabulary for marking in context of security labels.
+# "cote de sécurité" is Termium for "security marking" but too long for this padded label.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:205
+msgid "Marking   :"
+msgstr "Marquage  :"
+
+# TRANSLATOR: "Hash consistency" label — padded.
+# "Cohérence des condensés" — UMRS decision; "condensé" attested by Termium (hash algorithm).
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:227
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:233
+msgid "Hash consistency :"
+msgstr "Cohérence condensé :"
+
+# TRANSLATOR: Hash consistency status — file unchanged.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:228
+msgid "file unchanged across all signing events"
+msgstr "fichier inchangé à travers tous les événements de signature"
+
+# TRANSLATOR: Hash consistency status — no prior manifest.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:234
+msgid "no prior manifest (first signature)"
+msgstr "aucun manifeste antérieur (première signature)"
+
+# TRANSLATOR: UMRS-specific display labels (padded).
+# "UMRS" is a proper name — not translated.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:237
+msgid "UMRS action      :"
+msgstr "Action UMRS      :"
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:240
+msgid "UMRS output      :"
+msgstr "Sortie UMRS      :"
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:246
+msgid "UMRS identity    :"
+msgstr "Identité UMRS    :"
+
+# TRANSLATOR: UNTRUSTED is C2PA TrustStatus specification vocabulary — kept English.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:247
+msgid "ephemeral self-signed cert (test mode — UNTRUSTED)"
+msgstr "certificat auto-signé éphémère (mode test — UNTRUSTED)"
+
+# TRANSLATOR: Success message — all preflight checks passed.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:292
+msgid "All checks passed. Configuration is ready."
+msgstr "Toutes les vérifications ont réussi. La configuration est prête."
+
+# TRANSLATOR: Plural forms for check summary with warnings.
+# French: n=0 is singular (0 avertissement), n>1 is plural (2 avertissements).
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:282
+msgid "All checks passed ({} warning). Configuration is ready."
+msgid_plural "All checks passed ({} warnings). Configuration is ready."
+msgstr[0] "Toutes les vérifications ont réussi ({} avertissement). La configuration est prête."
+msgstr[1] "Toutes les vérifications ont réussi ({} avertissements). La configuration est prête."
+
+# TRANSLATOR: Plural forms for check failure summary.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/report.rs:296
+msgid "{} check failed. Configuration is NOT ready."
+msgid_plural "{} checks failed. Configuration is NOT ready."
+msgstr[0] "{} vérification a échoué. La configuration N'EST PAS prête."
+msgstr[1] "{} vérifications ont échoué. La configuration N'EST PAS prête."
+
+# ---------------------------------------------------------------------------
+# Validation messages
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Status when credential check is skipped (missing files).
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:146
+msgid "Skipped — requires both cert and key files to be readable"
+msgstr "Ignoré — les fichiers de certificat et de clé doivent être lisibles"
+
+# TRANSLATOR: Warning about ed25519 on FIPS systems.
+# Algorithm identifiers (es256, es384, es512) are specification vocabulary — kept English.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:166
+msgid ""
+"ed25519 is not reliably available on FIPS-enabled systems. Recommended: "
+"es256, es384, or es512."
+msgstr ""
+"ed25519 n'est pas disponible de façon fiable sur les systèmes FIPS activés. "
+"Recommandé : es256, es384 ou es512."
+
+# TRANSLATOR: Validation error — required field is empty.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:180
+msgid "Field is empty"
+msgstr "Champ vide"
+
+# TRANSLATOR: Error prefix + path or error message follows.
+# "Impossible de lire" — coreutils corpus pattern.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:199
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:291
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:473
+msgid "Cannot read:"
+msgstr "Impossible de lire :"
+
+# TRANSLATOR: Status — PEM file valid. Path follows.
+# "PEM" is a specification acronym — kept as-is.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:208
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:300
+msgid "Valid PEM at"
+msgstr "PEM valide à"
+
+# TRANSLATOR: Error — file is not valid PEM.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:214
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:306
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:497
+msgid "File is not valid PEM:"
+msgstr "Le fichier n'est pas un PEM valide :"
+
+# TRANSLATOR: Security warning — private key file has unsafe permissions.
+# "clé privée" — Termium Plus: private key.
+# "droits" — coreutils corpus: permissions/mode.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:240
+msgid "Private key has unsafe permissions"
+msgstr "La clé privée a des droits non sécurisés"
+
+# TRANSLATOR: Supplementary message with expected mode and remediation command.
+# chmod command is kept as-is (shell command, not translatable).
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:242
+msgid "expected 0600 or 0400. Run: chmod 0600"
+msgstr "attendu 0600 ou 0400. Exécutez : chmod 0600"
+
+# TRANSLATOR: Label for file permissions field.
+# "Droits" — coreutils corpus: consistently translates "permissions" as "droits".
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:257
+msgid "Permissions"
+msgstr "Droits"
+
+# TRANSLATOR: Status value — permissions are secure.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:258
+msgid "secure"
+msgstr "sécurisés"
+
+# TRANSLATOR: Label — private key owner (UID).
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:269
+msgid "Private key owner"
+msgstr "Propriétaire de la clé privée"
+
+# TRANSLATOR: Status value — owner does not match process UID.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:271
+msgid "does not match process"
+msgstr "ne correspond pas au processus"
+
+# TRANSLATOR: Error prefix — cannot stat key file.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:280
+msgid "Cannot stat key file:"
+msgstr "Impossible d'obtenir les informations du fichier de clé :"
+
+# TRANSLATOR: Error fragment — algorithm is not in the allowed set.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:347
+msgid "is not allowed. Use one of:"
+msgstr "n'est pas autorisé. Utilisez l'un de :"
+
+# TRANSLATOR: TSA endpoint status — reachable. URL follows.
+# TSA = Time Stamp Authority — kept as acronym.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:363
+msgid "TSA endpoint reachable:"
+msgstr "Point de terminaison TSA accessible :"
+
+# TRANSLATOR: TSA endpoint status — did not respond. URL and error follow.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:367
+msgid "TSA endpoint did not respond:"
+msgstr "Le point de terminaison TSA n'a pas répondu :"
+
+# TRANSLATOR: Status value — TSA is configured.
+# "configuré" — corpus (coreutils/bash): consistently attested.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:376
+msgid "configured"
+msgstr "configuré"
+
+# TRANSLATOR: Status value — network feature is disabled.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:377
+msgid "but network feature is disabled"
+msgstr "mais la fonctionnalité réseau est désactivée"
+
+# TRANSLATOR: Status value — timestamps will be unsigned.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:378
+msgid "timestamps will be unsigned"
+msgstr "les horodatages ne seront pas signés"
+
+# TRANSLATOR: Status fragment — file exists. Path follows.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:413
+msgid "File exists:"
+msgstr "Fichier présent :"
+
+# TRANSLATOR: Error prefix — cannot stat file/directory.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:425
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:449
+msgid "Cannot stat:"
+msgstr "Impossible d'obtenir les informations de :"
+
+# TRANSLATOR: Status — EKU config file found. Path follows.
+# EKU = Extended Key Usage — kept as acronym.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:437
+msgid "EKU config found:"
+msgstr "Configuration EKU trouvée :"
+
+# TRANSLATOR: Status — OCSP responder is configured.
+# OCSP = Online Certificate Status Protocol — kept as acronym.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:460
+msgid "OCSP responder configured:"
+msgstr "Répondeur OCSP configuré :"
+
+# TRANSLATOR: Developer note — feature not yet implemented.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:461
+msgid "not yet implemented — skeleton only"
+msgstr "pas encore implémenté — squelette seulement"
+
+# TRANSLATOR: Security warning — trust file has world-writable permissions.
+# "(mode)" refers to the Unix file mode (octal).
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:535
+msgid "Trust file is world-writable (mode)"
+msgstr "Le fichier de confiance est accessible en écriture par tous (droits)"
+
+# TRANSLATOR: Explanation of the world-writable risk.
+# "certificats AC" = CA certificates.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:537
+msgid "any local user could inject CA certificates"
+msgstr "tout utilisateur local pourrait injecter des certificats AC"
+
+# TRANSLATOR: Remediation instruction. Shell command kept as-is.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/validate.rs:538
+msgid "Run: chmod o-w"
+msgstr "Exécutez : chmod o-w"
+
+# ---------------------------------------------------------------------------
+# Error types
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Error category prefixes. Each is followed by the specific error message.
+# "E/S" — coreutils corpus: consistently translates "I/O" as "E/S" (entrée/sortie).
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:56
+msgid "IO error:"
+msgstr "Erreur d'E/S :"
+
+# TRANSLATOR: C2PA SDK error prefix.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:57
+msgid "C2PA error:"
+msgstr "Erreur C2PA :"
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:58
+msgid "Config error:"
+msgstr "Erreur de configuration :"
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:59
+msgid "Signing error:"
+msgstr "Erreur de signature :"
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:60
+msgid "Hash error:"
+msgstr "Erreur de condensé :"
+
+# TRANSLATOR: Error fragment — algorithm not in FIPS-safe set.
+# FIPS is a specification acronym — kept as-is.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:65
+msgid "is not in the FIPS-safe allowed set"
+msgstr "ne figure pas dans l'ensemble autorisé compatible FIPS"
+
+# TRANSLATOR: Error — refusing to overwrite a previously signed file. Path follows.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/error.rs:72
+msgid "Refusing to overwrite previously signed file:"
+msgstr "Refus d'écraser le fichier déjà signé :"
+
+# ---------------------------------------------------------------------------
+# Credential config validation
+# ---------------------------------------------------------------------------
+
+# TRANSLATOR: Configuration error — asymmetric credential config.
+# "cert_chain" and "private_key" are configuration keys — kept as-is.
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/creds.rs:239
+msgid "cert_chain is set but private_key is missing"
+msgstr "cert_chain est défini mais private_key est absent"
+
+#: components/rusty-gadgets/umrs-c2pa/src/c2pa/creds.rs:246
+msgid "private_key is set but cert_chain is missing"
+msgstr "private_key est défini mais cert_chain est absent"

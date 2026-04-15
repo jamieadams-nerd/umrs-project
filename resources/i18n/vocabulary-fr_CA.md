@@ -185,3 +185,25 @@ When a term has no established francophone equivalent, retain the English term a
 | credential (PKI signing) | justificatif d'identité de signature | corpus:Termium Plus | Closest Termium Plus match for "credential" in IT security domain. Connotation leans toward identity documents; in C2PA context the credential is a certificate-and-key pair. Henri C-1: defensible, no change required. |
 | trust anchor (PKI) | ancre de confiance | corpus:Termium Plus | Termium Plus standard for PKI trust anchor. |
 | security marking (C2PA manifest field) | marquage de sécurité | corpus:Termium Plus | Termium Plus standard; preferred over "étiquette de sécurité" in CUI/C2PA context to avoid SELinux terminology collision. |
+| IO error (runtime prefix) | Erreur d'E/S | corpus:coreutils | coreutils: "I/O error" → "Erreur d'E/S"; standard POSIX fr_CA rendering. |
+| failed to hash file (C2PA) | Impossible de calculer le condensé du fichier | corpus:Termium Plus + UMRS | "condensé" Termium-attested; "impossible de" is the standard fr_CA negative infinitive construction for operational failure messages. |
+| trust anchors (plural) | ancres de confiance | corpus:Termium Plus | Plural of "ancre de confiance"; Termium Plus standard. |
+| certificate authority | autorité de certification | corpus:Termium Plus | Termium Plus standard for PKI CA; universally attested. |
+| permission (filesystem) | droit | corpus:coreutils | coreutils plural "droits" confirmed; singular "droit" follows the same pattern. |
+
+---
+
+## Audit and Display Terms (umrs-stat)
+
+| English | French (fr_CA) | Source | Notes |
+|---|---|---|---|
+| File Security Audit (tab title) | Audit de sécurité du fichier | UMRS decision | No corpus match; standard fr_CA audit report title form. |
+| Identity (tab name) | Identité | corpus:Termium Plus | Termium Plus "identity" → "identité"; universally attested. |
+| Security (tab name) | Sécurité | corpus:Termium Plus | Termium Plus standard; universally attested. |
+| Observations (tab name) | Observations | corpus:Termium Plus | Direct cognate; Termium Plus attests in audit and security contexts. |
+| Encryption (field label) | Chiffrement | corpus:Termium Plus | Termium Plus "encryption" → "chiffrement"; preferred over "cryptage" in government fr_CA. |
+| Findings (audit count label) | Constats | UMRS decision | No corpus match; ANSSI "constat" for an audit finding; plural "constats". Preferred over "résultats" (too generic) and "conclusions" (implies decision). |
+| Marking (field label in umrs-stat) | Marquage | UMRS decision | Consistent with umrs-ls.po; SELinux context marking column header. |
+| Count (observation count) | Nombre | corpus:coreutils | coreutils: "count" → "nombre"; standard. |
+| Size (file size field) | Taille | corpus:tar + corpus:coreutils | Both corpora: "size" / "SIZE" → "taille" / "TAILLE". |
+| IMA/EVM (field label) | IMA/EVM | spec acronym | Integrity Measurement Architecture / Extended Verification Module; no French equivalent; retained as English specification acronym in all locales. |

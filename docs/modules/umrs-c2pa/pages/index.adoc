@@ -1,0 +1,224 @@
+= umrs-c2pa — Media Provenance and Chain-of-Custody Signing
+:description: Overview of the umrs-c2pa tool: C2PA manifest inspection, ingest signing, \
+    and chain-of-custody management for media assets in UMRS-controlled environments.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 AU-3, AU-9, AU-10, SC-12, SC-13, SI-7
+// FIPS 186-5, C2PA Technical Specification 2.x
+
+`umrs-c2pa` reads and writes C2PA (Coalition for Content Provenance and Authenticity)
+manifests embedded in media files.
+It serves two purposes.
+
+*Inspection* — given any media file, the tool reads the embedded C2PA manifest store
+and displays the chain of custody: every signer in the file's history, the algorithm
+and certificate used, the signing timestamp, and whether each signer's certificate chain
+leads to a recognized trust anchor.
+
+*Ingest signing* — when a file enters a UMRS-controlled boundary, the tool appends a new
+signed manifest entry that records the ingest event.
+If the file already carries a prior chain (e.g., from a camera or an AI image generator),
+that chain is preserved as a C2PA ingredient and the UMRS entry is added on top.
+The original file is never modified; a signed copy is written to a separate output path.
+
+The binary is named `umrs-c2pa`.
+All library logic is in the `umrs_c2pa` crate.
+
+WARNING: `umrs-c2pa` requires a Linux system with systemd.
+The tool initializes journald logging at startup.
+macOS and non-systemd Linux are not supported.
+
+'''
+
+== Configuration and Data Files
+
+`umrs-c2pa` reads the following files at startup and during signing operations.
+Each file's role is described below the diagram.
+
+[mermaid]
+....
+flowchart LR
+    subgraph config["Configuration (TOML)"]
+        TOML["umrs-c2pa.toml\n(default or --config)"]
+    end
+
+    subgraph creds["Signing Credentials"]
+        CERT["cert_chain\n(PEM certificate chain)"]
+        KEY["private_key\n(PEM private key, mode 0600)"]
+    end
+
+    subgraph trust["Trust Anchors"]
+        CA_TRUST["C2PA-TRUST-LIST.pem\n(signing CA trust anchors)"]
+        TSA_TRUST["C2PA-TSA-TRUST-LIST.pem\n(TSA CA trust anchors)"]
+    end
+
+    subgraph media["Media Input"]
+        FILE["media file\n(JPEG, PNG, MP4, ...)"]
+    end
+
+    TOOL["umrs-c2pa"]
+
+    TOML -- "identity.cert_chain path" --> CERT
+    TOML -- "identity.private_key path" --> KEY
+    TOML -- "trust.trust_anchors path" --> CA_TRUST
+    TOML -- "trust.user_anchors path" --> TSA_TRUST
+    FILE -- "existing C2PA manifest\n(inspect or ingredient)" --> TOOL
+    CERT --> TOOL
+    KEY --> TOOL
+    CA_TRUST --> TOOL
+    TSA_TRUST --> TOOL
+    TOML --> TOOL
+....
+
+.Configuration file roles
+[cols="2,4", options="header"]
+|===
+| File | Role
+
+| `umrs-c2pa.toml`
+| Primary configuration file.
+  Contains the `[identity]` section (cert_chain, private_key paths) and the
+  `[trust]` section (trust anchor paths, `verify_trust` flag).
+  Path is set with `--config`; defaults to `umrs-c2pa.toml` in the current directory.
+
+| Certificate chain (`cert_chain`)
+| PEM file containing the signing certificate chain, leaf-first.
+  Path is read from the TOML `[identity]` section.
+  Required for production signing.
+  When absent, the tool runs in ephemeral test mode and all manifests are `UNVERIFIED`.
+
+| Private key (`private_key`)
+| PEM file containing the ECDSA private key.
+  Must be mode 0600.
+  The tool opens the file with `O_NOFOLLOW` to prevent symlink redirection.
+  Key bytes are held in a `Zeroizing` buffer and wiped on drop.
+  Path is read from the TOML `[identity]` section.
+
+| `C2PA-TRUST-LIST.pem`
+| C2PA official signing CA trust anchors.
+  Used to verify that third-party signers (cameras, editors) chain to a recognized root.
+  Path is read from `trust.trust_anchors` in the TOML.
+
+| `C2PA-TSA-TRUST-LIST.pem`
+| Timestamp Authority CA trust anchors.
+  Used to verify TSA-certified signing timestamps in existing manifests.
+  Path is read from `trust.user_anchors` in the TOML.
+|===
+
+[IMPORTANT]
+====
+Without a configuration file, the tool runs in *ephemeral test mode*:
+a self-signed certificate is generated at runtime and all manifests your system
+produces are marked `UNVERIFIED` by external validators.
+Ephemeral mode is suitable for evaluation only.
+Do not use it in production ingest pipelines.
+====
+
+'''
+
+== Quick Reference
+
+[source,shell]
+----
+# Inspect a file — display the chain-of-custody report
+umrs-c2pa photo.jpg
+
+# Sign a file — ingest into the UMRS-controlled chain
+umrs-c2pa --sign photo.jpg
+
+# Sign with a security marking
+umrs-c2pa --sign --marking "CUI//SP-CTI//NOFORN" photo.jpg
+
+# Validate configuration and credentials
+umrs-c2pa config validate
+
+# Generate a starter configuration file
+umrs-c2pa config generate --output umrs-c2pa.toml
+
+# Generate signing credentials (self-signed, for evaluation)
+umrs-c2pa creds generate --output ./certs
+----
+
+For the complete usage reference, see xref:umrs-tools:umrs-c2pa.adoc[umrs-c2pa — Media Provenance and Chain-of-Custody Signing].
+
+'''
+
+== Security Design
+
+`umrs-c2pa` implements the following high-assurance patterns:
+
+*Key material protection* — the private key is read into a `Zeroizing<Vec<u8>>` buffer.
+The buffer is wiped to zeroes when it is dropped, regardless of whether the signing operation
+succeeds or fails.
+Key bytes are never copied to the heap outside the zeroizing wrapper.
+(NIST SP 800-53 SC-12, SC-28)
+
+*Symlink-safe key reads* — private key files are opened with `O_NOFOLLOW`.
+If the path is a symlink, the open fails.
+This prevents a symlink substitution attack where the key path is redirected to a
+different file between the configuration load and the read.
+(NSA RTB RAIN, NIST SP 800-53 SI-7)
+
+*File creation mode 0600* — when `umrs-c2pa creds generate` writes a new private key file,
+the file is created with mode 0600 from the first write.
+The file is never created with a more permissive mode and then tightened.
+(NIST SP 800-53 AC-3)
+
+*Journald logging with AU-5 fallback* — all audit events are sent to journald.
+If journald is unavailable, the tool falls back to stderr.
+The tool never aborts due to a logging failure.
+(NIST SP 800-53 AU-5)
+
+ed25519 is not used, even though the c2pa-rs library supports it.
+UMRS excludes ed25519 for portability with FIPS 140-2 deployments.
+FIPS-validated cryptographic modules do not uniformly support Ed25519.
+ECDSA P-256 (ES256) is used instead.
+(NIST SP 800-53 SC-13, FIPS 186-5)
+
+'''
+
+== Compliance
+
+[cols="1,3", options="header"]
+|===
+| Control | How `umrs-c2pa` satisfies it
+
+| NIST SP 800-53 AU-3
+| Chain-of-custody report is self-identifying: filename, SHA-256, SHA-384, signer,
+  timestamp, algorithm, and generator for each entry.
+  No field is omitted silently.
+
+| NIST SP 800-53 AU-9
+| The signed manifest is cryptographically bound to the file content.
+  Any modification to the file or the manifest after signing changes the hash
+  and invalidates the manifest.
+
+| NIST SP 800-53 AU-10
+| The chain-of-custody model is non-repudiable: each signing event is bound to a
+  specific certificate and key.
+  Prior entries in the chain are preserved as C2PA ingredients.
+
+| NIST SP 800-53 SC-12
+| Private key management: key bytes are held in a `Zeroizing` buffer,
+  files created at mode 0600, opened with `O_NOFOLLOW`.
+
+| NIST SP 800-53 SC-13
+| ECDSA P-256 (ES256) is the only signing algorithm.
+  SHA-256 and SHA-384 are both computed for each file.
+  ed25519 is excluded for FIPS 140-2 portability.
+
+| NIST SP 800-53 SI-7
+| Hash consistency check verifies the file has not been modified across
+  all signing events in the chain.
+  Symlink-safe key reads prevent path-swap attacks on key material.
+
+|===
+
+'''
+
+== See Also
+
+* xref:umrs-tools:umrs-c2pa.adoc[umrs-c2pa — full reference page] — complete usage, field definitions, all subcommands
+* xref:patterns:pattern-provenance.adoc[Provenance Verification] — the high-assurance pattern this tool implements
+* xref:cryptography:index.adoc[Cryptography] — FIPS mode and algorithm policy

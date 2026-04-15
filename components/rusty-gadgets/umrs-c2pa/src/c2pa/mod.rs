@@ -49,8 +49,8 @@ pub use config::UmrsConfig;
 pub use error::InspectError;
 pub use ingest::{ingest_file, sha256_hex, sha384_hex};
 pub use manifest::{
-    chain_json, chain_report_json, has_manifest, inspect_rotation_mismatch, manifest_json,
-    read_chain, TrustFinding,
+    TrustFinding, chain_json, chain_report_json, has_manifest, inspect_rotation_mismatch,
+    manifest_json, read_chain,
 };
 pub use report::{print_chain, print_chain_readonly, print_validation_report};
 pub use signer::ALLOWED_ALGORITHMS;

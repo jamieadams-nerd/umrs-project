@@ -105,6 +105,8 @@ impl AuditCardApp for StandaloneAuditCard {
 ///
 /// - **NIST SP 800-53 AU-3**: Operator supplies the target path explicitly.
 /// - **NIST SP 800-53 CM-6**: Output mode is operator-controlled via `--json`.
+/// - **NIST SP 800-53 SI-11**: Verbose progress goes to stderr only; machine
+///   output (future `--json`) stays on stdout.
 #[derive(Parser)]
 #[command(
     name = "umrs-stat",
@@ -120,6 +122,14 @@ struct Args {
     /// JSON output support is reserved for a future implementation phase.
     #[arg(long)]
     json: bool,
+
+    /// Show step-by-step progress on stderr.
+    ///
+    /// Narrates config paths, catalog counts, and trust-gate results so
+    /// operators can diagnose slow starts or missing resources without
+    /// enabling debug logging.
+    #[arg(long, short)]
+    verbose: bool,
 }
 
 // ---------------------------------------------------------------------------
@@ -136,12 +146,26 @@ fn main() {
 
     let args = Args::parse();
 
+    // Enable verbose progress output to stderr when --verbose / -v is passed.
+    // All verbose output goes to stderr so it does not interfere with --json
+    // or piped stdout. NIST SP 800-53 SI-11.
+    let verbose = args.verbose;
+    macro_rules! verbose {
+        ($($arg:tt)*) => {
+            if verbose {
+                eprintln!("  [umrs-stat] {}", format_args!($($arg)*));
+            }
+        };
+    }
+
     let path_str = if let Some(s) = args.path.to_str() {
         s.to_owned()
     } else {
         eprintln!("error: path contains non-UTF-8 characters and cannot be displayed");
         std::process::exit(1);
     };
+
+    verbose!("Target: {}", path_str);
 
     log::debug!(
         "umrs-stat: json={} (JSON output not yet implemented)",
@@ -167,13 +191,18 @@ fn main() {
     let stat_app: FileStatApp = match &dirent_result {
         Ok(dirent) => {
             log::info!("umrs-stat: loaded {path_str}");
+            verbose!("MIME type: {mime}");
+            verbose!("SecureDirent: loaded successfully");
             FileStatApp::from_dirent(dirent, mime)
         }
         Err(e) => {
             log::warn!("umrs-stat: failed to read {path_str}: {e}");
+            verbose!("SecureDirent: failed — {e}");
             FileStatApp::from_error(&path_str, e)
         }
     };
+
+    verbose!("Launching TUI");
 
     let app = StandaloneAuditCard(stat_app);
 

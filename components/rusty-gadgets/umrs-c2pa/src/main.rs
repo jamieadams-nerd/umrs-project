@@ -61,7 +61,11 @@ use c2pa::{
 #[expect(clippy::struct_excessive_bools, reason = "CLI flags — not a state machine")]
 struct Cli {
     /// Path to UMRS configuration file.
-    #[arg(long, global = true, default_value = "umrs-c2pa.toml")]
+    ///
+    /// Default: `/opt/umrs/etc/umrs/umrs-c2pa.toml`.
+    /// Override priority: `--config` flag → `UMRS_CONFIG_DIR` env var → default.
+    /// Falls back to `umrs-c2pa.toml` in the current directory for development use.
+    #[arg(long, global = true, default_value = "/opt/umrs/etc/umrs/umrs-c2pa.toml")]
     config: PathBuf,
 
     /// Show step-by-step progress on stderr.
@@ -172,21 +176,55 @@ fn main() -> Result<()> {
         c2pa::enable_verbose();
     }
 
+    // Resolve config path using the documented override chain:
+    //   1. Explicit --config flag (only if different from the compile-time default)
+    //   2. UMRS_CONFIG_DIR environment variable
+    //   3. /opt/umrs/etc/umrs/umrs-c2pa.toml  (install default)
+    //   4. umrs-c2pa.toml in CWD              (development convenience)
+    //
+    // The UMRS_CONFIG_DIR variable is read here from std::env before the
+    // sanitized env snapshot would be available; this is acceptable because
+    // this variable gates config path resolution, not security decisions.
+    // It is overridden by the explicit --config flag.
+    //
+    // NIST SP 800-53 CM-6 — configuration path resolved before any operation.
+    let default_path = std::path::Path::new("/opt/umrs/etc/umrs/umrs-c2pa.toml");
+    let cwd_fallback = std::path::Path::new("umrs-c2pa.toml");
+
+    // Choose the effective config path.
+    let resolved_config: std::path::PathBuf =
+        if cli.config != std::path::Path::new("/opt/umrs/etc/umrs/umrs-c2pa.toml") {
+            // Explicit --config override.
+            cli.config.clone()
+        } else if let Ok(dir) = std::env::var("UMRS_CONFIG_DIR") {
+            std::path::PathBuf::from(dir).join("umrs-c2pa.toml")
+        } else if default_path.exists() {
+            default_path.to_path_buf()
+        } else {
+            cwd_fallback.to_path_buf()
+        };
+
+    verbose!("Config search: resolved to {}", resolved_config.display());
+
     // Load config — fall back to defaults if the file doesn't exist.
-    let config = if cli.config.exists() {
-        verbose!("Loading config from {}", cli.config.display());
-        UmrsConfig::load(&cli.config).with_context(|| {
+    let config = if resolved_config.exists() {
+        verbose!("Loading config from {}", resolved_config.display());
+        UmrsConfig::load(&resolved_config).with_context(|| {
             format!(
                 "{} {}",
                 i18n::tr("Failed to load config:"),
-                cli.config.display()
+                resolved_config.display()
             )
         })?
     } else {
         verbose!(
             "{} {}",
             i18n::tr("No config file at"),
-            format!("{} — {}", cli.config.display(), i18n::tr("using defaults"))
+            format!(
+                "{} — {}",
+                resolved_config.display(),
+                i18n::tr("using defaults")
+            )
         );
         UmrsConfig::default()
     };

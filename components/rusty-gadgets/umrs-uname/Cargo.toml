@@ -13,12 +13,13 @@ name = "umrs-uname"
 path = "src/main.rs"
 
 [dependencies]
-crossterm = "0.28"
-ratatui = "0.30.0"
-umrs-core = { path = "../libs/umrs-core" }
+clap       = { version = "4", features = ["derive"] }
+crossterm  = "0.28"
+ratatui    = "0.30.0"
+umrs-core  = { path = "../libs/umrs-core" }
 umrs-platform = { path = "../libs/umrs-platform" }
-umrs-ui = { path = "../libs/umrs-ui" }
-log = "0.4"
+umrs-ui    = { path = "../libs/umrs-ui" }
+log        = "0.4"
 systemd-journal-logger = "2"
 
 

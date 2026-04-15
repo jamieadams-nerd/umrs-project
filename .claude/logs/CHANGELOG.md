@@ -1,5 +1,67 @@
 # Changelog
 
+## 2026-04-15
+
+### CUI Taxonomy Corrections
+- Removed 21 occurrences of the LEI/INV anti-pattern (LEI used as parent of INV) across documentation, configuration files, and prototypes.
+- Fixed `labels-backup.json` INV entry: nulled `parent_group: "LEI"` per NARA registry (INV and LEI are sibling Law Enforcement categories, not parent-child).
+- Updated `setrans.conf` files in all policy variants (targeted and MLS) to reflect corrected taxonomy.
+
+### Man Pages (EN + fr_CA) for Staged Tools
+- Created 8 man pages: umrs-label, umrs-ls, umrs-stat, umrs-uname (each in English and Canadian French).
+- umrs-c2pa man pages already existed; not regenerated.
+- All pages follow UMRS CLI conventions; man page source in `<crate>/docs/`.
+
+### Antora Per-Tool Documentation Modules
+- Published 5 new Antora modules under `docs/modules/` (umrs-c2pa, umrs-label, umrs-ls, umrs-stat, umrs-uname).
+- Each module includes `index.adoc`, `nav.adoc`, and Mermaid diagrams (JSON source format).
+- umrs-ls module added library-integration diagram showing data flow from umrs-stat and umrs-label.
+- All modules build cleanly with `make docs` (zero Antora warnings).
+
+### Build Tooling Extended
+- `cargo xtask stage` now sweeps man pages (`<crate>/docs/*.1`) and compiled locale catalogs (`<crate>/locale/*/LC_MESSAGES/*.mo`) into `staging/share/{man,locale}`.
+- `umrs-install.sh` updated to install man pages and locale catalogs under `/opt/umrs/share/{man,locale}` with correct ownership (root:root) and permissions (755 for directories, 644 for files).
+- SELinux `usr_t` fcontext rule added for staged resources; `.pp` policy rebuilt.
+
+### CLI Consolidation Across All Staged Tools
+- All 5 tools now support `--help`, `--version`, `--verbose/-v`.
+- umrs-ls migrated from manual `std::env::args()` parsing to clap derive, preserving all 8 existing command-line flags.
+- umrs-uname received clap scaffolding (previously had no CLI argument parsing).
+- umrs-label added `--verbose` flag and wrapped 11 TUI strings with `i18n::tr()` macro; missing `i18n::init()` call added at startup.
+- All tools implement consistent configuration override chain: `--config` flag → `UMRS_CONFIG_DIR` env var → default path at `/opt/umrs/etc/umrs/`.
+- umrs-c2pa `--config` default changed from current working directory to `/opt/umrs/etc/umrs/umrs-c2pa.toml` (fails closed if not found).
+- All workspace `cargo xtask clippy` passes with zero warnings; `cargo xtask test` passes (5 pre-existing mcs_translator failures unaffected).
+
+### umrs-ls MCS Level Lookup Bug Fixed
+- Root cause identified: `setrans.conf` has no entries for Canadian Protected category ranges (c300–c302), causing group headers to fall back to raw level strings that never matched JSON catalog keys.
+- Solution: Added `Catalog::marking_by_mcs_level()` fallback method in umrs-label crate; umrs-ls now dispatches via direct catalog key lookup with MCS-level fallback strategy.
+- No JSON catalog modifications required (change is purely in lookup logic).
+- 15 new regression tests added covering Canadian group headers and MCS-level fallback paths.
+
+### Internationalization Compilation
+- Makefile wired for `umrs-stat` i18n domain.
+- Canadian French (.mo) compiled for umrs-ls, umrs-stat, umrs-uname, umrs-c2pa.
+- umrs-ls additionally compiled for en_GB, en_AU, en_NZ locales.
+
+### Documentation Sync Tasks Created
+- Created task #13: doc sync for man pages and Antora modules against CLI reality (pre-CLI-pass docs need update).
+
+### Follow-up Work
+- Task #10: Henri validates 2 Canadian French terminology decisions (marquage vs cote; chaîne de possession).
+- Task #12: Knox reconciles `.mo` output paths (Makefile vs xtask sweep patterns).
+- Task #14: Simone compiles umrs-label Canadian French `.mo` (blocks umbrella i18n task #1).
+
+### Audit Reports Written
+- `.claude/reports/code/2026-04-15-cui-lei-inv-audit.md` — CUI taxonomy audit with 21 corrections.
+- `.claude/reports/code/2026-04-15-clap-cli-audit.md` — CLI clap migration verification and coverage.
+- `.claude/reports/code/2026-04-15-xtask-man-locale.md` (Knox) — build tooling extensions.
+- `.claude/reports/i18n/2026-04-15-{umrs-label,umrs-ls,umrs-stat,umrs-c2pa,umrs-uname}-inventory.md` — string inventory reports per tool.
+
+### Architectural Decisions Recorded
+- Config default location: `/opt/umrs/etc/umrs/` with override chain (flag → env → default), fail-closed on missing config.
+- Universal `--verbose/-v` mode: every binary supports operator startup narration distinct from `--debug` mode.
+- MCS level fallback: umrs-label `Catalog::marking_by_mcs_level()` enables graceful degradation when category tuples don't exist in setrans.conf.
+
 ## 2026-04-09
 
 ### Shared Display Infrastructure & Code Consolidation

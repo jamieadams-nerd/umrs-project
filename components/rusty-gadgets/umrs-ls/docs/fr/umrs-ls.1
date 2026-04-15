@@ -1,0 +1,204 @@
+.\" SPDX-License-Identifier: MIT
+.\" Copyright (c) 2025 Jamie Adams
+.\" Traduction française (Canada) — umrs-translator (Claude Code), 2026-04-15
+.TH UMRS-LS 1 "2026-04-15" "umrs-ls 0.1.0" "Outils UMRS"
+.SH NOM
+umrs-ls \- listage de répertoire axé sur la sécurité avec contexte SELinux et marquages CUI
+.SH SYNOPSIS
+.B umrs-ls
+.RI [ CHEMIN ]
+.RB [ \-\-color ]
+.RB [ \-\-no\-iov ]
+.RB [ \-\-no\-mtime ]
+.RB [ \-\-with\-size ]
+.RB [ \-\-with\-inode ]
+.RB [ \-\-flat ]
+.RB [ \-\-cli ]
+.RB [ \-\-json ]
+.SH DESCRIPTION
+.B umrs-ls
+affiche les entrées de répertoire enrichies du contexte de sécurité SELinux,
+du marquage de sécurité CUI, de la propriété POSIX et des observations de sécurité.
+.PP
+La sortie est regroupée par paire
+.I (type SELinux, marquage de sécurité).
+Le type et le marquage apparaissent dans les en-têtes de groupe et ne sont pas
+répétés pour chaque ligne.
+.PP
+Par défaut, les fichiers apparentés (rotations de journaux, signatures, sommes
+de contrôle, sauvegardes) sont
+.I regroupés
+sous leur fichier de base \(em une ligne récapitulative remplace les lignes
+individuelles des fichiers satellites.
+Utilisez
+.B \-\-flat
+pour désactiver le regroupement et afficher chaque entrée sur sa propre ligne.
+.PP
+Lorsque la sortie standard est un terminal, le navigateur TUI interactif
+se lance automatiquement.
+Utilisez
+.B \-\-cli
+pour forcer une sortie texte en colonnes.
+.SH OPTIONS
+.TP
+.RI [ CHEMIN ]
+Répertoire à lister.
+Par défaut\u00a0: répertoire courant
+.RB ( . ).
+.TP
+.B \-\-color
+Activer la sortie colorée ANSI.
+Sans effet si la variable d'environnement
+.B NO_COLOR
+est définie.
+.TP
+.B \-\-no\-iov
+Omettre la colonne des observations de sécurité (IOV = Integrity Observation Vector).
+.TP
+.B \-\-no\-mtime
+Omettre la colonne de date de dernière modification.
+.TP
+.B \-\-with\-size
+Inclure une colonne de taille de fichier (masquée par défaut).
+.TP
+.B \-\-with\-inode
+Inclure une colonne de numéro d'inode (masquée par défaut).
+.TP
+.B \-\-flat
+Désactiver le regroupement ; afficher chaque entrée sur sa propre ligne.
+.TP
+.B \-\-cli
+Forcer une sortie texte brut en colonnes plutôt que le TUI interactif.
+Activé implicitement lorsque la sortie standard n'est pas un terminal.
+.TP
+.B \-\-json
+Émettre une sortie JSON lisible par machine.
+Contourne toujours le TUI.
+.TP
+.BR \-h ", " \-\-help
+Afficher le message d'aide.
+Non implémenté avec clap ; utilisez
+.B \-\-version
+pour vérifier le binaire.
+.SH FORMAT DE SORTIE
+.SS Mode CLI
+Les entrées sont imprimées en groupes séparés par une ligne d'en-tête indiquant
+le type SELinux et le marquage CUI pour ce groupe.
+Chaque ligne affiche MODE, PROPRIÉTAIRE:GROUPE, MODIFIÉ, NOM et les observations
+de sécurité.
+Les colonnes TAILLE et inode sont masquées sauf si demandées avec
+.B \-\-with\-size
+et
+.BR \-\-with\-inode .
+.SS Mode TUI
+Un navigateur interactif à deux panneaux.
+Le panneau gauche affiche l'arborescence du répertoire ; le panneau droit
+affiche la fenêtre contextuelle de détails SELinux et de marquage CUI pour
+l'entrée sélectionnée.
+Appuyez sur
+.BR Entrée
+sur un fichier pour ouvrir la fenêtre contextuelle de détails de sécurité.
+.SS Mode JSON
+Émet un document JSON contenant les entrées de répertoire regroupées.
+Chaque groupe porte le type SELinux, le marquage et un tableau d'entrées
+avec les métadonnées complètes.
+.SH NAVIGATION TUI
+.TP
+.BR j " / " k " ou " \(ua " / " \(da
+Se déplacer vers le haut ou le bas dans le listage du répertoire.
+.TP
+.BR Entrée
+Ouvrir la fenêtre contextuelle de détails de sécurité pour l'entrée sélectionnée.
+.TP
+.BR Tab " / " Shift\-Tab
+Basculer le focus entre les panneaux.
+.TP
+.BR /
+Rechercher dans le listage.
+.TP
+.BR q " ou " Échap
+Quitter ou fermer la fenêtre contextuelle.
+.SH CODES DE SORTIE
+.TP
+.B 0
+Succès.
+.TP
+.B 1
+Erreur de lecture du répertoire ou échec d'initialisation du terminal.
+.TP
+.B 2
+Erreur d'utilisation.
+.SH CONSIDÉRATIONS DE SÉCURITÉ
+.IP \(bu 2
+Toutes les lectures de répertoire sont ancrées sur le descripteur de fichier via
+.B SecureDirent
+avec vérification de la signature du système de fichiers
+(PROC_SUPER_MAGIC pour les entrées
+.IR /proc )
+Cela élimine les vulnérabilités TOCTOU lors du parcours de répertoire
+(NSA RTB RAIN).
+.IP \(bu 2
+Les contextes de sécurité SELinux sont lus depuis l'attribut étendu
+.I security.selinux
+sur le descripteur de fichier ancré de chaque entrée.
+Si SELinux est désactivé dans le noyau, la colonne MARQUAGE affiche
+.IR N/A .
+.IP \(bu 2
+La sortie colorée est supprimée lorsque
+.B NO_COLOR
+est défini, indépendamment du drapeau
+.BR \-\-color .
+Cela empêche les séquences d'échappement ANSI d'atteindre les programmes en aval.
+.IP \(bu 2
+Les entrées refusées sont comptées et signalées en pied de groupe plutôt
+que silencieusement omises.
+.SH CONFORMITÉ
+.TP
+.B NIST SP 800-53 AC-3
+Application du contrôle d'accès \(em chaque entrée affiche l'étiquette SELinux
+utilisée dans les décisions d'accès.
+.TP
+.B NIST SP 800-53 AC-4
+Application du flux d'information \(em les marquages MCS et les observations
+de sécurité signalent les violations des frontières de flux d'information.
+.TP
+.B NIST SP 800-53 AU-3
+Contenu des enregistrements d'audit \(em tous les champs d'identité, d'étiquette
+et d'observation requis pour l'audit sont inclus dans la sortie.
+.TP
+.B NSA RTB RAIN
+Non-contournabilité et sécurité TOCTOU \(em toutes les lectures de répertoire
+sont ancrées sur le descripteur de fichier via
+.BR SecureDirent .
+.SH VARIABLES D'ENVIRONNEMENT
+.TP
+.B NO_COLOR
+Lorsque défini (toute valeur), la sortie colorée est désactivée inconditionnellement.
+.TP
+.B LANG
+Contrôle la locale pour la sortie traduite.
+Définissez à
+.B fr_CA.UTF-8
+pour le français (Canada).
+.TP
+.B LC_ALL
+Remplace toutes les catégories de locale.
+Prend le dessus sur
+.BR LANG .
+.TP
+.B UMRS_LOCALEDIR
+Remplace le répertoire des locales (tests de développement uniquement).
+.SH FICHIERS
+.TP
+.I /usr/share/locale/fr_CA/LC_MESSAGES/umrs-ls.mo
+Catalogue de messages en français (Canada).
+.SH AUTEURS
+Jamie Adams (alias Imodium Operator)
+.SH LICENCE
+Licence MIT.
+Consultez le fichier LICENSE.
+.SH VOIR AUSSI
+.BR ls (1),
+.BR umrs-stat (1),
+.BR umrs-label (1),
+.BR stat (1)

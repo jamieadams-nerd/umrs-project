@@ -1,0 +1,168 @@
+.\" SPDX-License-Identifier: MIT
+.\" Copyright (c) 2025 Jamie Adams
+.TH UMRS-LABEL 1 "2026-04-15" "umrs-label 0.1.0" "UMRS Tools"
+.SH NAME
+umrs-label \- browse and display the UMRS security label registry
+.SH SYNOPSIS
+.B umrs-label
+.RB [ \-\-us\-catalog
+.IR PATH ]
+.RB [ \-\-ca\-catalog
+.IR PATH ]
+.RB [ \-\-cli ]
+.RB [ \-\-json ]
+.br
+.B umrs-label
+.BR \-\-help
+.SH DESCRIPTION
+.B umrs-label
+loads CUI (Controlled Unclassified Information) and Canadian Protected label
+catalogs from JSON files and renders them as an interactive browser.
+.PP
+When stdout is a terminal, the interactive TUI launches automatically.
+Use
+.B \-\-cli
+to force plain-text output, or pipe the output to another program.
+.PP
+The tool is unconditionally read-only.
+No catalog mutation is possible through the interface.
+.PP
+The TUI presents a two-panel layout: a label tree on the left organized by
+index group, and a detail panel on the right showing the full marking
+definition, designation (Basic or Specified), handling instructions,
+and mandatory warning statements for the selected entry.
+.SH OPTIONS
+.TP
+.BI \-\-us\-catalog " PATH"
+Path to the US CUI label catalog JSON file.
+Default:
+.IR config/us/US-CUI-LABELS.json .
+.TP
+.BI \-\-ca\-catalog " PATH"
+Path to the Canadian Protected label catalog JSON file.
+Default:
+.IR config/ca/CANADIAN-PROTECTED.json .
+The Canadian catalog is optional; if the file is absent the tool continues
+with US CUI labels only.
+.TP
+.B \-\-cli
+Force plain-text CLI output instead of the interactive TUI.
+Implied when stdout is not a terminal.
+.TP
+.B \-\-json
+Emit machine-readable JSON output.
+Reserved for a future implementation phase; not yet implemented.
+.TP
+.BR \-h ", " \-\-help
+Print help message.
+.TP
+.BR \-V ", " \-\-version
+Print version.
+.SH TUI NAVIGATION
+.TP
+.BR j " / " k " or " \(ua " / " \(da
+Move up or down in the active panel.
+.TP
+.BR h " / " l " or " \(la " / " \(ra
+Collapse or expand the selected node.
+.TP
+.BR Tab
+Switch focus between the tree panel and the detail panel.
+.TP
+.BR Enter " or " Space
+Show details / toggle branch expansion.
+.TP
+.BR /
+Search and filter the catalog tree.
+.TP
+.BR Esc
+Cancel search.
+.TP
+.BR ?
+Toggle the keyboard help overlay.
+.TP
+.BR q
+Quit.
+.SH CATALOG FILE FORMAT
+Catalogs are JSON files.
+The top-level key is
+.BR "markings" .
+Each entry key is the full banner marking string (e.g.,
+.IR "CUI//SP-CTI" ).
+Fields include
+.IR name ,
+.IR abbrv_name ,
+.IR index_group ,
+.IR designation ,
+.IR level ,
+.IR required_warning_statement ,
+and
+.IR required_dissemination_control .
+.PP
+See
+.I docs/FIELD-REFERENCE.md
+in the
+.B umrs-label
+source tree for the full field specification.
+.SH EXIT STATUS
+.TP
+.B 0
+Success.
+.TP
+.B 1
+Terminal initialization failure or runtime error.
+.TP
+.B 2
+Usage error or required catalog file could not be loaded.
+.SH SECURITY CONSIDERATIONS
+.IP \(bu 2
+Catalog JSON files are loaded read-only.
+No write path exists in this tool.
+.IP \(bu 2
+CUI palette colors never use red or orange, which are reserved for
+SECRET and TOP SECRET on classified systems.
+.IP \(bu 2
+CUI Basic is a handling standard, not an access level.
+Displaying all Basic categories in the browser does not imply
+authorization to access data in any category.
+.SH COMPLIANCE
+.TP
+.B NIST SP 800-53 AC-16
+Security Attributes \(em accurate display of all CUI marking fields,
+including designation, handling instructions, and mandatory warning statements.
+.TP
+.B NIST SP 800-53 AC-3
+The browser is unconditionally read-only; no catalog mutation is possible.
+.TP
+.B NIST SP 800-53 AU-3
+The TUI header carries hostname, OS, SELinux mode, and FIPS state
+on every rendered frame.
+.TP
+.B NIST SP 800-53 SI-10
+Input Validation \(em clap validates all CLI arguments at entry,
+rejecting unknown flags before any catalog I/O occurs.
+.SH FILES
+.TP
+.I config/us/US-CUI-LABELS.json
+Default US CUI label catalog (relative to working directory).
+.TP
+.I config/ca/CANADIAN-PROTECTED.json
+Default Canadian Protected label catalog (relative to working directory,
+optional).
+.SH STANDARDS
+.TP
+.B NARA CUI Registry
+National Archives and Records Administration Controlled Unclassified
+Information Registry
+.RI ( https://www.archives.gov/cui )
+.TP
+.B Treasury Board of Canada
+Policy on Government Security \(em Canadian Protected label definitions
+.SH AUTHORS
+Jamie Adams (a.k.a. Imodium Operator)
+.SH LICENSE
+MIT License.
+See LICENSE file.
+.SH SEE ALSO
+.BR umrs-stat (1),
+.BR umrs-ls (1)

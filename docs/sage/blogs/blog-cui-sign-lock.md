@@ -116,11 +116,11 @@ The question: *can orthogonal, category-based access control work inside a syste
 for layered, hierarchical security?*
 
 Classified systems are vertical — Confidential, Secret, Top Secret. CUI is *horizontal*.
-Law Enforcement Investigative (LEI/INV) is not "more sensitive" than Agriculture Ammonium
+Law Enforcement Investigative (INV) is not "more sensitive" than Agriculture Ammonium
 Nitrate (AGR/AMNT). Different rooms, different locks.
 
 Categories compose. An investigator on a case involving agricultural chemicals in an
-improvised explosive device holds LEI/INV, AGR/AMNT, and Controlled Technical Information
+improvised explosive device holds INV, AGR/AMNT, and Controlled Technical Information
 (CTI) — access to the exact intersection, not an undifferentiated pool.
 
 The kernel enforces this using set theory — similar in structure to how DAC groups work, but
@@ -141,7 +141,7 @@ policy, when the escape hatch closes.
 Most systems treat CUI as a single label — "handle appropriately." That is nearly as useless
 as FOUO. UMRS carries a Rust-parsed catalog of 72 marking entries across 23 category groups
 and 48 subcategories. Each entry carries three layers: regulatory origin, verbatim handling
-requirements from the actual regulation, and the consequences of getting it wrong. LEI/INV:
+requirements from the actual regulation, and the consequences of getting it wrong. INV:
 28 CFR Part 23 governs it, mishandling exposes an active investigation. CTI: EAR/ITAR applies,
 criminal exposure is real. AGR: specific safety framework and documentation required before
 any sharing. A traditional MAC system marks a file and enforces access. UMRS does that — and
@@ -179,7 +179,7 @@ that proves the rule.
 
 Phase 1 loads CUI category labels into the Multi-Category Security (MCS) translation layer
 under targeted SELinux policy. Operators see the specific category, subcategory, and verbatim
-regulatory language — not a generic "CUI" stamp. A file carrying LEI/INV and AGR/AMNT is
+regulatory language — not a generic "CUI" stamp. A file carrying INV and AGR/AMNT is
 labeled as exactly that. The categories compose. The concept is proven.
 
 Most organizations have no operator-facing view of what handling requirements apply to their

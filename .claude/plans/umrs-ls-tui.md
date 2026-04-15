@@ -1,6 +1,6 @@
 # Plan: umrs-ls TUI — Directory Security Browser
 
-**Status:** in-progress — Phases 1-3 complete + custom renderer delivered. Phase 4 (umrs-stat) and Phase 5 (palette colors) remain.
+**Status:** in-progress — Phases 1-3 complete + custom renderer delivered. Canadian group-header lookup bug fixed 2026-04-15 (MCS-level fallback). Phase 4 (umrs-stat) and Phase 5 (palette colors) remain. Dash-separator bug still open.
 **Date:** 2026-04-04
 **ROADMAP Goals:** G4 (Tool Ecosystem), G5 (Security Tools), G8 (Human-Centered Design)
 

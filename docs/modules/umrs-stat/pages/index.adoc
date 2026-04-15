@@ -1,0 +1,229 @@
+= umrs-stat — File Security Audit Card
+:description: Overview of the umrs-stat tool: TOCTOU-safe, inode-anchored file security \
+    inspection for CUI and high-assurance environments.
+:toc: left
+:toclevels: 3
+
+// NIST SP 800-53 AC-3, AU-3, CA-7, SC-28, SI-7
+// NSA RTB RAIN — Non-Bypassability, TOCTOU Safety
+
+`umrs-stat` is a security overlay of the classic `stat` command.
+Where `stat` shows timestamps, permissions, and inode metadata, `umrs-stat` shows
+the security attributes that matter for a CUI or high-assurance system:
+the SELinux security context, inode integrity flags, encryption source, and
+typed security observations derived from what the tool actually sees.
+
+The tool opens the file once and performs all subsequent attribute reads through
+that single file descriptor.
+This inode-anchored approach eliminates the TOCTOU (Time-of-Check/Time-of-Use)
+window that path-based tools are exposed to.
+
+.Primary audiences
+* *Security operators* — verify that a file carries the expected security label
+  before processing it as CUI.
+* *Security auditors* — inspect integrity flags, encryption source, and SELinux
+  label state as part of a file-level audit.
+* *Developers* — understand how `SecureDirent` exposes security attributes and
+  how findings are typed and classified.
+
+'''
+
+== Data Sources
+
+`umrs-stat` does not read external JSON catalogs or configuration files.
+All data comes from kernel interfaces accessed through the provenance-verified
+platform abstraction layer.
+
+[mermaid]
+....
+flowchart LR
+    subgraph kernel_pseudo["Kernel Pseudo-Filesystems"]
+        PROC_MOUNTS["/proc/mounts\n(mount topology)"]
+        SYS_BLOCK["/sys/block/*/dm/*\n(device-mapper / LUKS)"]
+    end
+
+    subgraph inode["Per-File Kernel Interfaces (via open fd)"]
+        XATTR["security.selinux xattr\n(SELinux security context)"]
+        IOCTL["ioctl FSGETXATTR\n(inode flags: immutable, append-only)"]
+        IMA["security.ima xattr\n(IMA measurement hash)"]
+        POSIX_ACL["system.posix_acl_access xattr\n(POSIX ACL presence)"]
+        FSTAT["fstat(fd)\n(mode, uid, gid, size, mtime, inode)"]
+    end
+
+    subgraph secolor["Optional System Config"]
+        SETRANS["setrans / mcstransd\n(MCS → human-readable marking)"]
+    end
+
+    TOOL["umrs-stat"]
+
+    PROC_MOUNTS -- "ProcfsText + SecureReader\n(fs magic verified)" --> TOOL
+    SYS_BLOCK -- "SysfsText + SecureReader\n(fs magic verified)" --> TOOL
+    XATTR -- "fgetxattr(fd, security.selinux)\nTPI dual-parser verification" --> TOOL
+    IOCTL --> TOOL
+    IMA --> TOOL
+    POSIX_ACL --> TOOL
+    FSTAT --> TOOL
+    SETRANS -- "MCS label translation\n(optional; raw level if absent)" --> TOOL
+....
+
+.Data source descriptions
+[cols="2,4", options="header"]
+|===
+| Source | What `umrs-stat` reads from it
+
+| `security.selinux` xattr
+| The raw SELinux security context string.
+  Read via `fgetxattr(fd, ...)` — the fd is the file opened at startup.
+  Parsed by two independent parsers (TPI); disagreement is surfaced as a
+  `TpiDisagreement` finding.
+  (NIST SP 800-53 SI-10)
+
+| `ioctl(FSGETXATTR)`
+| Inode flags: immutable, append-only, and others.
+  Read through the open fd, not from the path.
+  Immutable flag means the file cannot be modified even by root.
+  (NIST SP 800-53 SI-7)
+
+| `security.ima` xattr
+| IMA measurement hash presence.
+  Indicates the file is under IMA appraisal.
+  (NIST SP 800-53 SI-7)
+
+| `system.posix_acl_access` xattr
+| POSIX ACL presence check.
+  When a POSIX ACL exists, the standard mode bits alone do not describe the
+  full access policy.
+  (NIST SP 800-53 AC-3)
+
+| `fstat(fd)`
+| Mode, uid/gid, size, modification time, inode number, and device.
+
+| `/proc/mounts`
+| Mount topology for the file's path.
+  Used to resolve the backing device for encryption detection.
+  Read via the `ProcfsText` provenance-verified reader.
+
+| `/sys/block/*/dm/*`
+| Device-mapper attributes used to detect LUKS dm-crypt encrypted backing devices.
+  Read via the `SysfsText` provenance-verified reader.
+
+| setrans / mcstransd
+| Translates the raw MCS level string (e.g., `s0:c0,c1`) to a human-readable
+  marking (e.g., `CUI//INV`).
+  Optional: if `mcstransd` is not running, the raw level string is displayed.
+
+|===
+
+NOTE: All reads from `/proc` and `/sys` pass through filesystem-magic verification.
+The tool cannot be deceived by a regular file mounted at a procfs path.
+
+'''
+
+== Quick Reference
+
+[source,shell]
+----
+# Inspect a file — display the security audit card
+umrs-stat /path/to/file
+
+# Forward-compat flag (JSON output is planned, not yet implemented)
+umrs-stat /path/to/file --json
+----
+
+.Key bindings
+[cols="2,4", options="header"]
+|===
+| Key | Action
+
+| `Tab` / `Right`
+| Next tab
+
+| `Shift-Tab` / `Left`
+| Previous tab
+
+| `j` / `Down`
+| Scroll down
+
+| `k` / `Up`
+| Scroll up
+
+| `q` or `Esc`
+| Quit
+
+|===
+
+For the complete tab reference and field definitions, see
+xref:umrs-tools:umrs-stat.adoc[umrs-stat — File Security Audit Card].
+
+'''
+
+== Security Design
+
+`umrs-stat` is built on `SecureDirent` — the UMRS inode-anchored file inspection
+primitive.
+
+*Single-open, fd-anchored reads* — the file is opened once.
+All subsequent reads operate through the resulting file descriptor.
+The path is never re-resolved after the initial open.
+This eliminates the TOCTOU race window present in path-based tools.
+
+*Two-path independence (TPI) for label parsing* — the SELinux label string is
+parsed independently by two parsers (`nom` and `FromStr`).
+If they disagree, the label state is `TpiDisagreement` and the discrepancy is
+surfaced as a finding.
+(NIST SP 800-53 SI-10)
+
+*Findings as typed data* — `SecurityObservation` variants are enum values,
+not log strings.
+The Observations tab renders them; the status bar summarizes them by severity.
+No security finding can be silently lost.
+(NIST SP 800-53 AU-3)
+
+*Fail-visible, not fail-silent* — when an attribute cannot be read, the card
+shows the field as unavailable.
+Nothing is silently omitted.
+
+'''
+
+== Compliance
+
+[cols="1,3", options="header"]
+|===
+| Control | How `umrs-stat` satisfies it
+
+| NIST SP 800-53 AC-3
+| Displays the full MAC label and permission mode;
+  POSIX ACL presence is flagged when extended DAC is in effect.
+
+| NIST SP 800-53 AU-3
+| Every audit card is self-identifying (report name and subject path);
+  observations are typed and structured, not free-form text.
+
+| NIST SP 800-53 CA-7
+| Observations surface findings as typed data that can be counted and matched
+  without parsing log output.
+
+| NIST SP 800-53 SC-28
+| Encryption source is displayed for every file;
+  absence of encryption is explicit, not left unaddressed.
+
+| NIST SP 800-53 SI-7
+| TOCTOU-safe fd-anchored reads prevent path-swap attacks;
+  IMA/EVM flag is surfaced on every file inspection;
+  TPI parsing catches malformed labels.
+
+| NIST SP 800-53 SI-10
+| TPI disagreement is surfaced as a `TpiDisagreement` finding,
+  not silently resolved in favor of either parser.
+
+|===
+
+'''
+
+== See Also
+
+* xref:umrs-tools:umrs-stat.adoc[umrs-stat — full reference page] — complete tab reference, all fields, label state values
+* xref:devel:high-assurance-patterns.adoc[High-Assurance Coding Patterns] — TOCTOU safety, TPI, findings-as-data
+* xref:security-concepts:integrity-and-provenance.adoc[Integrity and Provenance] — conceptual background on TOCTOU and IMA/EVM
+* xref:umrs-ls:index.adoc[umrs-ls] — directory listing with per-entry IOV posture marker
+* xref:umrs-uname:index.adoc[umrs-uname] — companion tool for system-level posture inspection

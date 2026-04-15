@@ -31,7 +31,7 @@ echo -e "\x1b[32m\x1b[7m CUI//PRIVACY \x1b[27m\u2593\U2592\u2591\x1b[0m"
 echo -e "\x1b[32m\x1b[7m CUI//PRIVACY \u2591\U2592\u2593\x1b[0m"
 
 echo
-echo "\x1b[34m\U1FB68\x1b[7m CUI//LEI/INV \x1b[0m\x1b[34m\U1FB6C\x1b[0m"
+echo "\x1b[34m\U1FB68\x1b[7m CUI//INV \x1b[0m\x1b[34m\U1FB6C\x1b[0m"
 echo
 echo "\x1b[2;3m\uAB\U200ARestricted\U200A\uBB\x1b[0m"
 echo
