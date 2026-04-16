@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # umrs-shred: UMRS best-effort file sanitization wrapper
 #

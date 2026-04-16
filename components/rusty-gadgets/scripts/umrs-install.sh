@@ -1,11 +1,49 @@
 #!/usr/bin/bash
 #
-# umrs-install.sh -- Phase A installer for /opt/umrs/
+# umrs-install.sh -- Phase A installer for the FHS 2.3 compliant UMRS layout
 #
 # Deployment:
-#   Demonstration release. Single source of truth for the /opt/umrs/ layout.
+#   Demonstration release. Single source of truth for the on-disk layout.
 #   Per Jamie (2026-04-13), the shell installer is authoritative until the
 #   xtask/umrs-install Rust port lands.
+#
+# On-disk layout (FHS 2.3 §3.12, §3.7.4, §4.9.2, §5.15):
+#
+#   /opt/umrs/                       static package files (FHS §5.15)
+#     bin/                           executable binaries
+#     share/umrs/                    package-specific static reference data
+#                                    (FHS §4.11 analogue of /usr/share/<pkg>)
+#       US-CUI-LABELS.json           NARA CUI registry catalog
+#       CANADIAN-PROTECTED.json      Treasury Board Protected A/B/C catalog
+#       LEVELS.json                  MCS sensitivity level definitions
+#       US-CUI-PALETTE.json          CUI marking color palette
+#       templates/                   configuration templates destined for /etc/
+#         MLS-setrans.conf.template
+#         TARGETED-setrans.conf-template
+#     share/man/man1/                English man pages
+#     share/man/fr/man1/             Canadian French man pages
+#     share/locale/<locale>/LC_MESSAGES/   compiled gettext catalogs
+#
+#   /etc/opt/umrs/                   host-specific admin-editable config
+#                                    (FHS §3.7.4) -- reserved for future use
+#
+#   /var/opt/umrs/                   variable package data (FHS §4.9.2)
+#     lib/                           state data
+#     log/                           log files
+#
+# Rationale for NOT using /opt/umrs/etc or /opt/umrs/var:
+#   FHS 2.3 §5.15 states "No other package files may exist outside the /opt,
+#   /var/opt, and /etc/opt hierarchies." Host-editable configuration and
+#   variable data MUST live under /etc/opt and /var/opt respectively; placing
+#   them inside /opt/<package>/ would violate the separation that lets an
+#   admin mount /opt read-only.
+#
+# Top-level directory assumption:
+#   /opt/umrs, /etc/opt/umrs, and /var/opt/umrs are provisioned OUT OF BAND
+#   (e.g., by a site deployment role) with ownership umrs:umrs before this
+#   script runs. Preflight verifies their presence. This script creates
+#   subdirectories under those roots but does not chown/chmod the roots
+#   themselves.
 #
 # Ownership and permissions (DEMONSTRATION concession -- see secure_bash_rules
 # "Privileged Script Rule"):
@@ -19,6 +57,7 @@
 #   NIST SP 800-53 SI-7              (software and information integrity)
 #   NIST SP 800-53 AU-12             (audit record generation -- logger calls)
 #   NSA RTB Non-Bypassability        (MAC label application via restorecon)
+#   FHS 2.3 §3.7.4, §3.12, §4.9.2, §4.11, §5.15 (on-disk layout)
 #
 # Exit codes (per .claude/rules/secure_bash_rules.md):
 #   0 success
@@ -49,8 +88,18 @@ IFS=$'\n\t'
 # Constants
 ########################################
 readonly SCRIPT_NAME="umrs-install"
+
+# FHS 2.3 compliant installation roots.
+#   PREFIX     -- /opt/<package>  (FHS §5.15) static package files
+#   ETC_DIR    -- /etc/opt/<pkg>  (FHS §3.7.4) host-specific admin config
+#   VAR_DIR    -- /var/opt/<pkg>  (FHS §4.9.2) variable package data
+# All three roots are provisioned out of band as umrs:umrs 0755 before
+# this script runs. Preflight verifies their presence.
 readonly PREFIX="/opt/umrs"
-readonly ADMIN_GROUP="umrs-admin"
+readonly ETC_DIR="/etc/opt/umrs"
+readonly VAR_DIR="/var/opt/umrs"
+readonly PKG_USER="umrs"
+readonly PKG_GROUP="umrs"
 
 # Resolve the workspace root relative to this script. The script lives at
 # <workspace>/scripts/umrs-install.sh. scripts/ is one directory deep inside
@@ -165,13 +214,39 @@ preflight() {
 
     local missing=0
 
-    # Admin group exists.
-    if ! getent group "${ADMIN_GROUP}" >/dev/null; then
-        _error "group '${ADMIN_GROUP}' does not exist (site precondition)"
+    # umrs user and group exist (FHS roots are owned by them).
+    if ! getent group "${PKG_GROUP}" >/dev/null; then
+        _error "group '${PKG_GROUP}' does not exist (site precondition)"
         missing=1
     else
-        _info "group '${ADMIN_GROUP}' present: $(getent group "${ADMIN_GROUP}")"
+        _info "group '${PKG_GROUP}' present: $(getent group "${PKG_GROUP}")"
     fi
+    if ! getent passwd "${PKG_USER}" >/dev/null; then
+        _error "user '${PKG_USER}' does not exist (site precondition)"
+        missing=1
+    else
+        _info "user '${PKG_USER}' present"
+    fi
+
+    # FHS roots exist and are owned by umrs:umrs.
+    # Per FHS 2.3 §3.7.4, §4.9.2, §5.15 these three trees are the only valid
+    # locations for package files, config, and variable data respectively.
+    local root
+    for root in "${PREFIX}" "${ETC_DIR}" "${VAR_DIR}"; do
+        if [[ ! -d "${root}" ]]; then
+            _error "FHS root missing: ${root} (must be provisioned out of band)"
+            missing=1
+            continue
+        fi
+        local owner
+        owner=$(stat -c '%U:%G' -- "${root}")
+        if [[ "${owner}" != "${PKG_USER}:${PKG_GROUP}" ]]; then
+            _error "FHS root ${root} is ${owner}, expected ${PKG_USER}:${PKG_GROUP}"
+            missing=1
+        else
+            _info "FHS root ${root} present and owned ${owner}"
+        fi
+    done
 
     # Policy package built.
     if [[ ! -f "${POLICY_PP}" ]]; then
@@ -223,54 +298,84 @@ preflight() {
 }
 
 ########################################
-# Step 2 -- layout creation (/opt/umrs/ tree)
+# Step 2 -- layout creation
+#
+# Creates subdirectories under the three pre-existing FHS roots:
+#   ${PREFIX}      -- /opt/umrs       (FHS §5.15, static package files)
+#   ${ETC_DIR}     -- /etc/opt/umrs   (FHS §3.7.4, host-editable config)
+#   ${VAR_DIR}     -- /var/opt/umrs   (FHS §4.9.2, variable package data)
+#
+# The roots themselves are NOT created or chown'd here -- preflight has
+# already verified they exist and are owned umrs:umrs. This script only
+# manages the subtrees inside them.
 ########################################
 create_layout() {
-    _info "layout: creating directory tree under ${PREFIX}"
+    _info "layout: creating subdirectories under FHS roots"
 
-    local dirs=(
+    # Static package tree under /opt/umrs (FHS §5.15).
+    local static_dirs=(
         "${PREFIX}/bin"
-        "${PREFIX}/etc"
+        "${PREFIX}/share/umrs"
+        "${PREFIX}/share/umrs/templates"
         "${PREFIX}/share/man/man1"
         "${PREFIX}/share/man/fr/man1"
         "${PREFIX}/share/locale"
-        "${PREFIX}/share/templates"
-        "${PREFIX}/share/umrs"
-        "${PREFIX}/var/lib"
-        "${PREFIX}/var/log"
+    )
+
+    # Variable data under /var/opt/umrs (FHS §4.9.2).
+    local var_dirs=(
+        "${VAR_DIR}/lib"
+        "${VAR_DIR}/log"
     )
 
     local d
-    for d in "${dirs[@]}"; do
+    for d in "${static_dirs[@]}" "${var_dirs[@]}"; do
         sudo_or_echo "mkdir ${d}" mkdir -p -- "${d}" || return 3
+        sudo_or_echo "chown ${PKG_USER}:${PKG_GROUP} ${d}" \
+            chown "${PKG_USER}:${PKG_GROUP}" "${d}" || return 3
     done
 
-    # Ownership + modes per proposal Section 7.
-    sudo_or_echo "chown root:root ${PREFIX}/bin" chown root:root "${PREFIX}/bin" || return 3
+    # Mode assignments.
+    # Static package directories are world-readable, group-writable by umrs
+    # for ease of package re-install by admins in the umrs group.
     sudo_or_echo "chmod 0755 ${PREFIX}/bin" chmod 0755 "${PREFIX}/bin" || return 3
+    sudo_or_echo "chmod 0755 ${PREFIX}/share/umrs" \
+        chmod 0755 "${PREFIX}/share/umrs" || return 3
+    sudo_or_echo "chmod 0755 ${PREFIX}/share/umrs/templates" \
+        chmod 0755 "${PREFIX}/share/umrs/templates" || return 3
+    sudo_or_echo "chmod 0755 ${PREFIX}/share/man/man1" \
+        chmod 0755 "${PREFIX}/share/man/man1" || return 3
+    sudo_or_echo "chmod 0755 ${PREFIX}/share/man/fr/man1" \
+        chmod 0755 "${PREFIX}/share/man/fr/man1" || return 3
+    sudo_or_echo "chmod 0755 ${PREFIX}/share/locale" \
+        chmod 0755 "${PREFIX}/share/locale" || return 3
 
-    sudo_or_echo "chown root:${ADMIN_GROUP} ${PREFIX}/etc" \
-        chown "root:${ADMIN_GROUP}" "${PREFIX}/etc" || return 3
-    sudo_or_echo "chmod 2775 ${PREFIX}/etc" chmod 2775 "${PREFIX}/etc" || return 3
+    # Variable data directories -- setgid so new entries inherit umrs group.
+    sudo_or_echo "chmod 2775 ${VAR_DIR}/lib" chmod 2775 "${VAR_DIR}/lib" || return 3
+    sudo_or_echo "chmod 2770 ${VAR_DIR}/log" chmod 2770 "${VAR_DIR}/log" || return 3
 
-    sudo_or_echo "chown root:${ADMIN_GROUP} ${PREFIX}/var/lib" \
-        chown "root:${ADMIN_GROUP}" "${PREFIX}/var/lib" || return 3
-    sudo_or_echo "chmod 2775 ${PREFIX}/var/lib" chmod 2775 "${PREFIX}/var/lib" || return 3
-
-    sudo_or_echo "chown root:${ADMIN_GROUP} ${PREFIX}/var/log" \
-        chown "root:${ADMIN_GROUP}" "${PREFIX}/var/log" || return 3
-    sudo_or_echo "chmod 2770 ${PREFIX}/var/log" chmod 2770 "${PREFIX}/var/log" || return 3
-
-    # Read-only share/ stays root:root.
-    sudo_or_echo "chown -R root:root ${PREFIX}/share" \
-        chown -R root:root "${PREFIX}/share" || return 3
-
-    _syslog "layout created under ${PREFIX}"
+    _syslog "layout subdirectories created under ${PREFIX}, ${ETC_DIR}, ${VAR_DIR}"
     _info "layout complete"
 }
 
 ########################################
 # Step 3 -- file placement
+#
+# Source layout (produced by `cargo xtask stage`):
+#   ${STAGING_DIR}/bin/                  executables + scripts
+#   ${STAGING_DIR}/share/umrs/           JSON reference databases
+#   ${STAGING_DIR}/share/umrs/templates/ setrans.conf templates
+#   ${STAGING_DIR}/share/man/            man pages (man1, fr/man1)
+#   ${STAGING_DIR}/share/locale/         compiled gettext catalogs
+#
+# Destination layout (FHS 2.3 §4.11, §5.15):
+#   ${PREFIX}/bin/                       = ${STAGING_DIR}/bin/
+#   ${PREFIX}/share/umrs/                = ${STAGING_DIR}/share/umrs/
+#   ${PREFIX}/share/umrs/templates/      = ${STAGING_DIR}/share/umrs/templates/
+#   ${PREFIX}/share/man/...              = ${STAGING_DIR}/share/man/...
+#   ${PREFIX}/share/locale/...           = ${STAGING_DIR}/share/locale/...
+#
+# All installed files are owned umrs:umrs per site policy (see header).
 ########################################
 place_files() {
     _info "placing files from ${STAGING_DIR}"
@@ -282,30 +387,35 @@ place_files() {
         local name
         name=$(basename -- "${b}")
         sudo_or_echo "install ${name}" \
-            install -m 0755 -o root -g root -- "${b}" "${PREFIX}/bin/${name}" || return 3
+            install -m 0755 -o "${PKG_USER}" -g "${PKG_GROUP}" -- \
+                "${b}" "${PREFIX}/bin/${name}" || return 3
     done
 
-    # Configuration files -- recursive copy, preserving subdirectory
-    # structure (e.g. config/ca/, config/us/ for label catalogs).
-    if [[ -d "${STAGING_DIR}/config" ]]; then
-        local c rel dst dst_dir
-        while IFS= read -r -d '' c; do
-            rel="${c#"${STAGING_DIR}"/config/}"
-            dst="${PREFIX}/etc/${rel}"
-            dst_dir=$(dirname -- "${dst}")
-            # Create the destination subdirectory if needed.
-            if [[ "${dst_dir}" != "${PREFIX}/etc" ]]; then
-                sudo_or_echo "mkdir ${dst_dir}" \
-                    mkdir -p -- "${dst_dir}" || return 3
-                sudo_or_echo "chown root:${ADMIN_GROUP} ${dst_dir}" \
-                    chown "root:${ADMIN_GROUP}" "${dst_dir}" || return 3
-                sudo_or_echo "chmod 2775 ${dst_dir}" \
-                    chmod 2775 "${dst_dir}" || return 3
-            fi
-            sudo_or_echo "install etc/${rel}" \
-                install -m 0644 -o root -g "${ADMIN_GROUP}" -- \
-                    "${c}" "${dst}" || return 3
-        done < <(find "${STAGING_DIR}/config" -type f -print0)
+    # Static reference databases under share/umrs/ (FHS §4.11).
+    # Flat layout: no us/ or ca/ subdirs, just top-level JSON files plus
+    # the templates/ subdirectory.
+    if [[ -d "${STAGING_DIR}/share/umrs" ]]; then
+        local j name
+        for j in "${STAGING_DIR}"/share/umrs/*.json; do
+            [[ -f "${j}" ]] || continue
+            name=$(basename -- "${j}")
+            sudo_or_echo "install share/umrs/${name}" \
+                install -m 0644 -o "${PKG_USER}" -g "${PKG_GROUP}" -- \
+                    "${j}" "${PREFIX}/share/umrs/${name}" || return 3
+        done
+
+        # Templates -- operators customize and copy into /etc/ (e.g.,
+        # /etc/selinux/<policy>/setrans.conf). We ship them read-only.
+        if [[ -d "${STAGING_DIR}/share/umrs/templates" ]]; then
+            local t
+            for t in "${STAGING_DIR}"/share/umrs/templates/*; do
+                [[ -f "${t}" ]] || continue
+                name=$(basename -- "${t}")
+                sudo_or_echo "install share/umrs/templates/${name}" \
+                    install -m 0644 -o "${PKG_USER}" -g "${PKG_GROUP}" -- \
+                        "${t}" "${PREFIX}/share/umrs/templates/${name}" || return 3
+            done
+        fi
     fi
 
     # Man pages (optional -- only if staging produced them).
@@ -314,7 +424,7 @@ place_files() {
         for m in "${STAGING_DIR}"/share/man/man1/*; do
             [[ -f "${m}" ]] || continue
             sudo_or_echo "install man $(basename -- "${m}")" \
-                install -m 0644 -o root -g root -- \
+                install -m 0644 -o "${PKG_USER}" -g "${PKG_GROUP}" -- \
                     "${m}" "${PREFIX}/share/man/man1/$(basename -- "${m}")" || return 3
         done
     fi
@@ -323,7 +433,7 @@ place_files() {
         for m in "${STAGING_DIR}"/share/man/fr/man1/*; do
             [[ -f "${m}" ]] || continue
             sudo_or_echo "install fr man $(basename -- "${m}")" \
-                install -m 0644 -o root -g root -- \
+                install -m 0644 -o "${PKG_USER}" -g "${PKG_GROUP}" -- \
                     "${m}" "${PREFIX}/share/man/fr/man1/$(basename -- "${m}")" || return 3
         done
     fi
@@ -339,12 +449,12 @@ place_files() {
             dst_dir=$(dirname -- "${dst}")
             sudo_or_echo "mkdir ${dst_dir}" \
                 mkdir -p -- "${dst_dir}" || return 3
-            sudo_or_echo "chown root:root ${dst_dir}" \
-                chown root:root "${dst_dir}" || return 3
+            sudo_or_echo "chown ${PKG_USER}:${PKG_GROUP} ${dst_dir}" \
+                chown "${PKG_USER}:${PKG_GROUP}" "${dst_dir}" || return 3
             sudo_or_echo "chmod 0755 ${dst_dir}" \
                 chmod 0755 "${dst_dir}" || return 3
             sudo_or_echo "install locale/${rel}" \
-                install -m 0644 -o root -g root -- \
+                install -m 0644 -o "${PKG_USER}" -g "${PKG_GROUP}" -- \
                     "${mo}" "${dst}" || return 3
         done < <(find "${STAGING_DIR}/share/locale" -type f -name '*.mo' -print0)
     fi
@@ -429,22 +539,39 @@ verify_install() {
         rc=5
     fi
 
-    # Spot-check directory modes.
+    # Spot-check that the FHS-compliant directory set is present with the
+    # expected ownership. We do not check the FHS roots themselves (preflight
+    # did that) -- this pass validates the subtrees this script created.
     local m
     m=$(stat -c '%U:%G %a' -- "${PREFIX}/bin")
     _info "verify: ${PREFIX}/bin = ${m}"
 
-    m=$(stat -c '%U:%G %a' -- "${PREFIX}/etc")
-    _info "verify: ${PREFIX}/etc = ${m}"
-    if [[ "${m}" != "root:${ADMIN_GROUP} 2775" ]]; then
-        _warn "verify: ${PREFIX}/etc DAC mismatch (expected root:${ADMIN_GROUP} 2775)"
+    m=$(stat -c '%U:%G %a' -- "${PREFIX}/share/umrs")
+    _info "verify: ${PREFIX}/share/umrs = ${m}"
+    if [[ "${m}" != "${PKG_USER}:${PKG_GROUP} 755" ]]; then
+        _warn "verify: ${PREFIX}/share/umrs DAC mismatch (expected ${PKG_USER}:${PKG_GROUP} 755)"
         rc=5
     fi
 
-    m=$(stat -c '%U:%G %a' -- "${PREFIX}/var/log")
-    _info "verify: ${PREFIX}/var/log = ${m}"
-    if [[ "${m}" != "root:${ADMIN_GROUP} 2770" ]]; then
-        _warn "verify: ${PREFIX}/var/log DAC mismatch (expected root:${ADMIN_GROUP} 2770)"
+    m=$(stat -c '%U:%G %a' -- "${VAR_DIR}/log")
+    _info "verify: ${VAR_DIR}/log = ${m}"
+    if [[ "${m}" != "${PKG_USER}:${PKG_GROUP} 2770" ]]; then
+        _warn "verify: ${VAR_DIR}/log DAC mismatch (expected ${PKG_USER}:${PKG_GROUP} 2770)"
+        rc=5
+    fi
+
+    m=$(stat -c '%U:%G %a' -- "${VAR_DIR}/lib")
+    _info "verify: ${VAR_DIR}/lib = ${m}"
+    if [[ "${m}" != "${PKG_USER}:${PKG_GROUP} 2775" ]]; then
+        _warn "verify: ${VAR_DIR}/lib DAC mismatch (expected ${PKG_USER}:${PKG_GROUP} 2775)"
+        rc=5
+    fi
+
+    # Spot-check a representative reference-data file.
+    if [[ -f "${PREFIX}/share/umrs/US-CUI-LABELS.json" ]]; then
+        _info "verify: ${PREFIX}/share/umrs/US-CUI-LABELS.json present"
+    else
+        _warn "verify: ${PREFIX}/share/umrs/US-CUI-LABELS.json missing"
         rc=5
     fi
 
