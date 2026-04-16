@@ -57,29 +57,54 @@ The `umrs` login account and group already exist (uid/gid 1004). Knox does NOT
 need `sudo useradd` or `sudo groupadd` for routine install work — flag to Jamie
 if a new account or group becomes necessary.
 
-**Standard install sequence (document this in the operator guide):**
+**Standard install sequence (FHS 2.3 compliant — document this in the operator guide):**
+
+The UMRS layout spans three FHS roots per FHS 2.3 §3.7.4, §3.12, §4.9.2,
+§5.15:
+
+- `/opt/umrs/`       — static package files (binaries, reference data, docs)
+- `/etc/opt/umrs/`   — host-editable configuration (reserved for future use)
+- `/var/opt/umrs/`   — variable data (logs, state)
+
+All three roots are provisioned once as `umrs:umrs 0755` before any install runs.
 
 ```bash
-# 1. Create the directory skeleton as the umrs user (SSH, not sudo -u —
-#    only SSH performs the proper SELinux login transition)
-ssh umrs mkdir -p /opt/umrs/{bin,etc,share/templates,share/umrs,var/lib,var/log}
+# 1. Provision the three FHS roots (one-time, out of band)
+sudo mkdir -p /opt/umrs /etc/opt/umrs /var/opt/umrs
+sudo chown umrs:umrs /opt/umrs /etc/opt/umrs /var/opt/umrs
+sudo chmod 0755 /opt/umrs /etc/opt/umrs /var/opt/umrs
 
-# 2. Build and load the policy module
+# 2. Build the SELinux policy module
 cd components/rusty-gadgets/selinux
 make
 sudo semodule -i umrs.pp
 sudo semodule -l | grep '^umrs$'
 
-# 3. Apply labels
-sudo restorecon -RFv /opt/umrs
+# 3. Stage and install the workspace
+cd ..
+cargo xtask stage
+./scripts/umrs-install.sh
 
-# 4. Map the umrs login account to a confined SELinux user
+# 4. Apply labels (install script already runs restorecon, but repeat if
+#    the policy module is reloaded afterward)
+sudo restorecon -RFv /opt/umrs
+# Future: also /etc/opt/umrs and /var/opt/umrs once umrs.fc.in is updated
+#         with FHS-compliant entries for those paths.
+
+# 5. Map the umrs login account to a confined SELinux user
 sudo semanage login -a -s user_u umrs
 sudo semanage login -l | grep '^umrs'
 
-# 5. Verify
-ls -lZ /opt/umrs /opt/umrs/bin
+# 6. Verify
+./scripts/umrs-install.sh --verify
+ls -lZ /opt/umrs/bin /opt/umrs/share/umrs /var/opt/umrs/log
 ```
+
+**Known gap (2026-04-16):** `umrs.fc.in` still encodes the pre-FHS paths
+(`/opt/umrs/etc`, `/opt/umrs/var`). Until it is refreshed, `restorecon`
+will not label the new `/etc/opt/umrs` and `/var/opt/umrs` trees. The
+installer still runs cleanly because the files landing in those trees
+receive the parent directory's context via inheritance.
 
 **Still needs Jamie for:**
 - `sudo useradd` / `sudo groupadd` — not yet granted

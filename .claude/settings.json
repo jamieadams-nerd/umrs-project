@@ -337,7 +337,11 @@
       "Bash(logger -t umrs-install -p auth.notice \"removed legacy modules cui_lei, umrs_cui, umrs\")",
       "Bash(logger -t umrs-install -p auth.notice \"installed umrs policy module\")",
       "Read(//var/lib/selinux/targeted/active/**)",
-      "Read(//etc/selinux/targeted/contexts/files/**)"
+      "Read(//etc/selinux/targeted/contexts/files/**)",
+      "Bash(awk '/#\\\\[derive\\\\\\(.*Parser|#\\\\[derive\\\\\\(.*Subcommand|#\\\\[derive\\\\\\(.*Args/,/^}/' umrs-c2pa/src/main.rs)",
+      "Bash(awk '/#\\\\[derive\\\\\\(.*Parser|#\\\\[derive\\\\\\(.*Subcommand|#\\\\[derive\\\\\\(.*Args/,/^}/' umrs-label/src/main.rs)",
+      "Bash(awk '/#\\\\[derive\\\\\\(.*Parser|#\\\\[derive\\\\\\(.*Subcommand|#\\\\[derive\\\\\\(.*Args/,/^}/' umrs-stat/src/main.rs)",
+      "Bash(command -v msgfmt)"
     ]
   },
   "enabledPlugins": {

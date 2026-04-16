@@ -5,8 +5,8 @@
 //
 // Usage:
 //   cargo run -p umrs-labels --example labels -- <catalog.json>
-//   cargo run -p umrs-labels --example labels -- config/us/US-CUI-LABELS.json
-//   cargo run -p umrs-labels --example labels -- config/ca/CANADIAN-PROTECTED.json
+//   cargo run -p umrs-labels --example labels -- config/US-CUI-LABELS.json
+//   cargo run -p umrs-labels --example labels -- config/CANADIAN-PROTECTED.json
 
 use umrs_labels::cui::catalog;
 

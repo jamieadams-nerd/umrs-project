@@ -16,12 +16,12 @@ use umrs_labels::cui::catalog;
 
 fn us_catalog_path() -> PathBuf {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    PathBuf::from(manifest_dir).join("config/us/US-CUI-LABELS.json")
+    PathBuf::from(manifest_dir).join("config/US-CUI-LABELS.json")
 }
 
 fn ca_catalog_path() -> PathBuf {
     let manifest_dir = env!("CARGO_MANIFEST_DIR");
-    PathBuf::from(manifest_dir).join("config/ca/CANADIAN-PROTECTED.json")
+    PathBuf::from(manifest_dir).join("config/CANADIAN-PROTECTED.json")
 }
 
 fn levels_path() -> PathBuf {

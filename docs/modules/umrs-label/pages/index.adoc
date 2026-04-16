@@ -26,25 +26,20 @@ No catalog mutation is possible through the interface.
 
 == Configuration and Data Files
 
-`umrs-label` reads JSON catalog files that define the label registry.
+`umrs-label` reads JSON reference databases that define the label registry.
 No runtime configuration file is required.
-Catalog paths default to the `config/` subdirectory of the current working directory
-and can be overridden with `--us-catalog` and `--ca-catalog`.
+Under the FHS 2.3 §4.11 layout, catalog paths default to
+`/opt/umrs/share/umrs/`. They can be overridden with `--us-catalog` and
+`--ca-catalog`, or collectively redirected with the `UMRS_CONFIG_DIR`
+environment variable for development runs.
 
 [mermaid]
 ....
 flowchart LR
-    subgraph us_config["US CUI Catalog (config/us/)"]
+    subgraph share_umrs["/opt/umrs/share/umrs/ (FHS §4.11 reference data)"]
         US_LABELS["US-CUI-LABELS.json\n(CUI markings, designations,\nhandling instructions,\nwarning statements)"]
         US_PALETTE["US-CUI-PALETTE.json\n(marking display colors)"]
-        US_HANDLING["US-CUI-HANDLING.json\n(handling requirement details)"]
-    end
-
-    subgraph ca_config["Canadian Protected Catalog (config/ca/)"]
         CA_LABELS["CANADIAN-PROTECTED.json\n(Protected A/B/C markings,\nTB policy terms)"]
-    end
-
-    subgraph shared_config["Shared Config"]
         LEVELS["LEVELS.json\n(sensitivity level definitions\ns0–s3 across Five Eyes)"]
     end
 
@@ -58,7 +53,6 @@ flowchart LR
 
     US_LABELS --> TOOL
     US_PALETTE --> TOOL
-    US_HANDLING --> TOOL
     CA_LABELS --> TOOL
     LEVELS --> TOOL
     SELINUX_STATE -- "TUI header context\n(umrs-platform + SecureReader)" --> TOOL
@@ -76,15 +70,15 @@ flowchart LR
   Contains the `markings` object with one entry per CUI marking.
   Each entry carries: `name`, `abbrv_name`, `index_group`, `designation`,
   `level`, `required_warning_statement`, and `required_dissemination_control`.
-  Path defaults to `config/us/US-CUI-LABELS.json`.
-  Override with `--us-catalog`.
+  Path defaults to `/opt/umrs/share/umrs/US-CUI-LABELS.json`.
+  Override with `--us-catalog` or set `UMRS_CONFIG_DIR`.
 
 | `CANADIAN-PROTECTED.json`
 | Canadian Protected catalog (Protected A, B, C).
   Uses the same `markings` structure as the US catalog.
   Labels use Treasury Board terminology.
-  Path defaults to `config/ca/CANADIAN-PROTECTED.json`.
-  Override with `--ca-catalog`.
+  Path defaults to `/opt/umrs/share/umrs/CANADIAN-PROTECTED.json`.
+  Override with `--ca-catalog` or set `UMRS_CONFIG_DIR`.
   Optional: the tool continues if this file is absent.
 
 | `LEVELS.json`
@@ -96,10 +90,6 @@ flowchart LR
   Used by the TUI tree to apply per-marking colors.
   CUI palette colors do not use red or orange, which are reserved for
   classified tiers in Five Eyes systems.
-
-| `US-CUI-HANDLING.json`
-| Detailed handling requirement text for each CUI category.
-  Displayed in the detail panel when an operator selects a marking.
 
 | `/sys/fs/selinux/enforce`
 | Live SELinux enforcement mode — read via `SecureReader` (sysfs magic verified).
@@ -132,7 +122,7 @@ umrs-label
 umrs-label --cli
 
 # Use a custom catalog path
-umrs-label --us-catalog /etc/umrs/catalogs/US-CUI-LABELS.json
+umrs-label --us-catalog /opt/umrs/share/umrs/US-CUI-LABELS.json
 
 # Show help
 umrs-label --help

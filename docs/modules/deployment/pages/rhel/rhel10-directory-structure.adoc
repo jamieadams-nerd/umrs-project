@@ -1,59 +1,201 @@
-= UMRS Directory Structure
-:description: Directory layout for UMRS configuration, binaries, and state on RHEL 10.
+= UMRS Directory Structure on RHEL 10
+:description: FHS 2.3 compliant directory layout for UMRS binaries, static data, host configuration, and variable data.
 
-// NOTE: This page is a placeholder. Directory paths and installation procedures
-// are still being defined. Update as the design firms up.
+UMRS follows the Linux Filesystem Hierarchy Standard 2.3 for add-on packages.
+Static files, host-editable configuration, and variable data each live under
+separate root directories — not commingled under a single tree — so that
+`/opt` can be mounted read-only without breaking logging or configuration.
 
-The following directory structure is planned for UMRS on RHEL 10. Paths follow
-Linux FHS conventions and will have SELinux file context assignments once the
-policy modules are complete.
+== The Three FHS Roots
 
-== Planned Paths
-
-[cols="1,2",options="header"]
+[cols="1,2,2",options="header"]
 |===
-| Path | Purpose
+| Root | FHS Reference | Purpose
 
-| `/etc/umrs`       | Configuration files (JSON, policy references)
-| `/usr/lib/umrs`   | Runtime support files
-| `/usr/share/umrs` | Static data, label definitions, documentation
-|===
+| `/opt/umrs/`
+| FHS 2.3 §3.12, §5.15
+| Static package files: binaries, reference databases, man pages, compiled
+  locale catalogs. The package owns this tree. Never modified at runtime.
 
-// TBD: Add /var/lib/umrs for runtime state files?
-// TBD: Confirm SELinux file context assignments for each path
-// TBD: Add RPM package layout once packaging work starts
+| `/etc/opt/umrs/`
+| FHS 2.3 §3.7.4
+| Host-specific, admin-editable configuration. Reserved for future use; no
+  UMRS config files are mandatory here in the current phase.
 
-== Files to Install
-
-The following files will be placed into the UMRS directory structure:
-
-* `umrs-mls-labels.json` → `/etc/umrs/`
-* `umrs-mls-state.json` → `/etc/umrs/` (or `/var/lib/umrs/` — TBD)
-* UMRS binaries → `/usr/bin/` or `/usr/lib/umrs/`
-* SELinux policy modules → loaded via `semodule` (no permanent install path needed)
-
-// TBD: Finalize installation paths for all files
-// TBD: Add semodule loading procedure for SELinux policy modules
-
-== Create the Directory Structure
-
-// TBD: Add commands once paths are finalized
-// Something like:
-//   sudo mkdir -p /etc/umrs /usr/lib/umrs /usr/share/umrs
-//   sudo restorecon -Rv /etc/umrs /usr/lib/umrs /usr/share/umrs
-
-== Documentation
-
-UMRS documentation will be available in multiple forms:
-
-[cols="1,2",options="header"]
-|===
-| Format | Path
-
-| Antora HTML site  | TBD
-| Man pages         | `/usr/share/man/`
-| API docs (rustdoc) | TBD
-| Desktop help (yelp) | `/usr/share/help/`
+| `/var/opt/umrs/`
+| FHS 2.3 §4.9.2
+| Variable data: logs, state files, runtime databases. Written during normal
+  operation.
 |===
 
-// TBD: Add install procedures for each documentation format
+From FHS 2.3 §5.15: _"No other package files may exist outside the `/opt`,
+`/var/opt`, and `/etc/opt` hierarchies."_ This separation is not a style
+preference — it is a hard requirement that allows the package tree to be
+mounted read-only and host-specific configuration to survive a reinstall.
+
+== Complete Layout
+
+[source,text]
+----
+/opt/umrs/                                  (FHS §5.15 — static files)
+├── bin/                                    executable binaries
+│   ├── umrs-c2pa                           C2PA provenance verifier
+│   ├── umrs-label                          security label registry browser
+│   ├── umrs-ls                             security-aware ls(1)
+│   ├── umrs-stat                           security-aware stat(1)
+│   └── umrs-uname                          security-aware uname(1)
+│
+└── share/                                  (FHS §4.11)
+    ├── umrs/                               package-specific reference data
+    │   ├── US-CUI-LABELS.json              NARA CUI registry catalog
+    │   ├── CANADIAN-PROTECTED.json         Treasury Board A/B/C catalog
+    │   ├── LEVELS.json                     MCS sensitivity level definitions
+    │   ├── US-CUI-PALETTE.json             CUI marking color palette
+    │   └── templates/                      configuration templates
+    │       ├── MLS-setrans.conf.template
+    │       └── TARGETED-setrans.conf-template
+    ├── man/
+    │   ├── man1/                           English man pages (section 1)
+    │   └── fr/man1/                        Canadian French man pages
+    └── locale/
+        └── <locale>/LC_MESSAGES/           compiled gettext catalogs
+
+/etc/opt/umrs/                              (FHS §3.7.4 — admin config)
+                                            reserved for future use
+
+/var/opt/umrs/                              (FHS §4.9.2 — variable data)
+├── lib/                                    runtime state
+└── log/                                    log files
+----
+
+The `share/umrs/` subtree mirrors the FHS `/usr/share/<package>/` pattern
+used by zoneinfo, MIME, and hwdata — static reference databases shipped with
+the software and never modified at runtime.
+
+== Templates vs Configuration
+
+The `.template` files in `share/umrs/templates/` are not configuration. They
+are reference starting points that operators customize and copy into
+`/etc/selinux/<policy>/setrans.conf`. A file only becomes configuration once
+an admin has deployed it to `/etc/`.
+
+This distinction matters for backup and change tracking: the templates are
+owned by the package and replaced on every upgrade; the installed config
+is owned by the site and must survive upgrades.
+
+== Ownership and Permissions
+
+All three FHS roots and every file UMRS installs are owned by the `umrs`
+user and `umrs` group. The `umrs` account already exists with uid/gid
+1004 on RHEL 10 systems prepared for UMRS deployment.
+
+[cols="2,1,1,2",options="header"]
+|===
+| Path | Owner | Mode | Notes
+
+| `/opt/umrs/`                   | `umrs:umrs` | `0755` | Provisioned out of band
+| `/opt/umrs/bin/`               | `umrs:umrs` | `0755` | Binaries are `0755`
+| `/opt/umrs/share/umrs/`        | `umrs:umrs` | `0755` | Reference data is `0644`
+| `/opt/umrs/share/umrs/templates/` | `umrs:umrs` | `0755` | Templates are `0644`
+| `/opt/umrs/share/man/...`      | `umrs:umrs` | `0755` | Man pages are `0644`
+| `/opt/umrs/share/locale/...`   | `umrs:umrs` | `0755` | Catalogs are `0644`
+| `/etc/opt/umrs/`               | `umrs:umrs` | `0755` | Provisioned out of band
+| `/var/opt/umrs/`               | `umrs:umrs` | `0755` | Provisioned out of band
+| `/var/opt/umrs/lib/`           | `umrs:umrs` | `2775` | setgid — new entries inherit umrs group
+| `/var/opt/umrs/log/`           | `umrs:umrs` | `2770` | setgid + no world access
+|===
+
+== SELinux Context Plan
+
+File contexts for the layout are defined in
+`components/rusty-gadgets/selinux/umrs.fc.in`. The canonical mapping is:
+
+[cols="2,2",options="header"]
+|===
+| Path pattern | SELinux type
+
+| `/opt/umrs(/.*)?`                    | `usr_t`
+| `/opt/umrs/bin(/.*)?`                | `umrs_bin_t`
+| `/opt/umrs/share/umrs(/.*)?`         | `umrs_data_rw_t`
+| `/opt/umrs/share/man(/.*)?`          | `usr_t`
+| `/opt/umrs/share/locale(/.*)?`       | `usr_t`
+| `/etc/opt/umrs(/.*)?`                | _pending policy update_
+| `/var/opt/umrs/lib(/.*)?`            | _pending policy update_
+| `/var/opt/umrs/log(/.*)?`            | _pending policy update_
+|===
+
+IMPORTANT: As of 2026-04-16 the `umrs.fc.in` template still encodes the
+pre-FHS paths (`/opt/umrs/etc`, `/opt/umrs/var`). The policy module must be
+refreshed before `restorecon` will label `/etc/opt/umrs/` and
+`/var/opt/umrs/` correctly. This is tracked as a follow-up for the
+security-engineer role.
+
+== Provisioning the FHS Roots
+
+The three top-level roots are provisioned once, out of band, before the
+installer runs. On a fresh RHEL 10 system:
+
+[source,bash]
+----
+sudo mkdir -p /opt/umrs /etc/opt/umrs /var/opt/umrs
+sudo chown umrs:umrs /opt/umrs /etc/opt/umrs /var/opt/umrs
+sudo chmod 0755 /opt/umrs /etc/opt/umrs /var/opt/umrs
+----
+
+The `umrs-install.sh` script verifies these roots exist as `umrs:umrs`
+during its preflight step and will refuse to proceed if any are missing
+or mislabeled.
+
+== Populating the Layout
+
+The `umrs-install.sh` installer reads from the staging tree produced by
+`cargo xtask stage` and writes into the three FHS roots. It never creates
+or modifies the roots themselves — only the subtrees beneath them.
+
+[source,bash]
+----
+# 1. Build and stage the workspace
+cd components/rusty-gadgets
+cargo xtask stage
+
+# 2. Run the installer (dry-run first to inspect the command list)
+./scripts/umrs-install.sh --dry-run
+./scripts/umrs-install.sh
+
+# 3. Verify the install
+./scripts/umrs-install.sh --verify
+----
+
+The installer performs these steps in order:
+
+. *Preflight* — verifies the `umrs` user and group exist, the three FHS
+  roots are present with correct ownership, SELinux is enabled, and the
+  staging tree was produced.
+. *Layout* — creates the subdirectories under each FHS root
+  (`/opt/umrs/bin`, `/opt/umrs/share/umrs`, `/var/opt/umrs/log`, etc.).
+. *File placement* — copies binaries, reference databases, templates,
+  man pages, and compiled locale catalogs to their destinations.
+. *Policy load* — installs the `umrs` SELinux policy module.
+. *Context application* — runs `restorecon -RF /opt/umrs`.
+. *Verification* — spot-checks binary labels and directory modes.
+
+== Compliance Mapping
+
+[cols="2,3",options="header"]
+|===
+| Control | Coverage
+
+| NIST SP 800-53 CM-2  (Baseline Configuration)    | Installer captures the authoritative static-file baseline.
+| NIST SP 800-53 CM-6  (Configuration Settings)    | Layout is fixed by FHS 2.3; no site variance permitted.
+| NIST SP 800-53 CM-7  (Least Functionality)       | Only classified artifact types are staged or installed.
+| NIST SP 800-53 CM-8  (Component Inventory)       | `EXPECTED_BINARIES` in the stager declares the full artifact set.
+| NIST SP 800-53 SA-12 (Supply Chain Protection)   | Staging is the IMA-signing checkpoint; no stray files reach signing.
+| FHS 2.3 §3.7.4, §3.12, §4.9.2, §4.11, §5.15      | On-disk layout conforms.
+|===
+
+== Related Pages
+
+* xref:filesystem-layout.adoc[Filesystem Layout] — base RHEL partition scheme
+* xref:rhel/rhel10-installation.adoc[RHEL 10 Installation] — full install walkthrough
+* xref:rhel/rhel10-packages.adoc[RHEL 10 Packages] — required RPM packages
+* xref:rhel/rhel10-setrans.adoc[setrans.conf Setup] — deploy MCS translation

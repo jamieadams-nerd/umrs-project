@@ -259,9 +259,12 @@ fn try_load_catalog(candidates: &[&str]) -> Option<Catalog> {
 /// Returns `(us_catalog, ca_catalog)` where each is `Option<Catalog>`.
 /// Missing or unreadable files yield `None` — the popup degrades gracefully.
 ///
-/// Path resolution uses the documented override chain:
+/// Path resolution uses the documented override chain. Under the FHS 2.3
+/// §4.11 layout the reference databases live flat under
+/// `/opt/umrs/share/umrs/` — there is no `us/` or `ca/` subdirectory.
+///
 ///   1. `UMRS_CONFIG_DIR` environment variable
-///   2. `/opt/umrs/etc/umrs/`  (install default)
+///   2. `/opt/umrs/share/umrs/`  (install default, FHS 2.3 §4.11)
 ///   3. CWD-relative `config/` subtree (development via `cargo run`)
 ///   4. `../umrs-label/config/` (workspace-relative dev fallback)
 ///
@@ -272,6 +275,7 @@ fn try_load_catalog(candidates: &[&str]) -> Option<Catalog> {
 ///   panics.
 /// - **NIST SP 800-53 CM-6**: Configuration Settings — catalog path resolves
 ///   under the documented install root before any other location.
+/// - **FHS 2.3 §4.11**: package-specific static reference data path.
 fn load_catalogs() -> (Option<Catalog>, Option<Catalog>) {
     // Build the candidate list honoring the UMRS_CONFIG_DIR override chain.
     let config_dir_entry: Option<String> = std::env::var("UMRS_CONFIG_DIR").ok();
@@ -279,22 +283,22 @@ fn load_catalogs() -> (Option<Catalog>, Option<Catalog>) {
     let us_candidates: Vec<String> = {
         let mut v = Vec::with_capacity(4);
         if let Some(ref dir) = config_dir_entry {
-            v.push(format!("{dir}/us/US-CUI-LABELS.json"));
+            v.push(format!("{dir}/US-CUI-LABELS.json"));
         }
-        v.push("/opt/umrs/etc/umrs/us/US-CUI-LABELS.json".to_owned());
-        v.push("config/us/US-CUI-LABELS.json".to_owned());
-        v.push("../umrs-label/config/us/US-CUI-LABELS.json".to_owned());
+        v.push("/opt/umrs/share/umrs/US-CUI-LABELS.json".to_owned());
+        v.push("config/US-CUI-LABELS.json".to_owned());
+        v.push("../umrs-label/config/US-CUI-LABELS.json".to_owned());
         v
     };
 
     let ca_candidates: Vec<String> = {
         let mut v = Vec::with_capacity(4);
         if let Some(ref dir) = config_dir_entry {
-            v.push(format!("{dir}/ca/CANADIAN-PROTECTED.json"));
+            v.push(format!("{dir}/CANADIAN-PROTECTED.json"));
         }
-        v.push("/opt/umrs/etc/umrs/ca/CANADIAN-PROTECTED.json".to_owned());
-        v.push("config/ca/CANADIAN-PROTECTED.json".to_owned());
-        v.push("../umrs-label/config/ca/CANADIAN-PROTECTED.json".to_owned());
+        v.push("/opt/umrs/share/umrs/CANADIAN-PROTECTED.json".to_owned());
+        v.push("config/CANADIAN-PROTECTED.json".to_owned());
+        v.push("../umrs-label/config/CANADIAN-PROTECTED.json".to_owned());
         v
     };
 

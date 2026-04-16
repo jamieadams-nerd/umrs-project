@@ -29,19 +29,19 @@ use umrs_labels::cui::catalog;
 // ---------------------------------------------------------------------------
 
 fn mls_setrans_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/MLS-setrans.conf")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/MLS-setrans.conf.template")
 }
 
 fn targeted_setrans_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/TARGETED-setrans.conf")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/TARGETED-setrans.conf-template")
 }
 
 fn us_catalog_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/us/US-CUI-LABELS.json")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/US-CUI-LABELS.json")
 }
 
 fn ca_catalog_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/ca/CANADIAN-PROTECTED.json")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("config/CANADIAN-PROTECTED.json")
 }
 
 // ---------------------------------------------------------------------------

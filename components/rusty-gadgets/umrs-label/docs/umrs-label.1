@@ -36,12 +36,12 @@ and mandatory warning statements for the selected entry.
 .BI \-\-us\-catalog " PATH"
 Path to the US CUI label catalog JSON file.
 Default:
-.IR config/us/US-CUI-LABELS.json .
+.IR /opt/umrs/share/umrs/US-CUI-LABELS.json .
 .TP
 .BI \-\-ca\-catalog " PATH"
 Path to the Canadian Protected label catalog JSON file.
 Default:
-.IR config/ca/CANADIAN-PROTECTED.json .
+.IR /opt/umrs/share/umrs/CANADIAN-PROTECTED.json .
 The Canadian catalog is optional; if the file is absent the tool continues
 with US CUI labels only.
 .TP
@@ -143,10 +143,10 @@ Input Validation \(em clap validates all CLI arguments at entry,
 rejecting unknown flags before any catalog I/O occurs.
 .SH FILES
 .TP
-.I config/us/US-CUI-LABELS.json
+.I /opt/umrs/share/umrs/US-CUI-LABELS.json
 Default US CUI label catalog (relative to working directory).
 .TP
-.I config/ca/CANADIAN-PROTECTED.json
+.I /opt/umrs/share/umrs/CANADIAN-PROTECTED.json
 Default Canadian Protected label catalog (relative to working directory,
 optional).
 .SH STANDARDS

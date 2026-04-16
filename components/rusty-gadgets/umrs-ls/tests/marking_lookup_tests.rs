@@ -33,12 +33,11 @@ use umrs_labels::cui::catalog;
 fn us_catalog_path() -> PathBuf {
     // Tests run with the crate root as the working directory; resolve from
     // the umrs-label crate directory via CARGO_MANIFEST_DIR of umrs-ls.
-    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../umrs-label/config/us/US-CUI-LABELS.json")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../umrs-label/config/US-CUI-LABELS.json")
 }
 
 fn ca_catalog_path() -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../umrs-label/config/ca/CANADIAN-PROTECTED.json")
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../umrs-label/config/CANADIAN-PROTECTED.json")
 }
 
 // ---------------------------------------------------------------------------

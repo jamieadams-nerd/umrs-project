@@ -10,7 +10,8 @@
 //! - Non-executable scripts are skipped with a warning (verified via return
 //!   value inspection of the filter logic)
 //! - Missing `target/` directory causes a non-zero exit with a clear message
-//! - Config copy preserves subdirectory structure (`ca/`, `us/`)
+//! - Config classifier routes `*.json` to `share/umrs/` and setrans templates
+//!   to `share/umrs/templates/` (FHS 2.3 §4.11)
 //! - Missing `scripts/` directory does not cause an error
 //! - `EXPECTED_BINARIES` is non-empty and contains no duplicate entries
 //!
@@ -214,62 +215,113 @@ fn symlink_is_not_stageable() {
     fs::remove_dir_all(&dir).ok();
 }
 
-/// Config copy preserves subdirectory structure.
+/// Config classifier routes JSON databases and setrans templates to the
+/// correct FHS-compliant destinations.
 ///
-/// Verifies that `ca/` and `us/` subdirectories inside a crate's `config/`
-/// appear at the same relative paths under `staging/config/`.
+/// Under the FHS 2.3 §4.11 layout, static package reference databases go to
+/// `staging/share/umrs/` and admin-editable templates go to
+/// `staging/share/umrs/templates/`. Unclassified files are skipped rather
+/// than silently admitted.
 ///
-/// `NIST SP 800-53 CM-2`.
+/// `NIST SP 800-53 CM-2`, `CM-7`. `FHS 2.3 §4.11`.
 #[test]
-fn config_copy_preserves_subdirectory_structure() {
+fn config_classifier_routes_databases_and_templates() {
     let dir = temp_dir("xtask_test_config");
     let src_config = dir.join("fake_crate").join("config");
-    let dst_config = dir.join("staging").join("config");
+    let data_dst = dir.join("staging").join("share").join("umrs");
+    let tmpl_dst = data_dst.join("templates");
 
-    // Create a simulated umrs-label config layout
-    let ca_dir = src_config.join("ca");
-    let us_dir = src_config.join("us");
-    fs::create_dir_all(&ca_dir).expect("create ca/");
-    fs::create_dir_all(&us_dir).expect("create us/");
+    fs::create_dir_all(&src_config).expect("create src config/");
 
-    File::create(ca_dir.join("CANADIAN-PROTECTED.json")).expect("create ca file");
-    File::create(us_dir.join("US-CUI-LABELS.json")).expect("create us file");
-    File::create(src_config.join("top-level.json")).expect("create top-level file");
+    // Simulate the real umrs-label/config/ contents after the flatten pass.
+    File::create(src_config.join("US-CUI-LABELS.json")).expect("create US JSON");
+    File::create(src_config.join("CANADIAN-PROTECTED.json")).expect("create CA JSON");
+    File::create(src_config.join("LEVELS.json")).expect("create levels JSON");
+    File::create(src_config.join("MLS-setrans.conf.template")).expect("create MLS template");
+    File::create(src_config.join("TARGETED-setrans.conf-template"))
+        .expect("create TARGETED template");
+    // Unclassified stray — must be skipped, not staged.
+    File::create(src_config.join("README.txt")).expect("create readme");
 
-    // Run a copy using the same recursive logic as the staging pipeline.
-    copy_dir_recursive_test(&src_config, &dst_config).expect("copy_dir_recursive");
+    // Ignored subdirectory (simulates _scratch/).
+    fs::create_dir_all(src_config.join("_scratch")).expect("create _scratch/");
+    File::create(src_config.join("_scratch").join("draft.json")).expect("create scratch draft");
 
+    classify_and_stage_test(&src_config, &data_dst, &tmpl_dst).expect("classify+stage");
+
+    // JSON databases land in share/umrs/ (flat, no subdirs).
     assert!(
-        dst_config.join("ca").join("CANADIAN-PROTECTED.json").exists(),
-        "ca/CANADIAN-PROTECTED.json should be in staging/config/"
+        data_dst.join("US-CUI-LABELS.json").exists(),
+        "US-CUI-LABELS.json should be in staging/share/umrs/"
     );
     assert!(
-        dst_config.join("us").join("US-CUI-LABELS.json").exists(),
-        "us/US-CUI-LABELS.json should be in staging/config/"
+        data_dst.join("CANADIAN-PROTECTED.json").exists(),
+        "CANADIAN-PROTECTED.json should be in staging/share/umrs/"
     );
     assert!(
-        dst_config.join("top-level.json").exists(),
-        "top-level.json should be in staging/config/"
+        data_dst.join("LEVELS.json").exists(),
+        "LEVELS.json should be in staging/share/umrs/"
+    );
+
+    // Setrans templates land in share/umrs/templates/, regardless of
+    // `.template` vs `-template` suffix inconsistency.
+    assert!(
+        tmpl_dst.join("MLS-setrans.conf.template").exists(),
+        "MLS-setrans.conf.template should be in staging/share/umrs/templates/"
+    );
+    assert!(
+        tmpl_dst.join("TARGETED-setrans.conf-template").exists(),
+        "TARGETED-setrans.conf-template should be in staging/share/umrs/templates/"
+    );
+
+    // Unclassified files are NOT staged.
+    assert!(
+        !data_dst.join("README.txt").exists(),
+        "README.txt must not be admitted to share/umrs/"
+    );
+    assert!(
+        !tmpl_dst.join("README.txt").exists(),
+        "README.txt must not be admitted to share/umrs/templates/"
+    );
+
+    // Subdirectory contents (e.g., _scratch/) are NOT staged.
+    assert!(
+        !data_dst.join("draft.json").exists(),
+        "_scratch/draft.json must not be admitted to share/umrs/"
+    );
+    assert!(
+        !data_dst.join("_scratch").exists(),
+        "_scratch/ must not appear under share/umrs/"
     );
 
     fs::remove_dir_all(&dir).ok();
 }
 
-/// Recursive directory copy — same logic as `stage::copy_dir_recursive`.
+/// Replicates the classification + copy logic of `stage::stage_configs` for
+/// tests, without requiring a `[lib]` target in xtask.
 ///
-/// Duplicated here so the test does not require a `[lib]` target in xtask.
-fn copy_dir_recursive_test(src: &std::path::Path, dst: &std::path::Path) -> std::io::Result<()> {
-    fs::create_dir_all(dst)?;
+/// Keep this in sync with `classify_config_file` in `src/stage.rs`.
+fn classify_and_stage_test(
+    src: &std::path::Path,
+    data_dst: &std::path::Path,
+    tmpl_dst: &std::path::Path,
+) -> std::io::Result<()> {
     for entry in fs::read_dir(src)? {
         let entry = entry?;
-        let src_path = entry.path();
+        let path = entry.path();
         let meta = entry.metadata()?;
-        let dst_path = dst.join(entry.file_name());
-        if meta.is_dir() {
-            copy_dir_recursive_test(&src_path, &dst_path)?;
-        } else if meta.is_file() {
-            fs::copy(&src_path, &dst_path)?;
+        if !meta.is_file() {
+            continue;
         }
+        let name = entry.file_name().to_string_lossy().into_owned();
+        if name.ends_with(".json") {
+            fs::create_dir_all(data_dst)?;
+            fs::copy(&path, data_dst.join(&name))?;
+        } else if name.contains("setrans") && name.contains("template") {
+            fs::create_dir_all(tmpl_dst)?;
+            fs::copy(&path, tmpl_dst.join(&name))?;
+        }
+        // else: unclassified, skip (matches production behaviour).
     }
     Ok(())
 }

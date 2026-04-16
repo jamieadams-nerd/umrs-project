@@ -17,14 +17,28 @@
 //! The declared set is:
 //! `umrs-c2pa`, `umrs-label`, `umrs-ls`, `umrs-stat`, `umrs-uname`.
 //!
-//! ## Staging layout
+//! ## Staging layout (FHS 2.3 compliant)
+//!
+//! The staging tree mirrors the final on-disk layout under `/opt/umrs/`,
+//! which is the package's FHS `/opt/<package>` root (FHS 2.3 §3.12, §5.15).
+//! Host-editable configuration (`/etc/opt/umrs/`) and variable data
+//! (`/var/opt/umrs/`) are NOT part of the staging bundle: per FHS 2.3 §3.7.4
+//! and §4.9.2 those hierarchies live outside `/opt/<package>` and are
+//! provisioned by the installer, not shipped inside the artifact set.
 //!
 //! ```text
 //! staging/
 //!   bin/            ← compiled workspace binaries (expected set verified) +
 //!                     end-user scripts
-//!   config/         ← merged config files from all crates (subdirs preserved)
 //!   share/
+//!     umrs/         ← static package reference databases
+//!                     (CUI labels, Canadian Protected catalog, MCS levels,
+//!                      palette). FHS 2.3 §4.11 — package-specific static
+//!                      architecture-independent data, analogous to
+//!                      /usr/share/zoneinfo or /usr/share/mime.
+//!       templates/  ← configuration templates operators copy and customize
+//!                     into /etc/ (e.g., setrans.conf templates destined for
+//!                     /etc/selinux/<policy>/setrans.conf).
 //!     man/
 //!       man1/       ← English man pages copied from <crate>/docs/*.1
 //!       fr/
@@ -35,6 +49,20 @@
 //!                   ← compiled gettext catalogs copied from
 //!                     <crate>/locale/<locale>/LC_MESSAGES/*.mo
 //! ```
+//!
+//! ## Config classification rule
+//!
+//! Files under each crate's `config/` directory are sorted into two staging
+//! destinations based on filename suffix:
+//!
+//! - `*.json` → `staging/share/umrs/`
+//! - `*setrans*template*` (covers both `.conf.template` and `.conf-template`
+//!   historical suffix variants) → `staging/share/umrs/templates/`
+//!
+//! This split reflects the FHS distinction between immutable reference data
+//! (zoneinfo-style databases) and editable admin configuration. The JSON
+//! catalogs are package-owned reference data; the `.template` files become
+//! configuration only after an operator customizes and places them.
 //!
 //! ## Man page phase
 //!
@@ -60,11 +88,17 @@
 //!
 //! - `NIST SP 800-53 AC-3` — Access Enforcement: execute permission is
 //!   verified before any binary or script is copied to `staging/bin/`.
-//! - `NIST SP 800-53 CM-2` — Baseline Configuration: config file staging
-//!   captures the authoritative configuration baseline for each crate.
+//! - `NIST SP 800-53 CM-2` — Baseline Configuration: reference-data and
+//!   template staging captures the authoritative package baseline per crate.
 //! - `NIST SP 800-53 CM-7` — Least Functionality: only well-typed artifact
-//!   classes (executables, config files, man pages) are accepted; all other
-//!   output artifacts are excluded by the filter.
+//!   classes (executables, reference data, templates, man pages, compiled
+//!   catalogs) are accepted; all other artifacts are excluded by the filter.
+//! - `FHS 2.3 §3.12, §5.15` — `/opt/<package>` layout. Static files live
+//!   inside the package tree; host-specific config and variable data live
+//!   outside it.
+//! - `FHS 2.3 §4.11` — `/usr/share/<package>` pattern for static reference
+//!   databases. The `share/umrs/` subtree mirrors this convention inside
+//!   the `/opt/umrs/` root.
 //! - `NIST SP 800-53 CM-8` — Component Inventory: the expected binary
 //!   manifest ([`EXPECTED_BINARIES`]) declares the complete artifact set.
 //!   Staging fails if any declared component is absent, preventing an
@@ -337,69 +371,154 @@ const CONFIG_CRATES: &[&str] = &[
     "umrs-uname",
 ];
 
-/// Recursively copies a source directory tree into a destination directory,
-/// preserving subdirectory structure.
-fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<()> {
-    fs::create_dir_all(dst).with_context(|| format!("creating {}", dst.display()))?;
-
-    for entry in fs::read_dir(src).with_context(|| format!("reading {}", src.display()))? {
-        let entry = entry.with_context(|| format!("reading entry in {}", src.display()))?;
-        let src_path = entry.path();
-        let meta = entry.metadata().with_context(|| format!("stat {}", src_path.display()))?;
-
-        let file_name = entry.file_name();
-        let dst_path = dst.join(&file_name);
-
-        if meta.is_dir() {
-            copy_dir_recursive(&src_path, &dst_path)?;
-        } else if meta.is_file() {
-            fs::copy(&src_path, &dst_path).with_context(|| {
-                format!("copying {} to {}", src_path.display(), dst_path.display())
-            })?;
-            eprintln!("[stage] config: {}", dst_path.display());
-        }
-    }
-
-    Ok(())
+/// Classification of a single source file found under a crate's `config/`
+/// directory, used to decide which staging subtree it belongs in.
+///
+/// The classification is filename-driven and deliberately coarse. The rules
+/// are defined in [`classify_config_file`].
+enum ConfigKind {
+    /// Static package reference database — goes under `staging/share/umrs/`.
+    /// Per FHS 2.3 §4.11 this is the `/usr/share/<package>` analogue.
+    Database,
+    /// Admin-editable configuration template — goes under
+    /// `staging/share/umrs/templates/`. Operators copy and customize these
+    /// into `/etc/` (for UMRS: `/etc/selinux/<policy>/setrans.conf`).
+    Template,
+    /// Unclassified file. Currently ignored with a diagnostic so that a
+    /// stray README or backup file does not silently land in a reference
+    /// database directory and get labeled as trusted package data.
+    Unknown,
 }
 
-/// Copies `config/` directories from each listed crate into `staging/config/`,
-/// preserving subdirectory structure without crate-name prefixing.
+/// Classifies a file under `config/` by its filename.
 ///
-/// If a crate has no `config/` directory, it is skipped silently.
+/// The rules, in order:
+///
+/// 1. `*.json` → `ConfigKind::Database`
+/// 2. `*setrans*template*`, case-sensitive — matches both
+///    `MLS-setrans.conf.template` and `TARGETED-setrans.conf-template`
+///    (historical inconsistent suffix) → `ConfigKind::Template`
+/// 3. Everything else → `ConfigKind::Unknown`
+///
+/// The classifier is a pure function on filename. It does not read file
+/// contents and does not follow symlinks.
+fn classify_config_file(name: &str) -> ConfigKind {
+    if name.ends_with(".json") {
+        return ConfigKind::Database;
+    }
+    if name.contains("setrans") && name.contains("template") {
+        return ConfigKind::Template;
+    }
+    ConfigKind::Unknown
+}
+
+/// Sweeps each crate's `config/` directory (non-recursive at top level —
+/// `_scratch/` subdirectories and other nested dirs are skipped) and copies
+/// each file into the staging location chosen by [`classify_config_file`].
+///
+/// Scratch directories (`_scratch/`) and other subdirectories under `config/`
+/// are never staged. The flat layout is enforced because under the new
+/// FHS-compliant scheme there is no `us/` or `ca/` subdir — all JSON
+/// databases live at the same level of `share/umrs/`.
+///
+/// Files with unknown classification are logged as a warning and skipped
+/// rather than copied into an unclear location. This is a fail-safe choice:
+/// a misfiled artifact landing in `share/umrs/` would be labeled as trusted
+/// package reference data by the SELinux policy.
 ///
 /// ## Collision policy
 ///
-/// No filename collisions are expected across crates. If two crates contain a
-/// file at the same relative path, the second write will overwrite the first.
-/// This is documented here so that if a collision is introduced in future, the
-/// symptom (silent overwrite) is understood and not mistaken for a bug.
+/// No filename collisions are expected across crates. If two crates ship a
+/// file with the same name and classification, the second write will
+/// overwrite the first. This matches the prior behaviour and is noted so
+/// that a future collision is diagnosed as a data bug, not a tool bug.
 ///
 /// ## Compliance
 ///
-/// `NIST SP 800-53 CM-2` — staging captures the full configuration baseline.
+/// - `NIST SP 800-53 CM-2` — Baseline Configuration: reference data and
+///   templates are part of the auditable deployment artifact set.
+/// - `NIST SP 800-53 CM-7` — Least Functionality: unclassified files are
+///   rejected rather than admitted to the staging bundle.
+/// - `FHS 2.3 §4.11` — static package-specific data layout.
 fn stage_configs(workspace_root: &Path) -> Result<()> {
-    let staging_config = workspace_root.join("staging").join("config");
-    let mut any = false;
+    let data_dst = workspace_root.join("staging").join("share").join("umrs");
+    let tmpl_dst = data_dst.join("templates");
+
+    let mut data_count = 0usize;
+    let mut tmpl_count = 0usize;
+    let mut skipped = 0usize;
+    let mut any_crate = false;
 
     for &crate_rel in CONFIG_CRATES {
         let config_dir = workspace_root.join(crate_rel).join("config");
         if !config_dir.exists() {
             continue;
         }
+        any_crate = true;
 
-        any = true;
-        fs::create_dir_all(&staging_config)
-            .with_context(|| format!("creating {}", staging_config.display()))?;
+        for entry in fs::read_dir(&config_dir)
+            .with_context(|| format!("reading {}", config_dir.display()))?
+        {
+            let entry =
+                entry.with_context(|| format!("reading entry in {}", config_dir.display()))?;
+            let src_path = entry.path();
+            let meta = entry.metadata().with_context(|| format!("stat {}", src_path.display()))?;
 
-        copy_dir_recursive(&config_dir, &staging_config)?;
-        eprintln!("[stage] config from {crate_rel}/config/");
+            // Non-recursive at top of config/: skip subdirectories silently.
+            // Under the FHS-compliant scheme there is no nested layout to
+            // preserve — every shipped file is a top-level file.
+            if !meta.is_file() {
+                continue;
+            }
+
+            let file_name = entry.file_name();
+            let name_cow = file_name.to_string_lossy();
+            let name: &str = name_cow.as_ref();
+
+            match classify_config_file(name) {
+                ConfigKind::Database => {
+                    fs::create_dir_all(&data_dst)
+                        .with_context(|| format!("creating {}", data_dst.display()))?;
+                    let dst = data_dst.join(&file_name);
+                    fs::copy(&src_path, &dst).with_context(|| {
+                        format!("copying {} to {}", src_path.display(), dst.display())
+                    })?;
+                    data_count = data_count.saturating_add(1);
+                    eprintln!("[stage] share/umrs: {name}");
+                }
+                ConfigKind::Template => {
+                    fs::create_dir_all(&tmpl_dst)
+                        .with_context(|| format!("creating {}", tmpl_dst.display()))?;
+                    let dst = tmpl_dst.join(&file_name);
+                    fs::copy(&src_path, &dst).with_context(|| {
+                        format!("copying {} to {}", src_path.display(), dst.display())
+                    })?;
+                    tmpl_count = tmpl_count.saturating_add(1);
+                    eprintln!("[stage] share/umrs/templates: {name}");
+                }
+                ConfigKind::Unknown => {
+                    skipped = skipped.saturating_add(1);
+                    eprintln!(
+                        "WARNING: {crate_rel}/config/{name} is not a classified \
+                         database or template — skipping"
+                    );
+                }
+            }
+        }
+
+        eprintln!("[stage] scanned {crate_rel}/config/");
     }
 
-    if any {
+    if any_crate {
         eprintln!(
-            "[stage] config staging complete → {}",
-            staging_config.display()
+            "[stage] share staging complete → {} database(s), {} template(s){}",
+            data_count,
+            tmpl_count,
+            if skipped > 0 {
+                format!(", {skipped} file(s) skipped — see warnings above")
+            } else {
+                String::new()
+            }
         );
     } else {
         eprintln!("[stage] no config/ directories found in workspace crates");
@@ -721,7 +840,9 @@ fn verify_staged_binaries(workspace_root: &Path) -> Result<()> {
 /// 2. Copies compiled binaries from `target/{profile}/` to `staging/bin/`.
 /// 3. Verifies every name in [`EXPECTED_BINARIES`] landed in `staging/bin/`.
 /// 4. Copies scripts from `scripts/` (if present) to `staging/bin/`.
-/// 5. Copies `config/` trees from all listed crates to `staging/config/`.
+/// 5. Classifies each crate's `config/*` files and copies them to either
+///    `staging/share/umrs/` (JSON reference databases) or
+///    `staging/share/umrs/templates/` (setrans.conf templates). FHS 2.3 §4.11.
 /// 6. Copies pre-built troff man pages from `<crate>/docs/*.1` and
 ///    `<crate>/docs/fr/*.1` into `staging/share/man/` (see [`stage_man_pages`]).
 /// 7. Copies compiled gettext catalogs from `<crate>/locale/<locale>/LC_MESSAGES/*.mo`

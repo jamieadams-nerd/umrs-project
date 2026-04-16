@@ -19,9 +19,14 @@
 //!
 //! ## Catalog File Paths
 //!
-//! Defaults to `config/us/US-CUI-LABELS.json` and
-//! `config/ca/CANADIAN-PROTECTED.json` relative to the current directory.
-//! Override with `--us-catalog` and `--ca-catalog`.
+//! Under the FHS 2.3 §4.11 layout, JSON reference databases live at
+//! `/opt/umrs/share/umrs/` (the package's `/usr/share/<pkg>` analogue).
+//! Defaults resolve in this order:
+//!
+//! 1. Explicit `--us-catalog` / `--ca-catalog` flags
+//! 2. `UMRS_CONFIG_DIR` environment variable — `<dir>/US-CUI-LABELS.json`
+//! 3. `/opt/umrs/share/umrs/US-CUI-LABELS.json` (install default)
+//! 4. `config/US-CUI-LABELS.json` in CWD (development convenience)
 //!
 //! ## Compliance
 //!
@@ -91,17 +96,17 @@ use umrs_ui::viewer::ViewerState;
 struct Args {
     /// Path to the US CUI label catalog JSON file.
     ///
-    /// Default: `/opt/umrs/etc/umrs/us/US-CUI-LABELS.json`.
+    /// Default: `/opt/umrs/share/umrs/US-CUI-LABELS.json` (FHS 2.3 §4.11).
     /// Override priority: `--us-catalog` flag → `UMRS_CONFIG_DIR` env var → default.
-    #[arg(long, default_value = "/opt/umrs/etc/umrs/us/US-CUI-LABELS.json")]
+    #[arg(long, default_value = "/opt/umrs/share/umrs/US-CUI-LABELS.json")]
     us_catalog: String,
 
     /// Path to the Canadian Protected label catalog JSON file.
     ///
-    /// Default: `/opt/umrs/etc/umrs/ca/CANADIAN-PROTECTED.json`.
+    /// Default: `/opt/umrs/share/umrs/CANADIAN-PROTECTED.json` (FHS 2.3 §4.11).
     /// The Canadian catalog is optional; if the file is absent the tool
     /// continues with US CUI labels only.
-    #[arg(long, default_value = "/opt/umrs/etc/umrs/ca/CANADIAN-PROTECTED.json")]
+    #[arg(long, default_value = "/opt/umrs/share/umrs/CANADIAN-PROTECTED.json")]
     ca_catalog: String,
 
     /// Force plain-text CLI output instead of the interactive TUI.
@@ -157,23 +162,26 @@ fn main() {
     let json_mode = args.json;
     let cli_mode = args.cli;
 
-    // Resolve catalog paths using the documented override chain:
+    // Resolve catalog paths using the documented override chain. Under the
+    // FHS 2.3 §4.11 layout the reference databases live flat under
+    // /opt/umrs/share/umrs/ — there is no us/ or ca/ subdirectory.
+    //
     //   1. Explicit --us-catalog / --ca-catalog flags
-    //   2. UMRS_CONFIG_DIR environment variable  → <dir>/us/US-CUI-LABELS.json
-    //   3. /opt/umrs/etc/umrs/  (install default)
-    //   4. config/us/ in CWD   (development convenience)
+    //   2. UMRS_CONFIG_DIR environment variable → <dir>/US-CUI-LABELS.json
+    //   3. /opt/umrs/share/umrs/  (install default, FHS 2.3 §4.11)
+    //   4. config/ in CWD  (development convenience, pre-install)
     //
     // NIST SP 800-53 CM-6 — configuration path resolved before catalog I/O.
-    let default_us = "/opt/umrs/etc/umrs/us/US-CUI-LABELS.json";
-    let default_ca = "/opt/umrs/etc/umrs/ca/CANADIAN-PROTECTED.json";
-    let cwd_us = "config/us/US-CUI-LABELS.json";
-    let cwd_ca = "config/ca/CANADIAN-PROTECTED.json";
+    let default_us = "/opt/umrs/share/umrs/US-CUI-LABELS.json";
+    let default_ca = "/opt/umrs/share/umrs/CANADIAN-PROTECTED.json";
+    let cwd_us = "config/US-CUI-LABELS.json";
+    let cwd_ca = "config/CANADIAN-PROTECTED.json";
 
     let us_catalog_path = if args.us_catalog != default_us {
         // Explicit override.
         args.us_catalog
     } else if let Ok(dir) = std::env::var("UMRS_CONFIG_DIR") {
-        format!("{dir}/us/US-CUI-LABELS.json")
+        format!("{dir}/US-CUI-LABELS.json")
     } else if std::path::Path::new(default_us).exists() {
         default_us.to_owned()
     } else {
@@ -183,7 +191,7 @@ fn main() {
     let ca_catalog_path = if args.ca_catalog != default_ca {
         args.ca_catalog
     } else if let Ok(dir) = std::env::var("UMRS_CONFIG_DIR") {
-        format!("{dir}/ca/CANADIAN-PROTECTED.json")
+        format!("{dir}/CANADIAN-PROTECTED.json")
     } else if std::path::Path::new(default_ca).exists() {
         default_ca.to_owned()
     } else {

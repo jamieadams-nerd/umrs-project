@@ -144,7 +144,7 @@ pub struct Catalog {
     /// Catalog provenance and MCS allocation metadata.
     #[serde(rename = "_metadata")]
     pub metadata: Option<CatalogMetadata>,
-    /// Regulatory marking registry (e.g., `"CUI//LEI"`, `"CUI//LEI/JUV"`,
+    /// Regulatory marking registry (e.g., `"CUI//LEI"`,
     /// `"PROTECTED-A"`). Both US and Canadian catalogs populate this key.
     #[serde(default)]
     pub markings: HashMap<String, Marking>,
@@ -201,7 +201,7 @@ impl Catalog {
         self.markings.iter()
     }
 
-    /// Lookup a marking by its JSON key (e.g., `"CUI//LEI/JUV"`, `"PROTECTED-A"`).
+    /// Lookup a marking by its JSON key (e.g., `"CUI//JUV"`, `"PROTECTED-A"`).
     #[must_use = "returns None if the key is absent; check before use"]
     pub fn marking(&self, key: &str) -> Option<&Marking> {
         self.markings.get(key)
