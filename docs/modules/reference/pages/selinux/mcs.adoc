@@ -64,4 +64,4 @@ systemctl status mcstrans
 
 UMRS uses MCS category labels to represent CUI compartments. The `setrans.conf`
 shipped with UMRS maps categories to CUI label names. See
-xref:deployment:rhel/rhel10-setrans.adoc[CUI Label Configuration] for installation steps.
+xref:deployment:umrs/5b-directory-structure/directory-structure.adoc#etc-opt-umrs[CUI Label Configuration] for installation steps.

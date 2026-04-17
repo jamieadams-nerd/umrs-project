@@ -1,0 +1,220 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/filesystem-layout.adoc
+//   - docs/modules/deployment/pages/linux-baseline.adoc
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/filesystem-layout.adoc
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/linux-baseline.adoc
+= Step 1: Pre-Installation Planning
+:toc: left
+:description: Planning decisions, partition layout, FIPS requirements, and network design for UMRS on RHEL 10.
+
+Before starting the RHEL 10 installer, make three decisions that are difficult
+or impossible to change after installation: whether to enable FIPS mode,
+how to partition the disk, and how to configure the network. This page
+covers each decision and provides the reference tables you will need during
+the installer session.
+
+== Platform Requirements
+
+Every UMRS deployment needs the following before the installer runs:
+
+* A RHEL 10 installation ISO and a valid Red Hat subscription or activation key.
+* At least 64 GB of storage.
+* Two separate network interfaces — see <<network-separation>> below.
+* An internal NTP time source. Accurate time is mandatory for audit logs,
+  Kerberos, certificate validation, and SELinux audit correlation.
+* A clear answer to: *is this a development system or an operational system?*
+  This determines which packages get installed later.
+
+// TBD: Add minimum CPU and RAM specifications.
+
+[[fips-decision]]
+== FIPS Mode Decision
+
+Enable FIPS mode at the installer boot prompt. This is the only supported method
+for a fully compliant RHEL 10 FIPS installation.
+
+Red Hat no longer supports enabling FIPS mode after installation is complete.
+The `fips-mode-setup` tool was found insufficient for full FIPS 140-3 compliance
+because it cannot guarantee that all cryptographic keys (including LUKS disk
+encryption) were generated using FIPS-approved algorithms from the start.
+Enabling FIPS at install time ensures components such as LUKS choose
+FIPS-compliant functions (for example, PBKDF2 instead of Argon2).
+
+IMPORTANT: This decision cannot be reversed without reinstalling the OS.
+If this system will handle CUI under NIST SP 800-171 or CMMC, FIPS mode
+is required.
+
+[[network-separation]]
+== Network Interface Separation
+
+Every UMRS deployment requires at least two separate network interfaces:
+
+* *Management interface* — SSH, administration, and out-of-band control.
+  Place this on a restricted administrative network, not reachable from
+  general user traffic.
+* *Data interface* — operational traffic (application data, monitoring).
+
+Keeping them on separate physical or logical interfaces prevents a compromise
+on the data network from immediately reaching the management plane. This
+satisfies NIST SP 800-53 SC-7 (Boundary Protection) for interface separation.
+
+NOTE: On a virtual machine, use separate virtual NICs attached to separate
+virtual networks — not just separate IP addresses on the same virtual switch.
+
+Zero Trust Architecture guidance (NIST SP 800-207) further supports this design
+by encouraging separation of control planes and data planes. DoD STIGs for RHEL
+explicitly require administrative services to be bound only to trusted interfaces
+or isolated management networks.
+
+=== When More Than Two Interfaces Are Appropriate
+
+Two network interfaces is the baseline. Configure more when the infrastructure
+supports it and the system warrants it:
+
+* Out-of-band hardware management (IPMI, iDRAC, iLO).
+* Storage networks or replication.
+* Separation of different mission enclaves.
+* Cross-domain or MLS channeling.
+
+[[partition-layout]]
+== Partition Layout
+
+Use one of the following layouts. Adjust sizes for your storage capacity.
+The partition structure and mount options are not optional — they are required
+by DISA STIG (CM-6, AU-9, SC-28).
+
+=== Bare-Metal Layout (64 GB Reference)
+
+[cols="2,1,3,2",options="header"]
+|===
+| Mount Point | Size | Purpose | Mount Options
+
+| `/boot`          | 1 GB    | Kernel and initramfs           | defaults
+| `/boot/efi`      | 500 MB  | UEFI firmware partition        | umask=0077
+| `/`              | 15 GB   | OS binaries and system files   | defaults
+| `/home`          | 5 GB    | User data                      | nodev
+| `/tmp`           | 2 GB    | Temporary storage              | nodev,nosuid,noexec
+| `/var`           | 8 GB    | System state and RPM data      | defaults
+| `/var/tmp`       | 2 GB    | Persistent temporary files     | nodev,nosuid,noexec
+| `/var/log`       | 4 GB    | System logs                    | nodev,nosuid
+| `/var/log/audit` | 2 GB    | Audit logs                     | nodev,nosuid
+| `/opt`           | 3 GB    | Third-party applications       | defaults
+| Swap             | 4–8 GB  | Swap space                     | —
+|===
+
+This uses approximately 46–50 GB, leaving room for LVM overhead and future growth.
+
+=== VM-Optimized Layout (64 GB Disk)
+
+Virtual machines can use a smaller footprint. This layout stays fully
+STIG-compliant while reducing disk footprint and keeping snapshots manageable.
+
+[cols="2,1,3,2",options="header"]
+|===
+| Mount Point | Size | Purpose | Mount Options
+
+| `/boot`          | 1 GB    | Kernel and initramfs            | defaults
+| `/boot/efi`      | 500 MB  | UEFI firmware partition         | umask=0077
+| `/`              | 20 GB   | OS binaries and system files    | defaults
+| `/home`          | 2 GB    | User data                       | nodev
+| `/tmp`           | 1 GB    | Temporary storage               | nodev,nosuid,noexec
+| `/var`           | 10 GB   | System state, RPM DB, journals  | defaults
+| `/var/tmp`       | 1 GB    | Persistent temporary files      | nodev,nosuid,noexec
+| `/var/log`       | 4 GB    | System logs                     | nodev,nosuid
+| `/var/log/audit` | 2 GB    | Audit logs                      | nodev,nosuid
+| Swap             | 2–4 GB  | VM memory support               | —
+|===
+
+Omitting `/opt` and `/srv` is acceptable for VMs unless you are running
+third-party services that need them.
+
+==== VM Disk Controller Recommendations
+
+[cols="1,2",options="header"]
+|===
+| Hypervisor | Recommended Controller
+
+| Parallels Desktop (Apple Silicon) | Virtio-SCSI / Virtio Block
+| VMware Fusion / ESXi              | VMware Paravirtual (PVSCSI)
+| KVM / QEMU / Proxmox              | Virtio-SCSI, qcow2 format
+| VirtualBox                        | Virtio-SCSI (fallback: AHCI SATA)
+|===
+
+TIP: Virtio controllers give the best I/O performance on Linux guests.
+Use thin-provisioned disks to keep snapshot and backup sizes manageable.
+
+=== Filesystem Type
+
+Use *XFS* for all partitions — it is the RHEL default and performs well under
+Virtio and modern hypervisors. EXT4 is an acceptable alternative for `/var/log`
+and `/var/log/audit` if you prefer faster `fsck`. Both are STIG-compliant.
+
+=== Example /etc/fstab
+
+[source,fstab]
+----
+/dev/mapper/cs-root      /                  xfs     defaults                       0 0
+/dev/mapper/cs-home      /home              xfs     nodev                          0 0
+/dev/mapper/cs-tmp       /tmp               xfs     nodev,nosuid,noexec            0 0
+/dev/mapper/cs-vartmp    /var/tmp           xfs     nodev,nosuid,noexec            0 0
+/dev/mapper/cs-var       /var               xfs     defaults                       0 0
+/dev/mapper/cs-varlog    /var/log           xfs     nodev,nosuid                   0 0
+/dev/mapper/cs-audit     /var/log/audit     xfs     nodev,nosuid                   0 0
+/dev/mapper/cs-opt       /opt               xfs     defaults                       0 0
+
+UUID=<boot-uuid>         /boot              xfs     defaults                       0 0
+UUID=<efi-uuid>          /boot/efi          vfat    umask=0077                     0 2
+----
+
+Replace `<boot-uuid>` and `<efi-uuid>` with the actual UUIDs from `blkid`.
+
+NOTE: LVM volume names (`cs-root`, `cs-home`, etc.) match the RHEL installer
+defaults when the volume group is named `cs`. Adjust if you used a different
+VG name.
+
+=== Why These Mount Options
+
+`/tmp` and `/var/tmp` use `noexec,nosuid,nodev`:
+
+* `noexec` — prevents running programs from temporary storage
+* `nosuid` — prevents privilege escalation via setuid/setgid files
+* `nodev` — prevents device files from being created
+
+These three options are required by DISA STIG (CM-6, CM-7, SI-16) and address
+the most common attack vectors on world-writable directories.
+
+`/home` uses `nodev` to prevent placing device files in user directories.
+
+NOTE: If you run `cargo` or UMRS utilities from `~/.local/bin`, do not apply
+`noexec` to `/home` on development systems.
+
+`/boot/efi` uses `umask=0077` to restrict the EFI System Partition to
+root-only access.
+
+`/var/log` and `/var/log/audit` use `nodev,nosuid` to protect audit data
+integrity (AU-9).
+
+=== STIG Compliance Summary
+
+NOTE: The STIG IDs in this table are RHEL 7 identifiers used as approximate
+references. When the RHEL 10 STIG is published, update this table.
+
+[cols="2,1,1",options="header"]
+|===
+| Requirement | Reference STIG ID (RHEL 7) | Status
+
+| `/tmp` must be a separate partition          | RHEL-07-021310 | Compliant
+| `/var/log` must be a separate partition      | RHEL-07-021320 | Compliant
+| `/var/log/audit` must be a separate partition | RHEL-07-021330 | Compliant
+| `/home` must be a separate partition         | RHEL-07-021100 | Compliant
+| `/var/tmp` must be separate from `/var`      | RHEL-07-021200 | Compliant
+| `/var` should be a separate partition        | RHEL-07-021000 | Compliant
+| Required mount options applied               | Multiple       | Compliant
+| EFI partition secured                        | RHEL-07-021350 | Compliant
+|===
+
+== Next Step
+
+xref:rhel10/02-install-choices.adoc[Step 2: Installation Choices] — run the RHEL 10
+installer with FIPS mode, partitioning, networking, and admin user decisions
+already resolved.

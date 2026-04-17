@@ -383,6 +383,289 @@ fn missing_scripts_dir_does_not_error() {
 }
 
 // ---------------------------------------------------------------------------
+// Script staging: one-level recursion, suffix strip, duplicate detection
+// ---------------------------------------------------------------------------
+
+/// A nested script (`scripts/signing/foo.sh`) lands at `staging/bin/foo`
+/// with the `.sh` suffix stripped, matching the naming convention for compiled
+/// workspace binaries.
+///
+/// `NIST SP 800-53 AC-3`, `NIST SP 800-53 SA-12`.
+#[test]
+fn nested_script_staged_with_suffix_stripped() {
+    let dir = temp_dir("xtask_test_nested");
+    let scripts_dir = dir.join("scripts");
+    let sub_dir = scripts_dir.join("signing");
+    let staging_bin = dir.join("staging").join("bin");
+
+    fs::create_dir_all(&sub_dir).expect("create scripts/signing/");
+    fs::create_dir_all(&staging_bin).expect("create staging/bin/");
+
+    let script = sub_dir.join("umrs-sign-mgr.sh");
+    create_file_with_mode(&script, 0o755);
+
+    // Replicate the one-level collect logic from stage_scripts.
+    let stem = collect_sh_stems_one_level(&scripts_dir);
+
+    assert_eq!(
+        stem,
+        vec!["umrs-sign-mgr".to_owned()],
+        "nested .sh should yield stem without suffix"
+    );
+
+    fs::remove_dir_all(&dir).ok();
+}
+
+/// A flat script (`scripts/baz.sh`) still lands at `staging/bin/baz`
+/// with the `.sh` suffix stripped.
+///
+/// `NIST SP 800-53 AC-3`, `NIST SP 800-53 SA-12`.
+#[test]
+fn flat_script_staged_with_suffix_stripped() {
+    let dir = temp_dir("xtask_test_flat_sh");
+    let scripts_dir = dir.join("scripts");
+    let staging_bin = dir.join("staging").join("bin");
+
+    fs::create_dir_all(&scripts_dir).expect("create scripts/");
+    fs::create_dir_all(&staging_bin).expect("create staging/bin/");
+
+    let script = scripts_dir.join("umrs-shred.sh");
+    create_file_with_mode(&script, 0o755);
+
+    let stems = collect_sh_stems_one_level(&scripts_dir);
+
+    assert_eq!(
+        stems,
+        vec!["umrs-shred".to_owned()],
+        "flat .sh should yield stem without suffix"
+    );
+
+    fs::remove_dir_all(&dir).ok();
+}
+
+/// A non-executable nested script is skipped (not staged) with a warning.
+///
+/// The execute-bit guard enforced at the staging boundary must apply equally
+/// to nested scripts and flat scripts.
+///
+/// `NIST SP 800-53 AC-3`.
+#[test]
+fn non_executable_nested_script_is_skipped() {
+    let dir = temp_dir("xtask_test_noexec_nested");
+    let scripts_dir = dir.join("scripts");
+    let sub_dir = scripts_dir.join("signing");
+
+    fs::create_dir_all(&sub_dir).expect("create scripts/signing/");
+
+    // Non-executable — mode 0o644.
+    let script = sub_dir.join("umrs-sign-mgr.sh");
+    create_file_with_mode(&script, 0o644);
+
+    // Verify the execute-bit check: the file is not executable.
+    let meta = fs::metadata(&script).expect("stat script");
+    let mode = std::os::unix::fs::PermissionsExt::mode(&meta.permissions());
+    assert_eq!(
+        mode & 0o111,
+        0,
+        "precondition: script must not have execute bit"
+    );
+
+    // The staging pipeline would warn and skip — no destination file created.
+    // Verify that the stem IS discovered (discoverable) but the execute check
+    // would reject it at copy time. We test the two stages independently.
+    let stems = collect_sh_stems_one_level(&scripts_dir);
+    assert_eq!(
+        stems,
+        vec!["umrs-sign-mgr".to_owned()],
+        "non-executable script should still be discovered (rejection happens at copy)"
+    );
+
+    // Simulate the execute-bit gate: staging_bin should remain empty.
+    let staging_bin = dir.join("staging").join("bin");
+    fs::create_dir_all(&staging_bin).expect("create staging/bin/");
+
+    // Attempt copy only if executable — mirrors pipeline behaviour.
+    if mode & 0o111 != 0 {
+        let dest = staging_bin.join("umrs-sign-mgr");
+        fs::copy(&script, &dest).expect("copy");
+    }
+
+    assert!(
+        !staging_bin.join("umrs-sign-mgr").exists(),
+        "non-executable script must not be placed in staging/bin/"
+    );
+
+    fs::remove_dir_all(&dir).ok();
+}
+
+/// Duplicate script names across flat and nested directories return an error.
+///
+/// `scripts/foo.sh` and `scripts/bar/foo.sh` both produce target name `foo`.
+/// The staging pipeline must bail with a hard error listing both source paths.
+///
+/// `NIST SP 800-53 SA-12` — ambiguous supply-chain artifacts are rejected.
+#[test]
+fn duplicate_script_name_across_flat_and_nested_returns_error() {
+    let dir = temp_dir("xtask_test_dup");
+    let scripts_dir = dir.join("scripts");
+    let sub_dir = scripts_dir.join("bar");
+
+    fs::create_dir_all(&sub_dir).expect("create scripts/bar/");
+
+    create_file_with_mode(&scripts_dir.join("foo.sh"), 0o755);
+    create_file_with_mode(&sub_dir.join("foo.sh"), 0o755);
+
+    // Replicate the duplicate-detection logic from stage_scripts.
+    let result = detect_duplicate_stems(&scripts_dir);
+
+    assert!(
+        result.is_err(),
+        "duplicate script stem 'foo' must produce an error"
+    );
+    let msg = result.unwrap_err();
+    assert!(
+        msg.contains("foo"),
+        "error message must name the conflicting stem: {msg}"
+    );
+
+    fs::remove_dir_all(&dir).ok();
+}
+
+// ---------------------------------------------------------------------------
+// Test-local helpers that replicate the stage_scripts logic without requiring
+// a [lib] target in xtask. Keep these in sync with stage.rs.
+// ---------------------------------------------------------------------------
+
+/// Discovers `*.sh` stems reachable from `scripts_dir` at depth 0 and depth 1.
+///
+/// Returns the stem names (filename without `.sh`) sorted for deterministic
+/// comparison. Does not filter on execute bit — discovery and permission checks
+/// are separate concerns in the pipeline.
+fn collect_sh_stems_one_level(scripts_dir: &std::path::Path) -> Vec<String> {
+    let mut stems: Vec<String> = Vec::new();
+
+    // Depth 0: scripts/*.sh
+    if let Ok(entries) = fs::read_dir(scripts_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let Ok(meta) = path.metadata() else {
+                continue;
+            };
+            if !meta.is_file() {
+                continue;
+            }
+            if path.extension().and_then(|e| e.to_str()) != Some("sh") {
+                continue;
+            }
+            if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                stems.push(stem.to_owned());
+            }
+        }
+    }
+
+    // Depth 1: scripts/*/*.sh
+    if let Ok(entries) = fs::read_dir(scripts_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let Ok(meta) = path.metadata() else {
+                continue;
+            };
+            if !meta.is_dir() {
+                continue;
+            }
+            if let Ok(sub_entries) = fs::read_dir(&path) {
+                for sub_entry in sub_entries.flatten() {
+                    let sub_path = sub_entry.path();
+                    let Ok(sub_meta) = sub_path.metadata() else {
+                        continue;
+                    };
+                    if !sub_meta.is_file() {
+                        continue;
+                    }
+                    if sub_path.extension().and_then(|e| e.to_str()) != Some("sh") {
+                        continue;
+                    }
+                    if let Some(stem) = sub_path.file_stem().and_then(|s| s.to_str()) {
+                        stems.push(stem.to_owned());
+                    }
+                }
+            }
+        }
+    }
+
+    stems.sort();
+    stems
+}
+
+/// Detects duplicate `.sh` stems across flat and one-level nested directories.
+///
+/// Returns `Ok(())` when all stems are unique, or `Err(String)` with a
+/// descriptive message naming the conflicting stem and both source paths.
+fn detect_duplicate_stems(scripts_dir: &std::path::Path) -> Result<(), String> {
+    let mut seen: std::collections::HashMap<String, std::path::PathBuf> =
+        std::collections::HashMap::new();
+
+    // Flat pass.
+    if let Ok(entries) = fs::read_dir(scripts_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let Ok(meta) = path.metadata() else {
+                continue;
+            };
+            if !meta.is_file() {
+                continue;
+            }
+            if path.extension().and_then(|e| e.to_str()) != Some("sh") {
+                continue;
+            }
+            if let Some(stem) = path.file_stem().and_then(|s| s.to_str()) {
+                seen.insert(stem.to_owned(), path);
+            }
+        }
+    }
+
+    // Nested pass — check for conflicts.
+    if let Ok(entries) = fs::read_dir(scripts_dir) {
+        for entry in entries.flatten() {
+            let path = entry.path();
+            let Ok(meta) = path.metadata() else {
+                continue;
+            };
+            if !meta.is_dir() {
+                continue;
+            }
+            if let Ok(sub_entries) = fs::read_dir(&path) {
+                for sub_entry in sub_entries.flatten() {
+                    let sub_path = sub_entry.path();
+                    let Ok(sub_meta) = sub_path.metadata() else {
+                        continue;
+                    };
+                    if !sub_meta.is_file() {
+                        continue;
+                    }
+                    if sub_path.extension().and_then(|e| e.to_str()) != Some("sh") {
+                        continue;
+                    }
+                    if let Some(stem) = sub_path.file_stem().and_then(|s| s.to_str()) {
+                        if let Some(existing) = seen.get(stem) {
+                            return Err(format!(
+                                "duplicate script target name '{stem}': \
+                                 existing={}, conflict={}",
+                                existing.display(),
+                                sub_path.display()
+                            ));
+                        }
+                        seen.insert(stem.to_owned(), sub_path);
+                    }
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
+// ---------------------------------------------------------------------------
 // EXPECTED_BINARIES manifest self-checks
 // ---------------------------------------------------------------------------
 

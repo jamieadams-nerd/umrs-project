@@ -1,0 +1,63 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-directory-structure.adoc (FHS overview)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-directory-structure.adoc
+= Step 5b: Directory Structure
+:toc: left
+:description: FHS 3.0 compliant directory layout for UMRS — static files, configuration, variable data, and key material.
+
+UMRS follows the Linux Filesystem Hierarchy Standard 3.0 for add-on packages.
+Static files, host-editable configuration, and variable data each live under
+separate root directories so that `/opt` can be mounted read-only without
+breaking logging or configuration.
+
+Key material is deliberately placed *outside* the add-on package tree. It uses
+standard FHS system paths (`/etc/keys/umrs/`, `/var/lib/umrs/keys/`) to satisfy
+NIST SP 800-53 CM-6 and SA-8. See
+xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees] for
+the full rationale.
+
+== The Three FHS 3.0 Add-on Package Roots
+
+[cols="1,2,2",options="header"]
+|===
+| Root | FHS Reference | Purpose
+
+| `/opt/umrs/`
+| FHS 3.0 §4.5, §5.15
+| Static package files: binaries, reference databases, man pages, compiled
+  locale catalogs. The package owns this tree. Never modified at runtime.
+
+| `/etc/opt/umrs/`
+| FHS 3.0 §3.13
+| Host-specific, admin-editable configuration. Policy metadata and tool
+  configuration only — no key material.
+
+| `/var/opt/umrs/`
+| FHS 3.0 §3.15
+| Variable data: logs and state files. Written during normal operation.
+|===
+
+From FHS 3.0 §5.15: _"No other package files may exist outside the `/opt`,
+`/var/opt`, and `/etc/opt` hierarchies."_ This separation allows the package
+tree to be mounted read-only and host-specific configuration to survive a reinstall.
+
+== Pages in This Section
+
+[cols="1,3",options="header"]
+|===
+| Page | Description
+
+| xref:umrs/5b-directory-structure/directory-structure.adoc[Directory Structure Reference]
+| Five grouped tables — one per root — covering `/opt/umrs/`, `/etc/keys/umrs/`,
+  `/etc/opt/umrs/`, `/var/opt/umrs/`, and `/var/lib/umrs/`. Every path with
+  owner, mode, SELinux type, and purpose.
+
+| xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees]
+| Full NIST-aligned rationale for key material directory placement. Covers
+  `/etc/pki/`, `/etc/keys/umrs/`, and `/var/lib/umrs/keys/`. Includes the
+  FHS/NIST conflict-resolution analysis (§6).
+|===
+
+== Next Sub-task
+
+xref:umrs/5c-install/index.adoc[Step 5c: Install Pipeline]

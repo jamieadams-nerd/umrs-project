@@ -1,0 +1,28 @@
+// Source material (merged 2026-04-16):
+//   No single source — aggregate landing page for 5a sub-tasks.
+= Step 5a: Users and SELinux Types
+:toc: left
+:description: Landing page for DAC user/group creation and SELinux type declarations for UMRS.
+
+This sub-task covers three related pieces of identity configuration.
+
+[cols="1,3",options="header"]
+|===
+| Page | Description
+
+| xref:umrs/5a-users-and-types/dac-users-groups.adoc[DAC Users and Groups]
+| Create the `umrs` service account, `umrs` group, and `umrs-admin` group.
+  Covers uid/gid assignments, shell, home directory, and purpose of each account.
+
+| xref:umrs/5a-users-and-types/mac-selinux-types.adoc[SELinux Types]
+| Documents every concrete type and attribute currently declared in
+  `umrs.te`. Includes a "Deferred" subsection for types not yet declared.
+
+| xref:umrs/5a-users-and-types/mac-selinux-users.adoc[SELinux Users and Login Mappings]
+| The `staff_u` login mapping for the UMRS operator account, and the
+  reference table of confined SELinux user capabilities.
+|===
+
+== Next Sub-task
+
+xref:umrs/5b-directory-structure/index.adoc[Step 5b: Directory Structure]

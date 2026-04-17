@@ -333,7 +333,7 @@ fn lookup_marking_detail(
     us_catalog: Option<&Catalog>,
     ca_catalog: Option<&Catalog>,
 ) -> Option<MarkingDetailData> {
-    // US catalog — direct key, then MCS level fallback.
+    // US catalog — direct key, then MCS level fallback, then banner text fallback.
     if let Some(cat) = us_catalog {
         if let Some(m) = cat.marking(marking) {
             let flag = cat.country_flag().unwrap_or_default();
@@ -343,14 +343,22 @@ fn lookup_marking_detail(
             let flag = cat.country_flag().unwrap_or_default();
             return Some(marking_to_detail(key, m, &flag));
         }
+        if let Some((key, m)) = cat.marking_by_banner(marking) {
+            let flag = cat.country_flag().unwrap_or_default();
+            return Some(marking_to_detail(key, m, &flag));
+        }
     }
-    // Canadian catalog — direct key, then MCS level fallback.
+    // Canadian catalog — direct key, then MCS level fallback, then banner text fallback.
     if let Some(cat) = ca_catalog {
         if let Some(m) = cat.marking(marking) {
             let flag = cat.country_flag().unwrap_or_default();
             return Some(marking_to_detail(marking, m, &flag));
         }
         if let Some((key, m)) = cat.marking_by_mcs_level(marking) {
+            let flag = cat.country_flag().unwrap_or_default();
+            return Some(marking_to_detail(key, m, &flag));
+        }
+        if let Some((key, m)) = cat.marking_by_banner(marking) {
             let flag = cat.country_flag().unwrap_or_default();
             return Some(marking_to_detail(key, m, &flag));
         }
@@ -378,12 +386,18 @@ fn find_index_group_for_marking(
         if let Some((_, m)) = cat.marking_by_mcs_level(marking) {
             return m.index_group.clone();
         }
+        if let Some((_, m)) = cat.marking_by_banner(marking) {
+            return m.index_group.clone();
+        }
     }
     if let Some(cat) = ca_catalog {
         if let Some(m) = cat.marking(marking) {
             return m.index_group.clone();
         }
         if let Some((_, m)) = cat.marking_by_mcs_level(marking) {
+            return m.index_group.clone();
+        }
+        if let Some((_, m)) = cat.marking_by_banner(marking) {
             return m.index_group.clone();
         }
     }

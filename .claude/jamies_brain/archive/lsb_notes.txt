@@ -1,0 +1,14 @@
+Download the LInux Standard BAse (LSB 5) Specification Series.
+
+
+- All of the PDF's for the LSB, every functional area and respective architecture. 
+- We should already have the FHS 3.0, so store the LSB and FHS stuff together if possible.
+
+Check the section for UID/GID identification blocks. Accounts, static system accounts, dynamic
+system accounts, and user accounts. Our 'umrs' account is considered a dynamic system account and is
+created with the '-r' opiton with no home directory. Check the docs/ deployment section. I have
+updated it. 
+
+You and Knox, please familiarize yourselves with both FHS and LSB.
+
+

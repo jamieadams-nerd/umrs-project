@@ -1288,8 +1288,11 @@ impl SecureDirent {
                 nlink: self.nlink.as_u32(),
             });
         }
-        if self.uid().is_root() && self.file_type.is_regular() && !self.is_write_protected() {
-            obs.push(SecurityObservation::RootOwnedMutable);
+        if self.uid().is_root()
+            && self.file_type.is_regular()
+            && (self.mode.group_can_write() || self.mode.is_world_writable() || self.has_acl())
+        {
+            obs.push(SecurityObservation::RootOwnedExcessiveWrite);
         }
         if self.ownership.user.is_unresolved() {
             obs.push(SecurityObservation::UnresolvedOwner {

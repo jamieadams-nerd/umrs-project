@@ -1,0 +1,35 @@
+// Source material (merged 2026-04-16):
+//   No single source -- aggregate landing page.
+= Step 5c: Install Pipeline
+:toc: left
+:description: Landing page for the UMRS install pipeline -- staging, policy load, file placement, configurations, and verification.
+
+This sub-task covers the complete install sequence. Complete
+xref:umrs/5a-users-and-types/index.adoc[Step 5a] and
+xref:umrs/5b-directory-structure/index.adoc[Step 5b] (including provisioning the
+FHS roots) before starting here.
+
+[cols="1,3",options="header"]
+|===
+| Page | Description
+
+| xref:umrs/5c-install/staging.adoc[Staging]
+| `cargo xtask stage` --- builds all crates and assembles the staging tree at
+  `components/rusty-gadgets/staging/`.
+
+| xref:umrs/5c-install/install-pipeline.adoc[Install Pipeline]
+| `umrs-install.sh` walkthrough: preflight, directory layout, file placement,
+  policy load, context application, and verification. Also covers the SELinux
+  policy build (`make` in `selinux/`).
+
+| xref:umrs/5c-install/scripts.adoc[Scripts]
+| `umrs-sign-mgr` and `umrs-shred` --- purpose, placement, and integration with
+  the install pipeline.
+
+| xref:umrs/5c-install/configurations.adoc[Configurations]
+| `setrans.conf` and `umrs-c2pa.toml` placement under `/etc/opt/umrs/`.
+
+| xref:umrs/5c-install/restorecon-and-verify.adoc[restorecon and Verification]
+| Applying SELinux contexts with `restorecon` and running spot-checks to confirm
+  the install is correct.
+|===

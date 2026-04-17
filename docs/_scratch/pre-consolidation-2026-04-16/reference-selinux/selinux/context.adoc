@@ -1,0 +1,141 @@
+= Security Context
+:toc: left
+:description: The five-component SELinux security context — field definitions, MLS format, and UMRS type model.
+
+// NIST 800-53 AC-4 — Information Flow Enforcement
+// NIST 800-53 AC-3 — Access Enforcement
+// NSA RTB RAIN — Non-bypassable, always-invoked reference monitor
+
+A security context is the structured label that SELinux assigns to every subject (process)
+and object (file, socket, IPC resource) on the system.
+The kernel's reference monitor compares the security context of the subject against
+the security context of the object when making every access decision.
+
+Without a security context, SELinux has no identity to enforce policy against.
+
+NOTE: "Security label" appears widely as an informal synonym for security context.
+In UMRS documentation and code, _security context_ is the precise, preferred term.
+See xref:glossary:index.adoc#_security_label[Glossary: Security Label].
+
+== Field Structure
+
+A security context has five components, separated by colons:
+
+```
+user : role : type : sensitivity_level : category_set
+```
+
+Example (MLS context):
+
+```
+staff_u:staff_r:staff_t:s2:c0,c4
+```
+
+Example (targeted policy, no MLS level):
+
+```
+system_u:system_r:httpd_t:s0
+```
+
+In MLS deployments, all five components are present.
+In targeted policy deployments, the sensitivity level is `s0` and the category set
+is typically absent.
+
+== Field Definitions
+
+=== User
+
+The SELinux user is a persistent identity defined in the policy.
+It is separate from the POSIX UID in `/etc/passwd`.
+
+* Maps Linux users to specific SELinux privileges
+* Controls which roles the identity is permitted to enter
+* Names conventionally end with `_u`
+
+Examples: `unconfined_u` (default for interactive users), `system_u` (system services),
+`staff_u` (confined staff users).
+
+=== Role
+
+The role is part of the Role-Based Access Control (RBAC) layer.
+It acts as an intermediate between the user and the types the user can access.
+
+* Defines which process domains (types) the user can enter
+* Names conventionally end with `_r`
+
+Examples: `staff_r` (confined staff), `sysadm_r` (system administrator),
+`object_r` (placeholder for files, which do not have active roles).
+
+=== Type
+
+The type field is the primary anchor for Type Enforcement (TE) — the mechanism that
+handles the majority of SELinux access decisions.
+
+* Defines a _domain_ for processes and a _type_ for files and objects
+* Policy rules are expressed as: "Allow domain A to perform operation X on type B"
+* Names conventionally end with `_t`
+
+Examples: `httpd_t` (Apache HTTP server domain), `httpd_sys_content_t` (files the
+HTTP server may read), `sshd_t` (SSH daemon domain).
+
+NOTE: "Domain" specifically refers to the type of a running process.
+"Type" is the general term.
+When a process is running with `httpd_t`, it is said to be running _in the httpd_t domain_.
+
+=== Sensitivity Level
+
+The sensitivity level is the hierarchical component of the MLS label.
+Valid range: `s0` (lowest) through `s15` (highest) — exact hierarchy is policy-defined.
+
+In UMRS, the sensitivity levels correspond to the unclassified data classification
+hierarchy (GENERAL, PUBLIC, U-CONTROLLED).
+
+Bell–LaPadula rules apply:
+
+* *No-read-up*: A process at `s2` cannot read objects labeled `s3` or higher
+* *No-write-down*: A process at `s2` cannot write to objects labeled `s1` or lower
+
+See xref:selinux/sensitivity.adoc[Sensitivity levels] for the UMRS level definitions.
+
+=== Category Set
+
+The category set is a bitmask representing compartment membership within a sensitivity level.
+A subject's category set must be a superset of the object's category set for access to be permitted,
+in addition to meeting the sensitivity level requirement.
+
+In UMRS, `CategorySet` is a 1024-bit `[u64; 16]` fixed-size array supporting up to 1024 distinct
+categories.
+Categories are written as `c0`, `c1`, `c1023`, or as ranges: `c0.c15`.
+
+Example: `s2:c0,c4` means sensitivity level s2 with categories 0 and 4.
+
+See xref:selinux/category_set.adoc[Category set] for the bitmask model and lattice math.
+
+== UMRS Type Model
+
+UMRS models each component as a distinct validated Rust type.
+A `SecurityContext` cannot be constructed with a malformed sensitivity level,
+an out-of-range category, or an invalid user, role, or type value.
+If construction fails, an error is returned at the boundary — downstream code receives
+a valid `SecurityContext` or nothing at all.
+
+[source,rust]
+----
+// Construct from a full MLS context string (TPI: two independent parse paths)
+let ctx: SecurityContext = "staff_u:staff_r:staff_t:s2:c0,c4".parse()?;
+
+// Each component is a typed value — not a string
+println!("{}", ctx.sensitivity());   // SensitivityLevel
+println!("{:?}", ctx.categories());  // CategorySet
+----
+
+The dual-path parsing (TPI) is documented at xref:patterns:pattern-tpi.adoc[Two-Path Independence].
+
+== Related Reference Pages
+
+* xref:selinux/user.adoc[SELinux user]
+* xref:selinux/role.adoc[SELinux role]
+* xref:selinux/security_type.adoc[SELinux type]
+* xref:selinux/sensitivity.adoc[Sensitivity levels]
+* xref:selinux/category_set.adoc[Category set]
+* xref:glossary:index.adoc[Glossary] — definitions for security context, sensitivity level, category set, MLS range

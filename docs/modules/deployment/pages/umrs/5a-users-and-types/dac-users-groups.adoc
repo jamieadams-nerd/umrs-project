@@ -1,0 +1,352 @@
+// Source material (merged 2026-04-16):
+//   - components/rusty-gadgets/selinux/INSTRUCTIONS.md (Prerequisites section)
+//   - components/rusty-gadgets/scripts/umrs-install.sh (PKG_USER/PKG_GROUP constants)
+//   - docs/modules/deployment/pages/rhel/rhel10-directory-structure.adoc (Ownership section)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-directory-structure.adoc
+= DAC Users and Groups
+:toc: left
+:description: Creating the umrs service account and the umrs and umrs-admin groups for UMRS on RHEL 10.
+
+UMRS uses dedicated DAC (discretionary access control) accounts to own its installed
+files and run its tools under a confined SELinux context. These accounts must exist
+before the installer runs.
+
+== Accounts Required
+
+[cols="1,1,1,2",options="header"]
+|===
+| Account | Type | uid/gid | Purpose
+
+| `umrs`
+| Dynamic System Account
+| 100-999
+| System account that owns the three FHS installation roots and runs UMRS tools.
+  Has no special privileges. Its SELinux login mapping restricts it to a confined
+  domain (see xref:umrs/5a-users-and-types/mac-selinux-users.adoc[SELinux Users and Login Mappings]).
+
+| `umrs-admin`
+| Group
+| Site-assigned
+| Operators who manage UMRS configuration. Members of this group have group-write
+  access to the editable configuration subtree under `/etc/opt/umrs/`.
+|===
+
+== UID/GID Allocation Standards
+
+System account UIDs and GIDs are not arbitrary. Three authoritative sources establish
+the allocation range for the `umrs` account, and no single source tells the complete
+story. An auditor tracing the `useradd -r` invocation in the installer needs all three.
+
+=== Source 1: Linux Standard Base 5.0 (Formal Specification)
+
+LSB 5.0, Part IX, Chapter 23, §23.3 defines the foundational UID range structure
+for all LSB-conformant systems. The standard divides the namespace as follows:
+
+[cols="1,2,3",options="header"]
+|===
+| UID Range | LSB 5.0 Classification | Implications for UMRS
+
+| 0
+| Root superuser
+| UID and GID SHALL equal 0. Not applicable to the `umrs` account.
+
+| 1–99
+| Statically allocated by the system
+| SHALL NOT be created by applications. UMRS does not use this range.
+
+| 100–499
+| Reserved for dynamic allocation by system administrators and post-install scripts
+| The `useradd -r` command allocates from this range on LSB-conformant systems.
+  UMRS installer uses `useradd -r`, placing the `umrs` account here.
+
+| 500+
+| Not defined by LSB
+| LSB 5.0 does not mandate the 100–999 "system" vs 1000+ "human" split.
+  This gap is filled by the systemd specification.
+|===
+
+LSB 5.0 §23.2 also defines required and optional users. The `umrs` name does not
+appear in either table — it is an application-specific account, not a distro service
+name, which is the correct relationship for a third-party package.
+
+NOTE: LSB 5.0 covers UIDs up to 499 for dynamic system accounts. It does not address
+container UID ranges, dynamic service users, or the modern 100–999 "system account"
+convention. The systemd specification closes this gap.
+
+=== Source 2: systemd Users and Groups Specification (De Facto Standard)
+
+The systemd project publishes a Users and Groups Specification
+(https://systemd.io/UIDS-GIDS/) that is the de facto UID/GID standard for all
+systemd-based distributions, including RHEL 10. It extends the LSB's broad "100+"
+range into specific, well-defined tiers:
+
+[cols="1,2,2",options="header"]
+|===
+| UID Range | systemd Classification | Resolution Mechanism
+
+| 0
+| Root superuser
+| `/etc/passwd` + `nss-systemd`
+
+| 1–4
+| System daemons (distro-assigned)
+| `/etc/passwd`
+
+| 5
+| TTY group
+| `/etc/passwd`
+
+| 6–999
+| System daemons and service accounts (distro-assigned)
+| `/etc/passwd`
+
+| 1000–60000
+| Regular (human) users
+| `/etc/passwd` + LDAP/NIS
+
+| 60001–60513
+| `systemd-homed` home directory mappings
+| `nss-systemd`
+
+| 61184–65519
+| Dynamic service users (`DynamicUser=`)
+| `nss-systemd`
+
+| 65534
+| Overflow / `nobody`
+| `/etc/passwd` + `nss-systemd`
+
+| 524288–1879048191
+| Container UID ranges (`--private-users=pick`)
+| `nss-systemd`
+|===
+
+Two requirements from the systemd spec directly govern how the `umrs` account is
+configured:
+
+. **System users (0–999) must be resolvable without a network connection.** These
+  accounts must be present and resolvable before `systemd-udevd.service` starts.
+  This is why UMRS creates the `umrs` account in local `/etc/passwd` — no LDAP or
+  NIS dependency is acceptable for a system service account.
+
+. **System accounts do not log in.** The spec treats UIDs 0–999 as service and daemon
+  accounts, not interactive users. This is the normative basis for using `/sbin/nologin`
+  as the shell.
+
+=== Source 3: RHEL 10 `login.defs` (Implementation Evidence)
+
+The `useradd` command reads `/etc/login.defs` to determine the UID and GID ranges it
+allocates from. RHEL 10 implements the systemd specification with these values:
+
+[source]
+----
+SYS_UID_MIN               201
+SYS_UID_MAX               999
+UID_MIN                  1000
+UID_MAX                 60000
+SYS_GID_MIN               201
+SYS_GID_MAX               999
+GID_MIN                  1000
+GID_MAX                 60000
+SUB_UID_MIN           524288
+SUB_UID_MAX        600100000
+SUB_GID_MIN           524288
+SUB_GID_MAX        600100000
+----
+
+IMPORTANT: RHEL 10 sets `SYS_UID_MIN=201`, not 100. Red Hat reserves 100–200 for
+distribution-assigned static entries. The `useradd -r` command allocates from 201–999,
+not from 100. Verify the actual assigned UID with `getent passwd umrs` after account
+creation.
+
+=== Why Three Sources Are Required
+
+No single source establishes complete compliance. Each source fills a gap the others
+leave open:
+
+[cols="2,3,3",options="header"]
+|===
+| Source | What it establishes | What it leaves open
+
+| LSB 5.0 §23.3
+| Formal ISO/POSIX-adjacent authority for the system account range (100–499)
+| Does not define the 100–999 boundary, login shell requirements, or password policy
+
+| systemd UIDS-GIDS spec
+| Modern range definition (6–999), no-network-login requirement, service account rules
+| Not a formal standards body; cannot substitute for LSB as a normative reference
+
+| RHEL 10 `login.defs`
+| Confirms the actual range `useradd -r` uses on the deployment target (201–999)
+| Implementation evidence only — an auditor needs the normative references behind it
+|===
+
+Together they form a complete chain: formal standard (LSB 5.0) → modern specification
+(systemd) → implementation evidence (RHEL 10 `login.defs`).
+
+=== LANANA
+
+The Linux Assigned Names and Numbers Authority (LANANA, https://www.lanana.org/)
+coordinates namespace assignments to prevent collisions across Linux distributions.
+LANANA does not publish a standalone UID/GID policy document — its role is registration,
+not specification. The LANANA LSB registries cover provider names, package names, and
+init script names. UID/GID range definitions come from LSB and systemd; LANANA's role
+is to ensure the `umrs` name does not collide with existing registrations.
+
+=== `umrs` Account Compliance Summary
+
+[cols="2,1,3",options="header"]
+|===
+| Requirement | Status | Authority
+
+| UID in dynamic system range (201–999 on RHEL 10)
+| Satisfied
+| LSB 5.0 §23.3 (100–499); systemd spec (6–999); RHEL 10 `login.defs` (201–999)
+
+| No login shell (`/sbin/nologin`)
+| Satisfied
+| systemd spec: system users do not log in
+
+| No home directory
+| Satisfied
+| `useradd -r` skips home directory creation
+
+| Locked password (`!` in `/etc/shadow`)
+| Satisfied
+| `useradd -r` locks password by default; `passwd -l` adds explicit lock
+
+| Resolvable without network
+| Satisfied
+| Local `/etc/passwd` entry — no LDAP or NIS dependency
+
+| Name not in LSB required/optional list
+| Satisfied
+| LSB 5.0 §23.2 Tables 23-1, 23-2 — `umrs` is not listed
+
+| Name does not conflict with distro conventions
+| Satisfied
+| `umrs` is application-specific; not a recognized RHEL service account name
+|===
+
+.Compliance Mapping
+[cols="1,2",options="header"]
+|===
+| Control | Application
+
+| NIST SP 800-53 AC-2
+| Account Management — the `umrs` account has a defined purpose, lifecycle, and
+  non-interactive scope
+
+| NIST SP 800-53 AC-6
+| Least Privilege — no login shell, no home directory, locked password, no sudo rights
+  in the default configuration
+
+| NIST SP 800-53 CM-6
+| Configuration Settings — UID range follows three concordant authoritative sources
+
+| NIST SP 800-53 IA-5
+| Authenticator Management — password locked, interactive authentication not possible
+
+| CMMC AC.L2-3.1.1
+| Limit system access to authorized users — the account is non-interactive by design
+|===
+
+== Create the umrs User and Group
+
+IMPORTANT: These commands provision the accounts out of band, before the installer
+runs. The installer verifies their existence as a preflight check and refuses to
+proceed if they are missing.
+
+. Create the `umrs` user with matching uid:
++
+[source,bash]
+----
+sudo useradd -r --shell /sbin/nologin umrs
+----
+
+. Disable password login for the account:
++
+[source,bash]
+----
+sudo passwd -l umrs
+----
+
++
+The account uses `/sbin/nologin` as its shell, so interactive login is already
+blocked at the shell level. Locking the password with `passwd -l` is defense-in-depth:
+it prevents any authentication attempt from succeeding even if the nologin restriction
+were bypassed or misconfigured.
+
+. Verify the account:
++
+[source,bash]
+----
+getent passwd umrs
+getent group umrs
+----
++
+Expected output for `getent passwd umrs`:
++
+----
+umrs:x:<UID>:<GID>::/nonexistent:/sbin/nologin
+----
++
+`<UID>` and `<GID>` are site-assigned values from the 201–999 range.
+The home directory field shows `/nonexistent` because `useradd -r` does not
+create a home directory. The shell field confirms `/sbin/nologin`.
+
+== Create the umrs-admin Group
+
+. Create the group:
++
+[source,bash]
+----
+sudo groupadd umrs-admin
+----
+
+. Add operator accounts to the group:
++
+[source,bash]
+----
+sudo usermod -aG umrs-admin <operator-login>
+----
+
+. Verify:
++
+[source,bash]
+----
+getent group umrs-admin
+----
+
+== Account Security Notes
+
+* The `umrs` account's SELinux login mapping is a mandatory follow-on step.
+  See xref:umrs/5a-users-and-types/mac-selinux-users.adoc[SELinux Users and Login Mappings].
+* The `umrs` account is non-interactive. Its shell is `/sbin/nologin`, which means
+  login via SSH, `su`, and `sudo -u umrs bash` all fail at the shell level. Processes
+  run as `umrs` only through two paths: the installer (which drops privileges to `umrs`
+  for file ownership operations) and systemd units (which set `User=umrs` in the unit
+  file). Neither path involves an interactive shell session.
+* The `umrs-admin` group grants write access to `/etc/opt/umrs/` via DAC.
+  In Phase 2 this access will also require the `umrs_manage_config` SELinux
+  interface grant.
+
+[NOTE]
+====
+*Future: `umrs-secadm` group*
+
+Signing and key-management operations currently run as `root` (the default
+`umrs-admin` sudo path). A planned refinement introduces a separate
+`umrs-secadm` group alongside `umrs-admin`, scoped specifically to operations
+on `/etc/keys/umrs/**` and `/var/lib/umrs/keys/**`. This separates key-material
+authority from general package administration and enables a future SELinux
+`umrs_sign_t` domain to be reached only via a bounded sudo transition.
+
+This is a design commitment, not a current capability. `umrs-install.sh` does
+not create `umrs-secadm` in the current release.
+====
+
+== Next Step
+
+xref:umrs/5a-users-and-types/mac-selinux-types.adoc[SELinux Types] — the concrete types and attributes
+declared in the UMRS policy module.

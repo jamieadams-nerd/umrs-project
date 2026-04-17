@@ -1,0 +1,111 @@
+= SELinux User
+:description: SELinux user identifier — identity mapping, role authorization, and UMRS type model.
+:toc: left
+
+// NIST 800-53 AC-2 — Account Management
+// NIST 800-53 AC-3 — Access Enforcement
+// Kernel sources: security/selinux/include/security.h, ss/policydb.c
+
+The SELinux user is the first component of a security context.
+It represents a persistent identity defined in the SELinux policy — separate from the POSIX UID.
+
+SELinux users serve two functions:
+
+. *Role authorization* — each SELinux user is authorized for a specific set of roles.
+  A user can only enter a role that policy permits.
+. *MLS clearance binding* — in MLS deployments, each user has an MLS range that
+  limits the sensitivity levels and categories they can operate at.
+
+== Relationship to POSIX Identity
+
+SELinux users are not POSIX users.
+A single SELinux user identity may be mapped to many Linux accounts.
+
+Example: an organization might map all standard operator accounts to `staff_u`,
+defining one security profile for the entire group rather than per-account rules.
+
+The mapping from Linux login name to SELinux user is managed by `semanage login`.
+The SELinux user context persists independently of POSIX UID changes.
+
+== Naming Convention
+
+SELinux user identifiers end with `_u`.
+
+[cols="1,3", options="header"]
+|===
+| Identifier | Description
+
+| `system_u`
+| System services — daemons, kernel threads, boot-time processes.
+Not for interactive human sessions.
+
+| `staff_u`
+| Confined staff users who may transition to administrative roles (e.g., via `newrole` or `sudo`).
+
+| `unconfined_u`
+| Default identity on systems running targeted policy.
+Broad privileges; not used in MLS deployments.
+
+| `user_u`
+| Least-privileged interactive user.
+Authorized only for the `user_r` role.
+Cannot transition to administrative domains.
+|===
+
+`object_r` is not a user — it is the placeholder role used by files and passive objects.
+Files do not have active SELinux user identities in the same sense as processes.
+
+== UMRS Type Model
+
+UMRS models the SELinux user as a distinct validated Rust type: `SelinuxUser`.
+
+[source,text]
+----
+SelinuxUser(String)
+
+Valid identifiers: system_u, staff_u, user_u
+MIN_USER_LEN: 3 bytes
+MAX_USER_LEN: 255 bytes
+----
+
+Validation rules enforced at construction time:
+
+* ASCII characters only
+* No whitespace
+* Character set: `[a-z0-9_]` (lowercase letters, digits, underscore)
+* Must end with `_u`
+* Stem (identifier minus the `_u` suffix) must be non-empty
+* Length within bounds: 3–255 bytes
+
+A `SelinuxUser` cannot be constructed with a malformed identifier.
+Construction succeeds and returns the typed value, or it fails and returns an error.
+
+[source,rust]
+----
+let user: SelinuxUser = "staff_u".parse()?;
+
+// Invalid — uppercase letters not permitted
+let err = SelinuxUser::new("Staff_u");
+assert!(err.is_err());
+
+// Invalid — wrong suffix
+let err = SelinuxUser::new("staff_r");
+assert!(err.is_err());
+----
+
+=== Kernel Source Correspondence
+
+Kernel sources consulted:
+
+* `security/selinux/include/security.h` — user identity structures
+* `security/selinux/ss/policydb.c` — user symbol table handling
+* libselinux user mapping interfaces
+
+No kernel source code has been copied or translated.
+
+== Related Reference Pages
+
+* xref:selinux/context.adoc[Security context] — the full five-component label
+* xref:selinux/role.adoc[SELinux role] — the roles a user may enter
+* xref:selinux/rhel-selinux-users.adoc[RHEL confined SELinux users] — configured user definitions
+* xref:glossary:index.adoc#_security_context[Glossary: Security Context]

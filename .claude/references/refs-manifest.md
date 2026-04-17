@@ -1645,6 +1645,61 @@ manifest error path. License: MIT (contentauth/example-assets).
 
 ---
 
+### Linux Standard Base 5.0 — Specification Series
+
+| Field | Value |
+|---|---|
+| Full title | Linux Standard Base 5.0 |
+| Issuing authority | Linux Foundation |
+| Version | 5.0 |
+| Published | 2015 |
+| Downloaded | 2026-04-17 |
+| Local path | `lsb-5/` (8 PDFs) |
+| Source URL | https://refspecs.linuxfoundation.org/LSB_5.0.0/ |
+| Status | ✓ Downloaded |
+
+**Documents and checksums:**
+
+| File | SHA-256 |
+|---|---|
+| `LSB-Core-generic.pdf` | `3703086d627f0e94235b015185281b6b13c8a1a98c652890af20781dcaa2c3aa` |
+| `LSB-Core-AMD64.pdf` | `cb320e6d0a8546ba1d3d6cbbd47cb2654fc86737a987d6f5b8c0455924ee7459` |
+| `LSB-Common.pdf` | `a42479d1e783ddab603a0dbfa57ed37aa3c04cfa4f2bbf36554f34ad90b785a9` |
+| `LSB-Desktop-generic.pdf` | `4ecf6eb4b3c8e15d4d2e3b3a52cc6e546e2bf2152eee41bf798c921fd2626507` |
+| `LSB-Desktop-AMD64.pdf` | `1842e53380a16546be4afc4ae575778adb682bf84c8ffa2686d1d9370b1f1ac4` |
+| `LSB-Languages.pdf` | `7533bfc31c8491e63b2757b715bee416d18c39461baab9ffa6f4f4d9f19d425b` |
+| `LSB-Imaging.pdf` | `a4c1009a30248e837c3286559931b5c9c1ce405686a3110f9cdf3d8cacbe7207` |
+| `LSB-TrialUse.pdf` | `00e820cbf38514dd0ff26a0aadf9560cfb5cf82d119497a03c7a6f7bdeb77adb` |
+
+**Key relevance**: Part IX, Chapter 23 "Users & Groups" in LSB-Core-generic defines
+UID/GID allocation: §23.3 specifies 0–99 as static system (SHALL NOT be created by
+applications) and 100–499 as dynamic system (`useradd -r` range). The UMRS `umrs`
+account is correctly allocated in the dynamic system range. Also covers required/optional
+user and group names (§23.2) and filesystem layout requirements complementing FHS 3.0.
+
+---
+
+### systemd Users, Groups, UIDs and GIDs Specification
+
+| Field | Value |
+|---|---|
+| Full title | Users, Groups, UIDs and GIDs on systemd Systems |
+| Issuing authority | systemd project |
+| Version | Living document (no version number) |
+| Downloaded | 2026-04-17 |
+| Local path | `systemd-uid-gid/uids-gids.html` |
+| Source URL | https://systemd.io/UIDS-GIDS/ |
+| SHA-256 | `5ddf68b3d4832868a564a16850e3f87c52fe6702b27f991ae7224f1dcc82743d` |
+| Status | ✓ Downloaded |
+
+**Key relevance**: Defines the modern UID/GID range allocation followed by RHEL 10.
+Refines LSB 5.0's broad "100+" range into 100–999 (system) and 1000–60000 (human).
+Also defines container UID ranges, dynamic service users, and the `nobody` UID (65534).
+See `.claude/references/reports/2026-04-17-uid-gid-compliance-reference.md` for the
+full three-source compliance chain (LSB + systemd + RHEL 10 `login.defs`).
+
+---
+
 ## Pending Documents
 
 The following documents are referenced in CLAUDE.md but not yet downloaded.

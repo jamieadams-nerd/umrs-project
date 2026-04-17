@@ -31,6 +31,7 @@
 //! - [`build_identity_rows`], [`build_security_rows`], [`build_observation_rows`] —
 //!   row builders for each tab
 //! - [`build_status`] — derive a [`StatusMessage`] from the observation list
+//! - [`compute_file_digests`] — SHA-256 and SHA-384 digest display helper
 //!
 //! ## Compliance
 //!
@@ -41,10 +42,13 @@
 //!   typed data, not free-form text.
 //! - **NIST SP 800-53 SC-28**: Protection at rest — encryption source display.
 //! - **NIST SP 800-53 SI-7**: Integrity — SELinux TPI state is displayed;
-//!   `/proc/mounts` is read via provenance-verified `ProcfsText`.
+//!   `/proc/mounts` is read via provenance-verified `ProcfsText`;
+//!   SHA-256 and SHA-384 digest rows (FIPS 180-4) provide tamper-evidence display.
 
+use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 
+use sha2::{Digest, Sha256, Sha384};
 use umrs_core::i18n;
 use umrs_platform::kattrs::{ProcfsText, SecureReader};
 use umrs_selinux::fs_encrypt::EncryptionSource;
@@ -53,6 +57,7 @@ use umrs_selinux::posix::primitives::FileSize;
 use umrs_selinux::secure_dirent::{InodeSecurityFlags, SecDirError, SecureDirent};
 use umrs_selinux::{ObservationKind, SecurityObservation, SelinuxCtxState};
 use umrs_ui::app::{DataRow, StatusLevel, StatusMessage, StyleHint, TabDef};
+use umrs_ui::icons::{EM_DASH, ICON_MOUNT, ICON_WARNING};
 use umrs_ui::popup::PopupCardData;
 
 // ---------------------------------------------------------------------------
@@ -222,7 +227,6 @@ pub struct ElfInfo {
 /// the ELF bytes are display hints, not assertions.
 #[must_use = "ElfInfo is the only output; discarding it means binary type context is not displayed"]
 pub fn read_elf_info(path: &Path) -> Option<ElfInfo> {
-    use std::io::Read;
     let mut f = std::fs::File::open(path).ok()?;
     let mut buf = [0u8; 20];
     f.read_exact(&mut buf).ok()?;
@@ -250,6 +254,62 @@ pub fn read_elf_info(path: &Path) -> Option<ElfInfo> {
         class,
         elf_type,
     })
+}
+
+// ---------------------------------------------------------------------------
+// File digest helper
+// ---------------------------------------------------------------------------
+
+/// Compute SHA-256 and SHA-384 digests of a regular file in a single pass.
+///
+/// Returns `None` if the file cannot be read (access denied, disappeared, etc.).
+/// Reads the file in 8 KiB chunks to bound memory usage on arbitrarily large files.
+/// Both hashers are updated on each chunk so the file is read exactly once.
+///
+/// The returned strings are lowercase hex-encoded digests.
+///
+/// ## DIRECT-IO-EXCEPTION
+///
+/// Opens the file with `std::fs::File::open` rather than routing through
+/// a provenance-verified abstraction.  This is permissible because:
+/// 1. No `umrs-platform` or `umrs-selinux` abstraction exists for raw file
+///    content hashing.
+/// 2. The digest is display-only — it is never compared against a stored
+///    reference value, never used in a trust decision, and never influences
+///    any policy gate.
+/// 3. TOCTOU: the file may have changed since `SecureDirent` construction;
+///    the displayed digest reflects the file at the moment of the read, which
+///    is the correct semantics for a live "what is this file right now" view.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**: Software and Information Integrity — displayed
+///   digests give operators tamper-evidence for the file's content.
+/// - **FIPS 180-4**: SHA-256 and SHA-384 are both FIPS-approved hash algorithms.
+#[must_use = "digest strings are the only output; discarding them means the hash rows are never shown"]
+pub fn compute_file_digests(path: &Path) -> Option<(String, String)> {
+    // DIRECT-IO-EXCEPTION: display-only digest, no trust decision.
+    // See doc comment above for full rationale.
+    let file = std::fs::File::open(path).ok()?;
+    let mut reader = BufReader::new(file);
+
+    let mut sha256 = Sha256::new();
+    let mut sha384 = Sha384::new();
+    let mut buf = [0u8; 8192];
+
+    loop {
+        let n = reader.read(&mut buf).ok()?;
+        if n == 0 {
+            break;
+        }
+        sha256.update(&buf[..n]);
+        sha384.update(&buf[..n]);
+    }
+
+    let digest256 = sha256.finalize();
+    let digest384 = sha384.finalize();
+
+    Some((format!("{digest256:x}"), format!("{digest384:x}")))
 }
 
 // ---------------------------------------------------------------------------
@@ -327,7 +387,39 @@ pub fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Ve
     }
 
     rows.push(DataRow::normal(i18n::tr("Size"), format_size(dirent.size)));
-    rows.push(DataRow::normal("Inode", dirent.inode.to_string()));
+
+    if dirent.file_type.is_regular()
+        && let Some((sha256, sha384)) = compute_file_digests(path)
+    {
+        rows.push(DataRow::separator());
+        rows.push(DataRow::separator());
+        rows.push(DataRow::group_title("Computed Hashes"));
+        rows.push(DataRow::separator());
+        rows.push(DataRow::normal(" SHA-256:", ""));
+        rows.push(DataRow::normal("", format!("  {sha256}")));
+        rows.push(DataRow::separator());
+        rows.push(DataRow::normal(" SHA-384:", ""));
+        rows.push(DataRow::normal("", format!("  {sha384}")));
+    }
+
+    rows.push(DataRow::separator());
+
+    // ── Storage Location ─────────────────────────────────────────────────────
+    rows.push(DataRow::group_title("Storage Location"));
+
+    let fs_info = find_fs_info(path);
+
+    if let Some(ref fs) = fs_info {
+        let mounted_on_str = if dirent.is_mountpoint {
+            format!("{ICON_MOUNT} {} (mount point)", fs.mount_point)
+        } else {
+            fs.mount_point.clone()
+        };
+        rows.push(DataRow::normal(" Mounted on", mounted_on_str));
+        rows.push(DataRow::normal(" Filesystem type", fs.fs_type.clone()));
+    }
+
+    rows.push(DataRow::normal(" Inode", dirent.inode.to_string()));
 
     let nlink_val: u32 = dirent.nlink.into();
     let (nlink_str, nlink_hint) = if nlink_val > 1 && !dirent.file_type.is_directory() {
@@ -335,22 +427,11 @@ pub fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Ve
     } else {
         (dirent.nlink.to_string(), StyleHint::Normal)
     };
-    rows.push(DataRow::new("Hard links", nlink_str, nlink_hint));
+    rows.push(DataRow::new(" Hard links", nlink_str, nlink_hint));
 
-    rows.push(DataRow::separator());
-
-    let mp_str = if dirent.is_mountpoint {
-        "yes"
-    } else {
-        "no"
-    };
-    rows.push(DataRow::normal("Mount point", mp_str));
-
-    if let Some(fs) = find_fs_info(path) {
-        rows.push(DataRow::normal("Filesystem type", fs.fs_type));
-        rows.push(DataRow::normal("Device node", fs.device));
-        rows.push(DataRow::normal("Device ID", dirent.dev.to_string()));
-        rows.push(DataRow::normal("Mounted on", fs.mount_point));
+    if let Some(fs) = fs_info {
+        rows.push(DataRow::normal(" Device node", fs.device));
+        rows.push(DataRow::normal(" Device ID", dirent.dev.to_string()));
     }
 
     rows
@@ -394,7 +475,18 @@ pub fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
     rows.push(DataRow::separator());
 
     // ── Encryption & access ──────────────────────────────────────────────────
+    // Determine whether this file carries MCS categories (CUI or Protected
+    // marking). Files with categories are expected to be encrypted at rest
+    // per NIST SP 800-53 SC-28 and CMMC SC.L2-3.13.16.
+    let has_marking = matches!(
+        &dirent.selinux_label,
+        SelinuxCtxState::Labeled(ctx) if ctx.level().is_some_and(|lvl| !lvl.categories.is_empty())
+    );
     let (enc_str, enc_hint) = match &dirent.encryption {
+        EncryptionSource::None if has_marking => (
+            format!("{ICON_WARNING} None {EM_DASH} CUI/protected asset on unencrypted storage"),
+            StyleHint::TrustYellow,
+        ),
         EncryptionSource::None => ("None".to_owned(), StyleHint::Normal),
         EncryptionSource::LuksDevice => ("LUKS (dm-crypt)".to_owned(), StyleHint::TrustGreen),
         EncryptionSource::EncryptedFilesystem(fs) => (
@@ -425,7 +517,7 @@ pub fn build_security_rows(dirent: &SecureDirent) -> Vec<DataRow> {
         let (user_str, user_hint) = {
             let u = ctx.user().to_string();
             if u == "unconfined_u" {
-                (format!("\u{26A0} {u}"), StyleHint::TrustYellow)
+                (format!("{ICON_WARNING} {u}"), StyleHint::TrustYellow)
             } else {
                 (u, StyleHint::Normal)
             }

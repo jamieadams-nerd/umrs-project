@@ -1,0 +1,23 @@
+BEFORE:
+
+║ SHA-256         : 126e48a479aa7980c82d53f813d3f3847ff2ef1028d39eafceda5c3af5fcf║
+│ SHA-384         : a22e3c3d80336aee8ab7ace5eaccf09f6eea6d22128ddaf4e55b7ef641c2d║
+
+
+AFTER:
+
+Size:
+Inode:
+
+
+Computed Hashes:  <- Small grouping
+║ SHA-256: 
+     126e48a479aa7980c82d53f813d3f3847ff2ef1028d39eafceda5c3af5fcf ║
+
+│ SHA-384: 
+     a22e3c3d80336aee8ab7ace5eaccf09f6eea6d22128ddaf4e55b7ef641c2d ║
+
+
+See extra trailing space on the hash.
+
+

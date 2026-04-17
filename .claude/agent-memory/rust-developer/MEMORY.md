@@ -20,6 +20,8 @@
 - [umrs-label TUI module](umrs_label_tui.md) — LabelRegistryApp, tui/app.rs+render.rs, DisseminationControl type, main.rs dispatch, Cargo deps
 - [Popup module](popup_module.md) — umrs-ui popup.rs: PopupConfig, PopupCardData trait, render_popup_frame, render_marking_detail_popup, render_audit_card_popup, data_row_to_line; FileStatApp impl in umrs-stat
 
+- [Staging scripts pattern](staging_scripts_pattern.md) — stage_scripts() recurses one level, strips .sh, duplicate stem = hard error
+
 ## CPU/Crypto Reference Scripts
 
 `reference/cpu-crypto/` contains Jamie's empirical detection scripts from octopussy (Ubuntu 24.04.3, ARM64):

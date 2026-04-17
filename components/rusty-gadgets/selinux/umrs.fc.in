@@ -4,11 +4,40 @@
 # @PREFIX@ is substituted by the Makefile at build time
 # (demonstration default: /opt/umrs). Do NOT edit umrs.fc
 # directly -- it is a generated artifact.
+#
+# FHS 2.3 / 3.0 layout (2026-04-16 migration):
+#   /opt/umrs/            -> static package files          (FHS §5.15)
+#   /etc/opt/umrs/        -> host-editable configuration   (FHS §3.7.4)
+#   /var/opt/umrs/        -> variable package data         (FHS §4.9.2)
+#   /etc/keys/umrs/       -> key material at rest          (FHS §3.5)
+#   /var/lib/umrs/keys/   -> runtime key lifecycle state   (FHS §3.15)
+#
+# The /etc/opt/umrs, /var/opt/umrs, /etc/keys/umrs, and
+# /var/lib/umrs/keys trees are NOT templated via @PREFIX@. FHS fixes
+# those paths by standard regardless of install prefix -- an operator
+# who reroots /opt to /alt cannot move /etc/opt/umrs to /alt/etc
+# without violating FHS §5.15. Key material deliberately lives
+# OUTSIDE /opt/umrs per KEY-MANAGEMENT-DIRS.md §6.3 (NIST CM-6/SA-8
+# trumps FHS §4.5 add-on-package autonomy for secrets).
+#
+# Source of truth for key-material layout: KEY-MANAGEMENT-DIRS.md
+# (UMRS-SEC-KM-001). Do not add or retarget key-bearing fcontext
+# entries without updating that document first.
+#
+# Controls:
+#   NIST SP 800-53 AC-3, AC-6 (access enforcement, least privilege)
+#   NIST SP 800-53 CM-5, CM-6 (access restrictions, config settings)
+#   NIST SP 800-53 SC-3, SC-12, SC-17, SC-28 (cryptographic protection)
+#   NIST SP 800-57 Pt 1 Rev 5 §5.3 (key lifecycle states)
+#   NSA RTB: Non-Bypassability (key material isolated from umrs domain)
+############################################
+
+############################################
+# /opt/umrs -- static package files (FHS §5.15)
 ############################################
 
 @PREFIX@(/.*)?                    gen_context(system_u:object_r:usr_t,s0)
 @PREFIX@/bin(/.*)?                gen_context(system_u:object_r:umrs_bin_t,s0)
-@PREFIX@/etc(/.*)?                gen_context(system_u:object_r:umrs_config_ro_t,s0)
 @PREFIX@/share/templates(/.*)?    gen_context(system_u:object_r:umrs_config_ro_t,s0)
 # Man pages and compiled gettext catalogs: world-readable documentation and
 # localization artifacts. Labeled usr_t (system shared read-only data), the
@@ -18,5 +47,102 @@
 @PREFIX@/share/man(/.*)?          gen_context(system_u:object_r:usr_t,s0)
 @PREFIX@/share/locale(/.*)?       gen_context(system_u:object_r:usr_t,s0)
 @PREFIX@/share/umrs(/.*)?         gen_context(system_u:object_r:umrs_data_rw_t,s0)
-@PREFIX@/var/lib(/.*)?            gen_context(system_u:object_r:umrs_data_rw_t,s0)
-@PREFIX@/var/log(/.*)?            gen_context(system_u:object_r:umrs_log_rw_t,s0)
+
+############################################
+# /etc/opt/umrs -- host-editable configuration (FHS §3.7.4)
+#
+# Baseline site configuration shipped by the package and edited on host
+# by operators in the umrs-admin group. Read-only to the umrs tool
+# domain; write access flows through umrs_manage_config in future actor
+# domains. Phase 1 enforcement is DAC (0755 umrs:umrs); the label
+# carries intent into Phase 2.
+############################################
+
+/etc/opt/umrs(/.*)?               gen_context(system_u:object_r:umrs_config_ro_t,s0)
+
+############################################
+# /etc/opt/umrs/key-policy.toml -- key lifecycle policy metadata
+#
+# Policy document describing algorithm selection, rotation schedules,
+# and wrapping requirements per KEY-MANAGEMENT-DIRS.md §2 and §6.3.
+# This file is METADATA about keys -- it is NOT key material -- so
+# it carries the standard config-read-only type.
+#
+# Controls: NIST SP 800-53 PL-1, SA-8;
+#           NIST SP 800-57 Pt 1 Rev 5 §5.2 (policy documentation).
+############################################
+
+/etc/opt/umrs/key-policy\.toml    gen_context(system_u:object_r:umrs_config_ro_t,s0)
+
+############################################
+# /var/opt/umrs -- variable package data (FHS §4.9.2)
+############################################
+
+/var/opt/umrs/lib(/.*)?           gen_context(system_u:object_r:umrs_data_rw_t,s0)
+/var/opt/umrs/log(/.*)?           gen_context(system_u:object_r:umrs_log_rw_t,s0)
+
+############################################
+# /etc/keys/umrs -- UMRS key material at rest
+#
+# Per KEY-MANAGEMENT-DIRS.md (UMRS-SEC-KM-001) §2:
+#   - This tree is OUTSIDE /opt/umrs per FHS §4.5 autonomy vs. NIST
+#     CM-6 / SA-8. UMRS deliberately deviates from add-on-package
+#     autonomy for key material so that keys follow the system-wide
+#     audit and access-control baseline (see §6.3 resolution table).
+#   - All directories root:root 0700; all files root:root 0600.
+#   - No unconfined domain may read any subdirectory (§5.3).
+#
+# Subtree layout:
+#   sealing/   -- symmetric keys for LUKS / dm-crypt  (umrs_seal_key_t)
+#   signing/   -- IMA / DIGSIG asymmetric signing     (umrs_sign_key_t)
+#   wrapping/  -- Key-Encryption-Keys                 (umrs_kek_t)
+#   staging/   -- pre-activation signing material     (umrs_sign_key_t)
+#
+# Staging reuses umrs_sign_key_t; rationale is in umrs.te and in
+# KEY-MANAGEMENT-DIRS.md §5.1.
+#
+# Controls: NIST SP 800-53 SC-3, SC-12, SC-12(1), SC-12(2), SC-17,
+#                          SC-28, AC-3, AC-3(3);
+#           NIST SP 800-57 Pt 1 Rev 5 §5.3.4, §5.3.5;
+#           NIST SP 800-38F (wrapping); NIST SP 800-89 (signing);
+#           CMMC L2 SC.L2-3.13.10.
+############################################
+
+/etc/keys/umrs(/.*)?              gen_context(system_u:object_r:umrs_config_ro_t,s0)
+/etc/keys/umrs/sealing(/.*)?      gen_context(system_u:object_r:umrs_seal_key_t,s0)
+/etc/keys/umrs/signing(/.*)?      gen_context(system_u:object_r:umrs_sign_key_t,s0)
+/etc/keys/umrs/wrapping(/.*)?     gen_context(system_u:object_r:umrs_kek_t,s0)
+/etc/keys/umrs/staging(/.*)?      gen_context(system_u:object_r:umrs_sign_key_t,s0)
+
+############################################
+# /var/lib/umrs/keys -- runtime key lifecycle state
+#
+# Per KEY-MANAGEMENT-DIRS.md §2:
+#   - /var/lib/ per RHEL convention for system-wide variable state.
+#     UMRS variable data for NON-key files goes to /var/opt/umrs/ per
+#     FHS §4.9.2 (add-on-package data); key material deliberately
+#     breaks that pattern per NIST CM-6 -- see KEY-MANAGEMENT-DIRS §6.3.
+#   - All directories root:root 0700; all files root:root 0600.
+#   - active/    is short-lived unwrapped session material.
+#   - suspended/ is temporarily deactivated material that may return
+#                to service (SP 800-57 §5.3 suspended state).
+#   - retired/   is deactivated material awaiting secure destruction
+#                (SP 800-57 §5.3.6).
+#
+# /var/lib/umrs/keys/ and its subdirectories are NOT created by the
+# installer in this pass. They are lazily created by the runtime or
+# a future installer pass; restorecon applies the labels declared
+# below on first creation.
+#
+# Suspended reuses umrs_retired_key_t in Phase 1; rationale is in
+# umrs.te and in KEY-MANAGEMENT-DIRS.md §5.1.
+#
+# Controls: NIST SP 800-53 SC-12, AC-3, SC-4, MP-6, MP-7;
+#           NIST SP 800-57 Pt 1 Rev 5 §5.3.3, §5.3.6;
+#           CMMC L2 MP.L2-3.8.3.
+############################################
+
+/var/lib/umrs/keys(/.*)?          gen_context(system_u:object_r:umrs_config_ro_t,s0)
+/var/lib/umrs/keys/active(/.*)?   gen_context(system_u:object_r:umrs_session_key_t,s0)
+/var/lib/umrs/keys/suspended(/.*)? gen_context(system_u:object_r:umrs_retired_key_t,s0)
+/var/lib/umrs/keys/retired(/.*)?  gen_context(system_u:object_r:umrs_retired_key_t,s0)

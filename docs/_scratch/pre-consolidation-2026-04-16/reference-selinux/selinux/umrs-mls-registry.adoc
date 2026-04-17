@@ -1,0 +1,85 @@
+= UMRS MLS Registry: Filesystem Layout and Locking
+:toc: left
+:description: Where the UMRS MLS registry lives on the filesystem, how it is kept separate from other system files, and how it is locked down with permissions and SELinux labels.
+
+// NIST 800-53 CM-7 — Least functionality
+// NIST 800-53 AC-3 — Access enforcement
+// NIST 800-53 SI-7 — Software and information integrity
+
+The UMRS MLS registry is a JSON file that maps sensitivity levels and CUI
+category numbers to human-readable names and handling metadata. This page
+documents the agreed filesystem layout, update policy, and permission model
+for that file.
+
+== Filesystem Locations
+
+[source]
+----
+/etc/umrs/
+  mls/
+    umrs-mls-registry.json        # sensitivity + CUI registry
+    umrs-mls-registry.local.json  # optional site-local overrides
+/etc/pki/umrs/                    # keys, certificates
+/var/lib/umrs/                    # runtime state (umrs-state.json, caches)
+----
+
+This layout keeps UMRS clearly identifiable, separate from vendor config files,
+and easy to remove from a system cleanly if needed.
+
+== Registry Update Policy
+
+Treat `umrs-mls-registry.json` as a shipped artifact:
+
+* Shipped with the UMRS package.
+* Updated only when the CUI registry mapping changes or the UMRS tooling is
+  revised.
+* Runtime utilities *never* rewrite this file — they only read from it.
+
+For site-local overrides, use `umrs-mls-registry.local.json` or a file under
+`/var/lib/umrs/`. This preserves a clear distinction between "shipped truth"
+and "site-local customization" and prevents accidental corruption of the
+canonical mapping by administrative activity.
+
+== Permission Model
+
+[cols="2,2,1,1"]
+|===
+| Path | Owner | Group | Mode
+
+| `/etc/umrs` | root | umrs | 0750
+| `/etc/umrs/mls` | root | umrs | 0750
+| `/etc/umrs/mls/umrs-mls-registry.json` | root | umrs | 0640
+|===
+
+Using a dedicated `umrs` group gives UMRS tools read access while blocking
+casual user browsing of the sensitivity and CUI mapping details.
+
+== SELinux Labels
+
+Define dedicated SELinux types for the UMRS configuration tree:
+
+[source]
+----
+etc_umrs_t     # for /etc/umrs(/.*)?
+var_lib_umrs_t # for /var/lib/umrs(/.*)?
+----
+
+Policy rules:
+
+* `umrs_t` (the UMRS tool domain) — granted read access to `etc_umrs_t`
+* `umrs_t` — no write access to `etc_umrs_t`
+* Untrusted domains — no access to either type
+
+MLS range: keep these at `s0` so they are globally readable from an MLS
+perspective, but remain gated by UNIX permissions and SELinux type enforcement.
+
+== Future: Rust Lookup Utility
+
+When the registry format stabilizes, a Rust utility will provide:
+
+* List all known sensitivities and categories
+* Describe a given sensitivity level or category number
+* Accept a pathname, inspect its SELinux label, and display the human
+  description and NARA-mandated handling guidance
+
+See xref:umrs-tools:index.adoc[UMRS Tools] for the current tool status.

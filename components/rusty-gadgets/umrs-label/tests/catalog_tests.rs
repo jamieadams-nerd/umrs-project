@@ -654,3 +654,84 @@ fn ca_catalog_mcs_level_compound_category_uses_first() {
     let (key, _) = result.unwrap();
     assert_eq!(key, "PROTECTED-A");
 }
+
+// ---------------------------------------------------------------------------
+// marking_by_banner — setrans-translated string lookup
+// ---------------------------------------------------------------------------
+
+/// # TEST-ID: CAT-BANNER-001
+/// # REQUIREMENT: marking_by_banner resolves Canadian French translated banner text
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+///
+/// `setrans.conf` translates `s0:c300` to `"PROTÉGÉ A"`. This test verifies that
+/// `marking_by_banner` can resolve the translated French form back to the
+/// `PROTECTED-A` catalog entry, enabling the popup to display correctly for
+/// files labeled with Canadian Protected MCS categories.
+#[test]
+fn marking_by_banner_finds_canadian_french() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let result = cat.marking_by_banner("PROTÉGÉ A");
+    assert!(
+        result.is_some(),
+        "expected PROTÉGÉ A to resolve to PROTECTED-A via banner lookup"
+    );
+    let (key, _) = result.unwrap();
+    assert_eq!(key, "PROTECTED-A");
+}
+
+/// # TEST-ID: CAT-BANNER-002
+/// # REQUIREMENT: marking_by_banner resolves English banner text for Canadian entries
+/// # COMPLIANCE: NIST SP 800-53 AC-16
+///
+/// Verifies that the English form `"PROTECTED A"` stored in `marking_banner.en_US`
+/// also resolves correctly. Both locale variants must work because English-locale
+/// setups may use the English form.
+#[test]
+fn marking_by_banner_finds_canadian_english() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let result = cat.marking_by_banner("PROTECTED A");
+    assert!(
+        result.is_some(),
+        "expected PROTECTED A to resolve to PROTECTED-A via banner lookup"
+    );
+    let (key, _) = result.unwrap();
+    assert_eq!(key, "PROTECTED-A");
+}
+
+/// # TEST-ID: CAT-BANNER-003
+/// # REQUIREMENT: marking_by_banner performs case-insensitive ASCII comparison
+/// # COMPLIANCE: NIST SP 800-53 AC-16, NIST SP 800-53 SI-10
+///
+/// The comparison uses `eq_ignore_ascii_case` — ASCII letter case differences
+/// must not prevent a match. Accented characters (e.g., `É` U+00C9 vs `é`
+/// U+00E9) are distinct Unicode scalar values; `eq_ignore_ascii_case` does not
+/// perform Unicode case folding on them. This test exercises the ASCII folding
+/// path using a string whose non-accented letters differ from the stored value
+/// (`"PROTÉGÉ A"`) while keeping the accented characters identical.
+#[test]
+fn marking_by_banner_case_insensitive() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    // "PROTÉGÉ a" shares the same accented É characters as "PROTÉGÉ A" in the
+    // catalog, but the trailing letter 'a' differs in ASCII case. This exercises
+    // eq_ignore_ascii_case folding without requiring Unicode case folding.
+    let result = cat.marking_by_banner("PROTÉGÉ a");
+    assert!(
+        result.is_some(),
+        "case-insensitive banner lookup should match 'PROTÉGÉ a' to PROTECTED-A"
+    );
+    let (key, _) = result.unwrap();
+    assert_eq!(key, "PROTECTED-A");
+}
+
+/// # TEST-ID: CAT-BANNER-004
+/// # REQUIREMENT: marking_by_banner returns None for unknown banner text
+/// # COMPLIANCE: NIST SP 800-53 AC-16, NIST SP 800-53 SI-10
+///
+/// Fail-closed: an unrecognised banner string must not match any entry.
+/// This guards against inadvertent label resolution for garbage input.
+#[test]
+fn marking_by_banner_returns_none_for_unknown() {
+    let cat = catalog::load_catalog(ca_catalog_path()).expect("CA catalog load");
+    let result = cat.marking_by_banner("BOGUS");
+    assert!(result.is_none(), "BOGUS banner text should return None");
+}

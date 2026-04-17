@@ -1,0 +1,110 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/dual-network-interface.adoc
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/dual-network-interface.adoc
+= Step 3d: Dual Network Interface Setup
+:toc: left
+:description: Verifying and configuring the two-NIC management/data separation required for UMRS deployments.
+
+Every UMRS deployment requires at least two separate network interfaces: one for
+management traffic and one for data traffic. This page explains the security
+rationale and covers post-installation verification.
+
+If you already configured both interfaces during the installer session, the steps
+below verify the separation is correct. If the configuration was skipped during
+installation, follow the configuration steps below.
+
+== Why Two Network Interfaces
+
+Two network interfaces provide separation that matters operationally:
+
+* Prevents an operational compromise from granting admin access.
+* Allows firewalling, routing, and SELinux labeling to be stricter and more
+  enforceable on each channel.
+* Supports high-assurance evidence: you can demonstrate that management traffic
+  cannot traverse the same pathway as user-facing traffic.
+* Makes monitoring more effective: the management network becomes a high-signal
+  channel.
+* Enables stronger compliance posture by demonstrating architectural separation —
+  a key theme in many accreditations.
+
+=== Security Control Alignment
+
+`NIST SP 800-207 (Zero Trust Architecture)`::
+Encourages segmentation of control planes and data planes. A distinct interface
+for the administrative control plane is the cleanest implementation.
+
+`NIST SP 800-171 (CUI environments)`::
+Requires segmentation, separation of duties, and isolating administrative
+mechanisms from user data pathways.
+
+`DoD STIGs`::
+Many system STIGs for RHEL, networking, and application servers explicitly require
+administrative services to be bound only to trusted interfaces or isolated
+management networks.
+
+`NIST SP 800-53`::
+* `SC-7` (Boundary Protection) — enforces strong separation of different traffic types.
+* `AC-6` (Least Privilege) and `AC-17` (Remote Access) — administrative access paths
+  must be tightly constrained and isolated.
+* `CM-6` and `CM-7` — reduce exposure and control where administrative functionality
+  resides.
+
+== Interface Roles
+
+[cols="1,3",options="header"]
+|===
+| Interface | Purpose
+
+| Management interface
+| SSH administration, out-of-band control, configuration management systems,
+  monitoring, orchestration. Place this on a restricted administrative network,
+  not reachable from general user traffic.
+
+| Data interface
+| Operational traffic — application data, mission data, normal service traffic.
+|===
+
+NOTE: On a virtual machine, use separate virtual NICs attached to separate virtual
+networks — not just separate IP addresses on the same virtual switch.
+
+== Verifying Interface Separation
+
+. List network interfaces and their addresses:
++
+[source,bash]
+----
+ip addr show
+----
+
+. Verify that each interface is on a separate subnet with a separate routing entry:
++
+[source,bash]
+----
+ip route show
+----
+
+. Confirm that SSH is bound only to the management interface IP:
++
+[source,bash]
+----
+ss -tlnp | grep :22
+----
++
+The local address should show the management interface IP, not `0.0.0.0` or `::`.
+
+// TBD: Add specific interface naming conventions (eth0/eth1, ens3/ens4, etc.)
+// TBD: Add firewalld zone assignments (e.g., internal for management, dmz for data)
+
+== When More Than Two Interfaces Are Appropriate
+
+Two network interfaces is the baseline. Configure more when the infrastructure
+supports it and the system warrants it:
+
+* Out-of-band hardware management (IPMI, iDRAC, iLO).
+* Storage networks or replication.
+* Separation of different mission enclaves.
+* Cross-domain or MLS channeling.
+
+== Next Step
+
+xref:rhel10/03-postinstall/tmp-security.adoc[Step 3e: Temporary Filesystem Security]

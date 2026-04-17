@@ -1,0 +1,28 @@
+// Source material (merged 2026-04-16):
+//   No single source document — new aggregate landing page.
+= Step 5: UMRS Installation
+:toc: left
+:description: Landing page for UMRS-specific installation — users, groups, directory structure, and install pipeline.
+
+Complete xref:rhel10/04-rust-packages.adoc[Step 4: Package Installation] before
+starting this step.
+
+UMRS installation consists of three sub-tasks.
+
+[cols="1,3",options="header"]
+|===
+| Sub-task | Description
+
+| xref:umrs/5a-users-and-types/index.adoc[5a — Users and Types]
+| Create the UMRS DAC accounts and groups. Review the SELinux types currently
+  declared in the policy module. Map the operator login account to a confined
+  SELinux user.
+
+| xref:umrs/5b-directory-structure/index.adoc[5b — Directory Structure]
+| Provision the three FHS 2.3 root directories and understand the full static,
+  variable, configuration, and PKI subtrees.
+
+| xref:umrs/5c-install/index.adoc[5c — Install Pipeline]
+| Build the SELinux policy module, run the installer, deploy configurations, and
+  verify the installation.
+|===

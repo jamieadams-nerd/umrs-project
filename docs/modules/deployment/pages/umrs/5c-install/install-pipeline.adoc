@@ -1,0 +1,256 @@
+// Source material (merged 2026-04-16):
+//   - components/rusty-gadgets/selinux/INSTRUCTIONS.md (full walkthrough)
+//   - components/rusty-gadgets/selinux/README.md (install commands, smoke test)
+//   - docs/modules/operations/pages/admin-install.adoc (merged; content was superseded)
+//   - components/rusty-gadgets/scripts/umrs-install.sh (header, preflight, pipeline)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/selinux/INSTRUCTIONS.md
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/operations/admin-install.adoc
+= Install Pipeline
+:toc: left
+:description: Step-by-step walkthrough of the UMRS install pipeline -- SELinux policy build, umrs-install.sh, and verification.
+
+This page walks through installing UMRS into `/opt/umrs/` on a RHEL 10 host
+with SELinux in targeted enforcing mode. Each step explains what is happening
+and why, so the sequence is understandable rather than a recipe.
+
+Scope: Phase 1 (labeling only). The policy module declares types and file
+contexts that will be used later for MLS enforcement. No enforcement claims are
+made here.
+
+IMPORTANT: Complete xref:umrs/5a-users-and-types/dac-users-groups.adoc[DAC Users and Groups]
+and xref:umrs/5b-directory-structure/directory-structure.adoc[Directory Structure] before
+starting this pipeline. The `umrs` user, group, and three FHS roots must exist.
+
+== Verify Prerequisites
+
+. Verify that the `umrs` user and group exist and the FHS roots are present:
++
+[source,bash]
+----
+getent passwd umrs
+getent group umrs
+ls -ld /opt/umrs /etc/opt/umrs /var/opt/umrs
+----
++
+All three roots should show `umrs:umrs` ownership.
+
+== Step 1: Build the SELinux Policy Module
+
+The policy source lives in `components/rusty-gadgets/selinux/` as three files:
+
+* `umrs.te` --- type enforcement: declares types, attributes, neverallow rules
+* `umrs.if` --- interface macros other modules can call
+* `umrs.fc.in` --- file context template with `@PREFIX@` placeholder
+
+The Makefile substitutes `@PREFIX@` (default `/opt/umrs`) to produce `umrs.fc`,
+then compiles the module into a loadable package `umrs.pp`.
+
+. Build the policy:
++
+[source,bash]
+----
+cd /DEVELOPMENT/umrs-project/components/rusty-gadgets/selinux
+make clean && make
+----
++
+Output: `umrs.pp` in the `selinux/` directory.
++
+NOTE: Three `duplicate definition` warnings from `passt.if` and `smartmon.if`
+appear during the build. These are a distribution-shipped policy issue unrelated
+to UMRS --- ignore them.
++
+To build for a non-default install prefix:
++
+[source,bash]
+----
+make PREFIX=/some/other/path
+----
+
+== Step 2: Load the Policy Module
+
+Loading a `.pp` file does two things at once:
+
+. Registers the types declared in `umrs.te` with the kernel.
+. Installs the file-context entries from `umrs.fc` into the system's persistent
+  file-context database (so `restorecon` knows the correct labels).
+
+. Load the module:
++
+[source,bash]
+----
+sudo semodule -i umrs.pp
+sudo semodule -l | grep '^umrs$'
+----
++
+The second command confirms the module is loaded.
+
+. If an older iteration (`umrs_cui`, `cui_lei`) is still loaded, remove it first:
++
+[source,bash]
+----
+sudo semodule -r umrs_cui cui_lei 2>/dev/null || true
+----
+
+== Step 3: Create the Directory Skeleton
+
+The SELinux policy assigns a different type to each subdirectory under
+`/opt/umrs/`. Those directories must exist before applying labels.
+
+Run as the `umrs` user so ownership is correct and the process runs in the
+`umrs` account's SELinux context. Use `ssh umrs`, not `sudo -u umrs`:
+
+[source,bash]
+----
+ssh umrs mkdir -p /opt/umrs/bin \
+    /opt/umrs/share/umrs/templates \
+    /opt/umrs/share/man/man1 \
+    /opt/umrs/share/man/fr/man1 \
+    /opt/umrs/share/locale \
+    /var/opt/umrs/lib \
+    /var/opt/umrs/log
+----
+
+. Verify:
++
+[source,bash]
+----
+ls -l /opt/umrs
+ls -l /var/opt/umrs
+----
++
+All subdirectories should be owned `umrs:umrs`.
+
+== Step 4: Stage the Build Output
+
+. Build and stage the workspace (if not already done):
++
+[source,bash]
+----
+cd /DEVELOPMENT/umrs-project/components/rusty-gadgets
+cargo xtask stage
+----
++
+See xref:umrs/5c-install/staging.adoc[Staging] for details.
+
+== Step 5: Run umrs-install.sh
+
+. Run in dry-run mode first to inspect the command list:
++
+[source,bash]
+----
+cd /DEVELOPMENT/umrs-project/components/rusty-gadgets
+./scripts/umrs-install.sh --dry-run
+----
+
+. Run the installer:
++
+[source,bash]
+----
+./scripts/umrs-install.sh
+----
++
+The installer performs these steps in order:
++
+.. *Preflight* --- verifies the `umrs` user and group exist, the three FHS roots
+   are present with correct ownership, SELinux is enabled, and the staging tree
+   was produced.
+.. *Layout* --- creates subdirectories under each FHS root.
+.. *File placement* --- copies binaries, reference databases, templates, man pages,
+   and compiled locale catalogs to their destinations.
+.. *Policy load* --- installs the `umrs` SELinux policy module.
+.. *Context application* --- runs `restorecon -RF /opt/umrs`.
+.. *Verification* --- spot-checks binary labels and directory modes.
+
+. Verify the install:
++
+[source,bash]
+----
+./scripts/umrs-install.sh --verify
+----
+
+== Step 6: Confine the umrs Login Account
+
+`umrs.te` contains `neverallow` rules that forbid `unconfined_t` from touching
+UMRS types. The `umrs` login account must be mapped to a confined SELinux user.
+See xref:umrs/5a-users-and-types/mac-selinux-users.adoc[SELinux Users and Login Mappings]
+for the full procedure.
+
+Summary:
+
+[source,bash]
+----
+sudo semanage login -a -s user_u umrs
+sudo semanage login -l | grep '^umrs'
+ssh umrs id -Z
+----
+
+Expected: `user_u:user_r:user_t:s0`
+
+== One-Line Install Command
+
+For a clean re-install after a policy change:
+
+[source,bash]
+----
+cd /DEVELOPMENT/umrs-project/components/rusty-gadgets/selinux && make && sudo semodule -i umrs.pp && sudo restorecon -RF /opt/umrs
+----
+
+== Uninstall
+
+The uninstall path reverses steps 2--6 but preserves `/opt/umrs/` itself (the
+top-level directory stays in place so a reinstall can land cleanly).
+
+[source,bash]
+----
+# 1. Remove staged content (as the umrs user, not sudo)
+ssh umrs 'rm -rf /opt/umrs/bin /opt/umrs/share /opt/umrs/var'
+
+# 2. Remove the login mapping
+sudo semanage login -d umrs
+
+# 3. Unload the policy module (also removes fcontext entries)
+sudo semodule -r umrs
+
+# 4. Reset residual labels
+sudo restorecon -RFv /opt/umrs
+----
+
+Verify:
+
+[source,bash]
+----
+ls -lZ /opt/umrs                      # should be empty, type usr_t
+sudo semodule -l | grep '^umrs$'      # should produce no output
+sudo semanage login -l | grep '^umrs' # should produce no output
+----
+
+== Troubleshooting
+
+*Module won't load* --- check for conflicting legacy modules:
+
+[source,bash]
+----
+sudo semodule -l | grep -E '^(umrs|cui)'
+----
+
+*`restorecon` reports no changes* --- verify the fcontext entries are in the database:
+
+[source,bash]
+----
+sudo semanage fcontext -l | grep /opt/umrs
+----
+
+*A file still shows `usr_t` after restorecon* --- the path did not match any
+fcontext pattern. Check `umrs.fc` against the actual path.
+
+*Operator can't run a UMRS binary after login* --- confirm the login mapping:
+
+[source,bash]
+----
+sudo semanage login -l | grep umrs
+id -Z   # as the umrs user
+----
+
+== Next Step
+
+xref:umrs/5c-install/scripts.adoc[Scripts] --- `umrs-sign-mgr` and `umrs-shred` placement.

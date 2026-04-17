@@ -1,5 +1,39 @@
 # Changelog
 
+## 2026-04-17
+
+### TUI Bug Fixes
+- Fixed Canadian group header Enter-key popup not displaying: added `Catalog::marking_by_banner()` as third lookup strategy to resolve mismatches between setrans translations (e.g., `s0:c300` → PROTÉGÉ A) and catalog keys (PROTECTED-A). 4 new regression tests.
+- Fixed popup Level field showing incorrect MLS canonical level (s1/s2/s3) under targeted policy (always s0): suppressed Level row in security context popups since it has no meaning under Phase 1.
+- Fixed RootOwnedMutable false positives on standard 0755 root:root binaries: renamed to RootOwnedExcessiveWrite, now only fires on group-writable, world-writable, or POSIX ACL presence per NIST SP 800-53 CM-5.
+
+### Security Enhancements
+- Encryption warning for CUI/protected assets on unencrypted storage: yellow TrustYellow warning icon with text "⚠ None — CUI/protected asset on unencrypted storage" displayed when file carries MCS categories but EncryptionSource::None. Covers US CUI, Canadian Protected, and future Five Eyes classifications.
+- SHA-256 and SHA-384 file hashes added to Identity tab: regular files only, computed via single-pass 8KiB chunked reader (FIPS 180-4 compliant). Multi-line display with label on own line, full-width hash on next line with trailing space for consistency.
+
+### UI Polish & Consistency
+- ICON_WARNING and EM_DASH constants added to `umrs-ui/src/icons.rs`; replaced raw Unicode escapes in umrs-stat and popup renderers.
+- Audit card popup width increased from 70% baseline (60–90 columns) to 75% baseline (68–100 columns) for better data visibility.
+- Consistent trailing space applied to ALL DataRow values in both popup.rs and data_panel.rs renderers for alignment.
+- Empty-key continuation line support in renderers: value spans full width without key column, used for multi-line hash display.
+- Identity tab reorganization: "Storage Location" group title added (Mounted on with mount icon, Filesystem type, Inode, Hard links, Device node, Device ID). "Computed Hashes" group title for SHA rows.
+
+### Documentation & Reference Library
+- LSB 5.0 specification downloaded: 8 PDFs to `.claude/references/lsb-5/`, all verified and checksummed. Part IX Ch 23 §23.3 covers UID/GID ranges.
+- systemd UID/GID specification downloaded to `.claude/references/systemd-uid-gid/`.
+- UID/GID compliance reference report created at `.claude/references/reports/2026-04-17-uid-gid-compliance-reference.md`: three-source chain (LSB + systemd + RHEL 10 login.defs) for UMRS account justification.
+- DAC users-and-groups.adoc rewritten with full UID/GID standards rationale section citing LSB 5.0, systemd, RHEL 10 login.defs; 3 TODOs fixed (expected output, passwd -l rationale, SSH guidance removed).
+
+### Plans & Governance
+- Created `.claude/plans/signing-and-key-management.md`: consolidated all signing/key/umrs-sign-mgr.sh work into one parked plan.
+- SafeText + env sanitization cross-referenced to existing plans (umrs-tool-init.md, umrs-env-scrub-implementation.md).
+- Rules-to-skills extraction completed: 14 rules files moved to triggered skills. Always-loaded rules reduced from 2,586 lines to 312 lines (88% reduction, ~34,000 tokens saved). All content still accessible via skill trigger words.
+
+### Housekeeping
+- jamies_brain/ cleanup: 17 consumed files archived to `.claude/jamies_brain/archive/`, 9 live files remain (plus new KEY-MANAGEMENT-DIRS.md from Rusty notes).
+- Knox familiarization note posted to cross-team board for LSB/systemd/FHS material.
+- Created `.claude/agent-memory/rust-developer/staging_scripts_pattern.md`: formal memory for scripts-in-xtask pattern across umrs-sign-mgr.sh and future build tools.
+
 ## 2026-04-15
 
 ### CUI Taxonomy Corrections

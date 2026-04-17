@@ -1,0 +1,205 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-directory-structure.adoc (all tables)
+//   - components/rusty-gadgets/selinux/umrs.fc.in (all fcontext entries)
+//   - components/rusty-gadgets/scripts/umrs-install.sh (layout comments)
+//   - components/rusty-gadgets/selinux/KEY-MANAGEMENT-DIRS.md (UMRS-SEC-KM-001 — key material paths)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-directory-structure.adoc
+= Directory Purpose Matrix
+:toc: left
+:description: Single reference table -- every UMRS path with owner, mode, SELinux type, and purpose.
+
+This table is the single authoritative reference for the on-disk layout.
+Every path declared in `umrs.fc.in` and every directory created by the
+installer appears here.
+
+FHS 3.0 references: §3.5 (etc), §3.13 (etc/opt), §3.15 (var), §4.5 (opt),
+§4.11 (share), §5.15 (opt packages).
+
+IMPORTANT: As of 2026-04-16 the fcontext entries for `/etc/opt/umrs/` and
+`/var/opt/umrs/` are present in `umrs.fc.in`. The pre-FHS paths
+(`/opt/umrs/etc`, `/opt/umrs/var`) have been removed from the template.
+Run `semodule -i umrs.pp` after rebuilding to activate the updated entries,
+then run `restorecon -RFv /opt/umrs /etc/opt/umrs /var/opt/umrs`.
+
+== Full Path Matrix
+
+[cols="3,1,1,2,2",options="header"]
+|===
+| Path | Owner | Mode | SELinux Type | Purpose
+
+5+h| Static Package Files (`/opt/umrs/`) — FHS §5.15
+
+| `/opt/umrs/`
+| `umrs:umrs` | `0755` | `usr_t`
+| FHS root for static package files. Provisioned out of band.
+
+| `/opt/umrs/bin/`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Executable binaries.
+
+| `/opt/umrs/bin/umrs-c2pa`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| C2PA provenance verifier.
+
+| `/opt/umrs/bin/umrs-label`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Security label registry browser.
+
+| `/opt/umrs/bin/umrs-ls`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Security-aware ls(1).
+
+| `/opt/umrs/bin/umrs-stat`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Security-aware stat(1).
+
+| `/opt/umrs/bin/umrs-uname`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Security-aware uname(1).
+
+| `/opt/umrs/share/umrs/`
+| `umrs:umrs` | `0755` | `umrs_data_rw_t`
+| Package-specific static reference data (FHS §4.11 pattern).
+
+| `/opt/umrs/share/umrs/*.json`
+| `umrs:umrs` | `0644` | `umrs_data_rw_t`
+| CUI label catalogs, sensitivity levels, color palettes.
+
+| `/opt/umrs/share/umrs/templates/`
+| `umrs:umrs` | `0755` | `umrs_config_ro_t`
+| Configuration templates for site deployment.
+
+| `/opt/umrs/share/umrs/templates/*.template`
+| `umrs:umrs` | `0644` | `umrs_config_ro_t`
+| setrans.conf templates (MLS and targeted variants).
+
+| `/opt/umrs/share/man/man1/`
+| `umrs:umrs` | `0755` | `usr_t`
+| English man pages (section 1).
+
+| `/opt/umrs/share/man/fr/man1/`
+| `umrs:umrs` | `0755` | `usr_t`
+| Canadian French man pages.
+
+| `/opt/umrs/share/locale/`
+| `umrs:umrs` | `0755` | `usr_t`
+| Compiled gettext catalogs.
+
+5+h| Host Configuration (`/etc/opt/umrs/`) — FHS §3.7.4
+
+| `/etc/opt/umrs/`
+| `umrs:umrs` | `0755` | `umrs_config_ro_t`
+| FHS root for host-editable configuration. Provisioned out of band.
+
+| `/etc/opt/umrs/umrs-c2pa.toml`
+| `root:root` | `0644` | `umrs_config_ro_t`
+| C2PA tool configuration.
+
+5+h| Key Lifecycle Policy (`/etc/opt/umrs/`) — SP 800-57 §5.2, NIST PL-1, SA-8
+
+| `/etc/opt/umrs/key-policy.toml`
+| `umrs:umrs` | `0644` | `umrs_config_ro_t`
+| Key lifecycle policy: rotation schedules and algorithm selections.
+  Policy metadata only — no raw key material. _(future — not yet placed by installer)_
+
+5+h| UMRS Key Material Root (`/etc/keys/umrs/`) — NIST SC-12, SP 800-57 §5.3
+
+| `/etc/keys/umrs/`
+| `root:root` | `0700` | `umrs_config_ro_t`
+| UMRS key material namespace root. No listing by non-root.
+
+| `/etc/keys/umrs/sealing/`
+| `root:root` | `0700` | `umrs_seal_key_t`
+| Symmetric keys for LUKS/dm-crypt volume sealing.
+  NIST SC-12(1), SC-28; SP 800-57 §5.3.5; SP 800-38F.
+
+| `/etc/keys/umrs/signing/`
+| `root:root` | `0700` | `umrs_sign_key_t`
+| IMA/DIGSIG asymmetric signing keys.
+  NIST SI-7, SC-12; SP 800-89.
+
+| `/etc/keys/umrs/wrapping/`
+| `root:root` | `0700` | `umrs_kek_t`
+| Key Encryption Keys (KEKs) for AES-KW / AES-KWP wrapping.
+  NIST SC-12(2); SP 800-38F.
+
+| `/etc/keys/umrs/staging/`
+| `root:root` | `0700` | `umrs_sign_key_t`
+| Pre-activation key material (SP 800-57 §5.3 pre-active state).
+  NIST SC-12, CM-3.
+
+5+h| UMRS Runtime Key State (`/var/lib/umrs/keys/`) — NIST SC-12, AC-3 — _(not yet created by installer)_
+
+| `/var/lib/umrs/keys/`
+| `root:root` | `0700` | `umrs_config_ro_t`
+| Runtime key lifecycle state root. _Not yet created by `umrs-install.sh`._
+
+| `/var/lib/umrs/keys/active/`
+| `root:root` | `0700` | `umrs_session_key_t`
+| Currently loaded/unwrapped session keys. Short-lived.
+  NIST SC-12, AC-3, SC-4; SP 800-57 §5.3.3.
+  _(not yet created by installer)_
+
+| `/var/lib/umrs/keys/suspended/`
+| `root:root` | `0700` | `umrs_retired_key_t`
+| Temporarily deactivated keys (SP 800-57 suspended state).
+  NIST SC-12, AC-2.
+  _(not yet created by installer)_
+
+| `/var/lib/umrs/keys/retired/`
+| `root:root` | `0700` | `umrs_retired_key_t`
+| Keys pending cryptographic destruction. Staging area only.
+  NIST SC-12, MP-6, MP-7; CMMC MP.L2-3.8.3; SP 800-57 §5.3.6.
+  _(not yet created by installer)_
+
+5+h| Variable Data (`/var/opt/umrs/`) — FHS §4.9.2
+
+| `/var/opt/umrs/`
+| `umrs:umrs` | `0755` | (pending explicit fcontext)
+| FHS root for variable package data. Provisioned out of band.
+
+| `/var/opt/umrs/lib/`
+| `umrs:umrs` | `2775` | `umrs_data_rw_t`
+| Runtime state data. setgid; new entries inherit `umrs` group.
+
+| `/var/opt/umrs/log/`
+| `umrs:umrs` | `2770` | `umrs_log_rw_t`
+| Log spool. setgid + no world access.
+|===
+
+== Compliance Mapping
+
+[cols="2,3",options="header"]
+|===
+| Control | Coverage
+
+| NIST SP 800-53 CM-2 (Baseline Configuration)
+| Installer captures the authoritative static-file baseline.
+
+| NIST SP 800-53 CM-6 (Configuration Settings)
+| Layout is fixed by FHS 2.3; no site variance permitted.
+
+| NIST SP 800-53 CM-7 (Least Functionality)
+| Only classified artifact types are staged or installed.
+
+| NIST SP 800-53 CM-8 (Component Inventory)
+| `EXPECTED_BINARIES` in the stager declares the full artifact set.
+
+| NIST SP 800-53 SA-12 (Supply Chain Protection)
+| Staging is the IMA-signing checkpoint; no stray files reach signing.
+
+| NIST SP 800-53 AC-3, SC-12, SC-28
+| Key material at rest under `/etc/keys/umrs/` and `/var/lib/umrs/keys/`.
+  Distinct SELinux types per key function.
+
+| NIST SP 800-53 MP-6, MP-7
+| Retired key staging under `/var/lib/umrs/keys/retired/` with destruction service requirement.
+
+| NIST SP 800-57 Pt 1 Rev 5 §5.3
+| Directory layout reflects SP 800-57 key lifecycle states (pre-active, active,
+  suspended, deactivated/retired).
+
+| FHS 3.0 §3.5, §3.13, §3.15, §4.5, §4.11, §5.15
+| On-disk layout conforms. Deliberate deviations from §4.5 add-on package autonomy
+  are documented in xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees §6].
+|===

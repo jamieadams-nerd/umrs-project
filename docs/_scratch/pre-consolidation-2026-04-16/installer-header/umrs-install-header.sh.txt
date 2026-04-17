@@ -1,0 +1,70 @@
+#!/usr/bin/bash
+#
+# umrs-install.sh -- Phase A installer for the FHS 2.3 compliant UMRS layout
+#
+# Deployment:
+#   Demonstration release. Single source of truth for the on-disk layout.
+#   Per Jamie (2026-04-13), the shell installer is authoritative until the
+#   xtask/umrs-install Rust port lands.
+#
+# On-disk layout (FHS 2.3 §3.12, §3.7.4, §4.9.2, §5.15):
+#
+#   /opt/umrs/                       static package files (FHS §5.15)
+#     bin/                           executable binaries
+#     share/umrs/                    package-specific static reference data
+#                                    (FHS §4.11 analogue of /usr/share/<pkg>)
+#       US-CUI-LABELS.json           NARA CUI registry catalog
+#       CANADIAN-PROTECTED.json      Treasury Board Protected A/B/C catalog
+#       LEVELS.json                  MCS sensitivity level definitions
+#       US-CUI-PALETTE.json          CUI marking color palette
+#       templates/                   configuration templates destined for /etc/
+#         MLS-setrans.conf.template
+#         TARGETED-setrans.conf-template
+#     share/man/man1/                English man pages
+#     share/man/fr/man1/             Canadian French man pages
+#     share/locale/<locale>/LC_MESSAGES/   compiled gettext catalogs
+#
+#   /etc/opt/umrs/                   host-specific admin-editable config
+#                                    (FHS §3.7.4) -- reserved for future use
+#
+#   /var/opt/umrs/                   variable package data (FHS §4.9.2)
+#     lib/                           state data
+#     log/                           log files
+#
+# Rationale for NOT using /opt/umrs/etc or /opt/umrs/var:
+#   FHS 2.3 §5.15 states "No other package files may exist outside the /opt,
+#   /var/opt, and /etc/opt hierarchies." Host-editable configuration and
+#   variable data MUST live under /etc/opt and /var/opt respectively; placing
+#   them inside /opt/<package>/ would violate the separation that lets an
+#   admin mount /opt read-only.
+#
+# Top-level directory assumption:
+#   /opt/umrs, /etc/opt/umrs, and /var/opt/umrs are provisioned OUT OF BAND
+#   (e.g., by a site deployment role) with ownership umrs:umrs before this
+#   script runs. Preflight verifies their presence. This script creates
+#   subdirectories under those roots but does not chown/chmod the roots
+#   themselves.
+#
+# Ownership and permissions (DEMONSTRATION concession -- see secure_bash_rules
+# "Privileged Script Rule"):
+#   On production the script must be root-owned 0700/0750. On this
+#   development host it is shipped with the workspace (jadams:umrs-admin
+#   0750). The self-check below accepts either (root|jadams) + (700|750).
+#
+# Controls:
+#   NIST SP 800-53 CM-2, CM-5, CM-6  (baseline + access restrictions for change)
+#   NIST SP 800-53 AC-3, AC-6        (access enforcement, least privilege)
+#   NIST SP 800-53 SI-7              (software and information integrity)
+#   NIST SP 800-53 AU-12             (audit record generation -- logger calls)
+#   NSA RTB Non-Bypassability        (MAC label application via restorecon)
+#   FHS 2.3 §3.7.4, §3.12, §4.9.2, §4.11, §5.15 (on-disk layout)
+#
+# Exit codes (per .claude/rules/secure_bash_rules.md):
+#   0 success
+#   1 general runtime error
+#   2 usage error
+#   3 precondition failure
+#   4 policy failure  (reserved; used by --verify on label mismatch)
+#   5 partial success / verification mismatch
+#
+

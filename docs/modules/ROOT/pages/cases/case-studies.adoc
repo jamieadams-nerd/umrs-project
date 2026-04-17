@@ -249,4 +249,4 @@ be structurally enforced, not assumed.
 * xref:security-concepts:integrity-and-provenance.adoc[Integrity and provenance definitions]
 * xref:architecture:mls-label-model.adoc[MLS label model and CUI mapping]
 * xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
-* xref:deployment:ima-evm-setup.adoc[IMA/EVM setup]
+* xref:deployment:rhel10/03-postinstall/ima-evm.adoc[IMA/EVM setup]

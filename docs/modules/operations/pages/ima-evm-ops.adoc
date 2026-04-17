@@ -3,7 +3,7 @@
 
 This page covers ongoing IMA/EVM maintenance tasks (NIST 800-53 SI-7, CM-3, CM-5, AU-9).
 For initial kernel configuration, policy deployment, and the systemd service, see
-xref:deployment:ima-evm-setup.adoc[IMA/EVM Integrity Setup].
+xref:deployment:rhel10/03-postinstall/ima-evm.adoc[IMA/EVM Integrity Setup].
 
 == Updating Hashes After Authorized Changes
 
@@ -15,7 +15,7 @@ making the modification (CM-3, CM-5).
 If you are already in enforce mode, you may need to temporarily switch back to `fix`
 mode (or work from a root shell) before the write can complete.
 The fix-mode kernel parameters are set up in
-xref:deployment:ima-evm-setup.adoc#_step_1_configure_the_kernel_for_boot[Step 1 of the deployment guide].
+xref:deployment:rhel10/03-postinstall/ima-evm.adoc#_step_1_configure_the_kernel_for_boot[Step 1 of the deployment guide].
 
 Update the hash using `evmctl`:
 
@@ -97,12 +97,12 @@ satisfying AU-9 (Protection of Audit Information).
 == Expanding Coverage: Tracking Examples
 
 The base policy installed in
-xref:deployment:ima-evm-setup.adoc#_step_3_deploy_the_custom_policy[Step 3 of the deployment guide]
+xref:deployment:rhel10/03-postinstall/ima-evm.adoc#_step_3_deploy_the_custom_policy[Step 3 of the deployment guide]
 protects `setrans.conf` and measures all kernel modules, firmware, and root-owned reads.
 This section shows policy snippets for common additional targets.
 
 The systemd service installed in
-xref:deployment:ima-evm-setup.adoc#_step_5_create_the_systemd_automation_service[Step 5]
+xref:deployment:rhel10/03-postinstall/ima-evm.adoc#_step_5_create_the_systemd_automation_service[Step 5]
 loads all files matching `/etc/ima/[0-9]*.policy` at boot, in filename sort order.
 To add coverage without touching the base policy, create a new numbered file —
 for example, `/etc/ima/10-openssl.policy` — containing only the new rules.
@@ -125,7 +125,7 @@ have no `security.ima` xattr (procfs, sysfs, tmpfs, etc.) — in enforce mode th
 means denied access and a potentially unbootable system.
 In fix mode the mistake is harmless and will show up as unexpected measurement log
 entries; that is the correct time to discover and fix it.
-See the xref:deployment:ima-evm-setup.adoc#_step_3_deploy_the_custom_policy[policy
+See the xref:deployment:rhel10/03-postinstall/ima-evm.adoc#_step_3_deploy_the_custom_policy[policy
 ordering explanation in the deployment guide] for a full breakdown of why the sections
 are ordered the way they are.
 
@@ -137,18 +137,18 @@ After adding rules, hash the newly-tracked files before rebooting into enforce m
 To track an additional configuration file by exact path (SI-7(1), CM-3):
 
 ----
-measure  func=FILE_CHECK path=/etc/umrs/umrs.conf
-appraise func=FILE_CHECK path=/etc/umrs/umrs.conf
+measure  func=FILE_CHECK path=/etc/opt/umrs/umrs.conf
+appraise func=FILE_CHECK path=/etc/opt/umrs/umrs.conf
 ----
 
 This is the same pattern used for `setrans.conf`.
 Use it for any individual file whose integrity is security-relevant.
-After adding the rule, generate the initial hash (xref:deployment:ima-evm-setup.adoc#_step_4_initialize_and_verify[Step 4]):
+After adding the rule, generate the initial hash (xref:deployment:rhel10/03-postinstall/ima-evm.adoc#_step_4_initialize_and_verify[Step 4]):
 
 [source,bash]
 ----
-cat /etc/umrs/umrs.conf > /dev/null
-getfattr -n security.ima /etc/umrs/umrs.conf
+cat /etc/opt/umrs/umrs.conf > /dev/null
+getfattr -n security.ima /etc/opt/umrs/umrs.conf
 ----
 
 === A Binary
@@ -279,5 +279,5 @@ extended attributes — XFS and EXT4 on RHEL 10 both do by default.
 
 == See Also
 
-* xref:deployment:ima-evm-setup.adoc[IMA/EVM Integrity Setup] — kernel configuration,
+* xref:deployment:rhel10/03-postinstall/ima-evm.adoc[IMA/EVM Integrity Setup] — kernel configuration,
   policy file, SELinux context setup, and systemd service

@@ -1,0 +1,219 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-installation.adoc
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-installation.adoc
+= Step 2: RHEL 10 Installation
+:toc: left
+:description: Running the RHEL 10 installer with FIPS mode, partitioning, networking, admin user, and SELinux choices.
+
+This page walks through a fresh RHEL 10 installation configured for UMRS
+deployment. Complete xref:rhel10/01-preinstall.adoc[Step 1: Pre-Installation Planning]
+before starting the installer.
+
+== Enabling FIPS Mode at the Boot Prompt
+
+Enable FIPS mode at the installer boot prompt. This is the cleanest method.
+Enabling FIPS post-install requires extra steps and adds risk.
+
+At the RHEL 10 installer GRUB menu:
+
+. On BIOS systems: highlight the install entry and press *Tab*.
+  On UEFI systems: press *e*.
+. Find the line beginning with `linux` (or `linuxefi`).
+. Append `fips=1` to the end of that line.
+. Press *Ctrl+X* or *F10* to boot.
+
+The installer starts with FIPS mode active and configures the installed
+system accordingly.
+
+IMPORTANT: Once FIPS mode is enabled, the system uses only FIPS 140-2/140-3
+validated cryptographic modules. Do not disable it. Verify it is active after
+installation (see <<verify-fips>> below).
+
+== Networking
+
+When the installer prompts for network configuration:
+
+. Configure both network interfaces.
+. Set a meaningful hostname. Do not leave the generic installer default.
+. Use a static IP on the management interface if at all possible.
+
+// TBD: Add specific interface naming and firewalld zone assignment steps.
+
+== Disk Partitioning
+
+. Choose custom partitioning.
+. Use the layout from xref:rhel10/01-preinstall.adoc#partition-layout[Partition Layout].
+
+Key points:
+
+* All critical mount points on separate partitions.
+* The installer UI does not expose `noexec`/`nosuid`/`nodev`. Apply those
+  options to `/etc/fstab` post-install (see <<fix-mount-options>> below).
+
+// TBD: Add a screenshot-level walkthrough of the RHEL 10 installer partition screen.
+
+== User Accounts
+
+. In the user settings screen, check *Lock root account*. Do not set a root password.
+. Create one administrative user. Add them to the `wheel` group.
+. Do not create generic shared accounts such as `secadmin`. Use individual named accounts.
+
+WARNING: Shared accounts make audit trails useless. Every operator must have an
+individual named account so that audit logs can attribute actions to a person.
+
+== Post-Installation Checks
+
+[[verify-fips]]
+=== Verify FIPS Mode
+
+Before doing anything else, confirm FIPS is active. Check the kernel flag
+directly:
+
+[source,bash]
+----
+cat /proc/sys/crypto/fips_enabled
+----
+
+This must return `1`. If it returns `0`, stop and fix FIPS before continuing.
+On RHEL 10 there is no supported method to enable FIPS after installation.
+
+=== Configure Time Synchronization
+
+Accurate time is not optional. Audit logs, SELinux audit correlation, Kerberos
+authentication, and certificate validation all depend on the system clock.
+RHEL 10 uses `chronyd` by default.
+
+Configure it to use your internal time servers.
+
+. Open the chrony configuration file:
++
+[source,bash]
+----
+sudo vi /etc/chrony.conf
+----
+
+. Replace the default pool entries with your internal NTP server addresses:
++
+[source]
+----
+# Remove or comment out any pool or server lines pointing to the internet
+server <ntp1.internal.example.com> iburst prefer
+server <ntp2.internal.example.com> iburst
+
+driftfile /var/lib/chrony/drift
+makestep 1.0 3
+rtcsync
+logdir /var/log/chrony
+----
+
+. Enable and start `chronyd`, then verify it is synchronizing:
++
+[source,bash]
+----
+sudo systemctl enable --now chronyd
+chronyc tracking
+chronyc sources -v
+----
++
+The `Stratum` value in `chronyc tracking` should be 2–4 for a well-connected
+internal time server. `System time` offset should be sub-millisecond once
+synchronized.
+
+NOTE: On isolated or air-gapped systems with no internal NTP infrastructure,
+consider a GPS-disciplined time source or a hardware clock reference.
+
+// TBD: Add NTP authentication (symmetric key or NTS) for FIPS environments.
+// TBD: Add chrony configuration for MLS-classified networks with no external time access.
+
+=== Set the Timezone
+
+. Set the timezone:
++
+[source,bash]
+----
+sudo timedatectl set-timezone America/New_York
+----
+
+. Confirm the result:
++
+[source,bash]
+----
+timedatectl status
+----
++
+Verify that `NTP service: active` appears in the output.
+
+=== Verify GPG Check Is Enabled
+
+. Check that all DNF repositories have `gpgcheck=1`:
++
+[source,bash]
+----
+grep -r gpgcheck /etc/yum.repos.d/
+----
+
+. Correct or remove any repository with `gpgcheck=0`.
+
+[[fix-mount-options]]
+=== Fix Mount Options
+
+The RHEL installer does not apply `noexec`, `nosuid`, or `nodev` mount options
+through the partition UI.
+
+. Check `/etc/fstab` and verify that `/tmp`, `/var/tmp`, `/home`, `/var/log`,
+  and `/var/log/audit` have the correct options from
+  xref:rhel10/01-preinstall.adoc#partition-layout[Partition Layout].
+
+. After editing `/etc/fstab`, reboot to apply cleanly:
++
+[source,bash]
+----
+sudo reboot
+----
++
+Rebooting is the safest approach — remounting `/var/log` or `/var/log/audit`
+while services are actively writing to them can cause issues.
+
+. After reboot, verify the options are in effect:
++
+[source,bash]
+----
+findmnt -o TARGET,OPTIONS /tmp /var/tmp /home /var/log /var/log/audit
+----
+
+=== Configure sudo
+
+. Verify that only `wheel` group members have administrative access and that a
+  password is required:
++
+[source,bash]
+----
+sudo visudo
+----
+
+. Confirm this line is present and uncommented:
++
+[source]
+----
+%wheel  ALL=(ALL)  ALL
+----
++
+The `NOPASSWD:` variant must be commented out.
+
+// TBD: Add PAM configuration for sudo session timeout and failed attempt limits.
+
+=== Prepare SSH Access Before Hardening
+
+WARNING: The STIG profile applied in the next step disables SSH password
+authentication. Before running OpenSCAP remediation, verify that your SSH public
+key is in `~/.ssh/authorized_keys` on this system and that key-based login works.
+Skipping this step will lock you out.
+
+== Next Steps
+
+. xref:rhel10/03-postinstall/stig-hardening.adoc[Step 3a: STIG Hardening] — apply and verify the STIG baseline
+. xref:rhel10/03-postinstall/ima-evm.adoc[Step 3b: IMA/EVM Integrity Setup] — configure kernel integrity measurement
+. xref:rhel10/03-postinstall/kernel-lockdown.adoc[Step 3c: Kernel Lockdown] — restrict kernel runtime access
+. xref:rhel10/03-postinstall/dual-network.adoc[Step 3d: Dual Network Interface Setup] — configure network separation
+. xref:rhel10/03-postinstall/tmp-security.adoc[Step 3e: Temporary Filesystem Security] — harden `/tmp` and `/var/tmp`
+. xref:rhel10/04-rust-packages.adoc[Step 4: Package Installation] — install platform-specific packages

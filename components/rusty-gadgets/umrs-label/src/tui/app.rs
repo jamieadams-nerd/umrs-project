@@ -488,7 +488,13 @@ pub fn marking_to_detail(key: &str, m: &Marking, flag: &str) -> MarkingDetailDat
         abbreviation: m.abbrv_name.clone(),
         designation: m.designation.as_deref().unwrap_or("").to_owned(),
         index_group: m.index_group.as_deref().unwrap_or("").to_owned(),
-        level: m.level.as_deref().unwrap_or("").to_owned(),
+        // The JSON `level` field (s1, s2, s3) is the MLS canonical mapping
+        // for future enforcement — it does not reflect the actual system
+        // sensitivity level under targeted policy, which is always s0.
+        // Displaying it in the popup would mislead operators into thinking
+        // the marking operates at a non-s0 sensitivity.
+        // [AXIOM] Targeted policy has exactly one sensitivity level: s0.
+        level: String::new(),
         description_en: policy_aware_description(m.description.en()),
         description_fr: policy_aware_description(m.description.fr()),
         handling,

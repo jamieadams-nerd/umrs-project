@@ -73,28 +73,33 @@ Detailed rules are externalized. Do not duplicate rule content in this file.
 
 | File | Scope | Trigger |
 |---|---|---|
-| **Always active** | | |
 | `instruction-vocabulary.md` | Instruction type prefixes and priority | All agents |
 | `assurance_rules.md` | Security and reliability priorities | All agents |
 | `agent_behavior_rules.md` | Permissions, settings, memory, task tracking, reviews | All agents |
-| **Rust development** | | |
-| `rust_design_rules.md` | Coding standards, clippy, citations, annotations | Rust code |
-| `high_assurance_pattern_rules.md` | HA patterns, must-use, validation, measurement | Rust code |
 | `test_structure_rules.md` | Test placement (no inline tests) | Rust code |
-| `env_sanitization_rules.md` | Env tier classification, scrub, `init_tool`, Command::env_clear | `umrs-core::init`, process env, child spawns |
-| **SELinux & labeling** | | |
-| `selinux.md` | SELinux axioms, trust gates, context format, Phase 1 | `umrs-selinux`, security contexts |
-| `labeling_mcs.md` | MCS labeling, CUI catalogs, setrans.conf, Five Eyes | `umrs-labels`, MCS categories |
-| `cui_phase1_language.md` | Phase 1 = labeling only; no enforcement claims until MLS | CUI content, blog posts, tool output |
-| **Documentation** | | |
-| `doc_workflow_rules.md` | Workflow, archiving, Antora structure, xref safety | `docs/` or `.adoc` files |
-| `ste_mode.md` | Simplified Technical English for procedures (EN + FR) | Numbered procedure steps, translation of procedures |
-| `admonition_hierarchy.md` | WARNING/CAUTION/NOTE hierarchy | All `.adoc` files |
-| **Specialized** | | |
-| `tui_cli_rules.md` | TUI/CLI design principles | TUI/CLI development |
-| `secure_bash_rules.md` | Bash script security (shebang, PATH, strict mode) | Writing bash scripts |
-| `i18n_l10n_rules.md` | Locale detection, gettext, `.po`/`.pot` files, French l10n, terminology authority | i18n, l10n, locale, translation, gettext, `.po`/`.pot` files, French output |
-| `knowledge_management_rules.md` | RAG pipeline, acquisition, ingestion vs familiarization, collection naming | Reference library, RAG, corpus acquisition |
+
+## Triggered Skills (Loaded on Demand)
+
+The following rules live in `.claude/skills/` and are loaded automatically when trigger
+words appear. They are NOT always-loaded — this reduces base context by ~88% (2,586 → 312 lines).
+
+| Skill | Scope | Trigger words |
+|---|---|---|
+| `i18n-l10n-rules` | Locale detection, gettext, `.po`/`.pot`, French l10n, terminology | i18n, l10n, locale, translation, gettext, `.po`, `.pot`, French, fr_CA, msgid, msgstr, bilingual |
+| `cui-taxonomy-rules` | CUI banner syntax, categories, LDCs, JSON catalog mappings | CUI, banner, marking, taxonomy, NARA, LDC, dissemination, SP-CTI, index group, CUI Basic, CUI Specified |
+| `ste-mode-rules` | Simplified Technical English for procedures (EN + FR) | STE, Simplified Technical English, procedure steps, numbered steps, deployment procedure, installation steps, French procedures |
+| `secure-bash-rules` | Bash script security (shebang, PATH, strict mode, secrets) | bash script, `.sh` file, shebang, PATH lock, strict mode, privileged script, writing bash |
+| `env-sanitization-rules` | Env tier classification, scrub, `init_tool`, `Command::env_clear` | env, scrub, sanitize, init_tool, LD_PRELOAD, GLIBC_TUNABLES, ScrubReport, SanitizedEnv, environment variable, CWE-454 |
+| `labeling-mcs-rules` | MCS labeling, CUI catalogs, setrans.conf, Five Eyes | MCS, setrans, category, c300, Five Eyes, LEVELS.json, CUI catalog, CANADIAN-PROTECTED, US-CUI-LABELS, setrans.conf |
+| `knowledge-mgmt-rules` | RAG pipeline, acquisition, ingestion vs familiarization | RAG, reference library, corpus, ingestion, familiarization, collection, acquisition, refs-manifest, ChromaDB |
+| `cui-phase1-language` | Phase 1 = labeling only; no enforcement claims until MLS | CUI enforcement, Phase 1, targeted policy, labeling, MLS enforcement, mandatory access control claim |
+| `fhs-lsb-uid-gid` | FHS 3.0 paths, LSB/systemd UID/GID ranges, RHEL 10 login.defs | FHS, LSB, UID, GID, useradd, login.defs, /opt/umrs, system account, filesystem hierarchy, /etc/keys, /etc/opt/umrs, /var/opt/umrs |
+| `rust-design-rules` | Coding standards, clippy, citations, annotations, system state read prohibition | Rust code, clippy, cargo, forbid unsafe, citations, NIST annotations, module doc blocks, std::fs, DIRECT-IO-EXCEPTION |
+| `high-assurance-patterns` | HA patterns, must-use, validation, measurement, trust gates | must_use, validate at construction, trust gate, findings as data, compile-time path, security-relevant type |
+| `selinux-rules` | SELinux axioms, trust gates, context format, Phase 1 | SELinux, security context, MLS, MCS, targeted policy, enforcing, semanage, restorecon, umrs.te, umrs.fc |
+| `doc-workflow-rules` | Workflow, archiving, Antora structure, xref safety | docs/, .adoc, Antora, nav.adoc, xref, make docs, documentation workflow, archive |
+| `admonition-rules` | WARNING/CAUTION/NOTE hierarchy (MIL-STD adapted) | WARNING, CAUTION, NOTE, TIP, IMPORTANT, admonition |
+| `tui-cli-rules` | TUI/CLI design, NO_COLOR, I/O discipline | TUI, CLI, ratatui, crossterm, NO_COLOR, --json, --verbose, popup, binary crate |
 
 ---
 

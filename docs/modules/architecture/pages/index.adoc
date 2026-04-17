@@ -33,9 +33,9 @@ The deployment baseline also includes kernel lockdown, IMA/EVM integrity
 measurement, and OpenSCAP compliance scanning. These controls together
 form the trusted computing base on which label enforcement runs.
 
-See xref:deployment:linux-baseline.adoc[Linux baseline],
-xref:deployment:rhel/rhel10-installation.adoc[RHEL 10 installation], and
-xref:deployment:ima-evm-setup.adoc[IMA/EVM setup] for configuration
+See xref:deployment:rhel10/01-preinstall.adoc[pre-installation planning],
+xref:deployment:rhel10/02-install-choices.adoc[RHEL 10 installation], and
+xref:deployment:rhel10/03-postinstall/ima-evm.adoc[IMA/EVM setup] for configuration
 details.
 
 == SELinux Context Model

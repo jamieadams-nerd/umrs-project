@@ -1,0 +1,285 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/kernel-lockdown-moddisable.adoc
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/kernel-lockdown-moddisable.adoc
+= Step 3c: Kernel Lockdown and Module Hardening
+:toc: left
+:description: Configuring kernel lockdown mode and disabling runtime module loading on RHEL 10.
+
+This page covers two closely related kernel hardening steps (NIST SP 800-53 CM-7,
+SI-7, SC-39; NSA RTB RAIN non-bypassability).
+
+Kernel Lockdown restricts what even a root-privileged process can do to the
+running kernel. `kernel.modules_disabled` makes the kernel's module interface
+permanently read-only until the next reboot. Together they eliminate two of the
+most significant post-exploitation paths available to an attacker who has gained
+root: direct kernel memory access and runtime kernel extension.
+
+Neither feature is currently required by any OpenSCAP or STIG profile for RHEL 10.
+Both are optional for UMRS but are strongly recommended for demonstration and
+research deployments. Future UMRS work will explore these capabilities as part of
+a deeper kernel integrity posture, complementing the IMA/EVM measurements
+configured in the previous step.
+
+IMPORTANT: Complete xref:rhel10/03-postinstall/ima-evm.adoc[Step 3b: IMA/EVM Integrity Setup] before
+this step. IMA policy rules capture `MODULE_CHECK` and `FIRMWARE_CHECK` events.
+Disabling module loading after IMA is active ensures the measurement log reflects
+the full set of modules loaded before the interface was locked.
+
+== Step 1: Enable Kernel Lockdown
+
+=== What Lockdown Does
+
+The Linux kernel's Lockdown security module (introduced in kernel 5.4, supported
+on RHEL 10) enforces a hard boundary between userland and the kernel. In a
+standard Linux environment, a root-owned process can modify the running kernel
+image, read arbitrary kernel memory, load unsigned code, and write directly to
+hardware registers — all of which undermine the guarantees provided by Secure Boot,
+IMA, and SELinux. Lockdown removes those capabilities at the kernel level. Root
+cannot bypass it; SELinux cannot bypass it (SI-7, SC-39).
+
+[cols="1,2,2",options="header"]
+|===
+| Mode | What it blocks | Use case
+
+| `integrity`
+| Loading unsigned kernel modules, writing to `/dev/mem` or `/dev/kmem`,
+  direct PCI BAR access, and writing to Model Specific Registers (MSRs).
+  Also blocks `/dev/port` and custom ACPI table loading.
+| Baseline protection. Prevents root from modifying the running kernel
+  or bypassing module signing. Suitable for most UMRS deployments.
+
+| `confidentiality`
+| Everything in `integrity`, plus reading kernel memory via `/dev/mem`,
+  reading MSRs, using BPF to inspect kernel data structures, and
+  hibernation (which writes decrypted kernel memory to disk).
+| Higher assurance. Prevents root from extracting sensitive data from
+  kernel memory. Required when kernel memory may contain classified data.
+|===
+
+`integrity` is the recommended starting point. Use `confidentiality` if the
+system handles data where kernel memory disclosure is a threat (for example,
+when MLS labels or key material are resident in kernel structures).
+
+WARNING: Lockdown requires Secure Boot to be active, or must be set explicitly
+via a boot parameter. If Secure Boot is not enabled, the kernel will accept the
+boot parameter but will not automatically activate lockdown at boot. Verify your
+boot configuration before relying on this control.
+
+=== Enabling Lockdown via Boot Parameter
+
+. Set the lockdown mode persistently using `grubby` so it survives kernel updates:
++
+[source,bash]
+----
+sudo grubby --update-kernel=ALL --args="lockdown=integrity"
+----
++
+To use `confidentiality` mode instead, substitute `lockdown=confidentiality`.
+
+. Reboot to apply:
++
+[source,bash]
+----
+sudo reboot
+----
+
+=== Verifying Lockdown
+
+. Read the lockdown status from the security filesystem:
++
+[source,bash]
+----
+cat /sys/kernel/security/lockdown
+----
++
+Expected output when `integrity` is active:
++
+----
+none [integrity] confidentiality
+----
++
+The bracketed value is the currently enforced mode.
+
+. If the output shows `[none]`, check Secure Boot status:
++
+[source,bash]
+----
+mokutil --sb-state
+----
++
+If `mokutil` reports Secure Boot is disabled, enable it in firmware before
+lockdown will enforce at boot.
+
+== Step 2: Disable Runtime Module Loading
+
+=== What modules_disabled Does
+
+The `kernel.modules_disabled` sysctl sets the kernel's module interface to a
+locked state. Once set to `1`, no new kernel modules can be loaded until the
+next reboot — not by root, not by a DKMS hook, not by any userspace tool. This
+eliminates the runtime kernel extension attack surface entirely (CM-7 least
+functionality).
+
+A kernel with all required modules already loaded and module loading then
+disabled is deterministic: its kernel-space code is fixed at that point in
+time and cannot be extended. This is the same principle as write-protecting
+firmware after provisioning.
+
+IMPORTANT: This setting is irreversible until reboot. Before applying it,
+confirm that all required drivers are loaded and stable. If the system uses
+DKMS modules, hot-plug hardware, or VirtualBox/VMware guest additions, those
+modules must be loaded before this sysctl is set. Check with `lsmod` and verify
+the system is fully operational first.
+
+=== Applying Persistently
+
+. Create a sysctl configuration file:
++
+[source,bash]
+----
+echo "kernel.modules_disabled = 1" | sudo tee /etc/sysctl.d/99-high-assurance.conf
+----
+
+. Apply the setting immediately in the current session:
++
+[source,bash]
+----
+sudo sysctl -p /etc/sysctl.d/99-high-assurance.conf
+----
+
+NOTE: The `sysctl.d` approach applies the setting during boot via
+`systemd-sysctl.service`. The setting takes effect at `sysinit.target`, which
+runs after the initial ramdisk has loaded all required modules. DKMS and
+`modules-load.d` modules are loaded before the lock applies.
+
+=== Verifying modules_disabled
+
+[source,bash]
+----
+cat /proc/sys/kernel/modules_disabled
+----
+
+A value of `1` confirms module loading is disabled.
+
+== Step 3: Validate Both Controls
+
+After enabling lockdown and disabling module loading, generate observable evidence
+that both protections are enforced.
+
+=== Validate modules_disabled
+
+. Confirm the current state, then attempt to load a module:
++
+[source,bash]
+----
+cat /proc/sys/kernel/modules_disabled
+sudo modprobe dummy
+----
++
+Expected result:
++
+----
+modprobe: ERROR: could not insert 'dummy': Operation not permitted
+----
+
+. Capture kernel log evidence:
++
+[source,bash]
+----
+journalctl -k | tail -20
+----
++
+The kernel log will contain a message indicating that module loading is disabled.
+This entry is audit-grade evidence that the control is active (AU-2, SI-7).
+
+=== Validate Kernel Lockdown
+
+. Confirm the active mode:
++
+[source,bash]
+----
+cat /sys/kernel/security/lockdown
+----
+
+. Attempt a restricted operation using `msr-tools`:
++
+[source,bash]
+----
+sudo dnf install msr-tools
+sudo rdmsr 0x10
+----
++
+NOTE: `msr-tools` may not be available on air-gapped systems. On those systems,
+use the kernel log method below.
++
+Expected result when lockdown is active:
++
+----
+rdmsr: MSR read failed: Operation not permitted
+----
+
+. Capture kernel log evidence:
++
+[source,bash]
+----
+journalctl -k | grep -i lockdown
+----
++
+Expected entry:
++
+----
+Lockdown: rdmsr: MSR access is restricted; see man kernel_lockdown.7
+----
+
+== Summary Comparison
+
+[cols="1,2,2",options="header"]
+|===
+| Feature | Kernel Lockdown | modules_disabled
+
+| Primary goal
+| Protect kernel integrity from root-level tampering.
+| Freeze the module attack surface.
+
+| Scope
+| Blocks `/dev/mem`, MSR writes, unsigned code loading, PCI BAR access.
+| Blocks all `insmod` / `modprobe` calls.
+
+| Activation
+| Secure Boot or explicit `lockdown=` boot parameter via `grubby`.
+| `sysctl.d` configuration file or manual `echo 1` to the sysctl node.
+
+| Reversibility
+| Requires reboot to change policy.
+| Irreversible until reboot.
+
+| NIST controls
+| SI-7, SC-39, CM-7.
+| CM-7, SI-7.
+|===
+
+== Auditor Language
+
+If you need to document these configurations in a security plan or SCTM:
+
+____
+The system enforces two complementary kernel hardening controls.
+Kernel Lockdown is enabled in `integrity` mode via a persistent GRUB boot parameter,
+restricting root-level access to kernel memory, unsigned code loading, and hardware
+register writes in accordance with NIST SP 800-53 SI-7, SC-39, and CM-7.
+The Lockdown security module enforces a non-bypassable boundary at the kernel level,
+satisfying NSA RTB RAIN: the restriction cannot be circumvented by userspace, including
+privileged processes, and does not depend on SELinux policy cooperation.
+Runtime kernel module loading is disabled via `kernel.modules_disabled = 1` configured
+in `/etc/sysctl.d/99-high-assurance.conf`, applied automatically at `sysinit.target`.
+Once set, the kernel's module interface is read-only until the next reboot, making the
+kernel-space code surface deterministic and eliminating dynamic extension as an attack
+vector (CM-7). Neither control is currently mandated by the applicable STIG or OpenSCAP
+profile. Both are implemented as defense-in-depth measures, supplementing the IMA
+integrity measurement chain and SELinux mandatory access control, to reduce residual risk
+in the event of a privileged account compromise.
+____
+
+== Next Step
+
+xref:rhel10/03-postinstall/dual-network.adoc[Step 3d: Dual Network Interface Setup]

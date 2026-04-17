@@ -1,0 +1,86 @@
+// Source material (merged 2026-04-16):
+//   - components/rusty-gadgets/selinux/INSTRUCTIONS.md (Next step -- stage the build output)
+//   - components/rusty-gadgets/scripts/umrs-install.sh (STAGING_DIR constant, header)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/selinux/INSTRUCTIONS.md
+= Staging: cargo xtask stage
+:toc: left
+:description: Building the UMRS workspace and assembling the staging tree with cargo xtask stage.
+
+The `cargo xtask stage` command builds all crates in the workspace and assembles
+a staging tree at `components/rusty-gadgets/staging/`. The installer reads from
+this tree; it does not read from the build output directories directly.
+
+Staging is the supply chain checkpoint: only artifacts that have been built from
+source, passed tests, and passed `clippy` reach the staging tree. The IMA signing
+step (if configured) runs against the staged files before install.
+
+== Prerequisites
+
+* Rust toolchain installed (see xref:rhel10/04-rust-packages.adoc[Step 4]).
+* All workspace crates compile cleanly with zero clippy warnings.
+
+== Step 1: Build and Stage
+
+. Change to the workspace directory:
++
+[source,bash]
+----
+cd /DEVELOPMENT/umrs-project/components/rusty-gadgets
+----
+
+. Run the stage task:
++
+[source,bash]
+----
+cargo xtask stage
+----
++
+This compiles all crates in release mode, runs `clippy`, and assembles the
+staging tree. Expected output: no warnings, stage complete.
+
+== Staging Tree Layout
+
+After a successful run, the staging tree at `components/rusty-gadgets/staging/`
+contains:
+
+[source,text]
+----
+staging/
+  bin/       compiled binaries + operator scripts
+  config/    merged config/ directories from every crate
+----
+
+The installer maps from staging to the FHS destinations:
+
+[cols="2,2",options="header"]
+|===
+| Staging Path | Install Destination
+
+| `staging/bin/*`    | `/opt/umrs/bin/`
+| `staging/config/*` | `/etc/opt/umrs/`
+|===
+
+== Compliance
+
+[cols="2,3",options="header"]
+|===
+| Control | Coverage
+
+| NIST SP 800-53 CM-8 (Component Inventory)
+| `EXPECTED_BINARIES` in the stager declares the full artifact set.
+  Artifacts not in the list do not reach the staging tree.
+
+| NIST SP 800-53 SA-12 (Supply Chain Protection)
+| Staging is the controlled checkpoint between build and install.
+  No stray files reach the install destination.
+|===
+
+NOTE: Formal CM-8 and SA-12 compliance requires a signed staging manifest and
+a cryptographically verified install bundle. As of 2026-04-16, `cargo xtask stage`
+cites these controls but the formal manifest and signed bundle are not yet
+implemented. This is tracked as a follow-up task.
+
+== Next Step
+
+xref:umrs/5c-install/install-pipeline.adoc[Install Pipeline] --- load the SELinux policy module
+and run `umrs-install.sh`.

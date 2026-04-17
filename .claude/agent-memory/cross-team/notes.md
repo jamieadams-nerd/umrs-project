@@ -1,5 +1,55 @@
 # Cross-Team Notes
 
+---
+
+## [2026-04-17] orchestrator → Knox: LSB 5.0 + systemd + FHS familiarization needed
+
+**Status**: open
+
+Jamie directs both the orchestrator and Knox to familiarize with:
+
+1. **LSB 5.0** (`.claude/references/lsb-5/LSB-Core-generic.pdf`, Part IX Ch 23) — UID/GID ranges, required/optional users
+2. **systemd UIDS-GIDS** (`.claude/references/systemd-uid-gid/uids-gids.html`) — modern range allocation (100–999 system, 1000–60000 human)
+3. **FHS 3.0** — filesystem layout for `/opt/` add-on packages (already referenced in deployment docs)
+
+**Compliance report:** `.claude/references/reports/2026-04-17-uid-gid-compliance-reference.md` — the three-source chain for `umrs` account justification.
+
+**Why now:** Deployment/install work is upcoming. Knox must understand UID/GID allocation standards to validate `umrs.te` policy, `umrs-install.sh` account creation, and fcontext rules.
+
+---
+
+## [2026-04-16] tech-writer → ALL: Task #9 key material docs rewrite — COMPLETE
+
+**Status**: resolved
+
+`pki-tree.adoc` (wrong architecture) archived to `docs/_scratch/post-consolidation-obsolete-2026-04-16/pki-tree-wrong-architecture.adoc`.
+
+`key-material-trees.adoc` created from KEY-MANAGEMENT-DIRS.md (UMRS-SEC-KM-001), covering all 9 sections. All xrefs updated across 10 files. `make docs` clean.
+
+**Note for Knox:** `key-material-trees.adoc` §5.1 documents two Phase-1 type-reuse decisions (`staging/` using `umrs_sign_key_t`; `suspended/` using `umrs_retired_key_t`). Notes flag that Knox may want dedicated types in a future policy pass. This is informational only — the current fcontext/te decisions are yours from Task #8.
+
+**Note for all agents:** The `umrs-signing-README.adoc` operations page still references `/etc/pki` in its body prose (historical HA-Sign content). When `umrs-sign-mgr.sh` is written, that page needs a holistic revision.
+
+---
+
+## [2026-04-16] tech-writer → ALL: Task #6 deployment consolidation — COMPLETE
+
+**Status**: resolved
+
+28 new deployment module pages created and build-verified. All consolidation work
+is done for this session. Remaining open items for other agents:
+
+**Knox:** `umrs.fc.in` still has `@PREFIX@/etc` and `@PREFIX@/var` patterns (the old layout).
+Needs fcontext rules for `/etc/opt/umrs(/.*)?` and `/var/opt/umrs(/.*)?` per the new FHS paths.
+See `docs/modules/deployment/pages/umrs/5b-directory-structure/directory-purpose-matrix.adoc`
+for the authoritative path list. This is the blocker listed in the FHS migration task queue.
+
+**Note for Jamie:** Three pre-existing ROOT module errors remain (case-studies pages not yet written)
+and ubuntu.adoc has pre-existing structural issues. These are unchanged from before this session.
+Old source files archived to `docs/_scratch/post-consolidation-obsolete-2026-04-16/`.
+
+---
+
 Shared across all agents. Any agent can write here to notify another agent of something
 that crosses team boundaries — documentation gaps, new patterns, API changes that affect
 docs, compliance findings that require new doc content.

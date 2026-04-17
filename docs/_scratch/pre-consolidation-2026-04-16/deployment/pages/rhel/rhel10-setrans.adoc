@@ -1,0 +1,80 @@
+= CUI Label Configuration
+:description: Installing the UMRS setrans.conf and enabling MCS translation on RHEL 10.
+
+The UMRS repository includes a `setrans.conf` that maps MCS sensitivity levels and
+categories to human-readable CUI labels. Once installed, tools like `ls -Z` display
+the category names instead of raw strings like `c0,c1`.
+
+In targeted SELinux policy, these labels have no enforcement effect — they are
+display-only. In a future MLS deployment, they will drive enforcement decisions.
+
+== Prerequisites
+
+`mcstrans` must be installed and running. If you have not done that yet:
+
+[source,bash]
+----
+sudo dnf install -y mcstrans
+sudo systemctl enable --now mcstrans
+----
+
+== Back Up the Existing Configuration
+
+[source,bash]
+----
+sudo cp /etc/selinux/targeted/setrans.conf \
+        /etc/selinux/targeted/setrans.conf.bak
+----
+
+== Install the UMRS setrans.conf
+
+The configuration file is in the repository at:
+`components/platforms/rhel10/targeted/setrans.conf-TARGETED`
+
+From the root of the cloned repository:
+
+[source,bash]
+----
+sudo cp components/platforms/rhel10/targeted/setrans.conf-TARGETED \
+        /etc/selinux/targeted/setrans.conf
+----
+
+// TBD: Confirm exact repository path once directory structure is finalized
+
+== Restart mcstrans
+
+[source,bash]
+----
+sudo systemctl restart mcstrans
+sudo systemctl status mcstrans
+----
+
+The service should show `active (running)`. If it fails, check `journalctl -u mcstrans`
+for parse errors in the configuration file.
+
+== Verify
+
+Assign a test label to a file and check that the label translates correctly:
+
+[source,bash]
+----
+# Assign a sensitivity label (targeted policy — display only, no enforcement)
+sudo chcon -l s0:c0,c1 /tmp/testfile
+
+# Display the label
+ls -Z /tmp/testfile
+----
+
+The output should show the human-readable CUI category name rather than the raw `c0,c1` string.
+
+// TBD: Add expected output example once setrans.conf categories are finalized
+
+== JSON Configuration Files
+
+// TBD: Add installation steps for umrs-mls-labels.json and umrs-mls-state.json
+// once paths and format are finalized
+
+== Next Steps
+
+xref:ima-evm-setup.adoc[IMA/EVM Integrity Setup] — configure kernel integrity measurement
+and appraisal for security-critical files, including the setrans.conf installed here.

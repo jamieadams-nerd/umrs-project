@@ -1,0 +1,40 @@
+// Source material (merged 2026-04-16):
+//   Aggregate landing page — no single source document.
+= Step 3: Post-Installation Hardening
+:toc: left
+:description: Landing page for the five post-installation hardening tasks on RHEL 10 before UMRS installation.
+
+Complete xref:rhel10/02-install-choices.adoc[Step 2: RHEL 10 Installation] before
+starting this step.
+
+Post-installation hardening consists of five sub-tasks. Complete them in order
+— each builds on the previous one.
+
+[cols="1,3",options="header"]
+|===
+| Sub-task | Description
+
+| xref:rhel10/03-postinstall/stig-hardening.adoc[3a — STIG Hardening]
+| Apply the RHEL 10 STIG baseline with OpenSCAP. Also covers the `linux-baseline`
+  platform requirements.
+
+| xref:rhel10/03-postinstall/ima-evm.adoc[3b — IMA/EVM Integrity Setup]
+| Configure kernel integrity measurement and appraisal. IMA/EVM protects
+  configuration files and kernel modules from offline tampering.
+
+| xref:rhel10/03-postinstall/kernel-lockdown.adoc[3c — Kernel Lockdown]
+| Enable kernel lockdown mode and disable runtime module loading. These controls
+  eliminate post-exploitation paths that bypass IMA and SELinux.
+
+| xref:rhel10/03-postinstall/dual-network.adoc[3d — Dual Network Interface]
+| Verify or configure the two-NIC separation established during installation.
+
+| xref:rhel10/03-postinstall/tmp-security.adoc[3e — Temporary Filesystem Security]
+| Harden `/tmp` and `/var/tmp` with mount options and `PrivateTmp` for sensitive
+  services.
+|===
+
+== Next Step
+
+After completing all five sub-tasks, proceed to
+xref:rhel10/04-rust-packages.adoc[Step 4: Package Installation].

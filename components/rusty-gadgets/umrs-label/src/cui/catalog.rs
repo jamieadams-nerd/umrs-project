@@ -268,6 +268,41 @@ impl Catalog {
         })
     }
 
+    /// Look up a marking by matching against its `marking_banner` display text.
+    ///
+    /// This is a third-strategy fallback for group headers that carry a
+    /// `setrans.conf`-translated string (e.g., `"PROTÉGÉ A"`) rather than the
+    /// JSON key (e.g., `"PROTECTED-A"`) or a raw MCS level string. It iterates
+    /// all markings and returns the first entry whose `marking_banner` field —
+    /// either the English (`en_US`) or French (`fr_CA`) value — matches
+    /// `banner_text` with ASCII case-insensitive comparison.
+    ///
+    /// This resolves the lookup gap that arises when `setrans.conf` translates
+    /// `s0:c300` to `"PROTÉGÉ A"` but the catalog stores the entry under key
+    /// `"PROTECTED-A"` with `marking_banner: {"en_US": "PROTECTED A", "fr_CA":
+    /// "PROTÉGÉ A"}`. Neither a direct key lookup nor an MCS level fallback
+    /// matches the translated form; this method bridges that gap.
+    ///
+    /// Fail-closed: returns `None` when no entry matches rather than guessing.
+    /// The comparison uses `eq_ignore_ascii_case`, which handles ASCII
+    /// case differences in the non-accented letters of the string while leaving
+    /// accented Unicode characters unchanged (e.g., `"É"` and `"É"` compare
+    /// equal only as identical code points — there is no Unicode folding).
+    ///
+    /// ## Compliance
+    ///
+    /// - **NIST SP 800-53 AC-16**: Security Attributes — enables correct popup
+    ///   resolution for Canadian Protected markings rendered via `setrans.conf`
+    ///   translation, ensuring operators see accurate regulatory definitions.
+    #[must_use = "returns None if no banner text matches; check before use"]
+    pub fn marking_by_banner(&self, banner_text: &str) -> Option<(&String, &Marking)> {
+        self.markings.iter().find(|(_, m)| {
+            m.marking_banner.as_ref().is_some_and(|b| {
+                b.en().eq_ignore_ascii_case(banner_text) || b.fr().eq_ignore_ascii_case(banner_text)
+            })
+        })
+    }
+
     /// Iterate all dissemination controls as `(key, control)` pairs.
     ///
     /// Returns an empty iterator for catalogs that have no dissemination controls

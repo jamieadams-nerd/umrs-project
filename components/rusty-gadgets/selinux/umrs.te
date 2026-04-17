@@ -48,6 +48,16 @@ attribute umrs_data_type;
 attribute umrs_config_type;
 attribute umrs_log_type;
 
+# umrs_secret_type -- grouping attribute for highly-sensitive key
+# material (signing private keys + rotated archive). Declared but
+# deliberately NOT constrained by neverallow against unconfined_t in
+# Phase 1: the signing manager (umrs-sign-mgr) currently runs as root
+# under the default unconfined domain. DAC (0700 root:root on the
+# filesystem) is the Phase 1 boundary. Phase 2 will add a dedicated
+# umrs_sign_t domain and a neverallow that blocks every other domain
+# from touching umrs_secret_type.
+attribute umrs_secret_type;
+
 ########################################
 # Executable type
 #
@@ -78,6 +88,108 @@ typeattribute umrs_config_ro_t umrs_config_type;
 type umrs_config_rw_t;
 files_type(umrs_config_rw_t)
 typeattribute umrs_config_rw_t umrs_config_type;
+
+########################################
+# Key-material types
+#
+# Authoritative source of truth: KEY-MANAGEMENT-DIRS.md
+# (UMRS-SEC-KM-001) §5.1. Key material is held OUTSIDE /opt/umrs,
+# at /etc/keys/umrs/ (at rest) and /var/lib/umrs/keys/ (runtime
+# lifecycle state). Placement follows FHS 3.0 §3.5 + §3.15, with
+# the /opt/ autonomy deviation documented in KEY-MANAGEMENT-DIRS
+# §6.3 (NIST CM-6 / SA-8 win over FHS §4.5).
+#
+# The previous PKI types (umrs_pki_key_t, umrs_pki_public_t) under
+# /etc/opt/umrs/pki/ have been RETIRED. That subtree was
+# architecturally wrong: key material must not live under FHS
+# §3.13 add-on-package config. See KEY-MANAGEMENT-DIRS §6.3.
+#
+# Each type below binds to umrs_secret_type. Phase 1 does not add a
+# neverallow against umrs_secret_type because umrs-sign-mgr still
+# runs unconfined; DAC (0700 root:root on the filesystem) is the
+# Phase 1 boundary. Phase 2 will introduce a dedicated umrs_sign_t
+# domain with allow rules over umrs_secret_type, and a neverallow
+# blocking every other domain from the attribute.
+#
+# NONE of these types bind to umrs_config_type -- binding to that
+# attribute would activate the unconfined_t neverallow below and
+# block the current Phase 1 unconfined signing manager from reaching
+# the material. Key-material paths are label-enforced independently
+# of the config attribute.
+#
+# Staging vs. dedicated staging type:
+#   /etc/keys/umrs/staging/ holds pre-activation material (NIST SP
+#   800-57 §5.3 pre-active state). Rather than introduce a separate
+#   umrs_staging_key_t here, staging reuses umrs_sign_key_t: staged
+#   keys are signing-capable material awaiting activation, their
+#   confidentiality and integrity requirements are identical, and a
+#   separate type would add policy surface without a corresponding
+#   access-control distinction. A dedicated umrs_staging_key_t can
+#   be introduced in Phase 2 when pre-active transitions become an
+#   audit event (NIST SP 800-53 CM-3).
+#
+# Suspended vs. retired:
+#   /var/lib/umrs/keys/suspended/ (SP 800-57 suspended state, may
+#   return to active) and /var/lib/umrs/keys/retired/ (deactivated,
+#   awaiting destruction) both require the same label-level
+#   isolation: no domain other than umrs_sign_t should read them in
+#   Phase 2. Phase 1 reuses umrs_retired_key_t for both paths.
+#   Separate types can follow in Phase 2 if auditing needs to
+#   distinguish recoverable from pre-destruction material.
+########################################
+
+# umrs_seal_key_t -- symmetric sealing keys for LUKS / dm-crypt
+# volume sealing (/etc/keys/umrs/sealing/).
+# Controls: NIST SP 800-53 SC-12(1), SC-28;
+#           NIST SP 800-57 Pt 1 Rev 5 §5.3.5;
+#           NIST SP 800-38F (AES-KW / AES-KWP as wrapping companion).
+type umrs_seal_key_t;
+files_type(umrs_seal_key_t)
+typeattribute umrs_seal_key_t umrs_secret_type;
+
+# umrs_sign_key_t -- IMA / DIGSIG asymmetric signing keys
+# (/etc/keys/umrs/signing/) and pre-activation staging material
+# (/etc/keys/umrs/staging/). Compromise of either enables forgery
+# of signed artifacts; both are treated as same-sensitivity.
+# Controls: NIST SP 800-53 SI-7, SC-12;
+#           NIST SP 800-89 (signing-key assurance);
+#           NIST SP 800-57 Pt 1 Rev 5 §5.3 (pre-active state).
+type umrs_sign_key_t;
+files_type(umrs_sign_key_t)
+typeattribute umrs_sign_key_t umrs_secret_type;
+
+# umrs_kek_t -- Key-Encryption-Keys for key wrapping
+# (/etc/keys/umrs/wrapping/). Wraps both sealing and signing
+# material; sensitivity dominates any key it may wrap.
+# Controls: NIST SP 800-53 SC-12(2);
+#           NIST SP 800-38F (AES-KW / AES-KWP).
+type umrs_kek_t;
+files_type(umrs_kek_t)
+typeattribute umrs_kek_t umrs_secret_type;
+
+# umrs_session_key_t -- runtime / session key state
+# (/var/lib/umrs/keys/active/). Short-lived unwrapped key material
+# loaded for active operations; expected to be cleared on session
+# end. Persistence on /var/lib/ is accepted per
+# KEY-MANAGEMENT-DIRS §6.2 resolution (retirement staging + active
+# destruction service).
+# Controls: NIST SP 800-53 SC-12, AC-3, SC-4;
+#           NIST SP 800-57 Pt 1 Rev 5 §5.3.3 (active state).
+type umrs_session_key_t;
+files_type(umrs_session_key_t)
+typeattribute umrs_session_key_t umrs_secret_type;
+
+# umrs_retired_key_t -- deactivated and suspended key material
+# (/var/lib/umrs/keys/retired/, /var/lib/umrs/keys/suspended/).
+# Awaiting either reactivation (suspended) or cryptographic
+# destruction (retired). A compromised retired key still permits
+# retrospective forgery of artifacts signed under it, so confined
+# with the same rigor as active material.
+# Controls: NIST SP 800-53 SC-12, MP-6, MP-7;
+#           NIST SP 800-57 Pt 1 Rev 5 §5.3.6 (deactivated state).
+type umrs_retired_key_t;
+files_type(umrs_retired_key_t)
+typeattribute umrs_retired_key_t umrs_secret_type;
 
 ########################################
 # Data types

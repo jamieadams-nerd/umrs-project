@@ -1,18 +1,36 @@
 .xref:index.adoc[Deployment]
 [collapsible]
-* xref:linux-baseline.adoc[Platform Overview]
-* xref:filesystem-layout.adoc[Filesystem Layout]
-** RHEL 10
-*** xref:rhel/rhel10-installation.adoc[Installation]
-*** xref:rhel/rhel10-openscap.adoc[STIG Hardening with OpenSCAP]
-*** xref:rhel/rhel10-packages.adoc[Package Installation]
-*** xref:rhel/rhel10-setrans.adoc[CUI Label Configuration]
-*** xref:rhel/rhel10-directory-structure.adoc[UMRS Directory Structure]
+* xref:index.adoc[Overview]
+** Step 1 — Pre-Installation
+*** xref:rhel10/01-preinstall.adoc[Planning and Partition Layout]
+** Step 2 — Installation
+*** xref:rhel10/02-install-choices.adoc[RHEL 10 Installation]
+** Step 3 — Post-Installation Hardening
+*** xref:rhel10/03-postinstall/index.adoc[Hardening Overview]
+*** xref:rhel10/03-postinstall/stig-hardening.adoc[3a — STIG Hardening]
+*** xref:rhel10/03-postinstall/ima-evm.adoc[3b — IMA/EVM Integrity Setup]
+*** xref:rhel10/03-postinstall/kernel-lockdown.adoc[3c — Kernel Lockdown]
+*** xref:rhel10/03-postinstall/dual-network.adoc[3d — Dual Network Interface]
+*** xref:rhel10/03-postinstall/tmp-security.adoc[3e — Temporary Filesystem Security]
+** Step 4 — Packages
+*** xref:rhel10/04-rust-packages.adoc[Package Installation]
+** Step 5 — UMRS Installation
+*** xref:umrs/index.adoc[UMRS Installation Overview]
+**** 5a — Users and Types
+***** xref:umrs/5a-users-and-types/index.adoc[Users and Types Overview]
+***** xref:umrs/5a-users-and-types/dac-users-groups.adoc[DAC Users and Groups]
+***** xref:umrs/5a-users-and-types/mac-selinux-types.adoc[SELinux Types]
+***** xref:umrs/5a-users-and-types/mac-selinux-users.adoc[SELinux Users and Login Mappings]
+**** 5b — Directory Structure
+***** xref:umrs/5b-directory-structure/index.adoc[Directory Structure Overview]
+***** xref:umrs/5b-directory-structure/directory-structure.adoc[Directory Structure Reference]
+***** xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees]
+**** 5c — Install Pipeline
+***** xref:umrs/5c-install/index.adoc[Install Pipeline Overview]
+***** xref:umrs/5c-install/staging.adoc[Staging]
+***** xref:umrs/5c-install/install-pipeline.adoc[Install Pipeline]
+***** xref:umrs/5c-install/scripts.adoc[Scripts]
+***** xref:umrs/5c-install/configurations.adoc[Configurations]
+***** xref:umrs/5c-install/restorecon-and-verify.adoc[restorecon and Verification]
 ** Ubuntu
-*** xref:ubuntu/ubuntu.adoc[Ubuntu (Placeholder)]
-* Assurance Enhancements
-** xref:ima-evm-setup.adoc[IMA/EVM Integrity Setup]
-** xref:tmp-security.adoc[Temporary Filesystem Security]
-** xref:dual-network-interface.adoc[Dual Network Interface Separation]
-** Kernel Security
-*** xref:kernel-lockdown-moddisable.adoc[Kernel Lockdown and Module Hardening]
+*** xref:ubuntu/ubuntu.adoc[Ubuntu 26 (Placeholder)]

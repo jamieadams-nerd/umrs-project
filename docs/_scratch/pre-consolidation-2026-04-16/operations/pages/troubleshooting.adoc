@@ -1,0 +1,14 @@
+= Troubleshooting
+:toc: macro
+:toclevels: 2
+
+toc::[]
+
+== First steps
+1. Confirm FIPS mode and SELinux enforcement.
+2. Re-run the UMRS verification command.
+3. Review relevant logs and the UMRS state timestamps.
+
+== Common symptoms
+* State file values appear stale: run an update and confirm permissions.
+* Checks fail only under automation: compare environment, PATH, and privileges.

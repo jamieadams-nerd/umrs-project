@@ -1,0 +1,265 @@
+= IMA/EVM Key Placement on RHEL 10
+:doctype: article
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: rouge
+:imagesdir: images
+// NIST SP 800-53 Rev 5, SP 800-57 Part 1 Rev 5, CMMC L2
+// Controls: SC-12, SC-28, SI-7, AC-3, AU-2
+
+IMA/EVM key placement on RHEL 10 has distinct locations depending on key _purpose_.
+The kernel keyring layer adds a third dimension on top of filesystem location.
+
+== The Three Locations
+
+=== 1. Filesystem (at-rest storage)
+
+Where key _files_ live between uses.
+
+// SC-12: Cryptographic Key Establishment and Management
+// SP 800-57 §5.3.4: Asymmetric private key storage
+
+[source,text]
+----
+/etc/keys/umrs/signing/          # Your established namespace
+    ima-signing.key              # IMA private key (PEM) — mode 0600 root:root
+    ima-signing.pem              # IMA public key (PEM) — mode 0644 root:root
+
+/etc/pki/tls/certs/
+    ima-ca.pem                   # CA cert that signed IMA key (if using PKI chain)
+----
+
+=== 2. Kernel Keyrings (in-memory, runtime)
+
+Where keys live *after* being loaded.
+The kernel enforces policy from here, not from disk.
+
+// SC-3: Security Function Isolation
+// AC-3(3): Mandatory Access Control
+
+`.ima`::
+IMA measurement/appraisal keyring.
+Public keys loaded here via `evmctl` or dracut/initrd.
+Controlled by `/sys/kernel/security/ima/`.
+
+`.evm`::
+EVM HMAC master key keyring.
+Loaded at early boot — must be present before filesystem access.
+
+`.builtin_trusted_keys`::
+Keys compiled into kernel or loaded via MOK.
+
+`.machine`::
+MokManager keys (shim/UEFI Secure Boot path).
+
+Check what is currently loaded:
+
+[source,bash]
+----
+keyctl show @s          # Session keyring
+keyctl show %:.ima      # IMA keyring specifically
+keyctl show %:.evm      # EVM keyring
+----
+
+=== 3. IMA Policy / Security FS
+
+[source,text]
+----
+/sys/kernel/security/ima/policy     # Active IMA policy (write-once per boot)
+/sys/kernel/security/evm            # EVM status
+----
+
+== evmctl Key Operations
+
+// SI-7: Software, Firmware, and Information Integrity
+// SP 800-89: Assurance of Digital Signatures
+
+Generate IMA signing keypair:
+
+[source,bash]
+----
+evmctl gen_key --keysize 4096 \
+    /etc/keys/umrs/signing/ima-signing.key \
+    /etc/keys/umrs/signing/ima-signing.pem
+----
+
+Sign a file:
+
+[source,bash]
+----
+evmctl ima_sign --key /etc/keys/umrs/signing/ima-signing.key \
+    --hashalgo sha256 /path/to/binary
+----
+
+Load public key onto `.ima` keyring (requires root):
+
+[source,bash]
+----
+evmctl import /etc/keys/umrs/signing/ima-signing.pem \
+    $(keyctl show %:.ima | awk 'NR==1{print $1}')
+----
+
+Load EVM HMAC key:
+
+[source,bash]
+----
+evmctl import --user /etc/keys/umrs/sealing/evm-hmac.key \
+    $(keyctl show %:.evm | awk 'NR==1{print $1}')
+----
+
+== RHEL 10 Specific: Where Keys Are Expected
+
+RHEL 10 with IMA uses dracut to load keys into the kernel at initrd stage —
+*before* the root filesystem is mounted.
+This is the critical timing constraint.
+
+// SC-28: Protection of Information at Rest
+// SC-28(1): Cryptographic Protection
+
+[source,text]
+----
+/etc/dracut.conf.d/ima.conf                  # Dracut config pulling keys into initrd
+/usr/lib/dracut/modules.d/98integrity/       # IMA dracut module
+----
+
+The dracut module searches for keys in:
+
+[source,text]
+----
+/etc/keys/        # Your namespace works here — confirm in ima.conf
+/etc/pki/         # Also searched for certs
+----
+
+Verify dracut is picking up your keys:
+
+[source,bash]
+----
+lsinitrd | grep -E 'keys|ima|evm'
+----
+
+== The Confusion Source
+
+Most documentation conflates three distinct things:
+
+[cols="1,2,2", options="header"]
+|===
+| What
+| Where
+| Purpose
+
+| Private signing key
+| `/etc/keys/umrs/signing/`
+| Sign files with `evmctl ima_sign`
+
+| Public verification key
+| Kernel `.ima` keyring
+| Kernel verifies signatures at runtime
+
+| EVM HMAC master key
+| Kernel `.evm` keyring
+| Protects extended attributes from tampering
+|===
+
+[IMPORTANT]
+====
+The private key *never* touches the kernel keyring.
+Only the public key is loaded onto `.ima`.
+The EVM HMAC key is symmetric and loads directly onto `.evm`.
+====
+
+== Normative References
+
+[cols="1,2", options="header"]
+|===
+| Document
+| Relevance
+
+| NIST SP 800-53 Rev 5 — SC-12
+| Cryptographic Key Establishment and Management
+
+| NIST SP 800-53 Rev 5 — SC-28
+| Protection of Information at Rest
+
+| NIST SP 800-53 Rev 5 — SI-7
+| Software, Firmware, and Information Integrity
+
+| NIST SP 800-53 Rev 5 — AC-3
+| Access Enforcement
+
+| NIST SP 800-57 Part 1 Rev 5 §5.3
+| Key storage and lifecycle states
+
+| NIST SP 800-89
+| Assurance of Digital Signatures
+
+| CMMC L2 — SC.L2-3.13.10
+| Employ cryptographic mechanisms to protect CUI
+
+| CMMC L2 — SI.L2-3.14.6
+| Security alerting / integrity verification
+|===
+
+
+
+
+
+
+Correct. On RHEL 10 the IMA/EVM trust chain is bootstrapped by Red Hat's own PKI — you do not generate the verification keys yourself.
+
+## What Ships With RHEL 10
+
+The kernel's `.ima` and `.builtin_trusted_keys` keyrings are pre-populated at boot with:
+
+```
+/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release   # Red Hat's signing key
+```
+
+And more critically, keys embedded directly in the kernel binary itself via the **kernel keyring** at build time. Red Hat signs the kernel, the kernel carries the trusted public keys, Secure Boot validates the chain before the kernel even runs.
+
+```bash
+# See what is already on the builtin keyring
+keyctl show %:.builtin_trusted_keys
+
+# See what is on .ima at runtime
+keyctl show %:.ima
+```
+
+## What You Actually Need Custom Keys For
+
+The distinction is **what you are signing**:
+
+[cols="1,2,2"]
+|===
+| Scenario | Keys Needed | Source
+
+| Booting RHEL 10, running RH-signed binaries
+| None — RH PKI handles it
+| Ships with OS
+
+| Signing *your own* binaries/scripts for IMA appraisal
+| Yes — your own IMA signing key
+| You generate these
+
+| Signing *your own* kernel modules
+| Yes — MOK key via `mokutil`
+| You generate these
+
+| EVM HMAC protection of xattrs
+| Yes — EVM HMAC master key
+| You generate these
+|===
+
+## The UMRS Implication
+
+For UMRS, you will need custom keys specifically for:
+
+. **Your own compiled Rust binaries** — anything in `staging/bin/` that IMA will appraise needs to be signed with your key after the RH-provided chain is established
+. **EVM HMAC** — if you want xattr tamper protection on vault ingest files, you need your own HMAC master key
+. **Airgap deployments** — no OCSP, no RH network validation, so your local CA anchors become load-bearing
+
+The RH-delivered keys handle OS integrity. Your keys handle *UMRS application layer* integrity on top of that.
+
+
+
+

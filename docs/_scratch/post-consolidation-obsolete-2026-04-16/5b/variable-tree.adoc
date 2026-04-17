@@ -1,0 +1,125 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-directory-structure.adoc
+//   - components/rusty-gadgets/selinux/umrs.fc.in (variable tree fcontext entries)
+//   - components/rusty-gadgets/scripts/umrs-install.sh (VAR_DIR constant)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-directory-structure.adoc
+= Variable Tree: /var/opt/umrs/
+:toc: left
+:description: Layout of /var/opt/umrs/ -- runtime state and log subdirectories.
+
+`/var/opt/umrs/` holds variable data written during normal operation. The
+installer creates the two subdirectories below the root.
+
+== Directory Layout
+
+[source,text]
+----
+/var/opt/umrs/                              (FHS §4.9.2 — variable data)
+├── lib/                                    runtime state data
+└── log/                                    log files
+----
+
+== Ownership and Permissions
+
+[cols="2,1,1,2",options="header"]
+|===
+| Path | Owner | Mode | Notes
+
+| `/var/opt/umrs/`     | `umrs:umrs` | `0755` | Root; provisioned out of band
+| `/var/opt/umrs/lib/` | `umrs:umrs` | `2775` | setgid — new entries inherit `umrs` group
+| `/var/opt/umrs/log/` | `umrs:umrs` | `2770` | setgid + no world access
+|===
+
+The `setgid` bit on `lib/` and `log/` ensures that files created by any
+process writing into these directories inherit the `umrs` group ownership,
+regardless of the creating process's primary group. This maintains group
+ownership consistency across log rotation and state file creation.
+
+The `0770` mode on `log/` (no world read or write) protects log contents from
+being readable by arbitrary system users.
+
+== SELinux Types
+
+[cols="2,2",options="header"]
+|===
+| Path Pattern | SELinux Type
+
+| `/var/opt/umrs/lib(/.*)?` | `umrs_data_rw_t`
+| `/var/opt/umrs/log(/.*)?` | `umrs_log_rw_t`
+|===
+
+NOTE: The root `/var/opt/umrs/` does not yet have an explicit fcontext entry
+in `umrs.fc.in`. After `semodule -i umrs.pp`, the root inherits `var_t` from
+the system default. The security-engineer role is tracking this as a pending
+policy update.
+
+== Current Usage
+
+`log/` is currently reserved. The recommendation for Phase A is to use
+journald for all UMRS tool output rather than writing directly to the local
+log spool. The directory is provisioned so that it can receive files if local
+spooling is enabled in a future phase.
+
+`lib/` holds runtime state files written by UMRS tools. The specific files
+depend on which tools are active.
+
+== Runtime Key State: /var/lib/umrs/keys/
+
+UMRS runtime key lifecycle state is placed under `/var/lib/umrs/keys/`, *not*
+under `/var/opt/umrs/`. This is a deliberate deviation from the FHS add-on
+package pattern.
+
+=== Why /var/lib/ and Not /var/opt/umrs/?
+
+FHS §4.5 grants `/opt/<package>/` — and by extension `/var/opt/<package>/` —
+full directory autonomy. A conforming package may place its variable data under
+`/var/opt/umrs/`. For most UMRS runtime state, this is exactly where it belongs.
+
+Key lifecycle state is different. NIST SP 800-53 SC-12, AC-3, and MP-6 require
+that cryptographic key material follow an auditable, policy-controlled layout
+subject to system-level access control baselines. Placing runtime key state under
+`/var/lib/umrs/keys/` rather than `/var/opt/umrs/` aligns it with:
+
+* The FHS §3.15 category for _variable, persistent, host-specific_ data, which
+  is the correct semantic for key lifecycle objects that persist across reboots.
+* System-level SELinux MAC labeling patterns that security auditors expect at
+  `/var/lib/`, rather than the add-on package variable tree.
+* The system security plan (SSP) deviation note required by NIST SA-8, which is
+  easier to document against a standard system path than a package-specific subtree.
+
+The full rationale, including the four FHS/NIST conflict resolutions, is in
+xref:umrs/5b-directory-structure/key-material-trees.adoc#_6_3_conflict_fhs_opt_autonomy_vs_nist_configuration_control[Key Material Trees §6.3].
+
+=== Current Status
+
+[IMPORTANT]
+====
+The directories under `/var/lib/umrs/keys/` are *declared and typed* in policy
+but are not created by `umrs-install.sh` in the current release. The SELinux
+fcontext rules and type declarations are in place. Runtime creation and lifecycle
+management are tracked for a future pass.
+====
+
+[cols="3,1,1,2",options="header"]
+|===
+| Path | Owner | Mode | Notes
+
+| `/var/lib/umrs/keys/`
+| `root:root` | `0700`
+| Runtime key state root. _Not yet created by installer._
+
+| `/var/lib/umrs/keys/active/`
+| `root:root` | `0700`
+| Active session keys. SELinux type: `umrs_session_key_t`.
+  _Not yet created by installer._
+
+| `/var/lib/umrs/keys/suspended/`
+| `root:root` | `0700`
+| Suspended keys (SP 800-57 §5.3). SELinux type: `umrs_retired_key_t`.
+  _Not yet created by installer._
+
+| `/var/lib/umrs/keys/retired/`
+| `root:root` | `0700`
+| Keys pending destruction (SP 800-57 §5.3.6). SELinux type: `umrs_retired_key_t`.
+  _Not yet created by installer._
+|===

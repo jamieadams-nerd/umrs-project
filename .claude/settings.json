@@ -341,7 +341,24 @@
       "Bash(awk '/#\\\\[derive\\\\\\(.*Parser|#\\\\[derive\\\\\\(.*Subcommand|#\\\\[derive\\\\\\(.*Args/,/^}/' umrs-c2pa/src/main.rs)",
       "Bash(awk '/#\\\\[derive\\\\\\(.*Parser|#\\\\[derive\\\\\\(.*Subcommand|#\\\\[derive\\\\\\(.*Args/,/^}/' umrs-label/src/main.rs)",
       "Bash(awk '/#\\\\[derive\\\\\\(.*Parser|#\\\\[derive\\\\\\(.*Subcommand|#\\\\[derive\\\\\\(.*Args/,/^}/' umrs-stat/src/main.rs)",
-      "Bash(command -v msgfmt)"
+      "Bash(command -v msgfmt)",
+      "Bash(~/.claude/skills/claude-maintenance/claude-maintenance.sh *)",
+      "Bash(awk '{cmd=\"date -d @\" $1 \" +%Y-%m-%d\"; cmd | getline d; close\\(cmd\\); print d, $2}')",
+      "Bash(command -v rustup)",
+      "Read(//home/jadams/.cargo/bin/**)",
+      "Bash(~/.cargo/bin/rustup show *)",
+      "Bash(~/.cargo/bin/rustup toolchain *)",
+      "Bash(shellcheck --version)",
+      "Bash(claude-code-task update *)",
+      "Read(//opt/umrs/**)",
+      "Read(//etc/opt/umrs/**)",
+      "Read(//var/opt/umrs/**)",
+      "Read(//etc/keys/**)",
+      "Read(//etc/keys/umrs/**)",
+      "Bash(seinfo -t)",
+      "Bash(command -v seinfo)",
+      "Bash(command -v sesearch)",
+      "Bash(command -v semodule)"
     ]
   },
   "enabledPlugins": {

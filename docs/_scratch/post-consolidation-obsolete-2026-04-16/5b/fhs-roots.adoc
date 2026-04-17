@@ -1,0 +1,98 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-directory-structure.adoc
+//   - components/rusty-gadgets/scripts/umrs-install.sh (constants section)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-directory-structure.adoc
+= FHS Root Directories
+:toc: left
+:description: Ownership, mode, and SELinux type for the three FHS 2.3 root directories required by UMRS.
+
+The three top-level FHS 3.0 add-on package roots are provisioned once, out of band,
+before the installer runs. The installer verifies their presence and ownership during
+the preflight step — it refuses to proceed if any root is missing or mislabeled.
+
+NOTE: UMRS key material deliberately sits *outside* these three roots. Key material
+at rest is placed under `/etc/keys/umrs/` and runtime key state under
+`/var/lib/umrs/keys/`. These paths use standard FHS system directories rather than
+the add-on package tree. The rationale is in
+xref:umrs/5b-directory-structure/key-material-trees.adoc#_fhs_3_0_and_nist_conflicts_and_resolutions[Key Material Trees — FHS/NIST Conflicts and Resolutions].
+
+== Root Directory Properties
+
+[cols="2,1,1,2,2",options="header"]
+|===
+| Path | Owner | Mode | SELinux Type | Notes
+
+| `/opt/umrs/`
+| `umrs:umrs`
+| `0755`
+| `usr_t`
+| Provisioned out of band. Static package files. FHS 2.3 §5.15.
+
+| `/etc/opt/umrs/`
+| `umrs:umrs`
+| `0755`
+| `umrs_config_ro_t`
+| Provisioned out of band. Host-editable configuration. FHS 2.3 §3.7.4.
+
+| `/var/opt/umrs/`
+| `umrs:umrs`
+| `0755`
+| (pending — see note)
+| Provisioned out of band. Variable data. FHS 2.3 §4.9.2.
+|===
+
+NOTE: As of 2026-04-16 the `umrs.fc.in` template encodes fcontext entries for
+`/var/opt/umrs/lib` and `/var/opt/umrs/log` but not for the root
+`/var/opt/umrs/` itself. After `semodule -i umrs.pp`, the root inherits
+`var_t` from the system default. The security-engineer role is tracking a policy
+update to add an explicit root entry.
+
+== Provisioning the FHS Roots
+
+Run these commands once, before running `umrs-install.sh`:
+
+[source,bash]
+----
+sudo mkdir -p /opt/umrs /etc/opt/umrs /var/opt/umrs
+sudo chown umrs:umrs /opt/umrs /etc/opt/umrs /var/opt/umrs
+sudo chmod 0755 /opt/umrs /etc/opt/umrs /var/opt/umrs
+----
+
+Verify:
+
+[source,bash]
+----
+stat -c '%n %U:%G %a' /opt/umrs /etc/opt/umrs /var/opt/umrs
+----
+
+Expected output:
+
+----
+/opt/umrs umrs:umrs 755
+/etc/opt/umrs umrs:umrs 755
+/var/opt/umrs umrs:umrs 755
+----
+
+== Why These Roots Are Provisioned Out of Band
+
+The installer script creates subtrees beneath the roots but does not chown or
+chmod the roots themselves. This design ensures the installer can run without
+privilege beyond what is needed for file placement and SELinux context
+application. A site deployment role (or initial provisioning script) owns the
+one-time root creation step.
+
+== Compliance
+
+[cols="2,3",options="header"]
+|===
+| Control | Coverage
+
+| NIST SP 800-53 CM-2 (Baseline Configuration)
+| Root layout is fixed by FHS 2.3; no site variance is permitted.
+
+| NIST SP 800-53 CM-6 (Configuration Settings)
+| Ownership and mode are auditable requirements, not suggestions.
+
+| FHS 2.3 §3.7.4, §3.12, §4.9.2, §5.15
+| On-disk layout conforms to standard.
+|===

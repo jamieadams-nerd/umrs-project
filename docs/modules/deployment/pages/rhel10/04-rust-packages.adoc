@@ -1,0 +1,159 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-packages.adoc
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-packages.adoc
+= Step 4: Package Installation
+:toc: left
+:description: Platform-specific package installation for RHEL 10 UMRS deployments.
+
+Install the appropriate package set for your deployment type after completing
+xref:rhel10/02-install-choices.adoc[Step 2: Installation] and
+xref:rhel10/03-postinstall/stig-hardening.adoc[Step 3a: STIG Hardening].
+
+== All Systems
+
+These packages are required on every UMRS system regardless of role.
+
+. Install the required packages:
++
+[source,bash]
+----
+sudo dnf install -y \
+    ima-evm-utils \
+    mcstrans \
+    jq \
+    crypto-policies \
+    gnupg2 \
+    tuned \
+    aide \
+    git
+----
++
+Expected output: `dnf` resolves and installs the packages and reports `Complete!`.
++
+If any package is not found, verify that the BaseOS and AppStream repos are enabled:
++
+[source,bash]
+----
+subscription-manager repos --list-enabled
+----
+
+.Package descriptions
+
+`ima-evm-utils`::
+Provides `evmctl`, the userspace tool for IMA (Integrity Measurement Architecture)
+and EVM (Extended Verification Module) operations. Required for signing and
+verifying file measurement labels. See xref:rhel10/03-postinstall/ima-evm.adoc[IMA/EVM Setup].
+
+`mcstrans`::
+The Multi-Category Security translation daemon. Translates raw SELinux MCS labels
+(for example, `s0:c1,c3`) into human-readable strings as defined in `setrans.conf`.
+Must be running before CUI label configuration is applied.
+
+`jq`::
+A command-line JSON processor. Used by UMRS operational scripts to parse and
+format structured output from tools and state files.
+
+`gnupg2`::
+The GnuPG cryptographic toolkit. Required for signing and verifying commits, log
+archives, and release artifacts. Supports NIST SP 800-53 SI-7 and AU-10
+(non-repudiation).
+
+`tuned`::
+The system performance and power management tuning daemon. Allows setting a
+consistent kernel and I/O profile appropriate for a high-assurance logging server.
+The `throughput-performance` or a custom UMRS profile should be activated after
+installation.
+
+`aide`::
+Advanced Intrusion Detection Environment. Provides file integrity monitoring
+against a cryptographic baseline database. Required for NIST SP 800-53 SI-7 and
+STIG compliance.
+
+IMPORTANT: After installing `aide`, initialize the integrity database before the
+system enters active operation. See xref:operations:ima-evm-ops.adoc[IMA/EVM
+Maintenance] for the `aide --init` procedure. Do not run `aide --check` before
+the database has been initialized — it will exit with errors.
+
+=== Enable mcstrans
+
+. Enable and start mcstrans:
++
+[source,bash]
+----
+sudo systemctl enable --now mcstrans
+sudo systemctl status mcstrans
+----
++
+`mcstrans` must be running before CUI label configuration.
+See xref:umrs/5c-install/configurations.adoc[Configurations] for the
+`setrans.conf` installation step.
+
+== UMRS Development Platform
+
+For systems used to build and test UMRS, also install the Rust toolchain:
+
+[source,bash]
+----
+sudo dnf install -y \
+    rust \
+    rust-toolset \
+    jq \
+    rust-analyzer \
+    make
+----
+
+NOTE: RHEL 10 ships a supported Rust toolset via `rust-toolset`. Prefer this
+over installing from rustup.rs to stay within a supported, FIPS-compatible
+runtime.
+
+. Verify the toolchain after installation:
++
+[source,bash]
+----
+rustc --version
+cargo --version
+----
+
+=== Configure Git
+
+. Set your git identity:
++
+[source,bash]
+----
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+----
+
+. Set up SSH keys for repository access:
++
+[source,bash]
+----
+ssh-keygen -t ed25519 -C "you@example.com"
+cat ~/.ssh/id_ed25519.pub
+----
+
+. Add the public key to your repository host (GitHub, GitLab, or internal server).
+
+// TBD: Confirm GPG signing requirements for commits in this project.
+// TBD: Add any project-specific git config (commit signing, hooks, etc.)
+
+== Cryptographic Policy
+
+RHEL 10 controls which cryptographic algorithms are available system-wide through
+the `crypto-policies` package (installed by default). No additional package
+installation is needed for standard deployments.
+
+For UMRS deployments:
+
+* The `FIPS` policy is required for systems handling CUI under NIST SP 800-171
+  or CMMC. Enable it at install time via the FIPS mode installer option.
+* On RHEL 10.1+, the `DEFAULT` policy includes PQC support (ML-KEM, ML-DSA) for
+  non-FIPS systems.
+* FIPS mode and PQC support are mutually exclusive on current RHEL releases.
+  See xref:cryptography:crypto-post-quantum.adoc#_rhel_10_pqc_availability[RHEL 10 PQC Availability]
+  for the full compatibility matrix.
+
+== Next Step
+
+xref:umrs/index.adoc[Step 5: UMRS Installation] — set up users, groups,
+directory structure, and install the UMRS software.

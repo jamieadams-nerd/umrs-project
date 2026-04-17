@@ -570,10 +570,16 @@ fn expand_indicator_row<'a>(
     let key_col = widths.indicator_key_col;
     let key_padded = pad_key(key, key_col);
     let value_color = style_hint_color(style_hint);
+    // Trailing space provides breathing room before the panel border.
+    let value_padded = if value.is_empty() {
+        String::new()
+    } else {
+        format!("{value} ")
+    };
     let kv_line = Line::from(vec![
         Span::raw(" "),
         Span::styled(key_padded, theme.data_key),
-        Span::styled(value.to_owned(), theme.data_value.fg(value_color)),
+        Span::styled(value_padded, theme.data_value.fg(value_color)),
     ]);
 
     let mut lines = vec![kv_line];
@@ -833,17 +839,38 @@ fn build_key_value_line<'a>(
     highlight_key: bool,
     theme: &'a Theme,
 ) -> Line<'a> {
-    let key_padded = pad_key(key, KEY_COL_WIDTH);
     let value_color = style_hint_color(style_hint);
+
+    // Empty key = continuation line: value spans full width with leading space.
+    // Used for multi-line displays (e.g., hash digests on their own line).
+    if key.is_empty() {
+        let value_padded = if value.is_empty() {
+            String::new()
+        } else {
+            format!("{value} ")
+        };
+        return Line::from(vec![
+            Span::raw(" "),
+            Span::styled(value_padded, theme.data_value.fg(value_color)),
+        ]);
+    }
+
+    let key_padded = pad_key(key, KEY_COL_WIDTH);
     let key_style = if highlight_key {
         theme.header_field
     } else {
         theme.data_key
     };
+    // Trailing space provides breathing room before the panel border.
+    let value_padded = if value.is_empty() {
+        String::new()
+    } else {
+        format!("{value} ")
+    };
     Line::from(vec![
         Span::raw(" "),
         Span::styled(key_padded, key_style),
-        Span::styled(value.to_owned(), theme.data_value.fg(value_color)),
+        Span::styled(value_padded, theme.data_value.fg(value_color)),
     ])
 }
 

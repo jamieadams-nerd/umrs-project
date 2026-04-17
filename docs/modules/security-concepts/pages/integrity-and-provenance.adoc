@@ -251,7 +251,7 @@ of data whose integrity and access controls matter.
 * xref:reference-monitor.adoc[Reference monitor design]
 * xref:architecture:kernel-files-tpi.adoc[Two-path independence (TPI)]
 * xref:architecture:mls-label-model.adoc[MLS label model and CUI mapping]
-* xref:deployment:ima-evm-setup.adoc[IMA/EVM setup]
+* xref:deployment:rhel10/03-postinstall/ima-evm.adoc[IMA/EVM setup]
 * xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]
 
 === Implementation Patterns

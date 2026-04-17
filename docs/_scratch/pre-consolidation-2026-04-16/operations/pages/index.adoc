@@ -1,0 +1,18 @@
+= Operations
+:description: Tools, audit log management, OpenSCAP, signing, secure deletion, and kernel integrity maintenance.
+
+This module covers day-to-day UMRS operations: using the command-line tools,
+managing audit logs, running OpenSCAP scans, signing artifacts, secure file
+deletion, and maintaining kernel integrity with IMA/EVM.
+
+For the UMRS command-line tools (`umrs-ls` and related utilities), see
+xref:umrs-tools:index.adoc[UMRS Tools].
+
+== Related Modules
+
+* xref:deployment:index.adoc[Deployment] — initial platform setup, IMA/EVM configuration,
+  kernel hardening, and STIG baseline; prerequisite to operations work.
+* xref:logging-audit:index.adoc[Logging and Audit] — audit trail design, log capacity
+  planning, and log lifecycle management.
+* xref:glossary:index.adoc[Glossary] — definitions for audit event, chain of custody,
+  non-repudiation, and integrity terms used throughout this module.

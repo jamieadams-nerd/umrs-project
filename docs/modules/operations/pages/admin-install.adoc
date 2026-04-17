@@ -1,27 +1,10 @@
-= Install
-Jamie L. Adams
-:toc: macro
-:toclevels: 2
+// Moved 2026-04-16: content merged into deployment module.
+// Snapshot: docs/_scratch/pre-consolidation-2026-04-16/operations/pages/admin-install.adoc
+= UMRS Installation
+:description: Moved to the Deployment module.
 
-toc::[]
+The UMRS installation documentation has moved to the Deployment module.
 
-== Scope
-This section describes how to install UMRS components on a reference workstation.
-
-== Packages and components
-UMRS typically includes:
-* umrs-state tooling and supporting scripts
-* optional GUI utilities (GTK4)
-* configuration under /etc with umrs- prefixed files
-* optional state under /var/lib/umrs
-
-== Installation steps (high level)
-1. Install RPMs for UMRS components.
-2. Verify FIPS mode and SELinux enforcement.
-3. Initialize UMRS state file (if applicable).
-4. Validate baseline behavior using the UMRS verification commands.
-
-== Post-install verification
-Use the man pages for precise command usage:
-* umrs-state(1)
-* umrs-verify(1)
+See xref:deployment:umrs/index.adoc[Step 5: UMRS Installation] for the complete
+install pipeline — users and groups, SELinux types, directory provisioning, staging,
+policy load, configurations, and verification.

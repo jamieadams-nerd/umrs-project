@@ -4,7 +4,7 @@
 // NOTE: Ubuntu support is planned but not yet documented.
 
 Ubuntu deployment will follow the same general baseline as
-xref:linux-baseline.adoc[Platform Baseline], with Ubuntu-specific
+xref:rhel10/01-preinstall.adoc[Pre-Installation Planning], with Ubuntu-specific
 package management and SELinux configuration.
 
 // TBD: Confirm target Ubuntu version (24.04 LTS?)

@@ -10,11 +10,25 @@
 - `docs/modules/ROOT/` — project entry points, release notes, nav root
 - `docs/modules/architecture/` — design rationale, history, background
 - `docs/modules/devel/` — developer guides, Rust style, high-assurance patterns
-- `docs/modules/deployment/` — OS configuration, SELinux policy setup
+- `docs/modules/deployment/` — OS configuration, SELinux policy setup (see Deployment Structure below)
 - `docs/modules/operations/` — day-to-day operation, admin tasks (admin/ merged here)
 - `docs/modules/reference/` — API references, compliance registry
 - `docs/modules/umrs-tools/` — tool-level docs (umrs-ls, prototype crates)
 - `docs/modules/admin/` — DEPRECATED; originals still present pending Jamie's cleanup sign-off
+
+## Deployment Module Structure (as of 2026-04-16)
+Consolidated 5-step structure. OLD paths (rhel/, filesystem-layout, ima-evm-setup, etc.) archived.
+- `deployment:rhel10/01-preinstall.adoc` — partition planning, FIPS decision, network separation
+- `deployment:rhel10/02-install-choices.adoc` — RHEL 10 installer walkthrough
+- `deployment:rhel10/03-postinstall/` — 5 hardening pages (stig, ima-evm, lockdown, dual-nic, tmp)
+- `deployment:rhel10/04-rust-packages.adoc` — package install
+- `deployment:umrs/` — Step 5: users/types (5a), directory structure (5b), install pipeline (5c)
+- `deployment:umrs/5b-directory-structure/config-tree.adoc` — canonical setrans.conf install procedure
+- `deployment:umrs/5b-directory-structure/pki-tree.adoc` — PKI layout, key classes, lifecycle
+- `deployment:umrs/5c-install/scripts.adoc` — umrs-sign-mgr design, umrs-shred (not yet written)
+- Old files archived: `docs/_scratch/post-consolidation-obsolete-2026-04-16/`
+- KEY ANTORA RULE: all xrefs use module-root-absolute paths (e.g., `rhel10/03-postinstall/foo.adoc`), never `../` or `./` relative paths
+- Operations pages `key-management.adoc`, `key-manager-tool.adoc`, `admin-install.adoc` are now redirect stubs
 
 ## Communication Channels
 - Feedback log: `.claude/agent-memory/doc-team/feedback.md`

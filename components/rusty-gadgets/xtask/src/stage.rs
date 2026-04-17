@@ -279,30 +279,65 @@ fn stage_binaries(workspace_root: &Path, release: bool) -> Result<()> {
     Ok(())
 }
 
-/// Copies end-user scripts from `scripts/` (flat, non-recursive) into
-/// `staging/bin/`.
+/// Copies end-user scripts from `scripts/` into `staging/bin/`, recursing
+/// exactly one level deep.
 ///
-/// - If `scripts/` does not exist, skips silently.
-/// - Subdirectories inside `scripts/` are skipped silently (non-recursive).
-/// - Files without the execute bit emit a warning and are NOT copied.
+/// ## Discovery rules
+///
+/// Scripts are discovered from two locations:
+/// - `scripts/*.sh` — flat files directly under `scripts/`
+/// - `scripts/*/*.sh` — files one level below a subdirectory (e.g. `scripts/signing/foo.sh`)
+///
+/// The depth bound is intentional and hard-coded. Files at `scripts/a/b/c.sh`
+/// (depth ≥ 2) are silently skipped. This prevents accidental ingestion of
+/// deeply nested drafts, archived material, or work-in-progress trees.
+///
+/// ## Target name derivation
+///
+/// The `.sh` suffix is stripped on copy. The target name in `staging/bin/`
+/// is the filename stem only:
+/// ```text
+/// scripts/umrs-signing/umrs-sign-mgr.sh  →  staging/bin/umrs-sign-mgr
+/// scripts/umrs-shred.sh                  →  staging/bin/umrs-shred
+/// ```
+///
+/// This matches the naming convention for compiled workspace binaries (e.g.
+/// `umrs-ls`, `umrs-stat`). The installer places all `staging/bin/` artifacts
+/// at `/opt/umrs/bin/` without modification.
+///
+/// ## Provenance note (`NSA RTB`)
+///
+/// The `.sh` suffix is present in the repository and absent in the staging
+/// bundle. This is an intentional provenance boundary: an operator running
+/// `umrs-sign-mgr` is executing the staged (suffix-stripped) copy, not the
+/// repository source. The IMA signing checkpoint signs the staged artifact.
+/// Any post-strip substitution would produce a signing failure. This design
+/// is consistent with `NSA RTB` non-bypassability — the staging copy is the
+/// object of trust, not the source path.
+///
+/// ## Duplicate detection
+///
+/// If a flat script (`scripts/foo.sh`) and a nested script
+/// (`scripts/bar/foo.sh`) would produce the same target name, staging aborts
+/// with a hard error listing both conflicting paths. Ambiguous target names
+/// are a supply-chain integrity violation and cannot be resolved silently.
+///
+/// ## Execute-bit guard
+///
+/// Files without the execute bit emit a warning and are NOT copied. Scripts
+/// MUST be committed to git with the execute bit set:
+///
+/// ```text
+/// git add --chmod=+x scripts/<name>.sh
+/// ```
 ///
 /// ## Compliance
 ///
 /// `NIST SP 800-53 AC-3` — execute permission verified before copy.
 /// `NIST SP 800-53 SA-12` — scripts enter the staging checkpoint alongside
 /// compiled binaries, enabling uniform IMA-signing of the full `bin/` tree.
-///
-/// ## Contributor Note
-///
-/// Scripts MUST be committed to git with the execute bit set. When adding a
-/// new script to the repository, use:
-///
-/// ```text
-/// git add --chmod=+x scripts/<name>.sh
-/// ```
-///
-/// Without this, the file will not have the execute bit in the repository and
-/// the staging pipeline will emit a warning and skip it.
+/// `NSA RTB` — suffix-strip provenance boundary; staged artifact is the
+/// signed object, preventing source-path substitution attacks.
 fn stage_scripts(workspace_root: &Path) -> Result<()> {
     let scripts_dir = workspace_root.join("scripts");
 
@@ -315,44 +350,119 @@ fn stage_scripts(workspace_root: &Path) -> Result<()> {
     fs::create_dir_all(&staging_bin)
         .with_context(|| format!("creating {}", staging_bin.display()))?;
 
-    let entries =
+    // Collect (target_stem → source_path) pairs. Duplicate stems are a hard error.
+    let mut candidates: std::collections::HashMap<String, PathBuf> =
+        std::collections::HashMap::new();
+
+    // Pass 1: flat scripts/*.sh
+    collect_scripts(&scripts_dir, &scripts_dir, false, &mut candidates)?;
+
+    // Pass 2: one-level subdirectories scripts/*/*.sh
+    let top_entries =
         fs::read_dir(&scripts_dir).with_context(|| format!("reading {}", scripts_dir.display()))?;
 
-    let mut count = 0usize;
-    for entry in entries {
+    for entry in top_entries {
         let entry = entry.with_context(|| format!("reading entry in {}", scripts_dir.display()))?;
         let path = entry.path();
         let meta = path.metadata().with_context(|| format!("stat {}", path.display()))?;
 
-        // Non-recursive: skip subdirectories silently.
-        if !meta.is_file() {
-            continue;
+        if meta.is_dir() {
+            collect_scripts(&scripts_dir, &path, true, &mut candidates)?;
         }
+    }
 
-        let filename = match path.file_name() {
-            Some(n) => n,
-            None => continue,
-        };
-
-        // Verify execute bit — warn and skip if absent.
-        // NIST SP 800-53 AC-3: enforce execute permission at staging boundary.
+    // Stage each validated candidate.
+    let mut count = 0usize;
+    for (stem, src) in &candidates {
+        let meta = src.metadata().with_context(|| format!("stat {}", src.display()))?;
         let mode = meta.permissions().mode();
+
+        // NIST SP 800-53 AC-3: enforce execute permission at staging boundary.
         if mode & 0o111 == 0 {
+            let rel = src.strip_prefix(&scripts_dir).unwrap_or(src);
             eprintln!(
                 "WARNING: scripts/{} is not executable — skipping",
-                filename.to_string_lossy()
+                rel.display()
             );
             continue;
         }
 
-        let dest = staging_bin.join(filename);
-        fs::copy(&path, &dest)
-            .with_context(|| format!("copying {} to {}", path.display(), dest.display()))?;
+        let dest = staging_bin.join(stem);
+        fs::copy(src, &dest)
+            .with_context(|| format!("copying {} to {}", src.display(), dest.display()))?;
         count = count.saturating_add(1);
-        eprintln!("[stage] script: {}", filename.to_string_lossy());
+        eprintln!("[stage] script: {stem}");
     }
 
     eprintln!("[stage] staged {count} script(s) from scripts/");
+    Ok(())
+}
+
+/// Scans `search_dir` for `*.sh` files and inserts them into `candidates`.
+///
+/// `scripts_root` is used only for diagnostic messages (relative path display).
+/// `nested` controls whether this is a flat (`scripts/*.sh`) or nested
+/// (`scripts/*/*.sh`) scan — used only for diagnostic labels.
+///
+/// Duplicate stems across flat and nested locations are a hard error: the
+/// function calls `bail!` with both conflicting paths.
+///
+/// ## Compliance
+///
+/// `NIST SP 800-53 SA-12` — duplicate detection prevents ambiguous supply-chain
+/// artifacts from silently shadowing each other at the staging boundary.
+fn collect_scripts(
+    scripts_root: &Path,
+    search_dir: &Path,
+    nested: bool,
+    candidates: &mut std::collections::HashMap<String, PathBuf>,
+) -> Result<()> {
+    let entries =
+        fs::read_dir(search_dir).with_context(|| format!("reading {}", search_dir.display()))?;
+
+    for entry in entries {
+        let entry = entry.with_context(|| format!("reading entry in {}", search_dir.display()))?;
+        let path = entry.path();
+        let meta = path.metadata().with_context(|| format!("stat {}", path.display()))?;
+
+        if !meta.is_file() {
+            if nested && meta.is_dir() {
+                // Depth ≥ 2 — skip silently. Bounding recursion is intentional.
+            }
+            continue;
+        }
+
+        // Only `.sh` files are script candidates.
+        let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("");
+        if ext != "sh" {
+            continue;
+        }
+
+        // Derive target stem by stripping the `.sh` suffix.
+        let stem = match path.file_stem().and_then(|s| s.to_str()) {
+            Some(s) => s.to_owned(),
+            None => continue,
+        };
+
+        // Duplicate detection: same stem from different source paths is fatal.
+        if let Some(existing) = candidates.get(&stem) {
+            let rel_existing = existing.strip_prefix(scripts_root).unwrap_or(existing);
+            let rel_new = path.strip_prefix(scripts_root).unwrap_or(&path);
+            bail!(
+                "duplicate script target name '{stem}': two source scripts would \
+                 produce the same staging/bin/{stem} artifact.\n  \
+                 existing: scripts/{}\n  \
+                 conflict: scripts/{}",
+                rel_existing.display(),
+                rel_new.display()
+            );
+        }
+
+        candidates.insert(stem, path);
+    }
+
+    // Suppress the `nested` unused-variable lint for the depth-guard comment above.
+    let _ = nested;
     Ok(())
 }
 

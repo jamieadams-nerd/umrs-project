@@ -1018,12 +1018,17 @@ fn build_group_header_item<'a>(
     let type_bg = Color::Rgb(0x2D, 0x3A, 0x4A); // dark navy for SELinux type block
     // Look up the NARA index group for this marking to get the right palette color.
     // Every file in the group shares the same marking — just look it up in the catalog.
+
     let index_group = us_catalog
         .and_then(|c| c.marking(marking))
         .or_else(|| ca_catalog.and_then(|c| c.marking(marking)))
         .and_then(|m| m.index_group.as_deref())
         .unwrap_or("");
-    let marking_bg = palette_bg(index_group);
+
+    let _marking_bg = palette_bg(index_group);
+    // For testing, let's make the marking slightly lighter than the
+    // type field.
+    let marking_bg = Color::Rgb(0x3D, 0x4A, 0x5A);
 
     let chevron_span = Span::styled(
         chevron.to_owned(),
@@ -1034,7 +1039,7 @@ fn build_group_header_item<'a>(
     // space so names read from the start of the column rather than being
     // centered (centering made short vs long type names look misaligned).
     let type_span = Span::styled(
-        format!(" {selinux_type:<20} "),
+        format!(" {selinux_type:^20} "),
         Style::default().fg(Color::White).bg(type_bg),
     );
 

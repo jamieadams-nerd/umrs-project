@@ -103,10 +103,13 @@ pub enum SecurityObservation {
         nlink: u32,
     },
 
-    /// Root-owned regular file that is not write-protected.
-    /// A mutable root-owned file is a persistent escalation risk.
+    /// Root-owned regular file with group-writable or world-writable
+    /// permissions, or with extended POSIX ACLs that may grant non-owner
+    /// write access. Standard `0755 root:root` posture does NOT fire this
+    /// — only permission sets that allow non-root modification of a
+    /// root-owned file.
     /// NIST SP 800-53 CM-5 / CMMC CM.L2-3.4.5.
-    RootOwnedMutable,
+    RootOwnedExcessiveWrite,
 
     /// Uid has no entry in `/etc/passwd` — orphaned file owner.
     /// Indicates a deleted account that still owns files on disk.
@@ -192,7 +195,7 @@ impl SecurityObservation {
             | Self::HardLinked {
                 ..
             }
-            | Self::RootOwnedMutable
+            | Self::RootOwnedExcessiveWrite
             | Self::UnresolvedOwner {
                 ..
             }
@@ -222,7 +225,9 @@ impl fmt::Display for SecurityObservation {
             Self::HardLinked {
                 nlink,
             } => format!("hard-linked (nlink={nlink})"),
-            Self::RootOwnedMutable => "root-owned mutable file".to_owned(),
+            Self::RootOwnedExcessiveWrite => {
+                "root-owned file with non-owner write access".to_owned()
+            }
             Self::UnresolvedOwner {
                 uid,
             } => format!("orphaned owner (uid={uid})"),

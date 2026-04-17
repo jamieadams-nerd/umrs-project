@@ -219,3 +219,14 @@ pub const ICON_RUNNING_FIGURE: &str = "\u{1FBB2}\u{1FBB3}";
 
 /// ☐ Ballot Box — marking leaf nodes in tree displays (☐ — U+2610 BALLOT BOX).
 pub const ICON_MARKING: &str = "\u{2610}";
+
+// ===========================================================================
+// Semantic indicators
+// ===========================================================================
+
+/// ⚠ Warning Sign — security warnings, contradictions, policy gaps
+/// (⚠ — U+26A0 WARNING SIGN).
+pub const ICON_WARNING: &str = "\u{26A0}";
+
+/// — Em Dash — separator in warning/status strings (— — U+2014 EM DASH).
+pub const EM_DASH: &str = "\u{2014}";

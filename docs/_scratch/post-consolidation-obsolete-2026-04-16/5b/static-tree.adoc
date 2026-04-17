@@ -1,0 +1,95 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-directory-structure.adoc (Complete Layout section)
+//   - components/rusty-gadgets/scripts/umrs-install.sh (header layout comments)
+//   - components/rusty-gadgets/selinux/umrs.fc.in (static tree fcontext entries)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-directory-structure.adoc
+= Static Tree: /opt/umrs/
+:toc: left
+:description: Full layout of /opt/umrs/ -- binaries, reference data, man pages, and locale catalogs.
+
+`/opt/umrs/` holds all static package files. The package owns this tree; it is
+never modified at runtime. This allows `/opt` to be mounted read-only without
+affecting logging or configuration.
+
+== Directory Layout
+
+[source,text]
+----
+/opt/umrs/                                  (FHS §5.15 — static files)
+├── bin/                                    executable binaries
+│   ├── umrs-c2pa                           C2PA provenance verifier
+│   ├── umrs-label                          security label registry browser
+│   ├── umrs-ls                             security-aware ls(1)
+│   ├── umrs-stat                           security-aware stat(1)
+│   └── umrs-uname                          security-aware uname(1)
+│
+└── share/                                  (FHS §4.11)
+    ├── umrs/                               package-specific reference data
+    │   ├── US-CUI-LABELS.json              NARA CUI registry catalog
+    │   ├── CANADIAN-PROTECTED.json         Treasury Board A/B/C catalog
+    │   ├── LEVELS.json                     MCS sensitivity level definitions
+    │   ├── US-CUI-PALETTE.json             CUI marking color palette
+    │   └── templates/                      configuration templates
+    │       ├── MLS-setrans.conf.template
+    │       └── TARGETED-setrans.conf-template
+    ├── man/
+    │   ├── man1/                           English man pages (section 1)
+    │   └── fr/man1/                        Canadian French man pages
+    └── locale/
+        └── <locale>/LC_MESSAGES/           compiled gettext catalogs
+----
+
+The `share/umrs/` subtree mirrors the FHS `/usr/share/<package>/` pattern
+used by zoneinfo, MIME, and hwdata --- static reference databases shipped with
+the software and never modified at runtime.
+
+== Templates vs Configuration
+
+The `.template` files in `share/umrs/templates/` are not configuration. They
+are reference starting points that operators customize and copy into
+`/etc/selinux/<policy>/setrans.conf`. A file only becomes configuration once
+an admin has deployed it to `/etc/`.
+
+This distinction matters for backup and change tracking: the templates are
+owned by the package and replaced on every upgrade; the installed configuration
+is owned by the site and must survive upgrades.
+
+== Ownership and Permissions
+
+[cols="2,1,1,2",options="header"]
+|===
+| Path | Owner | Mode | Notes
+
+| `/opt/umrs/`                      | `umrs:umrs` | `0755` | Root; provisioned out of band
+| `/opt/umrs/bin/`                  | `umrs:umrs` | `0755` | —
+| `/opt/umrs/bin/*`                 | `umrs:umrs` | `0755` | Individual binaries
+| `/opt/umrs/share/umrs/`           | `umrs:umrs` | `0755` | —
+| `/opt/umrs/share/umrs/*.json`     | `umrs:umrs` | `0644` | Reference data files
+| `/opt/umrs/share/umrs/templates/` | `umrs:umrs` | `0755` | —
+| `/opt/umrs/share/umrs/templates/*`| `umrs:umrs` | `0644` | Template files
+| `/opt/umrs/share/man/...`         | `umrs:umrs` | `0755` | Dirs; pages are `0644`
+| `/opt/umrs/share/locale/...`      | `umrs:umrs` | `0755` | Dirs; catalogs are `0644`
+|===
+
+== SELinux Types
+
+[cols="2,2",options="header"]
+|===
+| Path Pattern | SELinux Type
+
+| `/opt/umrs(/.*)?`                 | `usr_t`
+| `/opt/umrs/bin(/.*)?`             | `umrs_bin_t`
+| `/opt/umrs/share/templates(/.*)?` | `umrs_config_ro_t`
+| `/opt/umrs/share/man(/.*)?`       | `usr_t`
+| `/opt/umrs/share/locale(/.*)?`    | `usr_t`
+| `/opt/umrs/share/umrs(/.*)?`      | `umrs_data_rw_t`
+|===
+
+NOTE: Man pages and compiled gettext catalogs are labeled `usr_t` --- the same
+label RHEL applies to `/usr/share/man` and `/usr/share/locale` by default.
+Explicit entries in `umrs.fc.in` make the intent auditable rather than relying
+on the catch-all pattern.
+
+NOTE: The `share/umrs/` data directory ships read-only via DAC (`0644` files)
+even though the SELinux type is `umrs_data_rw_t`. No RO data type exists in
+Phase A. This is documented in `components/rusty-gadgets/selinux/README.md`.

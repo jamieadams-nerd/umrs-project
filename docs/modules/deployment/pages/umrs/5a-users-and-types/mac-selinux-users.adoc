@@ -1,0 +1,120 @@
+// Source material (merged 2026-04-16):
+//   - components/rusty-gadgets/selinux/INSTRUCTIONS.md (Step 5 - Confine the umrs login account)
+//   - docs/modules/reference/pages/selinux/rhel-selinux-users.adoc (user capability table)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/reference/selinux/rhel-selinux-users.adoc
+= SELinux Users and Login Mappings
+:toc: left
+:description: Mapping the umrs operator login to a confined SELinux user domain, and reference table of confined user capabilities.
+
+// NIST SP 800-53 AC-3 -- Access enforcement
+// NIST SP 800-53 AC-6 -- Least privilege
+
+UMRS policy contains `neverallow` rules that forbid `unconfined_t` from touching
+UMRS types. An operator running UMRS tools from the default unconfined user would
+bypass the custody model. The `umrs` login account must therefore be mapped to a
+confined SELinux user.
+
+== Map the umrs Login Account
+
+. Add the login mapping:
++
+[source,bash]
+----
+sudo semanage login -a -s user_u umrs
+----
+
+. Confirm the mapping is in place:
++
+[source,bash]
+----
+sudo semanage login -l | grep '^umrs'
+----
++
+Expected output:
++
+----
+umrs    user_u    s0    *
+----
+
+. Verify the mapping by logging in and checking the process context:
++
+[source,bash]
+----
+ssh umrs id -Z
+----
++
+Expected: `user_u:user_r:user_t:s0`
+
+NOTE: Always use `ssh umrs` to verify confinement --- not `sudo -u umrs` or
+`su - umrs`. Only SSH performs the full SELinux login transition via PAM.
+`sudo` and `su` retain the invoker's role/type and give misleading results.
+
+== Confined User Capability Reference
+
+The following table describes the standard confined user types on RHEL and their
+capabilities.
+
+NOTE: This reference reflects confined user behavior as documented for
+Fedora/RHEL systems. Site-specific policy changes may alter these defaults.
+
+[cols="2,1,1,1,1,1",options="header"]
+|===
+| User | Domain | X Window System | su and sudo | Execute in home dir and /tmp | Networking
+
+| `guest_u` | `guest_t` | No | No | No | No
+| `xguest_u` | `xguest_t` | Yes | No | No | Firefox only
+| `user_u` | `user_t` | Yes | No | No | Yes
+| `staff_u` | `staff_t` | Yes | sudo only | Yes | Yes
+|===
+
+=== Behavioral Notes
+
+`guest_t` and `xguest_t` --- no `su` or `sudo`. Cannot escalate to root.
+
+`user_t` and `staff_t` --- full network access permitted by default policy.
+
+By default, `guest_t`, `xguest_t`, and `user_t` cannot execute applications
+from their home directories or `/tmp`. This prevents flawed or malicious
+applications from running with the user's permissions in directories the
+user can write to.
+
+For `staff_u`, an administrator must explicitly grant `sudo` permission.
+The `staff_t` domain does not permit `sudo` by default.
+
+=== Why `user_u` for the umrs Account
+
+The `umrs` account is mapped to `user_u` (`user_t` domain) rather than `staff_u`
+(`staff_t`) for Phase A. This provides the minimum necessary access:
+
+* UMRS tools run via `user_t`, which `umrs_exec(staff_t)` and the fcontext
+  rules allow to execute `umrs_bin_t` binaries.
+* No `sudo` access --- the account cannot escalate to root from the confined domain.
+* Full network access is available for operational connectivity.
+
+Phase B will reassess the domain assignment once actor domain transitions are
+implemented and the vault custody model is defined.
+
+== Deferred Login Mappings
+
+[cols="1,2",options="header"]
+|===
+| Deferred Mapping | Rationale
+
+| `umrs-admin` operator logins
+| Individual operator accounts that are members of `umrs-admin` need their
+  own login mappings. The specific identity (`staff_u` with `sudo` grant for
+  policy operations, or `user_u` for read-only access) depends on the role.
+  Phase B work.
+
+| Confined signing manager account
+| `umrs-sign-mgr` currently runs as root (unconfined). Phase 2 introduces a
+  dedicated `umrs_sign_t` domain and a corresponding login mapping.
+|===
+
+== Compliance Notes
+
+The confined user model satisfies NIST SP 800-53 AC-6 (Least Privilege) by
+restricting user domains to the minimum capabilities required for their role.
+The inability of `guest_t` and `user_t` to execute code in writable directories
+supports AC-3 (Access Enforcement) by preventing privilege escalation through
+user-writable locations.

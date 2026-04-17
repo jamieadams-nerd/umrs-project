@@ -1,0 +1,63 @@
+In the official SELinux vernacular, Booleans are conditional switches that allow you to change the security policy at runtime without reloading or recompiling the entire policy. Red Hat Documentation 
+
+The Purpose of Booleans
+
+Policy writers often face a dilemma: should a service like a web server be allowed to send emails? Some users need it; others don't. Instead of writing two separate policies, they create a Boolean. 
+Think of a Boolean as an "If/Then" statement built into the kernel:
+
+If httpd_can_sendmail is on, then allow the httpd_t domain to access mail server types.
+If it is off, deny that access.
+
+Managing Booleans
+As we discussed regarding the /sys/fs/selinux structure, you can find the raw state of every boolean in /sys/fs/selinux/booleans/, but you will typically use these two tools: 
+getsebool: To view current states.
+getsebool -a (Lists all booleans and their current status).
+setsebool: To toggle them.
+setsebool httpd_can_network_connect on (Changes it immediately in memory).
+setsebool -P httpd_can_network_connect on (The -P flag makes the change permanent across reboots). SELinux Project Wiki 
+
+Common Examples
+httpd_enable_homedirs: Allows the web server to read user home directories.
+ftpd_full_access: Allows the FTP daemon to read/write any file on the system (very permissive).
+virt_use_nfs: Allows virtual machines to store their disk images on an NFS share. 
+
+
+"Labeling" Examples of Booleans
+
+When we talk about the "labeling system" for Booleans, it is important to distinguish between how they are stored in the filesystem and how they are represented in the policy logic.
+Unlike files or processes, Booleans don't have a four-part user:role:type:level security context. Instead, they use a state-based labeling system integrated directly into the kernel's Access Vector Cache (AVC).
+1. The Filesystem Representation (selinuxfs)
+As you saw in your initial look at /sys/fs/selinux, Booleans are exposed to userspace as virtual files.
+Path: /sys/fs/selinux/booleans/
+The "Label": Each Boolean is represented by a file named after the Boolean itself (e.g., httpd_can_network_connect).
+The Value: Inside that file are two numbers (e.g., 0 0 or 1 1).
+The first number is the current runtime state.
+The second number is the pending state (what it will become after a commit).
+2. The Conditional Policy Logic
+Inside the compiled binary policy, Booleans act as conditional expressions. This is the "labeling" that the kernel actually cares about when making decisions.
+A typical rule in the policy source code looks like this:
+selinux
+if (httpd_can_network_connect) {
+    allow httpd_t network_port_t:tcp_socket connect;
+}
+Use code with caution.
+
+The Identifier: The string httpd_can_network_connect is the unique label for this switch.
+The Boolean Variable: In the kernel, this is mapped to a simple integer ID.
+3. Comparison of Labeling Systems
+It helps to visualize how Booleans differ from the "Building Blocks" we discussed earlier:
+Feature	Processes/Files (TE)	Booleans (Conditional)
+Format	user:role:type:level	Simple string (Variable Name)
+Storage	Extended Attributes (xattrs)	Kernel Memory (via selinuxfs)
+Evaluation	Checked on every access	Evaluated once, then toggles rules
+Persistence	Permanent on the disk	Temporary (unless using -P with setsebool)
+4. The semanage Metadata
+While the kernel only sees the "name" and the "0/1" state, the semanage tool maintains a separate database of descriptions. This is a "labeling" for humans.
+When you run semanage boolean -l, the system pulls from a local database to tell you:
+httpd_can_network_connect -> off Allow httpd to can network connect
+Summary
+Booleans don't have "Security Contexts" in the u:r:t:l sense. Their "label" is simply their name, which acts as a key to turn specific Type Enforcement (TE) rules on or off at the kernel level.
+Would you like to see how to use sesearch -b to see exactly which "Allow" rules are triggered when you flip a specific Boolean label to "on"?
+
+
+

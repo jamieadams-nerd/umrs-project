@@ -327,10 +327,10 @@ pub fn render_audit_card_popup(
     let config = PopupConfig {
         title: "FILE SECURITY AUDIT",
         hint: "  [ESC/q] close  [TAB/\u{2192}] next tab  [\u{2191}\u{2193}/j/k] scroll",
-        width_pct: 0.70,
+        width_pct: 0.75,
         height_pct: 0.70,
-        min_width: 60,
-        max_width: 90,
+        min_width: 68,
+        max_width: 100,
         min_height: 18,
         max_height: 35,
     };
@@ -468,14 +468,33 @@ pub fn data_row_to_line<'a>(
             style_hint,
             ..
         } => {
-            let key_style = theme.data_key;
             let val_style = theme.data_value.fg(style_hint_color(*style_hint));
+
+            // Empty key = continuation line: value spans the full width with
+            // a leading space indent. Used for multi-line displays (e.g., hash
+            // digests where the label is on the preceding line).
+            if key.is_empty() {
+                let value_display = if value.is_empty() {
+                    String::new()
+                } else {
+                    format!("{value} ")
+                };
+                return Line::from(vec![
+                    Span::raw(" "),
+                    Span::styled(value_display, val_style),
+                ]);
+            }
+
+            let key_style = theme.data_key;
             let key_padded = format!(" {key:<col_width$}");
             // Truncate value with ellipsis when it exceeds the available column.
+            // Trailing space provides breathing room before the popup border.
             let value_display: String = if val_width > 0 && value.len() > val_width {
-                format!("{}…", &value[..val_width.saturating_sub(1)])
+                format!("{}… ", &value[..val_width.saturating_sub(2)])
+            } else if value.is_empty() {
+                String::new()
             } else {
-                value.clone()
+                format!("{value} ")
             };
             Line::from(vec![
                 Span::styled(key_padded, key_style),

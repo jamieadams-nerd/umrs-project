@@ -1,0 +1,19 @@
+
+sudo systemd-run --wait --pipe -p User=umrs -p SELinuxContext=user_u:user_r:user_t:s0 /usr/bin/id -Z
+
+Running as unit: run-p301603-i4495389.service
+user_u:user_r:user_t:SystemLow
+Finished with result: success
+Main processes terminated with: code=exited, status=0/SUCCESS
+Service runtime: 43ms
+CPU time consumed: 4ms
+Memory peak: 1.2M (swap: 0B)
+
+
+
+
+
+sudo setpriv --reuid umrs --regid umrs --groups umrs --selinux-label "user_u:user_r:user_t:s0" id -Z
+
+
+

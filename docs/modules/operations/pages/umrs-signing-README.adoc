@@ -12,9 +12,11 @@ centralizes key storage under `/etc/pki`, provides clear naming and directory co
 and generates auditor-ready reports that show exactly which keys protect which artifacts,
 how long they are valid for, and when they were rotated.
 
-For detailed operator procedures see xref:key-manager-tool.adoc[HA-Sign Key Orchestrator].
-For background on key naming conventions and lifecycle management policy see
-xref:key-management.adoc[Cryptographic Key Management].
+For detailed operator procedures see
+xref:deployment:umrs/5c-install/scripts.adoc[umrs-sign-mgr and umrs-shred].
+For background on key material directory layout, SELinux types, DAC permissions,
+and lifecycle management policy see
+xref:deployment:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees].
 
 == Core Design Principles
 

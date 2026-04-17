@@ -1,0 +1,153 @@
+// Source material (merged 2026-04-16):
+//   - components/rusty-gadgets/selinux/INSTRUCTIONS.md (Step 4 -- Apply the labels)
+//   - components/rusty-gadgets/selinux/README.md (Phase A acceptance criteria, smoke test)
+//   - components/rusty-gadgets/scripts/umrs-install.sh (verification step)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/selinux/INSTRUCTIONS.md
+= restorecon and Verification
+:toc: left
+:description: Applying SELinux contexts with restorecon and running spot-checks to confirm the UMRS install is correct.
+
+After the installer has placed files and loaded the policy module, run
+`restorecon` to apply the correct SELinux types to all installed files.
+Then run the verification checks to confirm the install is correct.
+
+== Apply Labels with restorecon
+
+The SELinux fcontext database knows the correct type for each path, but the files
+installed by the pipeline still carry the label inherited from the creating process.
+`restorecon` walks the tree and relabels each file according to the database.
+
+. Apply labels to all three FHS add-on package trees and the UMRS key material paths:
++
+[source,bash]
+----
+sudo restorecon -RFv /opt/umrs
+sudo restorecon -RFv /etc/opt/umrs
+sudo restorecon -RFv /var/opt/umrs
+sudo restorecon -RFv /etc/keys/umrs
+----
++
+NOTE: `/var/lib/umrs/keys/` is not yet created by the installer. Run
+`restorecon -RFv /var/lib/umrs/keys` after those directories are provisioned.
++
+Flags:
++
+* `-R` --- recursive
+* `-F` --- force relabel even if the current label already looks plausible
+* `-v` --- verbose (shows each relabel)
+
+== Verification Spot-Checks
+
+=== Binary Labels
+
+. Verify that installed binaries carry `umrs_bin_t`:
++
+[source,bash]
+----
+ls -Z /opt/umrs/bin/umrs-ls | grep umrs_bin_t
+matchpathcon /opt/umrs/bin/umrs-ls
+----
++
+Both commands should show `umrs_bin_t`. If they disagree, the fcontext database
+may not match the installed policy version --- rebuild and reload `umrs.pp`.
+
+=== Directory Types
+
+. Check that each subdirectory carries its expected type:
++
+[source,bash]
+----
+ls -lZ /opt/umrs
+ls -lZ /opt/umrs/share/umrs
+ls -lZ /opt/umrs/share/templates
+ls -lZ /var/opt/umrs/lib
+ls -lZ /var/opt/umrs/log
+ls -lZ /etc/opt/umrs
+----
++
+Expected types:
++
+[cols="2,2",options="header"]
+|===
+| Path | Expected SELinux Type
+
+| `/opt/umrs`                   | `usr_t`
+| `/opt/umrs/bin`               | `umrs_bin_t`
+| `/opt/umrs/share/templates`   | `umrs_config_ro_t`
+| `/opt/umrs/share/umrs`        | `umrs_data_rw_t`
+| `/etc/opt/umrs`               | `umrs_config_ro_t`
+| `/etc/keys/umrs`              | `umrs_config_ro_t`
+| `/etc/keys/umrs/sealing`      | `umrs_seal_key_t`
+| `/etc/keys/umrs/signing`      | `umrs_sign_key_t`
+| `/etc/keys/umrs/wrapping`     | `umrs_kek_t`
+| `/etc/keys/umrs/staging`      | `umrs_sign_key_t`
+| `/var/opt/umrs/lib`           | `umrs_data_rw_t`
+| `/var/opt/umrs/log`           | `umrs_log_rw_t`
+|===
+
+=== Confined Execution Check
+
+. Confirm that the `umrs` login account runs in the confined domain:
++
+[source,bash]
+----
+ssh umrs id -Z
+----
++
+Expected: `user_u:user_r:user_t:s0`
++
+If the result shows `unconfined_t`, the SELinux login mapping for `umrs` is not
+in place. See xref:umrs/5a-users-and-types/mac-selinux-users.adoc[SELinux Users
+and Login Mappings].
+
+. Run a UMRS binary from the confined account and confirm the process label:
++
+[source,bash]
+----
+ssh umrs '/opt/umrs/bin/umrs-ls > /dev/null; ps -eZ $$ | head'
+----
++
+The process context must NOT be `unconfined_t`.
+
+=== Neverallow Check
+
+Confirm that `unconfined_t` is denied access to UMRS binaries from an unconfined shell:
+
+[source,bash]
+----
+/opt/umrs/bin/umrs-ls
+sudo ausearch -m AVC -ts recent | grep umrs_bin_t
+----
+
+Expected: permission denied (AVC denial against `umrs_exec_type`).
+
+=== Policy Module Presence
+
+[source,bash]
+----
+sudo semodule -l | grep '^umrs$'
+sudo semanage fcontext -l | grep /opt/umrs
+----
+
+=== Verify Install Script
+
+[source,bash]
+----
+cd /DEVELOPMENT/umrs-project/components/rusty-gadgets
+./scripts/umrs-install.sh --verify
+----
+
+== Troubleshooting
+
+*File still shows `usr_t` after restorecon* --- the path did not match any
+fcontext pattern. Run `semanage fcontext -l | grep <path>` to check whether
+the fcontext entry is in the database. If not, the policy may need to be
+rebuilt and reloaded.
+
+*`matchpathcon` and `ls -Z` disagree* --- the fcontext database was updated after
+the file was created. Run `restorecon -FRv` on the affected path.
+
+*AVC denials during confined exec* --- run `ausearch -m AVC -ts recent` and check
+whether the denial is against a UMRS type or a system type. UMRS-type denials
+indicate a missing policy allow rule (Phase B work). System-type denials may
+indicate a misconfigured login mapping.

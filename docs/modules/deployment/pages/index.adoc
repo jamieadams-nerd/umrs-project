@@ -1,21 +1,42 @@
+// Updated 2026-04-16: consolidated 5-step landing page.
 = Deployment
-:description: Installing and configuring UMRS on RHEL 10 and other Linux platforms.
+:toc: left
+:description: Installing and configuring UMRS on RHEL 10 -- from hardware decisions through SELinux policy and UMRS installation.
 
-This module covers everything needed to stand up a hardened UMRS platform —
-from filesystem layout decisions made during installation through SELinux label
-configuration, kernel integrity setup, and UMRS-specific directory setup.
+This module covers everything needed to stand up a hardened UMRS platform.
+Follow the five steps in order. Each step builds on the previous one.
 
-If you are starting from scratch, read xref:linux-baseline.adoc[Platform Baseline]
-first to understand the requirements common to all platforms, then follow the
-guide for your operating system.
+[cols="1,3",options="header"]
+|===
+| Step | Description
 
-== Operating System Setup for UMRS
+| xref:rhel10/01-preinstall.adoc[Step 1 — Pre-Installation Planning]
+| Partition layout, FIPS decision, network interface planning. Make these
+  decisions before starting the RHEL 10 installer.
 
-* xref:rhel/rhel10-installation.adoc[Red Hat Enterprise Linux 10] — primary supported platform
-* xref:ubuntu/ubuntu.adoc[Ubuntu 26] — placeholder, coming later
+| xref:rhel10/02-install-choices.adoc[Step 2 — RHEL 10 Installation]
+| Run the installer with FIPS mode enabled, custom partitioning, network
+  configuration, admin user creation, and SELinux=enforcing.
+
+| xref:rhel10/03-postinstall/index.adoc[Step 3 — Post-Installation Hardening]
+| Five sub-tasks: STIG hardening (OpenSCAP), IMA/EVM integrity, kernel lockdown,
+  dual-NIC setup, and temporary filesystem security.
+
+| xref:rhel10/04-rust-packages.adoc[Step 4 — Package Installation]
+| Required RPM packages for all UMRS systems plus the Rust development toolchain
+  for build systems.
+
+| xref:umrs/index.adoc[Step 5 — UMRS Installation]
+| DAC users and groups, SELinux types and login mappings, FHS directory
+  structure, install pipeline, configurations, and verification.
+|===
+
+== Ubuntu
+
+* xref:ubuntu/ubuntu.adoc[Ubuntu 26] --- placeholder, coming later.
 
 == Related Modules
 
-* xref:operations:index.adoc[Operations] — day-to-day system operation after deployment
-* xref:logging-audit:index.adoc[Logging and Audit] — log pipeline setup and lifecycle
-* xref:glossary:index.adoc[Glossary] — definitions for MLS, CUI, and assurance terms used in this module
+* xref:operations:index.adoc[Operations] --- day-to-day system operation after deployment
+* xref:logging-audit:index.adoc[Logging and Audit] --- log pipeline setup and lifecycle
+* xref:glossary:index.adoc[Glossary] --- definitions for MLS, CUI, and assurance terms

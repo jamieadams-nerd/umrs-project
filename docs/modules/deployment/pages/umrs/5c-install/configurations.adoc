@@ -1,0 +1,60 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-setrans.adoc (setrans.conf install)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-setrans.adoc
+= Configurations
+:toc: left
+:description: Deploying setrans.conf and umrs-c2pa.toml to /etc/opt/umrs/.
+
+This page covers the deployment of UMRS configuration files to
+`/etc/opt/umrs/`. The most critical of these is `setrans.conf`, which the
+IMA integrity policy specifically targets.
+
+The xref:umrs/5b-directory-structure/directory-structure.adoc#etc-opt-umrs[Directory Structure — /etc/opt/umrs/] section
+describes the full layout; this page covers the deployment procedures.
+
+== setrans.conf
+
+The `setrans.conf` file maps SELinux MCS category labels to human-readable
+CUI label names. It is installed to the SELinux targeted policy location, not
+to `/etc/opt/umrs/` directly.
+
+For the full installation procedure including prerequisites, backup, install,
+restart, and verification steps, see
+xref:umrs/5b-directory-structure/directory-structure.adoc#etc-opt-umrs[Directory Structure: /etc/opt/umrs/].
+
+NOTE: In targeted SELinux policy, `setrans.conf` category labels have no
+enforcement effect --- they are display-only. In a future MLS deployment, they
+will drive enforcement decisions.
+
+== umrs-c2pa.toml
+
+The C2PA provenance verifier tool uses a TOML configuration file. The installer
+places it at `/etc/opt/umrs/umrs-c2pa.toml`.
+
+For configuration reference, see the
+xref:umrs-tools:umrs-c2pa.adoc[umrs-c2pa tool page].
+
+// TBD: Add explicit placement steps once umrs-install.sh formally stages
+// umrs-c2pa.toml. Currently deployed manually from the staging config/ tree.
+
+== SELinux Context After Placement
+
+After deploying any configuration file under `/etc/opt/umrs/`:
+
+[source,bash]
+----
+sudo restorecon -RFv /etc/opt/umrs/
+----
+
+Verify the context:
+
+[source,bash]
+----
+ls -lZ /etc/opt/umrs/
+----
+
+Expected: `system_u:object_r:umrs_config_ro_t:s0` for all non-PKI files.
+
+== Next Step
+
+xref:umrs/5c-install/restorecon-and-verify.adoc[restorecon and Verification]

@@ -1,0 +1,363 @@
+// Source material (consolidated 2026-04-16):
+//   - fhs-roots.adoc (archived)
+//   - static-tree.adoc (archived)
+//   - variable-tree.adoc (archived)
+//   - config-tree.adoc (archived)
+//   - directory-purpose-matrix.adoc (archived)
+//   - components/rusty-gadgets/selinux/umrs.fc.in
+//   - components/rusty-gadgets/scripts/umrs-install.sh
+//   - components/rusty-gadgets/selinux/KEY-MANAGEMENT-DIRS.md (§6.3)
+= UMRS Directory Structure
+:toc: left
+:description: Ownership, mode, and SELinux type for all UMRS on-disk directories. Five tables: /opt/umrs/, /etc/keys/umrs/, /etc/opt/umrs/, /var/opt/umrs/, and /var/lib/umrs/.
+
+UMRS follows FHS 3.0 for add-on packages. Static files, host-editable
+configuration, and variable data each live under a separate root so that
+`/opt` can be mounted read-only without affecting logging or configuration.
+
+Key material deliberately sits outside the three FHS add-on package roots.
+It uses standard FHS system paths (`/etc/keys/umrs/`, `/var/lib/umrs/`) to
+satisfy NIST SP 800-53 CM-6 and SA-8. The full rationale for this deviation
+is in xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material
+Trees — FHS/NIST Conflicts and Resolutions].
+
+IMPORTANT: The three FHS roots (`/opt/umrs/`, `/etc/opt/umrs/`, `/var/opt/umrs/`)
+must be provisioned before running the installer. The installer creates subtrees
+beneath them but does not create the roots themselves. Run these commands once,
+as a privileged deployment step:
+
+[source,bash]
+----
+sudo mkdir -p /opt/umrs /etc/opt/umrs /var/opt/umrs
+sudo chown umrs:umrs /opt/umrs /etc/opt/umrs /var/opt/umrs
+sudo chmod 0755 /opt/umrs /etc/opt/umrs /var/opt/umrs
+----
+
+NOTE: As of 2026-04-16, the `umrs.fc.in` template has fcontext entries for
+`/var/opt/umrs/lib` and `/var/opt/umrs/log` but not for the root
+`/var/opt/umrs/` itself. After `semodule -i umrs.pp`, the root inherits
+`var_t` from the system default. The security-engineer role is tracking a
+policy update to add an explicit root entry.
+
+[[opt-umrs]]
+== /opt/umrs/ — Static Package Files
+
+`/opt/umrs/` holds all static package files. The package owns this tree; it
+is never modified at runtime. This allows `/opt` to be mounted read-only
+without affecting logging or configuration. FHS 3.0 §5.15.
+
+The `share/umrs/` subtree mirrors the FHS `/usr/share/<package>/` pattern
+used by zoneinfo, MIME, and hwdata — static reference databases shipped with
+the software and never modified at runtime.
+
+The `.template` files in `share/umrs/templates/` are not configuration. They
+are reference starting points that operators customize and copy into
+`/etc/selinux/<policy>/setrans.conf`. A file becomes configuration only after
+an admin has deployed it to `/etc/`. Templates are replaced on every package
+upgrade; deployed configuration survives upgrades.
+
+[cols="3,1,1,2,3",options="header"]
+|===
+| Path | Owner:Group | Mode | SELinux Type | Purpose
+
+| `/opt/umrs/`
+| `umrs:umrs` | `0755` | `usr_t`
+| FHS root for static package files. Provisioned out of band.
+
+| `/opt/umrs/bin/`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Executable binaries directory.
+
+| `/opt/umrs/bin/umrs-c2pa`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| C2PA provenance verifier.
+
+| `/opt/umrs/bin/umrs-label`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Security label registry browser.
+
+| `/opt/umrs/bin/umrs-ls`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Security-aware ls(1).
+
+| `/opt/umrs/bin/umrs-stat`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Security-aware stat(1).
+
+| `/opt/umrs/bin/umrs-uname`
+| `umrs:umrs` | `0755` | `umrs_bin_t`
+| Security-aware uname(1).
+
+| `/opt/umrs/share/umrs/`
+| `umrs:umrs` | `0755` | `umrs_data_rw_t`
+| Package-specific static reference data (FHS §4.11 pattern).
+
+| `/opt/umrs/share/umrs/*.json`
+| `umrs:umrs` | `0644` | `umrs_data_rw_t`
+| CUI label catalogs (`US-CUI-LABELS.json`, `CANADIAN-PROTECTED.json`,
+  `LEVELS.json`), and color palettes (`US-CUI-PALETTE.json`).
+
+| `/opt/umrs/share/umrs/templates/`
+| `umrs:umrs` | `0755` | `umrs_config_ro_t`
+| Configuration templates for site deployment.
+
+| `/opt/umrs/share/umrs/templates/*.template`
+| `umrs:umrs` | `0644` | `umrs_config_ro_t`
+| `setrans.conf` templates for MLS and targeted policy variants.
+
+| `/opt/umrs/share/man/man1/`
+| `umrs:umrs` | `0755` | `usr_t`
+| English man pages (section 1). Individual pages are `0644`.
+
+| `/opt/umrs/share/man/fr/man1/`
+| `umrs:umrs` | `0755` | `usr_t`
+| Canadian French man pages. Individual pages are `0644`.
+
+| `/opt/umrs/share/locale/<locale>/LC_MESSAGES/`
+| `umrs:umrs` | `0755` | `usr_t`
+| Compiled gettext catalogs. Catalog files are `0644`.
+|===
+
+NOTE: Man pages and compiled gettext catalogs are labeled `usr_t` — the same
+label RHEL applies to `/usr/share/man` and `/usr/share/locale` by default.
+Explicit entries in `umrs.fc.in` make the intent auditable rather than
+relying on the catch-all pattern.
+
+NOTE: The `share/umrs/` data directory ships read-only by DAC (`0644` files)
+even though the SELinux type is `umrs_data_rw_t`. No dedicated read-only data
+type exists in Phase A. This is noted in
+`components/rusty-gadgets/selinux/README.md`.
+
+[[etc-keys-umrs]]
+== /etc/keys/umrs/ — Key Material at Rest
+
+`/etc/keys/umrs/` holds all UMRS cryptographic key material at rest. This
+location is outside the FHS add-on package tree (`/opt/umrs/`) by deliberate
+design. FHS §3.5 reserves `/etc/` for host-specific, static, non-executable
+content — which is the correct semantic for key material stored as inert files.
+
+Placing key material under `/etc/keys/umrs/` rather than `/etc/opt/umrs/`
+also satisfies NIST SP 800-53 SC-12 and MP-6, which require cryptographic
+key material to follow an auditable, policy-controlled layout subject to
+system-level access control baselines. For the full conflict-resolution
+analysis, see
+xref:umrs/5b-directory-structure/key-material-trees.adoc#_6_3_conflict_fhs_opt_autonomy_vs_nist_configuration_control[Key
+Material Trees §6.3].
+
+[cols="3,1,1,2,3",options="header"]
+|===
+| Path | Owner:Group | Mode | SELinux Type | Purpose
+
+| `/etc/keys/umrs/`
+| `root:root` | `0700` | `umrs_config_ro_t`
+| UMRS key material namespace root. No listing by non-root.
+
+| `/etc/keys/umrs/sealing/`
+| `root:root` | `0700` | `umrs_seal_key_t`
+| Symmetric keys for LUKS/dm-crypt volume sealing.
+  NIST SP 800-53 SC-12(1), SC-28; NIST SP 800-57 §5.3.5; NIST SP 800-38F.
+
+| `/etc/keys/umrs/signing/`
+| `root:root` | `0700` | `umrs_sign_key_t`
+| IMA/DIGSIG asymmetric signing keys.
+  NIST SP 800-53 SI-7, SC-12; NIST SP 800-89.
+
+| `/etc/keys/umrs/wrapping/`
+| `root:root` | `0700` | `umrs_kek_t`
+| Key Encryption Keys (KEKs) for AES-KW / AES-KWP wrapping.
+  NIST SP 800-53 SC-12(2); NIST SP 800-38F.
+
+| `/etc/keys/umrs/staging/`
+| `root:root` | `0700` | `umrs_sign_key_t`
+| Pre-activation key material (NIST SP 800-57 §5.3 pre-active state).
+  NIST SP 800-53 SC-12, CM-3.
+|===
+
+[[etc-opt-umrs]]
+== /etc/opt/umrs/ — Host-Editable Configuration
+
+`/etc/opt/umrs/` holds host-specific, admin-editable configuration. This
+tree contains policy metadata and tool configuration only — not raw key
+material. FHS 3.0 §3.13 establishes this path as the companion configuration
+directory for packages installed under `/opt/`.
+
+IMPORTANT: The `setrans.conf` installation procedure requires `mcstrans` to
+be installed and running. Install `mcstrans` (see
+xref:rhel10/04-rust-packages.adoc[Step 4]) before deploying `setrans.conf`.
+
+[cols="3,1,1,2,3",options="header"]
+|===
+| Path | Owner:Group | Mode | SELinux Type | Purpose
+
+| `/etc/opt/umrs/`
+| `umrs:umrs` | `0755` | `umrs_config_ro_t`
+| FHS root for host-editable configuration. Provisioned out of band.
+  FHS 3.0 §3.7.4.
+
+| `/etc/opt/umrs/setrans.conf`
+| `root:root` | `0644` | `umrs_config_ro_t`
+| Symlink to or copy of `/etc/selinux/targeted/setrans.conf`. Maps MCS
+  category tuples to human-readable CUI label names for `ls -Z` and audit
+  logs. In targeted policy, display-only. In a future MLS deployment, drives
+  enforcement decisions.
+
+| `/etc/opt/umrs/umrs-c2pa.toml`
+| `root:root` | `0644` | `umrs_config_ro_t`
+| C2PA provenance verifier tool configuration. See
+  xref:umrs-tools:umrs-c2pa.adoc[umrs-c2pa] for configuration reference.
+
+| `/etc/opt/umrs/key-policy.toml`
+| `umrs:umrs` | `0644` | `umrs_config_ro_t`
+| Key lifecycle policy: rotation schedules and algorithm selections. Policy
+  metadata only — no raw key material. _(Future — not yet placed by
+  `umrs-install.sh`.)_
+|===
+
+NOTE: `key-policy.toml` is documented here to reserve the path and define its
+intended purpose. It is not placed by the current release of `umrs-install.sh`.
+
+Apply SELinux contexts after placing files:
+
+[source,bash]
+----
+sudo restorecon -RFv /etc/opt/umrs/
+----
+
+[[var-opt-umrs]]
+== /var/opt/umrs/ — Variable Package Data
+
+`/var/opt/umrs/` holds variable data written during normal operation. FHS 3.0
+§4.9.2 establishes this path as the companion variable-data directory for
+packages installed under `/opt/`. The installer creates `lib/` and `log/`
+below the root.
+
+The `setgid` bit on both subdirectories ensures that files created by any
+process writing into them inherit the `umrs` group, regardless of the creating
+process's primary group. This maintains group ownership consistency across log
+rotation and state file creation.
+
+[cols="3,1,1,2,3",options="header"]
+|===
+| Path | Owner:Group | Mode | SELinux Type | Purpose
+
+| `/var/opt/umrs/`
+| `umrs:umrs` | `0755` | (pending explicit fcontext)
+| FHS root for variable package data. Provisioned out of band.
+
+| `/var/opt/umrs/lib/`
+| `umrs:umrs` | `2775` | `umrs_data_rw_t`
+| Runtime state data. setgid — new entries inherit `umrs` group.
+
+| `/var/opt/umrs/log/`
+| `umrs:umrs` | `2770` | `umrs_log_rw_t`
+| Log spool. setgid + no world access. Currently reserved; the Phase A
+  recommendation is to use journald for all UMRS tool output rather than
+  writing to the local log spool.
+|===
+
+NOTE: The root `/var/opt/umrs/` does not yet have an explicit fcontext entry
+in `umrs.fc.in`. After `semodule -i umrs.pp`, the root inherits `var_t` from
+the system default. The security-engineer role is tracking this as a pending
+policy update.
+
+[[var-lib-umrs]]
+== /var/lib/umrs/ — Runtime Key State
+
+`/var/lib/umrs/` is the FHS §3.15 location for _variable, persistent,
+host-specific_ state. UMRS reserves this root for runtime key lifecycle state
+under `/var/lib/umrs/keys/`.
+
+This path is outside the FHS add-on package variable tree (`/var/opt/umrs/`)
+by deliberate design. NIST SP 800-53 SC-12, AC-3, and MP-6 require that
+cryptographic key material follow an auditable, policy-controlled layout
+subject to system-level access control baselines. Placing runtime key state
+under `/var/lib/umrs/keys/` aligns it with:
+
+* FHS §3.15 semantics for persistent, variable, host-specific data —
+  the correct category for key lifecycle objects that survive reboots.
+* System-level SELinux MAC labeling patterns at `/var/lib/` that security
+  auditors expect.
+* The system security plan (SSP) deviation note required by NIST SA-8, which
+  is easier to document against a standard system path than a package subtree.
+
+For the full conflict-resolution analysis, see
+xref:umrs/5b-directory-structure/key-material-trees.adoc#_6_3_conflict_fhs_opt_autonomy_vs_nist_configuration_control[Key
+Material Trees §6.3].
+
+IMPORTANT: The directories under `/var/lib/umrs/keys/` are declared and typed
+in SELinux policy but are not created by `umrs-install.sh` in the current
+release. The fcontext rules and type declarations are in place. Runtime
+creation and lifecycle management are tracked for a future pass.
+
+[cols="3,1,1,2,3",options="header"]
+|===
+| Path | Owner:Group | Mode | SELinux Type | Purpose
+
+| `/var/lib/umrs/keys/`
+| `root:root` | `0700` | `umrs_config_ro_t`
+| Runtime key lifecycle state root. _Not yet created by installer._
+
+| `/var/lib/umrs/keys/active/`
+| `root:root` | `0700` | `umrs_session_key_t`
+| Currently loaded / unwrapped session keys. Short-lived.
+  NIST SP 800-53 SC-12, AC-3, SC-4; NIST SP 800-57 §5.3.3.
+  _(Not yet created by installer.)_
+
+| `/var/lib/umrs/keys/suspended/`
+| `root:root` | `0700` | `umrs_retired_key_t`
+| Temporarily deactivated keys (NIST SP 800-57 suspended state).
+  NIST SP 800-53 SC-12, AC-2.
+  _(Not yet created by installer.)_
+
+| `/var/lib/umrs/keys/retired/`
+| `root:root` | `0700` | `umrs_retired_key_t`
+| Keys pending cryptographic destruction. Staging area only.
+  NIST SP 800-53 SC-12, MP-6, MP-7; CMMC MP.L2-3.8.3;
+  NIST SP 800-57 §5.3.6.
+  _(Not yet created by installer.)_
+|===
+
+== Compliance
+
+[cols="2,3",options="header"]
+|===
+| Control | Coverage
+
+| NIST SP 800-53 CM-2 (Baseline Configuration)
+| Root layout is fixed by FHS 3.0; no site variance is permitted.
+  Installer captures the authoritative static-file baseline.
+
+| NIST SP 800-53 CM-6 (Configuration Settings)
+| Ownership and mode are auditable requirements, not suggestions.
+
+| NIST SP 800-53 CM-7 (Least Functionality)
+| Only classified artifact types are staged or installed.
+
+| NIST SP 800-53 CM-8 (Component Inventory)
+| `EXPECTED_BINARIES` in the stager declares the full artifact set.
+
+| NIST SP 800-53 SA-12 (Supply Chain Protection)
+| Staging is the IMA-signing checkpoint; no stray files reach signing.
+
+| NIST SP 800-53 AC-3, SC-12, SC-28
+| Key material at rest under `/etc/keys/umrs/` and `/var/lib/umrs/keys/`.
+  Distinct SELinux types per key function.
+
+| NIST SP 800-53 MP-6, MP-7
+| Retired key staging under `/var/lib/umrs/keys/retired/` with destruction
+  service requirement.
+
+| NIST SP 800-57 Pt 1 Rev 5 §5.3
+| Directory layout reflects SP 800-57 key lifecycle states (pre-active,
+  active, suspended, deactivated/retired).
+
+| FHS 3.0 §3.5, §3.13, §3.15, §4.5, §4.11, §5.15
+| On-disk layout conforms to standard. Deliberate deviations from §4.5
+  add-on package autonomy are documented in
+  xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees §6].
+
+| NIST SP 800-53 SA-8 (Security Engineering Principles)
+| SSP deviation note documenting key material placement outside the add-on
+  package tree. See
+  xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees].
+|===

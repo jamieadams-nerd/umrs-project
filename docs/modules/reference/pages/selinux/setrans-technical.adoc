@@ -88,6 +88,6 @@ metadata from JSON registries, including:
 
 == See Also
 
-* xref:deployment:rhel/rhel10-setrans.adoc[Configuring setrans.conf on RHEL 10]
+* xref:deployment:umrs/5b-directory-structure/directory-structure.adoc#etc-opt-umrs[Configuring setrans.conf on RHEL 10]
 * xref:selinux/example-setrans-conf.adoc[Example setrans.conf]
 * xref:architecture:kernel-files-tpi.adoc[Two-path independence (TPI)]

@@ -1,0 +1,158 @@
+= Temporary Filesystem Security
+:description: Controls and configuration for /tmp and /var/tmp on UMRS deployments.
+
+The `/tmp` and `/var/tmp` directories are among the most common attack vectors on
+Linux systems. They are world-writable, shared across all users and processes, and
+historically the source of race conditions, privilege escalation, and data exposure.
+
+This page covers the required baseline controls and optional hardening choices.
+
+== Background
+
+`/tmp` dates back to early UNIX (1971) and was designed for shared, trusted environments.
+Modern systems are none of those things. The sticky bit (`1777`) prevents one user from
+deleting another user's files, but it does not prevent execution of malicious code or
+privilege escalation via setuid files. Mount options and service-level isolation are
+required to close those gaps.
+
+`/var/tmp` was added later to separate data that should survive reboots from
+truly short-lived data. It needs the same mount restrictions.
+
+== Baseline Requirements
+
+Every UMRS system must mount `/tmp` and `/var/tmp` with these options:
+
+[source,fstab]
+----
+/dev/mapper/cs-tmp    /tmp      xfs  nodev,nosuid,noexec  0 0
+/dev/mapper/cs-vartmp /var/tmp  xfs  nodev,nosuid,noexec  0 0
+----
+
+* `noexec` — no program execution from temporary storage
+* `nosuid` — no setuid/setgid privilege escalation
+* `nodev` — no device file creation
+
+This is the STIG baseline (CM-6, CM-7). See xref:filesystem-layout.adoc[Filesystem Layout]
+for the full partition scheme and a complete fstab example.
+
+== systemd PrivateTmp (Recommended for Services)
+
+Any systemd service that handles sensitive data should use `PrivateTmp=true`. This
+gives the service its own private `/tmp` and `/var/tmp`, completely isolated from
+other processes. It is the recommended approach for service-level isolation.
+
+To enable it for a service (using sshd as an example):
+
+[source,bash]
+----
+mkdir -p /etc/systemd/system/sshd.service.d
+
+cat > /etc/systemd/system/sshd.service.d/10-privatetmp.conf << 'EOF'
+[Service]
+PrivateTmp=true
+EOF
+
+systemctl daemon-reload
+systemctl restart sshd
+----
+
+Verify isolation is active:
+
+[source,bash]
+----
+# Find the sshd PID
+pidof sshd
+
+# Check its isolated /tmp
+ls -l /proc/<pid>/root/tmp
+----
+
+systemd automatically creates an isolated directory such as:
+`/tmp/systemd-private-<id>-sshd.service-<hash>.tmp`
+
+These are owned `root:root` mode `0700`. Do not touch them manually.
+
+`PrivateTmp` satisfies CM-6, CM-7(2), and SC-3 and is accepted by DISA/SCAP
+tooling without additional documentation.
+
+== Per-User /tmp with pam_namespace
+
+`pam_namespace` gives each login session a private `/tmp` via mount namespaces.
+It is more powerful than `PrivateTmp` but comes with significant operational risk:
+
+* Some installers and compilers expect a shared `/tmp` and misbehave without it
+* Debugging becomes more complex
+* SCAP scanning may generate false positives that require documentation
+
+*Recommendation:* Do not enable `pam_namespace` unless you have a specific multi-user
+threat model that justifies it and have tested your full software stack against it.
+`PrivateTmp=true` for services covers most of the same ground with far less breakage.
+
+=== STIG / NIST Position on pam_namespace
+
+It is allowed but not required. DISA treats it as environment-specific hardening and
+a compensating control rather than a mandatory baseline control.
+
+Controls it supports: AC-6 (Least Privilege), SI-7 (Integrity).
+
+// TBD: Add pam_namespace configuration steps if this becomes a requirement
+// TBD: Add SELinux/MLS-specific notes — pam_namespace + MLS can interact unexpectedly
+
+== Automatic Cleanup with systemd-tmpfiles
+
+Temporary data should not persist indefinitely. `systemd-tmpfiles` enforces retention
+policies based on file age. Configure it in `/etc/tmpfiles.d/` to remove stale files
+on a schedule.
+
+See the `tmpfiles.d(5)` man page for configuration syntax.
+
+// TBD: Add a site-specific systemd-tmpfiles configuration example for UMRS
+
+== SELinux and MLS
+
+In targeted policy, `/tmp` is labeled `system_u:object_r:tmp_t:s0` (system-low).
+
+In MLS mode, higher-sensitivity processes are prevented by policy from staging data
+in system-low temporary locations. This avoids accidental data downgrades and is
+enforced by the kernel — no application changes are needed.
+
+// TBD: Add MLS-specific /tmp labeling notes when MLS policy work is further along
+
+== Auditor Language
+
+If you need to document this for a security plan or SCTM:
+
+____
+The system enforces secure configuration settings for temporary storage locations
+in accordance with NIST SP 800-53 CM-6 and CM-7. The `/tmp` filesystem is mounted
+with `nodev`, `nosuid`, and `noexec` options on a dedicated partition. The `/var/tmp`
+filesystem is configured identically. System services that handle sensitive data use
+`systemd PrivateTmp=true` for process-level isolation. This configuration prevents
+execution of untrusted code and unauthorized privilege escalation from world-writable
+locations.
+____
+
+This language is acceptable for DISA, NSA RTB, and NCDSMO reviews.
+
+== Security Control References
+
+[cols="1,2",options="header"]
+|===
+| Control | Applicability
+
+| CM-6  | Mount options (`noexec`, `nosuid`, `nodev`) are explicit, auditable configuration settings
+| CM-7  | `noexec` removes executable capability from world-writable directories
+| CM-7(2) | `PrivateTmp` prevents program execution in user-writable directories
+| AC-6  | Sticky bit and per-user isolation enforce least privilege within shared directories
+| AC-4  | `PrivateTmp` prevents unintended information flow between services
+| SC-3  | Service temporary storage isolation limits impact of a compromised process
+| SC-5  | Filesystem size limits prevent denial-of-service via temp space exhaustion
+| SI-7  | Controls reduce unauthorized modification paths for data staged during execution
+| SI-12 | `systemd-tmpfiles` enforces defined retention limits; data is disposed when no longer needed
+| AU-12 | Temporary storage access can be audited to detect abnormal usage
+|===
+
+== Next Steps
+
+xref:rhel/rhel10-installation.adoc[RHEL 10 Installation] — start the RHEL 10 deployment
+sequence, applying the filesystem layout and mount options covered in this section.

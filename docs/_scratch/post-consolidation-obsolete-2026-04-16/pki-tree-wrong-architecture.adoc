@@ -1,0 +1,223 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/operations/pages/key-management.adoc (key classes, naming, lifecycle)
+//   - docs/modules/operations/pages/key-manager-tool.adoc (HA-Sign design, subcommands)
+//   - components/rusty-gadgets/scripts/umrs-install.sh (PKI_DIR constant, placeholder)
+//   - components/rusty-gadgets/selinux/umrs.fc.in (pki fcontext entries)
+//   - components/rusty-gadgets/selinux/umrs.te (PKI type declarations)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/operations/key-management.adoc
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/operations/key-manager-tool.adoc
+= PKI Tree: /etc/opt/umrs/pki/
+:toc: left
+:description: Layout of /etc/opt/umrs/pki/, the eight key classes managed by umrs-sign-mgr, and their SELinux types.
+
+`/etc/opt/umrs/pki/` holds the signing key material managed by `umrs-sign-mgr`.
+The subtree is split into subdirectories by function and by read/write sensitivity.
+
+== Directory Layout
+
+[source,text]
+----
+/etc/opt/umrs/pki/                          (signing key material root)
+├── private/                                private signing keys (active keys)
+├── public/                                 public certificates and key bundles
+├── meta/                                   signing metadata (JSON key inventory)
+└── archive/                                rotated old private keys
+----
+
+== SELinux Types
+
+The PKI subtree uses two types, defined in `umrs.te` and `umrs.fc.in`:
+
+[cols="2,2,2",options="header"]
+|===
+| Path Pattern | SELinux Type | Rationale
+
+| `/etc/opt/umrs/pki(/.*)?`
+| `umrs_config_ro_t`
+| Default for the PKI root and any path not matched by a more specific rule.
+
+| `/etc/opt/umrs/pki/private(/.*)?`
+| `umrs_pki_key_t`
+| Private signing keys. Bound to `umrs_secret_type`. DAC `0700 root:root`.
+
+| `/etc/opt/umrs/pki/archive(/.*)?`
+| `umrs_pki_key_t`
+| Rotated old private keys. Same sensitivity as active private keys.
+
+| `/etc/opt/umrs/pki/public(/.*)?`
+| `umrs_pki_public_t`
+| Public certificates. Bound to `umrs_config_type`; readable via `umrs_read_config`.
+
+| `/etc/opt/umrs/pki/meta(/.*)?`
+| `umrs_pki_public_t`
+| Signing metadata (JSON inventory). Same type as public material.
+|===
+
+IMPORTANT: In Phase 1, DAC (`0700 root:root` on `private/` and `archive/`) is
+the enforcement boundary for private key material. The SELinux type `umrs_pki_key_t`
+carries intent into Phase 2. Phase 2 will introduce a dedicated `umrs_sign_t`
+domain and a `neverallow` that blocks every other domain from touching
+`umrs_secret_type`.
+
+== The Eight Key Classes
+
+UMRS uses eight distinct signing key classes, each scoped to a specific artifact
+type. Separation prevents a single compromised key from undermining all signed
+artifacts.
+
+[cols="1,2,3",options="header"]
+|===
+| Key Class | Scope | Artifacts Signed
+
+| `audit`
+| Audit log signing
+| Files produced by auditd: `/var/log/audit/audit.log`, `/var/log/audit/audit.log.*`,
+  and exported audit archives.
+
+| `syslog`
+| Non-audit log signing (syslog and journald)
+| Rotated log files for `/var/log/messages`, `/var/log/secure`, `/var/log/maillog`,
+  application logs under `/var/log/<app>/`.
+
+| `journal`
+| journald export signing
+| journald export bundles and structured journal archives.
+
+| `logrotate`
+| Logrotate archive signing
+| Higher-level archives: tarballs from log snapshots
+  (`/var/archives/logs/*.tar.gz`), forensic bundles.
+
+| `archive`
+| Backup archive signing
+| Backup manifests or backup archives before off-system transfer.
+
+| `config`
+| Configuration baseline signing
+| Configuration snapshots and baselines: checksummed config manifests
+  (`/var/lib/config-baseline/etc-baseline.json`), tarballs of `/etc` state.
+
+| `rpmdb`
+| RPM database integrity
+| Snapshots of the RPM database used for supply chain integrity checks.
+
+| `swrel`
+| Software and script release signing
+| Internal tools, scripts, and packages shipped internally or promoted to
+  operations.
+|===
+
+== Key Naming Convention
+
+Key names express scope, use, algorithm, and rotation version.
+
+Pattern:
+
+----
+<scope>_<use>_<algo-size>_<vNN>.key    (private key)
+<scope>_<use>_<algo-size>_<vNN>.pub    (public key)
+<scope>_<use>_<algo-size>_<vNN>.pem    (PEM-bundled public material)
+----
+
+Where:
+
+* `scope` = host or environment domain, for example `ha-logger01`, `umrs-node01`
+* `use` = one of the eight key classes above
+* `algo-size` = `rsa-3072`, `rsa-4096`, `ecdsa-p256`
+* `vNN` = version, for example `v01`, `v02`
+
+.Example key names for a host named `ha-logger01`
+
+----
+ha-logger01_audit_sign_rsa-3072_v01.key
+ha-logger01_audit_sign_rsa-3072_v01.pub
+
+ha-logger01_syslog_sign_rsa-3072_v01.key
+ha-logger01_syslog_sign_rsa-3072_v01.pub
+
+ha-logger01_config_sign_rsa-3072_v01.key
+ha-logger01_config_sign_rsa-3072_v01.pub
+----
+
+== Ownership and Permissions
+
+[cols="2,1,1,2",options="header"]
+|===
+| Path | Owner | Mode | Notes
+
+| `/etc/opt/umrs/pki/`         | `root:root` | `0750` | PKI root
+| `/etc/opt/umrs/pki/private/` | `root:root` | `0700` | Private keys — root only
+| `/etc/opt/umrs/pki/archive/` | `root:root` | `0700` | Rotated private keys — root only
+| `/etc/opt/umrs/pki/public/`  | `root:root` | `0755` | Public certs — world-readable
+| `/etc/opt/umrs/pki/meta/`    | `root:root` | `0755` | Key inventory metadata
+| Private key files (`*.key`)  | `root:root` | `0400` | Read-only to owner
+| Public key files (`*.pub`)   | `root:root` | `0644` | World-readable
+|===
+
+== Key Lifecycle
+
+=== Metadata File per Key Class
+
+Maintain a metadata file at `meta/<class>_signing_keys.json`:
+
+[source,json]
+----
+[
+  {
+    "key_name": "ha-logger01_audit_sign_rsa-3072_v01.key",
+    "public_name": "ha-logger01_audit_sign_rsa-3072_v01.pub",
+    "created": "2026-01-01T00:00:00Z",
+    "activated": "2026-01-01T00:05:00Z",
+    "deactivated": null,
+    "retired": null,
+    "status": "active",
+    "algorithm": "RSA-3072",
+    "scope": "audit"
+  }
+]
+----
+
+=== Rotation Procedure
+
+. Mark the current key in JSON metadata as `"retired"` with a `"deactivated"` timestamp.
+. Move the current private key to `archive/`.
+. Move the current public key to `archive/`.
+. Generate a new `vNN+1` key pair in `private/` and `public/`.
+. Update the JSON metadata to mark the new key as `"active"`.
+. Rebuild the per-class and global public key bundles.
+
+=== Never Delete Old Public Keys
+
+Do not delete old public keys until:
+
+* All data signed with them has reached the end of its retention period.
+* A documented key-destruction procedure authorizes destruction.
+
+Verification tools must be able to find the correct public key by fingerprint
+from the signature metadata and archive bundles.
+
+== Cryptographic Defaults
+
+For a RHEL 10 FIPS system:
+
+* Algorithm: RSA
+* Key length: 3072 bits minimum (4096 preferred for new high-sensitivity keys)
+* ECDSA: P-256 and P-384 (FIPS-approved curves)
+
+NIST SP 800-131A Rev.2 and SP 800-57 Part 1 treat RSA-2048 as providing only
+112-bit security. RSA-3072 provides approximately 128-bit security.
+
+== Compliance
+
+[cols="1,3",options="header"]
+|===
+| Control | Coverage
+
+| NIST SP 800-53 AC-6 | Private keys restricted to `0700 root:root`; public material world-readable
+| NIST SP 800-53 SC-12 | Lifecycle: generation, rotation, archival, documented metadata
+| NIST SP 800-53 SC-13 | FIPS-approved algorithms and minimum key sizes enforced
+| NIST SP 800-53 AU-9  | Keys dedicated to signing audit logs; verifiable via exported public keys
+| NIST SP 800-53 AU-10 | Signed artifacts link to authenticated key holders; supports non-repudiation
+| NIST SP 800-53 SI-7  | Integrity verification of logs and archives using cryptographic signatures
+| NIST SP 800-57 Pt 1 §6.2.2.1 | Key storage integrity; separate types for private and public material
+|===

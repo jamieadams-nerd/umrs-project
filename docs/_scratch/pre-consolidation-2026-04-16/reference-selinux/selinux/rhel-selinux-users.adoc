@@ -1,0 +1,61 @@
+= RHEL Confined SELinux Users
+:toc: left
+:description: Capabilities of confined SELinux user domains on RHEL — what each user type can and cannot do.
+
+// NIST 800-53 AC-3 — Access enforcement
+// NIST 800-53 AC-6 — Least privilege
+
+SELinux confines Linux users by mapping them to SELinux user identities, each
+operating in a restricted domain. The following table describes the standard confined
+user types and their capabilities.
+
+NOTE: This reference reflects confined user behavior as documented for Fedora/RHEL
+systems. Site-specific policy changes may alter these defaults.
+
+== Confined User Capabilities
+
+[cols="2,1,1,1,1,1"]
+|===
+| User | Domain | X Window System | su and sudo | Execute in home dir and /tmp | Networking
+
+| `guest_u` | `guest_t` | No | No | No | No
+| `xguest_u` | `xguest_t` | Yes | No | No | Firefox only
+| `user_u` | `user_t` | Yes | No | No | Yes
+| `staff_u` | `staff_t` | Yes | sudo only | Yes | Yes
+|===
+
+== Behavioral Notes
+
+=== setuid Application Execution
+
+Linux users in the `guest_t`, `xguest_t`, and `user_t` domains can only run setuid
+applications if SELinux policy explicitly permits it (for example, `passwd`). They
+cannot run `su` or `/usr/bin/sudo` and therefore cannot escalate to the Linux root user
+through those mechanisms.
+
+=== Network Access
+
+* `guest_t` — no network access. Login is permitted via terminal (including SSH), but
+  users in this domain cannot use SSH to connect to other systems.
+* `xguest_t` — Firefox connecting to web pages is the only permitted network access.
+* `user_t`, `staff_t` — full network access permitted by default policy.
+
+=== Home Directory and /tmp Execution
+
+By default, users in `guest_t`, `xguest_t`, and `user_t` cannot execute applications
+from their home directories or `/tmp`. This prevents flawed or malicious applications
+from running with the user's permissions in directories the user can write to.
+
+=== sudo Access for staff_u
+
+By default, Linux users in the `staff_t` domain do not have permission to execute
+applications with `/usr/bin/sudo`. An administrator must explicitly grant this
+permission.
+
+== Compliance Notes
+
+The confined user model satisfies NIST 800-53 AC-6 (Least Privilege) by restricting
+user domains to the minimum capabilities required for their role. The inability of
+`guest_t` and `user_t` to execute code in writable directories directly supports
+AC-3 (Access Enforcement) by preventing privilege escalation through user-writable
+locations.

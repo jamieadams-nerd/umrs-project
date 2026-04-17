@@ -1,0 +1,144 @@
+// Source material (merged 2026-04-16):
+//   - docs/modules/deployment/pages/rhel/rhel10-setrans.adoc
+//   - docs/modules/deployment/pages/rhel/rhel10-directory-structure.adoc
+//   - components/rusty-gadgets/selinux/umrs.fc.in (/etc/opt/umrs entries)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/deployment/rhel/rhel10-setrans.adoc
+= Configuration Tree: /etc/opt/umrs/
+:toc: left
+:description: Non-PKI configuration files under /etc/opt/umrs/ -- setrans.conf placement and umrs-c2pa.toml.
+
+`/etc/opt/umrs/` holds host-specific, admin-editable configuration. This tree
+contains policy metadata and tool configuration only — *not* raw key material.
+Key material is stored under `/etc/keys/umrs/` and `/var/lib/umrs/keys/`; see
+xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees].
+
+IMPORTANT: The `setrans.conf` installation step depends on `mcstrans` being
+installed and running. Install `mcstrans` (xref:rhel10/04-rust-packages.adoc[Step 4])
+before performing the steps on this page.
+
+== Directory Layout
+
+[source,text]
+----
+/etc/opt/umrs/                              (FHS §3.13 — admin-editable config)
+├── setrans.conf -> /etc/selinux/targeted/setrans.conf  (symlink or direct install)
+├── umrs-c2pa.toml                          (C2PA tool configuration)
+└── key-policy.toml                         (key lifecycle policy — future)
+----
+
+// TBD: Confirm whether setrans.conf lives directly under /etc/opt/umrs/ or is
+// installed to /etc/selinux/targeted/setrans.conf with a symlink. The IMA policy
+// currently targets /etc/selinux/targeted/setrans.conf directly.
+
+== Installing setrans.conf
+
+The UMRS repository includes a `setrans.conf` that maps MCS sensitivity levels
+and categories to human-readable CUI labels. Once installed, tools such as
+`ls -Z` display the category names instead of raw strings like `c0,c1`.
+
+In targeted SELinux policy, these labels have no enforcement effect --- they are
+display-only. In a future MLS deployment, they will drive enforcement decisions.
+
+=== Prerequisites
+
+. Verify that `mcstrans` is installed and running:
++
+[source,bash]
+----
+sudo dnf install -y mcstrans
+sudo systemctl enable --now mcstrans
+----
+
+=== Back Up the Existing Configuration
+
+[source,bash]
+----
+sudo cp /etc/selinux/targeted/setrans.conf \
+        /etc/selinux/targeted/setrans.conf.bak
+----
+
+=== Install the UMRS setrans.conf
+
+The configuration file ships in the UMRS repository at:
+`components/platforms/rhel10/targeted/setrans.conf-TARGETED`
+
+. Copy it to the SELinux targeted policy location:
++
+[source,bash]
+----
+sudo cp components/platforms/rhel10/targeted/setrans.conf-TARGETED \
+        /etc/selinux/targeted/setrans.conf
+----
+
+// TBD: Confirm exact repository path once directory structure is finalized.
+
+=== Restart mcstrans
+
+. Restart and verify the service:
++
+[source,bash]
+----
+sudo systemctl restart mcstrans
+sudo systemctl status mcstrans
+----
++
+The service should show `active (running)`. If it fails, check
+`journalctl -u mcstrans` for parse errors in the configuration file.
+
+=== Verify Label Translation
+
+. Assign a test label to a file and check that the label translates correctly:
++
+[source,bash]
+----
+sudo chcon -l s0:c0,c1 /tmp/testfile
+ls -Z /tmp/testfile
+----
++
+The output should show the human-readable CUI category name rather than the
+raw `c0,c1` string.
+
+// TBD: Add expected output example once setrans.conf categories are finalized.
+
+== umrs-c2pa.toml
+
+The C2PA provenance verifier tool uses a TOML configuration file at
+`/etc/opt/umrs/umrs-c2pa.toml`. See the
+xref:umrs-tools:umrs-c2pa.adoc[umrs-c2pa tool page] for configuration reference.
+
+// TBD: Add placement steps for umrs-c2pa.toml once the install pipeline
+// formally stages it. Currently deployed manually.
+
+== key-policy.toml
+
+`/etc/opt/umrs/key-policy.toml` will hold the UMRS key lifecycle policy when
+the key management subsystem is implemented: rotation schedules, algorithm
+selections, and retention periods.
+
+This file is policy *metadata* only. It does not contain keys or keying material.
+For the full key material story, see
+xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees].
+
+NOTE: `key-policy.toml` is not placed by the current `umrs-install.sh`. It is
+documented here for completeness and to reserve the path in the configuration
+tree.
+
+== SELinux Context
+
+All files under `/etc/opt/umrs/` receive `umrs_config_ro_t`:
+
+[source]
+----
+/etc/opt/umrs(/.*)?    system_u:object_r:umrs_config_ro_t:s0
+----
+
+Apply the context after placing files:
+
+[source,bash]
+----
+sudo restorecon -RFv /etc/opt/umrs/
+----
+
+== Next Step
+
+xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees] --- directory layout for `/etc/keys/umrs/` and `/var/lib/umrs/keys/`.

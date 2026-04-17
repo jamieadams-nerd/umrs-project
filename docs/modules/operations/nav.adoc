@@ -15,5 +15,5 @@
 * Administration
 ** xref:admin-index.adoc[Administration Overview]
 ** xref:admin-install.adoc[Install Overview]
-** xref:key-management.adoc[Cryptographic Key Management]
-** xref:key-manager-tool.adoc[HA-Sign Key Orchestrator]
+** xref:key-management.adoc[Key Management (→ Deployment)]
+** xref:key-manager-tool.adoc[HA-Sign Orchestrator (→ Deployment)]

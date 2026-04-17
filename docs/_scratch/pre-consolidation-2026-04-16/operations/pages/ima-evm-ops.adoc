@@ -1,0 +1,283 @@
+= IMA/EVM Kernel Integrity: Operations
+:description: Day-to-day IMA/EVM maintenance — updating hashes, verifying integrity, and expanding policy coverage.
+
+This page covers ongoing IMA/EVM maintenance tasks (NIST 800-53 SI-7, CM-3, CM-5, AU-9).
+For initial kernel configuration, policy deployment, and the systemd service, see
+xref:deployment:ima-evm-setup.adoc[IMA/EVM Integrity Setup].
+
+== Updating Hashes After Authorized Changes
+
+Once the system is in `ima_appraise=enforce`, any modification to a protected file
+causes the kernel to deny access because the content no longer matches the stored hash.
+To authorize a change, you must update the `security.ima` extended attribute after
+making the modification (CM-3, CM-5).
+
+If you are already in enforce mode, you may need to temporarily switch back to `fix`
+mode (or work from a root shell) before the write can complete.
+The fix-mode kernel parameters are set up in
+xref:deployment:ima-evm-setup.adoc#_step_1_configure_the_kernel_for_boot[Step 1 of the deployment guide].
+
+Update the hash using `evmctl`:
+
+[source,bash]
+----
+sudo evmctl ima_hash /etc/selinux/targeted/setrans.conf
+----
+
+Verify the attribute reflects the new file content (SI-7(1), SI-7(6)):
+
+[source,bash]
+----
+getfattr -m . -d /etc/selinux/targeted/setrans.conf
+----
+
+The `security.ima` value should have changed.
+This hash-update step is the mandatory authorized-change procedure for any file
+under IMA appraisal — skipping it causes the kernel to block all access to that file.
+
+== Finalizing Enforcement (Optional)
+
+NOTE: The UMRS project is still actively developing.
+Running in `ima_appraise=fix` is the recommended stance during this phase — the kernel
+measures and logs integrity events without blocking access if a hash is missing or stale.
+Do not switch to enforce mode on a system you need to keep working.
+Revisit this section once the policy coverage and hash inventory are stable.
+
+When you are ready to lock down, switch to enforce mode (SI-7(1), CM-5, NSA RTB RAIN):
+
+[source,bash]
+----
+sudo grubby --update-kernel=ALL --remove-args="ima_appraise=fix"
+sudo grubby --update-kernel=ALL --args="ima_appraise=enforce"
+sudo reboot
+----
+
+From this point forward, any modification to a protected file — whether by an unauthorized
+process or by offline tampering (for example, via a live USB) — without updating the
+`security.ima` attribute via `evmctl` will cause the kernel to block all read and write
+access to that file.
+
+This is NSA RTB RAIN non-bypassability in effect: the kernel is the enforcement point,
+and there is no userspace path to circumvent appraisal.
+
+== Manually Verifying File Integrity
+
+Use `evmctl` to verify a file's hash against its stored metadata (SI-7(1)):
+
+[source,bash]
+----
+sudo evmctl ima_verify /etc/selinux/targeted/setrans.conf
+----
+
+* Exit code 0 (no output): the file is intact and matches the stored hash.
+* Non-zero exit with an error message: the file has been modified since the hash was generated.
+
+Check the kernel measurement log for the access history since the last boot (AU-9):
+
+[source,bash]
+----
+grep "/etc/selinux/targeted/setrans.conf" /sys/kernel/security/ima/ascii_runtime_measurements
+----
+
+Each entry shows the hash calculated when the file was accessed.
+A changing hash between entries indicates the file was modified between those accesses.
+
+Search audit logs for integrity failures — useful while testing in fix mode (AU-9):
+
+[source,bash]
+----
+sudo ausearch -m INTEGRITY_DATA -f /etc/selinux/targeted/setrans.conf
+----
+
+NOTE: In fix mode, the kernel logs integrity failures rather than blocking access.
+Look for `res=0` entries to identify files that failed appraisal.
+The measurement log and audit log together form a tamper-evident record of file access,
+satisfying AU-9 (Protection of Audit Information).
+
+== Expanding Coverage: Tracking Examples
+
+The base policy installed in
+xref:deployment:ima-evm-setup.adoc#_step_3_deploy_the_custom_policy[Step 3 of the deployment guide]
+protects `setrans.conf` and measures all kernel modules, firmware, and root-owned reads.
+This section shows policy snippets for common additional targets.
+
+The systemd service installed in
+xref:deployment:ima-evm-setup.adoc#_step_5_create_the_systemd_automation_service[Step 5]
+loads all files matching `/etc/ima/[0-9]*.policy` at boot, in filename sort order.
+To add coverage without touching the base policy, create a new numbered file —
+for example, `/etc/ima/10-openssl.policy` — containing only the new rules.
+The service picks it up automatically on the next reboot.
+
+Each new policy file must have its SELinux context set after creation:
+
+[source,bash]
+----
+sudo restorecon -v /etc/ima/10-openssl.policy
+----
+
+WARNING: Rule order within each file matters — the kernel evaluates rules top to bottom
+and stops at the first match, exactly like firewall rules.
+*Every new policy file must start with its own `dont_appraise` exclusions* for any
+virtual or pseudo-filesystem that the new rules could accidentally match, before any
+broad `appraise` rule.
+A broad `appraise` rule placed above the necessary exclusions will fire on files that
+have no `security.ima` xattr (procfs, sysfs, tmpfs, etc.) — in enforce mode that
+means denied access and a potentially unbootable system.
+In fix mode the mistake is harmless and will show up as unexpected measurement log
+entries; that is the correct time to discover and fix it.
+See the xref:deployment:ima-evm-setup.adoc#_step_3_deploy_the_custom_policy[policy
+ordering explanation in the deployment guide] for a full breakdown of why the sections
+are ordered the way they are.
+
+After adding rules, hash the newly-tracked files before rebooting into enforce mode — see
+<<_auditing_missing_hashes,Auditing Missing Hashes>>.
+
+=== A Specific Configuration File
+
+To track an additional configuration file by exact path (SI-7(1), CM-3):
+
+----
+measure  func=FILE_CHECK path=/etc/umrs/umrs.conf
+appraise func=FILE_CHECK path=/etc/umrs/umrs.conf
+----
+
+This is the same pattern used for `setrans.conf`.
+Use it for any individual file whose integrity is security-relevant.
+After adding the rule, generate the initial hash (xref:deployment:ima-evm-setup.adoc#_step_4_initialize_and_verify[Step 4]):
+
+[source,bash]
+----
+cat /etc/umrs/umrs.conf > /dev/null
+getfattr -n security.ima /etc/umrs/umrs.conf
+----
+
+=== A Binary
+
+To measure and appraise a specific executable — for example, `openssl`, a FIPS-relevant
+binary (SI-7(1), SI-7(14), SA-12):
+
+----
+measure  func=BPRM_CHECK path=/usr/bin/openssl
+appraise func=BPRM_CHECK path=/usr/bin/openssl
+----
+
+`BPRM_CHECK` fires when the kernel loads the binary for execution, before the first
+instruction runs.
+The `measure func=BPRM_CHECK` rule already in the base policy measures all executables
+globally; adding an `appraise` rule by path enforces integrity specifically for `openssl`
+without appraisal-blocking the rest of the system.
+
+Generate the initial hash:
+
+[source,bash]
+----
+sudo evmctl ima_hash /usr/bin/openssl
+getfattr -n security.ima /usr/bin/openssl
+----
+
+=== Shared Libraries
+
+`FILE_MMAP mask=MAY_EXEC` in the base policy already measures any shared library
+when it is mapped into a process for execution — so the measurement log already
+tracks `libcrypto` accesses since the last boot.
+To add appraisal (enforce integrity at load time), add an explicit `appraise` rule
+by the library's exact versioned path (SI-7(6), SA-12):
+
+----
+appraise func=FILE_MMAP mask=MAY_EXEC path=/usr/lib64/libcrypto.so.3
+appraise func=FILE_MMAP mask=MAY_EXEC path=/usr/lib64/libssl.so.3
+----
+
+NOTE: IMA policy `path=` rules require an exact path — glob patterns such as
+`libcrypto.so.*` are not supported.
+Check the current versioned filename before writing the rule:
+
+[source,bash]
+----
+ls -1 /usr/lib64/libcrypto.so.* /usr/lib64/libssl.so.*
+----
+
+After a system update that replaces the library with a new version, the rule must be
+updated to match the new filename and the hash re-generated.
+This is CM-3 (Configuration Change Control) applied to FIPS-critical shared libraries.
+
+Generate the initial hashes:
+
+[source,bash]
+----
+sudo evmctl ima_hash /usr/lib64/libcrypto.so.3
+sudo evmctl ima_hash /usr/lib64/libssl.so.3
+----
+
+=== A Custom SELinux Type
+
+IMA can use SELinux labels as the selection criterion, which lets you cover all files
+that carry a specific type without listing paths individually (SI-7(1), CM-7).
+This is the right approach for UMRS project files labeled `umrs_config_ro_t`:
+
+----
+measure  func=FILE_CHECK obj_type=umrs_config_ro_t
+appraise func=FILE_CHECK obj_type=umrs_config_ro_t
+----
+
+Any file labeled `umrs_config_ro_t` — regardless of where it lives in the filesystem —
+will be measured on every read and appraised on access.
+New files added to this type are automatically covered without a policy change, making
+this the most maintainable approach for a set of related configuration files (CM-7).
+
+Hash every file in the set before switching to enforce mode:
+
+[source,bash]
+----
+sudo find / -context '*:umrs_config_ro_t:*' -type f -exec evmctl ima_hash {} \;
+----
+
+Verify the full set:
+
+[source,bash]
+----
+sudo find / -context '*:umrs_config_ro_t:*' -type f -exec evmctl ima_verify {} \;
+----
+
+== Auditing Missing Hashes
+
+Before switching to enforce mode, identify any files that lack a `security.ima`
+attribute (CM-3, SI-7).
+A file missing this attribute will be blocked by the kernel once appraisal is active.
+
+List files missing IMA metadata:
+
+[source,bash]
+----
+sudo find /etc/selinux/targeted/ -type f ! -exec getfattr -n security.ima {} +
+----
+
+List files that already have IMA metadata set:
+
+[source,bash]
+----
+sudo getfattr -n security.ima -r /etc/selinux/targeted/
+----
+
+If this audit reveals missing entries, run a recursive hash to resolve them:
+
+[source,bash]
+----
+sudo evmctl ima_hash -r /etc/selinux/targeted/
+sudo evmctl ima_verify -r /etc/selinux/targeted/
+----
+
+NOTE: Before running a recursive hash, confirm that the target filesystem supports
+extended attributes — XFS and EXT4 on RHEL 10 both do by default.
+
+=== Pre-Enforcement Checklist
+
+. Audit: identify files missing a hash with the `find` command above.
+. Initialize: run `evmctl ima_hash` (or `-r` for directories) on any targets with missing entries.
+. Verify: run `evmctl ima_verify` to confirm all hashes match current content.
+. Deploy: switch `ima_appraise` from `fix` to `enforce` in GRUB and reboot (<<_finalizing_enforcement_optional,see above>>).
+
+== See Also
+
+* xref:deployment:ima-evm-setup.adoc[IMA/EVM Integrity Setup] — kernel configuration,
+  policy file, SELinux context setup, and systemd service

@@ -1,0 +1,177 @@
+= OpenSCAP on RHEL 10
+:toc: left
+:description: How to install, configure, and run OpenSCAP compliance scans on RHEL 10 using the SCAP Security Guide profiles.
+
+== Overview
+
+OpenSCAP and the SCAP Security Guide (SSG) provide automated compliance scanning and
+remediation against published profiles including STIG, CIS, PCI-DSS, OSPP, and C2S.
+This procedure uses standard Red Hat repositories and the official compliance profiles.
+
+== Step 1: Install Required Packages
+
+. Install OpenSCAP scanner and SCAP Security Guide:
++
+[source,bash]
+----
+sudo dnf install -y openscap-scanner scap-security-guide
+----
++
+This installs:
++
+* `oscap` — the scanner.
+* All compliance content under `/usr/share/xml/scap/ssg/`.
+* All profiles for RHEL 10 (STIG, CIS, ANSSI, PCI-DSS, C2S, OSPP).
+
+. If the system does not have access to Red Hat repos, register first:
++
+[source,bash]
+----
+subscription-manager register
+subscription-manager attach
+subscription-manager repos --enable=rhel-10-for-x86_64-baseos-rpms
+subscription-manager repos --enable=rhel-10-for-x86_64-appstream-rpms
+----
++
+Then re-run the `dnf install` command.
+
+== Step 2: Verify Profile Locations
+
+SCAP profiles are stored at:
+
+[source]
+----
+/usr/share/xml/scap/ssg/content/
+----
+
+For RHEL 10, the main data stream file is:
+
+[source]
+----
+ssg-rhel10-ds.xml
+----
+
+List all available profiles:
+
+[source,bash]
+----
+oscap info /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+----
+
+Expected profiles in the output include:
+
+* `xccdf_org.ssgproject.content_profile_stig`
+* `xccdf_org.ssgproject.content_profile_pci-dss`
+* `xccdf_org.ssgproject.content_profile_cis`
+* `xccdf_org.ssgproject.content_profile_c2s`
+* `xccdf_org.ssgproject.content_profile_ospp`
+
+== Step 3: Scan Your System Using a Profile
+
+Run an XCCDF evaluation against the desired profile. Results are written to an XML
+file for review and report generation.
+
+STIG scan:
+
+[source,bash]
+----
+oscap xccdf eval \
+  --profile xccdf_org.ssgproject.content_profile_stig \
+  --results results-stig.xml \
+  /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+----
+
+CIS scan:
+
+[source,bash]
+----
+oscap xccdf eval \
+  --profile xccdf_org.ssgproject.content_profile_cis \
+  --results results-cis.xml \
+  /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+----
+
+PCI-DSS scan:
+
+[source,bash]
+----
+oscap xccdf eval \
+  --profile xccdf_org.ssgproject.content_profile_pci-dss \
+  --results results-pci.xml \
+  /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+----
+
+== Step 4: Generate an HTML Report
+
+[source,bash]
+----
+oscap xccdf generate report results-stig.xml > stig-report.html
+----
+
+Open `stig-report.html` in a browser to review findings.
+
+== Step 5: Optional — Automatic Remediation
+
+CAUTION: Automatic remediation is aggressive. Review results first. Remediation can
+change system configuration in ways that disrupt running services.
+
+[source,bash]
+----
+oscap xccdf eval \
+  --profile xccdf_org.ssgproject.content_profile_stig \
+  --remediate \
+  /usr/share/xml/scap/ssg/content/ssg-rhel10-ds.xml
+----
+
+== Step 6: Optional — Download Updated Profiles Manually
+
+If you want the newest SCAP content from the upstream project (useful for disconnected
+or hardened environments):
+
+[source,bash]
+----
+curl -LO https://static.open-scap.org/ssg-rhel10-ds-latest.xml
+oscap info ssg-rhel10-ds-latest.xml
+----
+
+== Step 7: Verify Content Signatures
+
+All SCAP content from Red Hat is signed with GPG. Verify signature integrity:
+
+[source,bash]
+----
+rpm -q --qf "%{SIGPGP:pgpsig}\n" scap-security-guide
+----
+
+For externally downloaded content:
+
+[source,bash]
+----
+gpg --verify ssg-rhel10-ds-latest.xml.asc ssg-rhel10-ds-latest.xml
+----
+
+== Summary
+
+On RHEL 10, install OpenSCAP with `dnf install openscap-scanner scap-security-guide`.
+All compliance profiles are stored under `/usr/share/xml/scap/ssg/content/`, including
+STIG, CIS, PCI-DSS, and C2S. Use `oscap info` to list profiles and `oscap xccdf eval`
+to scan or remediate your system.
+
+== Compliance Alignment
+
+[cols="1,3"]
+|===
+| Control | Relevance
+
+| `CA-2` (Control Assessments)
+| OpenSCAP provides automated, repeatable assessment evidence.
+
+| `CA-7` (Continuous Monitoring)
+| Scheduled SCAP scans provide ongoing compliance posture visibility.
+
+| `SI-7` (Software and Information Integrity)
+| SCAP content is GPG-signed; verify before use.
+
+| `AU-6` (Audit Review, Analysis, and Reporting)
+| HTML reports from `oscap generate report` provide auditable documentation.
+|===

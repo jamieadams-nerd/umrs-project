@@ -421,5 +421,5 @@ the operator a complete picture.
 
 * xref:index.adoc[Architecture Overview]
 * xref:kernel-files-tpi.adoc[Two-path independence in kernel file parsing]
-* xref:deployment:rhel/rhel10-openscap.adoc[RHEL 10 OpenSCAP and STIG scanning]
+* xref:deployment:rhel10/03-postinstall/stig-hardening.adoc[RHEL 10 OpenSCAP and STIG scanning]
 * xref:reference:compliance-frameworks.adoc[Compliance frameworks registry]

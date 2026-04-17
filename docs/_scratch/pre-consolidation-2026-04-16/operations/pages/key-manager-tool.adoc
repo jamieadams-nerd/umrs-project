@@ -1,0 +1,283 @@
+= High-Assurance Signing Key Orchestrator (HA-Sign)
+:toc: left
+:description: Design and operator guide for the HA-Sign key lifecycle management utility.
+
+HA-Sign is a Bash-based orchestration utility that standardizes the lifecycle
+management of host-local signing keys used for:
+
+* Audit log signing (files produced by auditd and auditd log rotation).
+* System and application logging (rsyslog, journald exports, `/var/log` trees).
+* Archival package signing (tarballs and backups created by logrotate and retention jobs).
+* Optional auxiliary signatures (configuration snapshots, integrity manifests).
+
+The goal is to provide a deterministic, auditable, and policy-aligned mechanism for
+creating, rotating, inventorying, and documenting signing keys across a hardened Linux
+environment (RHEL 10 in FIPS mode). The utility is designed to support NIST 800-53
+control families (AU, SC, SI, and CM), FIPS 140-3 cryptographic requirements, and
+STIG expectations for key management, logging, and traceability.
+
+== Core Design Principles
+
+* *Deterministic structure* — keys live in well-defined locations with predictable names.
+* *Strong defaults* — FIPS-approved algorithms and key lengths enforced by default.
+* *No passphrases for automation* — signing keys used by unattended jobs are created
+  without passphrases; compensating controls are file permissions, account isolation, and rotation.
+* *Full lifecycle coverage* — init, rotate, list, report, and import of existing keys.
+* *Auditor-friendly reporting* — explicit mapping between keys, purpose, locations,
+  algorithms, and lifetimes.
+
+== Scope and Responsibilities
+
+HA-Sign manages local signing keys that protect the integrity and provenance of log
+and archive artifacts. It is not a general PKI or CA, not a replacement for system-level
+crypto libraries, and not a TLS certificate manager.
+
+The utility manages host-level signing of:
+
+* Audit logs (`/var/log/audit/audit.log.*`)
+* System and application logs (`/var/log/messages`, `/var/log/secure`, rotated logs)
+* Archived data bundles (compressed rotated logs, backup tarballs)
+
+Integrations — telling logrotate, auditd, or rsyslog which key to use — are left to
+system configuration. HA-Sign outputs consistent paths and names for those tools to use.
+
+== Key Layout and Naming
+
+The base directory is configurable; the default is `/etc/pki/ha-sign`.
+
+----
+/etc/pki/ha-sign/
+    audit/          -- keys for audit log signatures
+    logging/        -- keys for non-audit log signatures
+    archive/        -- keys for compressed and archived artifacts
+    aux/            -- optional keys for configuration snapshots and manifests
+    public/         -- exported public keys, organized by purpose and key ID
+----
+
+Each purpose directory follows a consistent naming scheme:
+
+* Private keys: `PURPOSE-hostname-YYYYMMDD.key`
+* Public keys: `PURPOSE-hostname-YYYYMMDD.pub`
+* Current symlinks: `PURPOSE-current.key` and `PURPOSE-current.pub`
+
+.Default file permissions
+[cols="2,1,1,1"]
+|===
+| Item | Owner | Group | Mode
+
+| Base directory | `root` | `root` | `0750`
+| Private key files | `root` | `root` | `0400`
+| Public key files | `root` | `root` | `0644`
+|===
+
+== Subcommands
+
+=== init
+
+Initializes the HA-Sign key hierarchy.
+
+* Creates the base directory and standard subdirectories.
+* Enforces secure permissions and ownership.
+* Optionally creates initial signing keys for each supported purpose using configured defaults.
+* Emits a human-readable summary and a machine-readable JSON metadata file.
+
+[source,bash]
+----
+sudo ha-signing-manager.sh init
+----
+
+=== rotate
+
+Generates a new key for a given purpose and archives the old one.
+
+* Creates a new private and public key pair using the configured algorithm and key length.
+* Moves the previous "current" key pair into an archive subdirectory.
+* Updates the "current" symlinks to point to the new pair.
+* Updates key metadata with the `retired_on` date for old keys and `activated_on` for new keys.
+
+[source,bash]
+----
+sudo ha-signing-manager.sh rotate audit
+----
+
+=== list
+
+Inventories all known keys and summarizes their attributes.
+
+* Walks the base directory and subdirectories.
+* For each key, reports: purpose, host, algorithm, key length, generation date, expiration date, current versus archived status.
+* Outputs a colorized console table for humans and optionally a JSON or YAML representation.
+
+[source,bash]
+----
+sudo ha-signing-manager.sh list
+----
+
+=== report
+
+Generates an auditor-ready report describing all signing keys and how they are used.
+
+* Produces a formal header with system name, hostname, date, OS version, and FIPS mode status.
+* One section per key purpose with naming conventions, directory paths, key counts, algorithms, lifetimes, and integration points.
+* A compliance mapping section tying key management to applicable security controls.
+* Output in plain text and optionally as a machine-readable summary.
+
+[source,bash]
+----
+sudo ha-signing-manager.sh report
+----
+
+=== import
+
+Discovers and incorporates existing public keys not originally created by HA-Sign.
+
+* Scans configurable search roots (`/etc/pki`, `/etc/ssh`, application paths).
+* For each public key found, parses algorithm and key length.
+* Uses naming and path context to infer purpose.
+* Includes discovered keys in the report as "external" or "pre-existing" entries.
+* Optionally copies them into `/etc/pki/ha-sign/public/` for centralized tracking.
+
+[source,bash]
+----
+sudo ha-signing-manager.sh import
+----
+
+== Configuration
+
+HA-Sign is configured through a configuration file, command-line options, or
+environment variables. All effective configuration values are reflected in generated
+reports for audit purposes.
+
+=== Configuration File
+
+[source]
+----
+/etc/ha-signing/ha-sign.conf
+----
+
+The configuration file must be root-owned and readable only via `sudo`. Changes
+to this file should follow change-management procedures.
+
+.Example configuration
+[source]
+----
+base_dir=/etc/pki/ha-signing
+algorithm=rsa
+key_length=4096
+expiry_days=730
+discover_public_keys=yes
+discovery_paths=/etc/pki,/usr/local/etc/pki
+----
+
+=== Base Directory Override
+
+[source,bash]
+----
+sudo ha-signing-manager.sh --base-dir /etc/pki/custom-signing init
+----
+
+The base directory must reside on a local filesystem with appropriate integrity
+protections and must be writable only via `sudo`.
+
+=== Algorithm Selection
+
+Supported algorithms (platform-dependent):
+
+* RSA (minimum 3072 bits)
+* ECDSA (P-256 and P-384 curves)
+* EdDSA (where FIPS-validated support is available)
+
+[source,bash]
+----
+sudo ha-signing-manager.sh --alg rsa --length 4096 init
+----
+
+HA-Sign refuses to use algorithms below the configured minimum security threshold.
+
+=== Key Lifetime
+
+[source,bash]
+----
+sudo ha-signing-manager.sh --expiry-days 730 init
+----
+
+Key lifetime must align with organizational cryptoperiod policy and applicable
+data retention requirements. Expiration metadata is recorded at generation time
+and surfaced in all reports.
+
+=== Change Management
+
+Any change to base directory, algorithm, key length, or expiration values is a
+security-relevant configuration change and must be:
+
+* Reviewed by a security authority.
+* Documented in system change records.
+* Reflected in the next HA-Sign report.
+
+== Example: Signing and Verifying an Audit Log
+
+=== Sign a Rotated Audit Log
+
+[source,bash]
+----
+openssl dgst -sha256 \
+  -sign /etc/pki/ha-signing/audit/private/audit_signing_rsa_3072.key \
+  -out /var/log/audit/audit.log.1.sig \
+  /var/log/audit/audit.log.1
+----
+
+This computes a SHA-256 digest of the log file, signs it with the private key,
+and writes a detached signature to `audit.log.1.sig`.
+
+=== Verify the Signature
+
+[source,bash]
+----
+openssl dgst -sha256 \
+  -verify /etc/pki/ha-signing/audit/public/audit_signing_rsa_3072.pem \
+  -signature /var/log/audit/audit.log.1.sig \
+  /var/log/audit/audit.log.1
+----
+
+Output `Verified OK` confirms the file has not been modified since it was signed
+and that the signature was produced by the matching private key.
+
+=== Logrotate Integration
+
+In `/etc/logrotate.d/audit`:
+
+[source]
+----
+postrotate
+    /usr/sbin/service auditd reload >/dev/null 2>&1 || true
+    /usr/local/sbin/ha-signing.sh sign-audit /var/log/audit/audit.log.1
+endscript
+----
+
+== Compliance Alignment
+
+[cols="1,3"]
+|===
+| Control | How HA-Sign Satisfies It
+
+| `SC-12` | Key generation, rotation, archival, and documented lifecycle managed by HA-Sign
+| `SC-13` | Enforces FIPS-approved algorithms and minimum key sizes; refuses weaker choices
+| `AU-9` | Provides keys dedicated to signing audit logs; verifiable via exported public keys
+| `AU-10` | Signed artifacts link to authenticated key holders; supports non-repudiation claims
+| `SI-7` | Enables integrity verification of logs and archives using cryptographic signatures
+| `CM-6` | Configuration is explicit and reviewable; changes follow a change-management process
+| `CA-7` | Scheduled report runs provide continuous key posture visibility
+|===
+
+== Auditor Summary
+
+When an auditor asks how signing keys are managed, the HA-Sign answer is:
+
+A dedicated, documented utility creates signing keys in a single location using
+FIPS-approved algorithms and minimum key sizes. It separates private and public keys,
+enforces strict file permissions, and prevents interactive passphrases for automated
+jobs. Keys are rotated on a documented schedule, old keys are archived for verification,
+and lifetimes are tracked. A formal report enumerates every key, its purpose, algorithm,
+length, locations, and status. This report is used as evidence for proper key management
+(SC-12, SC-13), log integrity and non-repudiation (AU-9, AU-10, SI-7), and configuration
+management and continuous monitoring (CM, CA families).

@@ -1,0 +1,221 @@
+// Source material (merged 2026-04-16):
+//   - components/rusty-gadgets/selinux/README.md
+//   - components/rusty-gadgets/selinux/umrs.te (types, attributes, neverallow)
+//   - snapshot: docs/_scratch/pre-consolidation-2026-04-16/selinux/README.md
+= SELinux Types: Current Declarations
+:toc: left
+:description: Every SELinux type and attribute currently declared in umrs.te, plus a Deferred subsection for types not yet in the policy.
+
+This page documents what is currently declared in
+`components/rusty-gadgets/selinux/umrs.te`. The policy is Phase A ---
+labeling and awareness under targeted policy. It makes no CUI enforcement
+claims. Mandatory access control across sensitivity levels is Phase 2 (MLS
+policy) work.
+
+IMPORTANT: This page reflects `umrs.te` version 1.2, accurate as of
+2026-04-16. If the policy file is updated, this page must be updated to match.
+
+== Policy Module Header
+
+[source]
+----
+policy_module(umrs, 1.2)
+----
+
+Controls: NIST SP 800-53 CM-5, CM-6, AC-3, AC-6, SI-7; NSA RTB Non-Bypassability.
+
+== Attributes
+
+Attributes group related concrete types so that interfaces and `neverallow`
+guardrails stay stable as types are added.
+
+[cols="1,2",options="header"]
+|===
+| Attribute | Groups
+
+| `umrs_exec_type`
+| All UMRS executable types.
+
+| `umrs_config_type`
+| Configuration files (read-only baseline and operator-editable overrides).
+
+| `umrs_data_type`
+| UMRS data files (Phase A: placeholder working directory; Phase B: vault).
+
+| `umrs_log_type`
+| UMRS log files.
+
+| `umrs_secret_type`
+| Highly-sensitive key material under `/etc/keys/umrs/` and `/var/lib/umrs/keys/`.
+  Declared but not constrained by `neverallow` against `unconfined_t` in
+  Phase 1 --- DAC (`0700 root:root`) is the Phase 1 enforcement boundary.
+  Phase 2 will add a dedicated `umrs_sign_t` domain and the corresponding
+  `neverallow`. See xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees §5].
+|===
+
+== Concrete Types
+
+=== Executable Type
+
+[cols="1,1,2",options="header"]
+|===
+| Type | Attribute | Description
+
+| `umrs_bin_t`
+| `umrs_exec_type`
+| Single shared binary type for Phase A. Per-tool exec types (`umrs_ls_exec_t`,
+  etc.) are Phase B scaffolding.
+|===
+
+=== Configuration Types
+
+[cols="1,1,2",options="header"]
+|===
+| Type | Attribute | Description
+
+| `umrs_config_ro_t`
+| `umrs_config_type`
+| Baseline site configuration shipped in the package. Never written at runtime.
+  Labels `/opt/umrs/share/templates/`, `/etc/opt/umrs/`, and the UMRS key material
+  namespace roots (`/etc/keys/umrs/`, `/var/lib/umrs/keys/`) before more specific
+  entries apply.
+
+| `umrs_config_rw_t`
+| `umrs_config_type`
+| Operator-editable site overrides. Written by `umrs-admin` group members via DAC.
+  Currently has no fcontext rule pointing at it --- re-introduce when a concrete
+  operator-editable path is established under `/etc/opt/umrs/`.
+|===
+
+=== Key Material Types
+
+The key material types were updated in 2026-04-16 (policy v1.2) to align with
+the authoritative directory structure in
+xref:umrs/5b-directory-structure/key-material-trees.adoc[Key Material Trees].
+
+[cols="1,1,2",options="header"]
+|===
+| Type | Attribute | Description
+
+| `umrs_seal_key_t`
+| `umrs_secret_type`
+| Symmetric keys for LUKS/dm-crypt volume sealing.
+  Labels `/etc/keys/umrs/sealing/`.
+  Controls: NIST SP 800-53 SC-12(1), SC-28; SP 800-57 §5.3.5.
+
+| `umrs_sign_key_t`
+| `umrs_secret_type`
+| IMA/DIGSIG asymmetric signing keys and pre-activation staging keys.
+  Labels `/etc/keys/umrs/signing/` and `/etc/keys/umrs/staging/`.
+  Controls: NIST SP 800-53 SI-7, SC-12; SP 800-89.
+
+| `umrs_kek_t`
+| `umrs_secret_type`
+| Key Encryption Keys (KEKs) for AES-KW / AES-KWP wrapping operations.
+  Labels `/etc/keys/umrs/wrapping/`.
+  Controls: NIST SP 800-53 SC-12(2); SP 800-38F.
+
+| `umrs_session_key_t`
+| `umrs_secret_type`
+| Active session keys in runtime lifecycle state.
+  Labels `/var/lib/umrs/keys/active/`.
+  Controls: NIST SP 800-53 SC-12, AC-3, SC-4; SP 800-57 §5.3.3.
+
+| `umrs_retired_key_t`
+| `umrs_secret_type`
+| Suspended and retired key material pending destruction.
+  Labels `/var/lib/umrs/keys/suspended/` and `/var/lib/umrs/keys/retired/`.
+  Controls: NIST SP 800-53 SC-12, MP-6, MP-7; CMMC MP.L2-3.8.3.
+|===
+
+NOTE: `umrs_pki_key_t` and `umrs_pki_public_t` were retired in policy v1.2.
+They are no longer declared in `umrs.te`. The `_scratch` archive retains the
+old `pki-tree.adoc` page that documented them.
+
+=== Data Type
+
+[cols="1,1,2",options="header"]
+|===
+| Type | Attribute | Description
+
+| `umrs_data_rw_t`
+| `umrs_data_type`
+| Single writable data type for Phase A. Labels `/opt/umrs/share/umrs/` and
+  `/var/opt/umrs/lib/`. Vault types are Phase B.
+|===
+
+=== Log Type
+
+[cols="1,1,2",options="header"]
+|===
+| Type | Attribute | Description
+
+| `umrs_log_rw_t`
+| `umrs_log_type`
+| Labels `/var/opt/umrs/log/`. Declared for Phase A layout completeness;
+  current recommendation is journald-only.
+|===
+
+== Neverallow Guardrails
+
+These rules ensure UMRS custody is unreachable from `unconfined_t`. Operators
+must be mapped to a confined login user before running UMRS tools.
+
+[source]
+----
+neverallow unconfined_t umrs_exec_type:file *;
+
+neverallow unconfined_t umrs_data_type:dir  *;
+neverallow unconfined_t umrs_data_type:file *;
+
+neverallow unconfined_t umrs_config_type:dir  *;
+neverallow unconfined_t umrs_config_type:file *;
+
+neverallow unconfined_t umrs_log_type:dir  *;
+neverallow unconfined_t umrs_log_type:file *;
+----
+
+Controls: NSA RTB Non-Bypassability; NIST SP 800-53 AC-3, AC-6.
+
+NOTE: `umrs_secret_type` is intentionally excluded from the `neverallow` block
+in Phase 1. The signing manager currently runs as root under the default
+unconfined domain. Phase 2 introduces `umrs_sign_t`.
+
+== Confined Operator Access (Phase A)
+
+`staff_t` is the first confined operator class permitted to interact with UMRS
+custody. Phase A grants execute rights (`umrs_exec(staff_t)`) and config read
+rights (`umrs_read_config(staff_t)`). Phase B adds vault data access.
+
+== Deferred / Future Types
+
+[cols="1,2",options="header"]
+|===
+| Deferred Type or Feature | Rationale
+
+| `umrs_config_rw_t` fcontext rule
+| Type declared; no fcontext rule yet. Needs a concrete operator-editable path.
+
+| `umrs_data_ro_t`, `umrs_log_ro_t`
+| Removed from Phase A --- no fcontext rule pointed at them. Re-introduce when
+  a concrete read-only data or log path exists.
+
+| `umrs_httpd_t`
+| Removed. No HTTP-surfaced UMRS component is designed yet.
+
+| `umrs_trust_list_t`, `umrs_secret_t`
+| Phase B types for vault and trust-list material.
+
+| Per-tool exec types (`umrs_ls_exec_t`, etc.)
+| Phase B. Will be bound to `umrs_exec_type` without touching callers.
+
+| `umrs_sign_t` (signing manager domain)
+| Phase B. Will carry `neverallow` for `umrs_secret_type` once the unconfined
+  signing path is replaced.
+
+| Vault intake/staging/archive data types
+| Phase B. Separate types for vault intake directories, staging, and archive.
+
+| Process domain types for confined operator tools
+| Phase B. Actor domains that transition on exec of specific UMRS binaries.
+|===

@@ -6,7 +6,7 @@
 // NIST 800-53 AU-3 — Content of audit records
 
 This example demonstrates all major `setrans.conf` directives. See
-xref:deployment:rhel/rhel10-setrans.adoc[Configuring setrans.conf on RHEL 10] for
+xref:deployment:umrs/5b-directory-structure/directory-structure.adoc#etc-opt-umrs[Configuring setrans.conf on RHEL 10] for
 deployment instructions.
 
 == Annotated Example
