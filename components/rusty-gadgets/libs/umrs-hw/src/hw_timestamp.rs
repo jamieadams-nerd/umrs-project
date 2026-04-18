@@ -67,9 +67,11 @@ mod x86_64_impl {
     /// // REVIEW: ASM — this block must be reviewed by the security-auditor
     /// // before any modification. See .claude/rules for the grep marker convention.
     ///
-    /// NIST SP 800-53 AU-8 — serialized cycle-accurate timestamp for audit
-    /// record phase ordering. std::time::Instant uses CLOCK_MONOTONIC which is
-    /// subject to NTP slew; RDTSCP bypasses the kernel clocksource layer entirely.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-8 — serialized cycle-accurate timestamp for audit
+    ///   record phase ordering. std::time::Instant uses CLOCK_MONOTONIC which is
+    ///   subject to NTP slew; RDTSCP bypasses the kernel clocksource layer entirely.
     #[inline]
     pub(super) unsafe fn rdtscp_raw() -> u64 {
         // REVIEW: ASM
@@ -105,8 +107,10 @@ mod x86_64_impl {
     ///
     /// CPUID is always available on x86_64; it is a non-faulting instruction.
     ///
-    /// NIST SP 800-53 AU-8 — TSC invariance is a prerequisite for reliable
-    /// monotonic timestamp ordering across pipeline phases.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-8 — TSC invariance is a prerequisite for reliable
+    ///   monotonic timestamp ordering across pipeline phases.
     pub fn tsc_is_invariant() -> bool {
         // SAFETY: [SA-8] CPUID is always available on x86_64.
         // Leaf 0x80000007: Advanced Power Management Information.
@@ -122,7 +126,9 @@ mod x86_64_impl {
     /// non-decreasing within a single core but may not be comparable across
     /// cores when the TSC is not invariant. Use `tsc_is_invariant()` to check.
     ///
-    /// NIST SP 800-53 AU-8 — high-resolution phase timing for audit records.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-8 — high-resolution phase timing for audit records.
     #[must_use = "hardware timestamp must be used to compute phase duration; discarding it loses the measurement"]
     pub fn read_hw_timestamp() -> u64 {
         #[cfg(debug_assertions)]
@@ -158,7 +164,9 @@ mod fallback_impl {
     /// Arm architecture to be invariant — it runs at a fixed frequency
     /// regardless of CPU frequency scaling. No runtime check is required.
     ///
-    /// NIST SP 800-53 AU-8 — monotonic timestamp ordering.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-8 — monotonic timestamp ordering.
     pub const fn tsc_is_invariant() -> bool {
         true
     }
@@ -174,7 +182,9 @@ mod fallback_impl {
     /// Saturating at 0 is the correct fail-safe: a zero duration is visible
     /// and auditable; a wrapped value would be misleading.
     ///
-    /// NIST SP 800-53 AU-8 — nanosecond-precision phase timing for audit records.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-8 — nanosecond-precision phase timing for audit records.
     #[must_use = "hardware timestamp must be used to compute phase duration; discarding it loses the measurement"]
     pub fn read_hw_timestamp() -> u64 {
         #[cfg(debug_assertions)]
@@ -217,7 +227,9 @@ mod fallback_impl {
 /// C-state transitions. The detection pipeline records a downgrade reason
 /// in `ConfidenceModel` when this condition is detected.
 ///
-/// NIST SP 800-53 AU-8 — TSC reliability assertion for audit record ordering.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-8 — TSC reliability assertion for audit record ordering.
 #[must_use = "TSC invariance check result must be examined to decide whether to record a downgrade reason"]
 pub const fn tsc_is_invariant() -> bool {
     #[cfg(target_arch = "x86_64")]
@@ -244,8 +256,10 @@ pub const fn tsc_is_invariant() -> bool {
 /// Never panics. Returns `0` only in the theoretical case of arithmetic
 /// overflow (non-x86_64 fallback only — ~584 years of uptime required).
 ///
-/// NIST SP 800-53 AU-8 — high-resolution timestamps for phase duration
-/// recording in `PhaseDuration::duration_ns` audit fields.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-8 — high-resolution timestamps for phase duration
+///   recording in `PhaseDuration::duration_ns` audit fields.
 #[must_use = "hardware timestamp must be used to compute phase duration; discarding it loses the measurement"]
 pub fn read_hw_timestamp() -> u64 {
     #[cfg(target_arch = "x86_64")]

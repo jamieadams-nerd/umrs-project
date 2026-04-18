@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 // tests/posix_identity.rs
 //
 // Integration-style tests for posix_identity module types.

@@ -37,33 +37,26 @@ use std::sync::{Mutex, OnceLock};
 
 /// SELinux-specific validation pattern registry.
 ///
+/// ## Variants:
+///
+/// - `SelinuxContext` — validates a SELinux security context string. Accepted form: three colon
+///   separators producing four fields. The first three fields (user, role, type) may not contain
+///   colons. The fourth field (level) may contain colons, as MLS ranges use colon notation
+///   (e.g., `s0:c0,c5`, `s0-s0:c0.c1023`). Example: `"system_u:system_r:httpd_t:s0"`,
+///   `"unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023"`. Structural check only — does not
+///   verify that user, role, type, or level are defined in the active policy.
+/// - `MlsRange` — validates an MLS sensitivity range string. Accepted form: `sN` optionally
+///   followed by `:cN` category components. Examples: `"s0"`, `"s0:c0"`, `"s1:c0,c5"`.
+///   Structural check only — does not verify that sensitivity or categories are within the active
+///   policy bounds.
+///
 /// ## Compliance
 ///
-/// - **NIST SP 800-53 SI-10**: Information Input Validation
-/// - **NIST SP 800-53 AC-3**: Access Enforcement
+/// - **NIST SP 800-53 SI-10**: Information Input Validation.
+/// - **NIST SP 800-53 AC-3**: Access Enforcement.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SelinuxPattern {
-    /// Validates a SELinux security context string.
-    ///
-    /// Accepted form: three colon separators producing four fields. The first
-    /// three fields (user, role, type) may not contain colons. The fourth
-    /// field (level) may contain colons, as MLS ranges use colon notation
-    /// (e.g., `s0:c0,c5`, `s0-s0:c0.c1023`).
-    ///
-    /// Example: `"system_u:system_r:httpd_t:s0"`,
-    /// `"unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023"`.
-    ///
-    /// This is a structural check only; it does not verify that the user,
-    /// role, type, or level components are defined in the active policy.
     SelinuxContext,
-
-    /// Validates an MLS sensitivity range string.
-    ///
-    /// Accepted form: `sN` optionally followed by `:cN` category components.
-    /// Examples: `"s0"`, `"s0:c0"`, `"s1:c0,c5"`.
-    ///
-    /// This is a structural check only; it does not verify that the
-    /// sensitivity level or categories are within the active policy's bounds.
     MlsRange,
 }
 

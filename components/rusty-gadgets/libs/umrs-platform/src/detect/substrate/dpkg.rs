@@ -52,7 +52,9 @@ const TMPFS_MAGIC: i64 = 0x0102_1994;
 
 /// dpkg package substrate probe.
 ///
-/// NIST SP 800-53 CM-7, SA-12, SI-7.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-7, SA-12, SI-7.
 pub struct DpkgProbe;
 
 impl DpkgProbe {

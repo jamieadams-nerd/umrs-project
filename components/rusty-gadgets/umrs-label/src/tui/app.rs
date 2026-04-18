@@ -56,14 +56,19 @@ use crate::cui::catalog::{Catalog, DisseminationControl, Marking, policy_aware_d
 
 /// Which panel currently has keyboard focus.
 ///
-/// NIST SP 800-53 AU-3 — panel focus is surfaced in the status bar so
-/// the operator always knows which panel is accepting input.
+/// ## Variants:
+///
+/// - `Tree` — the tree browser panel (left side); default focus.
+/// - `Detail` — the detail content panel (right side).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Panel focus is surfaced in the status bar so the operator always
+///   knows which panel is accepting input.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Panel {
-    /// The tree browser panel (left side).
     #[default]
     Tree,
-    /// The detail content panel (right side).
     Detail,
 }
 
@@ -84,18 +89,25 @@ pub enum Panel {
 /// containing catalog provenance rows `(label, value)` rendered at the bottom
 /// of the detail in subdued `DarkGray` style for attribution without visual
 /// competition with the marking content itself.
+///
+/// ## Variants:
+///
+/// - `None` — no node selected yet; show a placeholder prompt.
+/// - `Marking(MarkingDetailData, Vec<(String, String)>)` — a marking leaf is selected; show full
+///   marking detail plus provenance rows.
+/// - `DisseminationControl(MarkingDetailData, Vec<(String, String)>)` — a dissemination control
+///   leaf is selected; show detail plus provenance rows.
+/// - `CatalogMetadata(Vec<(String, String)>)` — a catalog root node is selected; show
+///   `_metadata` rows.
+/// - `Group { name, count }` — a group branch is selected; show a brief group summary with
+///   `name` (group label) and `count` (number of markings in the group).
 #[derive(Debug, Clone, Default)]
 pub enum DetailContent {
-    /// No node selected yet — show a placeholder prompt.
     #[default]
     None,
-    /// A marking leaf is selected — show full marking detail + provenance.
     Marking(MarkingDetailData, Vec<(String, String)>),
-    /// A dissemination control leaf is selected — show detail + provenance.
     DisseminationControl(MarkingDetailData, Vec<(String, String)>),
-    /// A catalog root node is selected — show `_metadata` rows.
     CatalogMetadata(Vec<(String, String)>),
-    /// A group branch is selected — show a brief group summary.
     Group {
         name: String,
         count: usize,
@@ -120,6 +132,12 @@ pub enum DetailContent {
 /// let tree = app.build_tree();
 /// ```
 ///
+/// ## Fields:
+///
+/// - `us_catalog` (private) — US CUI catalog.
+/// - `ca_catalog` (private) — Canadian Protected catalog; `None` when not configured.
+/// - `total` (private) — total marking count across both catalogs, computed once at construction.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AC-16**: Security Attributes — the app holds the
@@ -130,11 +148,8 @@ pub enum DetailContent {
 /// - **NIST SP 800-53 AC-3**: No mutation methods — catalogs are read once
 ///   at startup; the TUI is unconditionally read-only.
 pub struct LabelRegistryApp {
-    /// US CUI catalog.
     us_catalog: Catalog,
-    /// Canadian Protected catalog (optional — may not be configured).
     ca_catalog: Option<Catalog>,
-    /// Total marking count across both catalogs (computed once at construction).
     total: usize,
 }
 

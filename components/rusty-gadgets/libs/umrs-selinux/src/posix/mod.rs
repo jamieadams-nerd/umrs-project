@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! # POSIX Identity Primitives
 //!
 //! Strong types for POSIX Linux identity — user/group names, numeric UIDs/GIDs,
@@ -26,6 +28,6 @@ pub mod primitives;
 // Public API — everything a consumer needs from one import path
 pub use identity::{
     LinuxGroup, LinuxGroupName, LinuxOwnership, LinuxUser, LinuxUsername, PosixNameError,
-    UserIdentity,
+    UserIdentity, current_username,
 };
 pub use primitives::{DevId, FileMode, FileSize, Gid, HardLinkCount, Inode, Uid};

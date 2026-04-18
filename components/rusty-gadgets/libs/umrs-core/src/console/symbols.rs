@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Unified symbols, box-drawing glyphs, and icons for the UMRS design system.
 //!
 //! Centralizes Unicode characters to ensure visual consistency across CLI output,

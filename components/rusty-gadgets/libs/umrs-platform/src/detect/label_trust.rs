@@ -29,42 +29,33 @@
 /// a label for security policy decisions unless it has reached at least
 /// `TrustedLabel`.
 ///
-/// NSA RTB — trust must be explicit and non-forgeable from context alone.
-/// NIST SP 800-53 CM-8, SI-7.
+/// ## Variants:
+///
+/// - `UntrustedLabelCandidate` — permissions failed sanity check, or the file is unowned
+///   by any package. The label may be parsed for informational/display use, but must never
+///   be used for policy decisions.
+/// - `LabelClaim` — parsed successfully, but integrity could not be verified. The package
+///   substrate was not probed (T3 not reached), the package DB did not own this file, or
+///   the digest was unavailable. Structurally valid but provenance unconfirmed.
+/// - `TrustedLabel` — T4 reached: the file is owned by a package, and the on-disk SHA-256
+///   digest matches the value recorded in the package database. The label content also
+///   corroborates the substrate-derived identity. The only tier safe for policy decisions.
+///   (NIST SP 800-53 SI-7; CMMC L2 SI.1.210)
+/// - `IntegrityVerifiedButContradictory` — T4 integrity passed (digest verified) but the
+///   label content contradicts the substrate-derived identity. Treated as untrusted for
+///   policy decisions. Recorded as an anomaly in the `EvidenceBundle`.
+///   (NIST SP 800-53 SI-7, AU-10)
+///
+/// ## Compliance
+///
+/// - **NSA RTB**: trust must be explicit and non-forgeable from context alone.
+/// - **NIST SP 800-53 CM-8**, **SI-7**: component inventory accuracy and software
+///   integrity verification.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LabelTrust {
-    /// Permissions failed sanity check, or the file is unowned by any package.
-    ///
-    /// The label may be parsed for informational/display use, but must never
-    /// be used for policy decisions.
     UntrustedLabelCandidate,
-
-    /// Parsed successfully, but integrity could not be verified.
-    ///
-    /// The package substrate was not probed (T3 not reached), the package DB
-    /// did not own this file, or the digest was unavailable. The label content
-    /// is structurally valid but its provenance is unconfirmed.
     LabelClaim,
-
-    /// T4 reached: the file is owned by a package, and the on-disk SHA-256
-    /// digest matches the value recorded in the package database. The label
-    /// content also corroborates the substrate-derived identity.
-    ///
-    /// This is the only tier at which the label content is safe for use in
-    /// policy decisions.
-    ///
-    /// NIST SP 800-53 SI-7 — requires a package-DB digest match. CMMC L2 SI.1.210.
     TrustedLabel,
-
-    /// T4 integrity passed (digest verified) but the label content contradicts
-    /// the substrate-derived identity.
-    ///
-    /// This is an anomalous condition — the file has not been tampered with
-    /// (digest matches), but what it claims does not match what the package
-    /// substrate independently determined. Treated as untrusted for policy
-    /// decisions. Recorded as an anomaly in the `EvidenceBundle`.
-    ///
-    /// NIST SP 800-53 SI-7, AU-10 — anomalous; must never drive policy decisions.
     IntegrityVerifiedButContradictory {
         /// Brief description of the contradiction (≤64 characters at log sites).
         /// Must not contain security labels, credentials, or file content

@@ -104,6 +104,25 @@ No paywalled content was bypassed. No unauthorized copies were downloaded.
 
 ---
 
+---
+
+## Session 2026-04-18 — FHS 3.0 + systemd file-hierarchy(7)
+
+**Agent:** The Librarian (researcher)
+**Authorization:** Jamie Adams — tasked directly
+
+| # | Resource | Status | Files | SHA-256 | Notes |
+|---|---|---|---|---|---|
+| 1 | FHS 3.0 plain text | DOWNLOADED | 1 TXT | `ec52379984c85fdeddea6fabd5a84c8c358016e4d7c616995c2b147451d127b3` | HTTP 200; 112046 bytes; integrity verified |
+| 2 | FHS 3.0 PDF | DOWNLOADED | 1 PDF | `53d239e569a2d7b31a74fa09d585368c0f5a164e4624723fa2894660dd10fd23` | HTTP 200; 248943 bytes; `%PDF` magic verified |
+| 3 | systemd file-hierarchy(7) | DOWNLOADED | 1 TXT | `3131f8042829040660a44014b75a60fb0cfd8b8837874478cc206237eb140390` | Local man page; systemd 257-23.el10; upstream HTML bot-blocked (HTTP 418) |
+
+**Upstream HTML status (freedesktop.org):** Both canonical URLs returned HTTP 418 (bot-blocked). The locally installed RHEL 10 man page is the ground-truth for the deployment target and is authoritative.
+
+**FHS 3.0 section validation:** All sections cited by the `fhs-lsb-uid-gid` skill resolve correctly in FHS 3.0: §3.8, §3.13, §3.15 (`/run` — new in 3.0), §4.5, §5.12. FHS 2.3 retained at `linux-fhs-2.3/` for historical reference.
+
+---
+
 ## Next Steps
 
 1. **Stanford CS147:** Manual download needed (20 PDFs)

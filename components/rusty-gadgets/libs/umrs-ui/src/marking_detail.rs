@@ -91,52 +91,54 @@ const KEY_SEP: &str = " : ";
 /// not fit the fixed schema (e.g., nation-specific fields). They are
 /// rendered last, in the order provided.
 ///
+/// ## Fields:
+///
+/// - `key` — marking key; the full banner string (e.g., `"CUI//ADJ"`, `"PROTECTED-A"`).
+/// - `name_en` — English name.
+/// - `name_fr` — French name; empty if not bilingual.
+/// - `abbreviation` — banner abbreviation (e.g., `"ADJ"`, `"PA"`).
+/// - `designation` — `"basic"`, `"specified"`, or empty.
+/// - `index_group` — NARA index group (e.g., `"Immigration"`); empty for non-US catalogs.
+/// - `level` — MLS sensitivity level (e.g., `"s1"`).
+/// - `description_en` — English description; may be multi-line; the renderer word-wraps it.
+/// - `description_fr` — French description; may be multi-line; the renderer word-wraps it.
+/// - `handling` — handling information; pre-formatted multi-line string.
+/// - `required_warning` — required warning statement; rendered in a caution colour when present.
+/// - `required_dissemination` — required dissemination control description.
+/// - `marking_banner_en` — English banner marking (e.g., `"PROTECTED A"`).
+/// - `marking_banner_fr` — French banner marking (e.g., `"PROTÉGÉ A"`).
+/// - `injury_examples_en` — English injury examples; Canadian catalog field.
+/// - `injury_examples_fr` — French injury examples; Canadian catalog field.
+/// - `additional` — caller-supplied key-value pairs rendered in section order.
+/// - `country_flag` — country flag emoji (e.g., `"🇺🇸"`, `"🇨🇦"`); rendered flush-right on the
+///   marking key line; empty when the catalog has no country code.
+///
 /// ## Compliance
 ///
-/// - **NIST SP 800-53 AC-3**: Label display fidelity — the struct captures
-///   every field the catalog exposes so no information is silently dropped
-///   before reaching the display layer.
-/// - **NIST SP 800-53 SI-12**: Information output handling — owned strings
-///   decouple the catalog data model from the display model.
+/// - **NIST SP 800-53 AC-3**: label display fidelity — the struct captures every field the
+///   catalog exposes so no information is silently dropped before reaching the display layer.
+/// - **NIST SP 800-53 SI-12**: information output handling — owned strings decouple the catalog
+///   data model from the display model.
 #[derive(Debug, Clone, Default)]
 #[must_use = "MarkingDetailData is display-ready label data; construct it and pass it to render_marking_detail"]
 pub struct MarkingDetailData {
-    /// Marking key — the full banner string (e.g., `"CUI//ADJ"`, `"PROTECTED-A"`).
     pub key: String,
-    /// English name.
     pub name_en: String,
-    /// French name — empty if not bilingual.
     pub name_fr: String,
-    /// Banner abbreviation (e.g., `"ADJ"`, `"PA"`).
     pub abbreviation: String,
-    /// Designation: `"basic"`, `"specified"`, or empty.
     pub designation: String,
-    /// NARA index group (e.g., `"Immigration"`) — empty for non-US catalogs.
     pub index_group: String,
-    /// MLS sensitivity level (e.g., `"s1"`).
     pub level: String,
-    /// English description — may be multi-line; the renderer word-wraps it.
     pub description_en: String,
-    /// French description — may be multi-line; the renderer word-wraps it.
     pub description_fr: String,
-    /// Handling information — pre-formatted multi-line string.
     pub handling: String,
-    /// Required warning statement — rendered in a caution colour when present.
     pub required_warning: String,
-    /// Required dissemination control description.
     pub required_dissemination: String,
-    /// English banner marking (e.g., `"PROTECTED A"`).
     pub marking_banner_en: String,
-    /// French banner marking (e.g., `"PROTÉGÉ A"`).
     pub marking_banner_fr: String,
-    /// English injury examples — Canadian catalog field.
     pub injury_examples_en: String,
-    /// French injury examples — Canadian catalog field.
     pub injury_examples_fr: String,
-    /// Additional caller-supplied key-value pairs rendered in section order.
     pub additional: Vec<(String, String)>,
-    /// Country flag emoji (e.g., "🇺🇸", "🇨🇦") — rendered flush-right on the
-    /// marking key line.  Empty when the catalog has no country code.
     pub country_flag: String,
 }
 

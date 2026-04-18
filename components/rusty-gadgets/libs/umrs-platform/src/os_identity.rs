@@ -16,19 +16,7 @@
 //! contradict) what `os-release` asserts. Neither source is trusted in
 //! isolation.
 //!
-//! ## Compliance
-//!
-//! - **NIST SP 800-53 CM-8**: Information System Component Inventory —
-//!   component identity must be accurate, typed, and independently verifiable.
-//!   These types represent the inventory-level facts derived from the package
-//!   substrate, which is the most authoritative non-kernel identity source.
-//! - **NIST SP 800-53 SA-12**: Supply Chain Risk Management — package
-//!   substrate probes derive identity from the same database that tracks
-//!   installed software provenance. A mismatch between substrate identity
-//!   and `os-release` is a supply chain integrity signal.
-//! - **NSA RTB**: identity must be derived from multiple independent facts.
-//!   `SubstrateIdentity::facts_count` records how many independent facts
-//!   were corroborated; T3 (`SubstrateAnchored`) requires ≥2.
+#![doc = include_str!("../docs/compliance-os_identity.md")]
 
 use std::fmt;
 use std::str::FromStr;
@@ -46,19 +34,21 @@ use thiserror::Error;
 /// which package DB was successfully opened and parsed — not from any
 /// self-reported string.
 ///
-/// NIST SP 800-53 CM-8 — component inventory, substrate-derived.
+/// ## Variants:
+///
+/// - `RpmBased` — RPM-based distribution (RHEL, Fedora, CentOS, AlmaLinux, RockyLinux).
+/// - `DpkgBased` — dpkg-based distribution (Debian, Ubuntu, Kali).
+/// - `PacmanBased` — Pacman-based distribution (Arch Linux and derivatives).
+/// - `Unknown` — no recognised package substrate was found or successfully probed.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**: component inventory, substrate-derived.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum OsFamily {
-    /// RPM-based distribution (RHEL, Fedora, CentOS, AlmaLinux, RockyLinux).
     RpmBased,
-
-    /// dpkg-based distribution (Debian, Ubuntu, Kali).
     DpkgBased,
-
-    /// Pacman-based distribution (Arch Linux and derivatives).
     PacmanBased,
-
-    /// No recognised package substrate was found or successfully probed.
     Unknown,
 }
 
@@ -72,34 +62,32 @@ pub enum OsFamily {
 /// string is the substrate-derived identifier (e.g., from the release package
 /// name), not the `os-release` `ID=` field.
 ///
-/// NIST SP 800-53 CM-8, SA-12.
+/// ## Variants:
+///
+/// - `Rhel` — Red Hat Enterprise Linux.
+/// - `Fedora` — Fedora Linux.
+/// - `CentOs` — CentOS Stream or CentOS Linux.
+/// - `AlmaLinux` — AlmaLinux OS.
+/// - `RockyLinux` — Rocky Linux.
+/// - `Debian` — Debian GNU/Linux.
+/// - `Ubuntu` — Ubuntu.
+/// - `Kali` — Kali Linux.
+/// - `Other(String)` — a distribution not enumerated above, identified by a
+///   substrate-derived string.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**, **SA-12**.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Distro {
-    /// Red Hat Enterprise Linux.
     Rhel,
-
-    /// Fedora Linux.
     Fedora,
-
-    /// CentOS Stream or CentOS Linux.
     CentOs,
-
-    /// AlmaLinux OS.
     AlmaLinux,
-
-    /// Rocky Linux.
     RockyLinux,
-
-    /// Debian GNU/Linux.
     Debian,
-
-    /// Ubuntu.
     Ubuntu,
-
-    /// Kali Linux.
     Kali,
-
-    /// A distribution not enumerated above, identified by a substrate-derived string.
     Other(String),
 }
 
@@ -115,16 +103,19 @@ pub enum Distro {
 /// disagree, `corroborated` is `false` and the discrepancy is recorded in the
 /// `EvidenceBundle`.
 ///
-/// NIST SP 800-53 CM-8 — system component inventory; the kernel version is
-/// a required inventory field. Corroboration from two sources strengthens the
-/// claim.
+/// ## Fields:
+///
+/// - `release` — the kernel release string (e.g., `"5.14.0-503.23.1.el9_5.x86_64"`).
+/// - `corroborated` — `true` if both `uname(2)` and `/proc/sys/kernel/osrelease` agreed;
+///   `false` if only one source was available or they disagreed.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**: kernel version is a required component inventory field;
+///   corroboration from two sources strengthens the claim.
 #[derive(Debug, Clone)]
 pub struct KernelRelease {
-    /// The kernel release string (e.g., `"5.14.0-503.23.1.el9_5.x86_64"`).
     pub release: String,
-
-    /// `true` if both `uname(2)` and `/proc/sys/kernel/osrelease` agreed on
-    /// this string. `false` if only one source was available or they disagreed.
     pub corroborated: bool,
 }
 
@@ -135,8 +126,10 @@ pub struct KernelRelease {
 /// Parse error returned when a kernel release string does not contain a
 /// recognisable `MAJOR.MINOR.PATCH` prefix.
 ///
-/// NIST SP 800-53 SI-10 — input validation; construction fails on malformed
-/// input rather than silently defaulting.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-10 — input validation; construction fails on malformed
+///   input rather than silently defaulting.
 #[derive(Debug, Clone, PartialEq, Eq, Error)]
 #[error("not a valid MAJOR.MINOR.PATCH kernel version: {0:?}")]
 pub struct KernelVersionParseError(String);
@@ -165,16 +158,21 @@ pub struct KernelVersionParseError(String);
 /// assert!(running >= baseline);
 /// ```
 ///
-/// NIST SP 800-53 CM-8 — typed kernel version for component inventory.
-/// NIST SP 800-53 CA-7 — catalog currency check uses this type to compare
-/// the running kernel against the baseline the indicator catalog targets.
+/// ## Fields:
+///
+/// - `major` — Linux kernel major version number.
+/// - `minor` — Linux kernel minor version number.
+/// - `patch` — Linux kernel patch-level version number.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**: typed kernel version for component inventory.
+/// - **NIST SP 800-53 CA-7**: catalog currency check uses this type to compare the running
+///   kernel against the baseline the indicator catalog targets.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct KernelVersion {
-    /// Linux kernel major version number.
     pub major: u32,
-    /// Linux kernel minor version number.
     pub minor: u32,
-    /// Linux kernel patch-level version number.
     pub patch: u32,
 }
 
@@ -193,8 +191,10 @@ impl FromStr for KernelVersion {
     /// three dot-separated decimal integers. Fails closed — no partial result
     /// on error.
     ///
-    /// NIST SP 800-53 SI-10 — input validated at construction; callers receive
-    /// a `Result`, not a silently degraded default.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10 — input validated at construction; callers receive
+    ///   a `Result`, not a silently degraded default.
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let err = || KernelVersionParseError(s.chars().take(64).collect());
 
@@ -235,19 +235,19 @@ impl fmt::Display for KernelVersion {
 ///
 /// `Unknown(u16)` preserves the raw ELF `e_machine` value for audit records
 /// when the architecture is not in this enumeration.
+///
+/// ## Variants:
+///
+/// - `X86_64` — `x86_64` / `amd64`; ELF `e_machine` = 62 (`EM_X86_64`).
+/// - `Aarch64` — `aarch64` / `arm64`; ELF `e_machine` = 183 (`EM_AARCH64`).
+/// - `Riscv64` — `riscv64`; ELF `e_machine` = 243 (`EM_RISCV`).
+/// - `Unknown(u16)` — an architecture not enumerated above; the inner value is the raw ELF
+///   `e_machine` field, preserved for audit records.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CpuArch {
-    /// `x86_64` / `amd64` — ELF `e_machine` = 62 (`EM_X86_64`).
     X86_64,
-
-    /// `aarch64` / `arm64` — ELF `e_machine` = 183 (`EM_AARCH64`).
     Aarch64,
-
-    /// `riscv64` — ELF `e_machine` = 243 (`EM_RISCV`).
     Riscv64,
-
-    /// An architecture not enumerated above. The inner value is the raw ELF
-    /// `e_machine` field, preserved for audit records.
     Unknown(u16),
 }
 
@@ -265,33 +265,31 @@ pub enum CpuArch {
 /// (`SubstrateAnchored`) trust tier requirement. Callers must not assert T3
 /// with fewer than two corroborating facts.
 ///
-/// NIST SP 800-53 CM-8 — component inventory; SA-12 — supply chain risk.
-/// NSA RTB — identity must be derived from multiple independent facts.
+/// ## Fields:
+///
+/// - `family` — high-level OS family derived from which package substrate was probed.
+/// - `distro` — specific distribution identity, if the probe could determine it.
+/// - `version_id` — version identifier from the release package in the substrate
+///   (e.g., `"10"` from `redhat-release-10.0-1.el10.aarch64`), independent of
+///   the `VERSION_ID=` field in `os-release`.
+/// - `facts_count` — number of independent corroborating facts gathered from the substrate.
+///   Must reach ≥2 before T3 (`SubstrateAnchored`) can be asserted. Incremented via
+///   `add_fact()` using `saturating_add(1)` (ANSSI Secure Rust Coding Guide: arithmetic on
+///   security values must be explicit).
+/// - `probe_used` — the probe implementation that produced this identity; one of `"rpm"`,
+///   `"dpkg"`, `"pacman"`, or `"unknown"`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**: component inventory.
+/// - **NIST SP 800-53 SA-12**: supply chain risk.
+/// - **NSA RTB**: identity must be derived from multiple independent facts.
 #[derive(Debug, Clone)]
 pub struct SubstrateIdentity {
-    /// High-level OS family derived from which package substrate was probed.
     pub family: OsFamily,
-
-    /// Specific distribution identity, if the probe could determine it.
     pub distro: Option<Distro>,
-
-    /// Version identifier from the release package in the substrate
-    /// (e.g., `"10"` from `redhat-release-10.0-1.el10.aarch64`).
-    /// This is independent of the `VERSION_ID=` field in `os-release`.
     pub version_id: Option<String>,
-
-    /// Number of independent corroborating facts gathered from the substrate.
-    ///
-    /// Must reach ≥2 before T3 (`SubstrateAnchored`) can be asserted.
-    /// Incremented exclusively via [`SubstrateIdentity::add_fact`], which uses
-    /// `saturating_add(1)` to prevent overflow in release builds regardless of
-    /// the workspace `overflow-checks` setting (ANSSI Secure Rust Coding Guide:
-    /// integer overflow must be handled explicitly rather than relying on
-    /// debug-mode overflow checks, which are absent in release builds).
     pub facts_count: u8,
-
-    /// The probe implementation that produced this identity.
-    /// One of `"rpm"`, `"dpkg"`, `"pacman"`, or `"unknown"`.
     pub probe_used: &'static str,
 }
 
@@ -303,8 +301,10 @@ impl SubstrateIdentity {
     /// profile. A saturated count (255) correctly communicates "many facts"
     /// and never wraps to zero.
     ///
-    /// ANSSI Rust Secure Coding Guide — checked/saturating arithmetic MUST be
-    /// used for all integer operations on security-relevant values.
+    /// ## Compliance
+    ///
+    /// - ANSSI Rust Secure Coding Guide — checked/saturating arithmetic MUST be
+    ///   used for all integer operations on security-relevant values.
     pub const fn add_fact(&mut self) {
         self.facts_count = self.facts_count.saturating_add(1);
     }

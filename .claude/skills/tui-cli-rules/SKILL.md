@@ -44,3 +44,42 @@ operator — that IS a security-relevant outcome.
 **Hardcoded path prohibition:** TUI/CLI tools MUST NOT hardcode policy-variant paths
 (e.g., `/etc/selinux/targeted/secolor.conf`). Query the active policy name from the kernel
 and construct paths dynamically. Today's targeted policy is tomorrow's MLS policy.
+
+## Popup and Panel Right-Margin Discipline
+
+Text must never sit flush against a popup, panel, or dialog border. Every row needs a
+visible one-cell gap between its content (value, ellipsis, hash tail, table column) and
+the right border character. This has been a recurring bug — it is now a rule.
+
+[RULE] Every bordered renderer MUST reserve the right-margin gap at the rendering
+boundary, not per row-variant.
+
+- Bordered renderers in `libs/umrs-ui/` (popup, data panel, pinned pane, dialog)
+  MUST compute their content rect by shrinking the block's inner rect by one cell on
+  the right. The canonical helper is `popup::reserve_right_margin(rect)`.
+- Render the `Block` and the `Paragraph` separately. Do NOT attach the block to the
+  paragraph via `.block(block)` when you need the margin — ratatui will use
+  `block.inner()` verbatim and you lose control of the content rect.
+- Row-variant renderers (`data_row_to_line`, `build_key_value_line`, and friends) MUST
+  NOT compute per-arm margin. The reservation is upstream; each arm just fills its
+  budget.
+
+[ANTI-PATTERN] Computing `val_width = scroll_area.width - col_width - 3` (or any
+per-arm subtraction) and trusting each match arm to get the math right. Off-by-one
+bugs keep returning this way — six match arms, six chances to miscount.
+
+### Long content (hash digests, paths)
+
+- Content wider than the narrowest supported popup (e.g., SHA-384 at 96 hex chars on a
+  100-col terminal) MUST be split across multiple lines at build time — before it ever
+  reaches the renderer. Do not rely on the renderer to truncate cryptographic values.
+- Paths that may exceed the value column MUST use the shared left/right ellipsis
+  truncation (`libs/umrs-ui/src/text_fit.rs`). The ellipsis glyph is `…` (U+2026);
+  never three ASCII dots.
+
+### Regression protection
+
+Every bordered renderer that accepts arbitrary content SHOULD have a TestBackend-based
+test that renders overwide content at several widths and asserts the rightmost content
+column of every non-border row is blank. See
+`libs/umrs-ui/tests/popup_right_margin_tests.rs` as the reference pattern.

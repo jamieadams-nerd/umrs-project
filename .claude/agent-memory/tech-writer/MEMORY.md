@@ -98,6 +98,9 @@ See [feedback_raw_notes_in_pages.md](feedback_raw_notes_in_pages.md).
 - `foundations/history/mls-classified-talk.adoc` — placeholder stub, content pending
 - "targeted policy" is the consistent term (not "targeted mode")
 
+## Standards Terminology (2026-04-18)
+- [FHS/LSB/systemd familiarization](standards-terminology-familiarization.md) — canonical terms, citation patterns, three-source UID rule, skill drift warnings
+
 ## umrs-c2pa Module (2026-04-01)
 Source at `components/rusty-gadgets/umrs-c2pa/`. Binary named `umrs-c2pa` (not `inspect`).
 Antora page: `docs/modules/umrs-tools/pages/umrs-c2pa.adoc`. Nav section: "Media Provenance".

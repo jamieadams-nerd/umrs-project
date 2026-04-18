@@ -36,19 +36,7 @@
 //! this ceiling. All arithmetic operations use `checked_*` to prevent any
 //! theoretical overflow from producing a silent incorrect value.
 //!
-//! ## Compliance
-//!
-//! - **NIST SP 800-53 AU-3**: Audit Record Content — timestamps provide the
-//!   temporal ordering and precision required for complete, non-repudiable audit
-//!   records in MLS environments.
-//! - **NIST SP 800-53 AU-8**: Time Stamps — high-resolution monotonic source
-//!   ensures audit record sequence is preserved without NTP correction interference.
-//! - **NIST SP 800-53 AU-12**: Audit Record Generation — each call to
-//!   [`BootSessionTimestamp::now`] generates a unique, ordered reference point
-//!   suitable for event sequencing.
-//! - **NSA RTB**: Deterministic Execution — fixed-size stack-allocated types
-//!   with no heap allocation; arithmetic uses checked operations to prevent
-//!   silent overflow.
+#![doc = include_str!("../docs/compliance-timestamp.md")]
 
 use rustix::time::{ClockId, clock_gettime};
 use std::fmt;
@@ -65,8 +53,9 @@ use std::fmt;
 /// The inner value is nanoseconds. All arithmetic uses `checked_*` operations
 /// to prevent silent overflow.
 ///
-/// NIST SP 800-53 AU-8: Time Stamps — duration values support audit record
-/// interval analysis.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-8 — duration values support audit record interval analysis.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BootSessionDuration(u64);
 
@@ -123,28 +112,31 @@ impl fmt::Display for BootSessionDuration {
 
 /// Error type for timestamp construction failures.
 ///
-/// NIST SP 800-53 AU-3: errors in timestamp acquisition must be surfaced
-/// explicitly — callers must decide how to handle missing temporal context
-/// rather than silently continuing with no ordering reference.
+/// ## Variants:
+///
+/// - `NegativeSecs(i64)` — the `tv_sec` field from `clock_gettime` was negative, indicating
+///   a clock not yet initialized or a platform inconsistency. Fail-closed: a negative
+///   seconds value cannot produce a valid boot-session timestamp.
+/// - `NegativeNsecs(i64)` — the `tv_nsec` field from `clock_gettime` was negative or out
+///   of range `[0, 999_999_999]`.
+/// - `Overflow` — the computed nanosecond count overflowed `u64`. Cannot occur in practice
+///   (a `u64` nanosecond counter overflows after approximately 584 years of uptime), but
+///   included to ensure arithmetic is provably correct — any overflow is an error, not
+///   undefined behavior.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: errors in timestamp acquisition must be surfaced explicitly —
+///   callers must decide how to handle missing temporal context rather than silently
+///   continuing with no ordering reference.
 #[derive(Debug, thiserror::Error)]
 pub enum TimestampError {
-    /// The `tv_sec` field from `clock_gettime` was negative, which indicates
-    /// a clock that has not yet been initialized or a platform inconsistency.
-    /// Fail-closed: a negative seconds value cannot produce a valid boot-session
-    /// timestamp.
     #[error("clock_gettime returned negative tv_sec: {0}")]
     NegativeSecs(i64),
 
-    /// The `tv_nsec` field from `clock_gettime` was negative or out of range
-    /// `[0, 999_999_999]`.
     #[error("clock_gettime returned out-of-range tv_nsec: {0}")]
     NegativeNsecs(i64),
 
-    /// The computed nanosecond count overflowed `u64`.
-    ///
-    /// This cannot occur in practice: a `u64` nanosecond counter would overflow
-    /// after approximately 584 years of uptime. Included to ensure arithmetic
-    /// is provably correct — any overflow is an error, not undefined behavior.
     #[error("timestamp nanosecond value overflowed u64")]
     Overflow,
 }
@@ -175,9 +167,11 @@ pub enum TimestampError {
 /// All operations on this type are stack-allocated and heap-free. The inner
 /// representation is a single `u64` nanosecond count.
 ///
-/// NIST SP 800-53 AU-3, AU-8, AU-12 — audit record completeness, time stamps,
-/// and audit record generation.
-/// NSA RTB Deterministic Execution; NIST SP 800-218 SSDF PW.4.1.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-3, AU-8, AU-12 — audit record completeness, time stamps,
+///   and audit record generation.
+/// - NSA RTB Deterministic Execution; NIST SP 800-218 SSDF PW.4.1.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct BootSessionTimestamp(u64);
 
@@ -190,8 +184,10 @@ impl BootSessionTimestamp {
     /// Fails closed on any value that cannot be safely converted to a `u64`
     /// nanosecond count — negative `tv_sec`, negative `tv_nsec`, or overflow.
     ///
-    /// NIST SP 800-53 AU-12: Audit Record Generation — each call generates an
-    /// ordered reference point for event sequencing.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-12 — each call generates an ordered reference point
+    ///   for event sequencing.
     ///
     /// # Errors
     ///
@@ -247,10 +243,10 @@ impl BootSessionTimestamp {
     /// out of order) or if the subtraction overflows. This is fail-closed: any
     /// ambiguity returns `None` rather than a potentially wrong duration.
     ///
-    /// NIST SP 800-218 SSDF PW.4.1 — checked subtraction prevents silent underflow.
+    /// ## Compliance
     ///
-    /// NIST SP 800-53 AU-8: Time Stamps — elapsed duration supports audit
-    /// record interval analysis.
+    /// - NIST SP 800-218 SSDF PW.4.1 — checked subtraction prevents silent underflow.
+    /// - NIST SP 800-53 AU-8 — elapsed duration supports audit record interval analysis.
     #[must_use = "elapsed_since result must be examined — None indicates ordering violation or overflow"]
     pub fn elapsed_since(self, earlier: Self) -> Option<BootSessionDuration> {
         self.0.checked_sub(earlier.0).map(BootSessionDuration)

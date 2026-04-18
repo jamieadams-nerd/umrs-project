@@ -67,6 +67,20 @@ use crate::verbose;
 /// Both digests are computed via system OpenSSL, using the FIPS 140-2/3
 /// validated module on RHEL 10. SHA-384 is provided for CNSA 2.0 readiness.
 ///
+/// ## Fields:
+///
+/// - `source_path` — original file path.
+/// - `output_path` — output file path (signed copy).
+/// - `sha256` — SHA-256 hex digest of the source file bytes, computed at ingest time via system
+///   OpenSSL from the same buffer used for signing.
+/// - `sha384` — SHA-384 hex digest of the source file bytes, computed at ingest time via system
+///   OpenSSL; provided for CNSA 2.0 readiness alongside SHA-256.
+/// - `had_manifest` — whether the file had an existing C2PA manifest on arrival.
+/// - `action` — the C2PA action label applied by UMRS (acquired or published).
+/// - `previous_signer` — signer name of the previous last entry in the chain, if any.
+/// - `previous_signed_at` — signing timestamp of the previous last entry, if any.
+/// - `is_ephemeral` — whether UMRS signed with an ephemeral (test) cert.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AU-10**: Non-repudiation — this struct is the evidence
@@ -81,34 +95,14 @@ use crate::verbose;
               integrity digests are silently lost"]
 #[derive(Debug)]
 pub struct IngestResult {
-    /// Original file path.
     pub source_path: PathBuf,
-
-    /// Output file path (signed copy).
     pub output_path: PathBuf,
-
-    /// SHA-256 hex digest of the source file bytes, computed at ingest time.
-    /// Computed via system OpenSSL from the same buffer used for signing.
     pub sha256: String,
-
-    /// SHA-384 hex digest of the source file bytes, computed at ingest time.
-    /// Computed via system OpenSSL from the same buffer used for signing.
-    /// Provided for CNSA 2.0 readiness alongside SHA-256.
     pub sha384: String,
-
-    /// Whether the file had an existing C2PA manifest on arrival.
     pub had_manifest: bool,
-
-    /// The C2PA action label applied by UMRS (acquired or published).
     pub action: String,
-
-    /// Signer name of the previous last entry in the chain (if any).
     pub previous_signer: Option<String>,
-
-    /// Signing timestamp of the previous last entry (if any).
     pub previous_signed_at: Option<String>,
-
-    /// Whether UMRS signed with an ephemeral (test) cert.
     pub is_ephemeral: bool,
 }
 

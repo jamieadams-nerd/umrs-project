@@ -59,6 +59,18 @@ use crate::theme::{Theme, style_hint_color};
 /// Controls the popup's proportional size and clamped bounds.  Pass a value
 /// of this type to [`render_popup_frame`] to compute and draw the frame.
 ///
+/// ## Fields:
+///
+/// - `title` — title text displayed centered in the top border.
+/// - `hint` — hint line text shown dim at the bottom of the popup content area;
+///   typically a key legend such as `"[ESC] close"`.
+/// - `width_pct` — target popup width as a fraction of the terminal width (0.0–1.0).
+/// - `height_pct` — target popup height as a fraction of the terminal height (0.0–1.0).
+/// - `min_width` — minimum popup width in columns.
+/// - `max_width` — maximum popup width in columns.
+/// - `min_height` — minimum popup height in rows.
+/// - `max_height` — maximum popup height in rows.
+///
 /// ## Compliance
 ///
 /// - **NSA RTB**: Bounds are expressed as clamped percentages; there is no
@@ -66,23 +78,13 @@ use crate::theme::{Theme, style_hint_color};
 #[derive(Debug, Clone)]
 #[must_use = "PopupConfig must be passed to render_popup_frame; discarding it skips all popup rendering"]
 pub struct PopupConfig {
-    /// Title text displayed centered in the top border.
     pub title: &'static str,
-    /// Hint line text shown dim at the bottom of the popup content area.
-    ///
-    /// Typically a key legend such as `"[ESC] close"`.
     pub hint: &'static str,
-    /// Target popup width as a fraction of the terminal width (0.0–1.0).
     pub width_pct: f32,
-    /// Target popup height as a fraction of the terminal height (0.0–1.0).
     pub height_pct: f32,
-    /// Minimum popup width in columns.
     pub min_width: u16,
-    /// Maximum popup width in columns.
     pub max_width: u16,
-    /// Minimum popup height in rows.
     pub min_height: u16,
-    /// Maximum popup height in rows.
     pub max_height: u16,
 }
 
@@ -290,10 +292,13 @@ pub fn render_marking_detail_popup(
     };
 
     let content_area = render_popup_frame(frame, area, &config, theme);
+    // Reserve the right-margin cell at the rendering boundary; see
+    // `reserve_right_margin` for the rationale.
+    let content_rect = reserve_right_margin(content_area);
 
-    let lines = build_detail_lines(data, theme, content_area.width as usize);
+    let lines = build_detail_lines(data, theme, content_rect.width as usize);
     let paragraph = Paragraph::new(lines).scroll((scroll_offset, 0));
-    frame.render_widget(paragraph, content_area);
+    frame.render_widget(paragraph, content_rect);
 }
 
 // ---------------------------------------------------------------------------
@@ -327,10 +332,15 @@ pub fn render_audit_card_popup(
     let config = PopupConfig {
         title: "FILE SECURITY AUDIT",
         hint: "  [ESC/q] close  [TAB/\u{2192}] next tab  [\u{2191}\u{2193}/j/k] scroll",
-        width_pct: 0.75,
+        // SHA-384 continuation row is 96 hex chars + leading/trailing padding
+        // = 101 cells of content. The popup must be at least 103 cells wide
+        // (content + 2 border cells) for the trailing margin to survive.
+        // width_pct is set high and max_width is generous so that on any
+        // terminal ≥ 120 cols the popup reaches the width SHA-384 needs.
+        width_pct: 0.90,
         height_pct: 0.70,
         min_width: 68,
-        max_width: 100,
+        max_width: 120,
         min_height: 18,
         max_height: 35,
     };
@@ -404,6 +414,14 @@ pub fn render_audit_card_popup(
     frame.render_widget(Paragraph::new(Line::from(tab_spans)), tab_bar_area);
 
     // ── Scrollable content ─────────────────────────────────────────────────
+    //
+    // Reserve one cell on the right as a hard right-margin gap. Rendering
+    // into this narrowed rect is the single source of truth for the margin:
+    // every row-variant in `data_row_to_line` inherits it automatically,
+    // eliminating the class of off-by-one bugs where an individual arm
+    // computed its own padding and ended up flush against the popup border.
+    let content_rect = reserve_right_margin(scroll_area);
+
     let rows = app.rows_for_tab(active_tab);
     // Compute key column width dynamically from the actual rows so that
     // padding aligns consistently regardless of key string lengths.
@@ -422,11 +440,38 @@ pub fn render_audit_card_popup(
         })
         .max()
         .unwrap_or(16);
-    let val_width = usize::from(scroll_area.width).saturating_sub(col_width).saturating_sub(3);
+    // Budget for the value column inside `content_rect`. The right-margin
+    // reservation has already been subtracted by `reserve_right_margin`,
+    // so this is the pure prefix cost: 1 (leading space) + col_width + 3 (" : ").
+    let val_width = usize::from(content_rect.width).saturating_sub(col_width).saturating_sub(4);
     let lines: Vec<Line<'_>> =
         rows.iter().map(|row| data_row_to_line(row, col_width, val_width, theme)).collect();
     let content = Paragraph::new(lines).scroll((scroll_offset, 0));
-    frame.render_widget(content, scroll_area);
+    frame.render_widget(content, content_rect);
+}
+
+// ---------------------------------------------------------------------------
+// reserve_right_margin
+// ---------------------------------------------------------------------------
+
+/// Return `rect` with its width reduced by one cell on the right.
+///
+/// Centralises the single-cell right-margin reservation that every popup
+/// content renderer inherits. Any paragraph rendered into the returned rect
+/// is guaranteed to leave the rightmost column of the original rect blank —
+/// the visual gap between content and the popup border.
+///
+/// This exists so the margin is a property of the rendering boundary, not
+/// something each row-variant has to recompute. Adding a new row type can
+/// never regress the margin because the narrowed rect is enforced upstream.
+///
+/// ## Compliance
+///
+/// - **NSA RTB**: Uses `saturating_sub` so a zero-width rect is impossible to
+///   produce; narrowing degenerates gracefully rather than overflowing.
+#[must_use]
+pub(crate) const fn reserve_right_margin(rect: Rect) -> Rect {
+    Rect::new(rect.x, rect.y, rect.width.saturating_sub(1), rect.height)
 }
 
 // ---------------------------------------------------------------------------
@@ -479,10 +524,7 @@ pub fn data_row_to_line<'a>(
                 } else {
                     format!("{value} ")
                 };
-                return Line::from(vec![
-                    Span::raw(" "),
-                    Span::styled(value_display, val_style),
-                ]);
+                return Line::from(vec![Span::raw(" "), Span::styled(value_display, val_style)]);
             }
 
             let key_style = theme.data_key;

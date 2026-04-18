@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 // ============================================================================
 // UMRS EXAMPLE: High-Assurance xattr Retrieval and TPI Validation
 // ============================================================================

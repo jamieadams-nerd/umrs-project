@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 use log::LevelFilter;
 use std::str::FromStr;
 use systemd_journal_logger::JournalLog;

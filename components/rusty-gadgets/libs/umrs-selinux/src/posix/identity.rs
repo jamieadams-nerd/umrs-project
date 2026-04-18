@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! # POSIX Linux Identity Types
 //!
 //! Strong types for POSIX Linux usernames, group names, and numeric identity.
@@ -59,27 +61,28 @@ const POSIX_NAME_MAX_LEN: usize = 32;
 /// so that callers can produce precise diagnostics. This matters for audit
 /// logging — "invalid character" is not a useful audit event; the exact
 /// character and position is.
+///
+/// ## Variants:
+///
+/// - `Empty` — identifier was empty.
+/// - `TooLong { max: usize, got: usize }` — identifier exceeded maximum allowed length; `max` is
+///   the limit, `got` is the actual length supplied.
+/// - `InvalidFirstChar(char)` — first character violated the `[a-zA-Z_]` rule.
+/// - `InvalidChar { ch: char, position: usize }` — a character at a specific position violated
+///   the allowed set; `ch` is the offending character, `position` is its byte offset.
+/// - `ContainsNull` — identifier contained a null byte; always rejected for C FFI safety.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum PosixNameError {
-    /// Identifier was empty.
     Empty,
-
-    /// Identifier exceeded maximum allowed length.
     TooLong {
         max: usize,
         got: usize,
     },
-
-    /// First character violated the [a-zA-Z_] rule.
     InvalidFirstChar(char),
-
-    /// A character at a specific position violated the allowed set.
     InvalidChar {
         ch: char,
         position: usize,
     },
-
-    /// Identifier contained a null byte — always rejected for C FFI safety.
     ContainsNull,
 }
 
@@ -406,11 +409,15 @@ impl std::ops::Deref for LinuxGroupName {
 /// This distinction matters for security tooling: a file owned by uid 1337
 /// with no resolvable name is itself a finding — it should be surfaced as
 /// such, not silently omitted or substituted with a placeholder string.
+///
+/// ## Fields:
+///
+/// - `uid` — numeric user ID; authoritative kernel identity.
+/// - `name` — resolved username, if available; `None` if resolution was not performed or the uid
+///   has no name database entry (orphaned file owner).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LinuxUser {
-    /// Numeric user ID — authoritative kernel identity.
     pub uid: crate::posix::primitives::Uid,
-    /// Resolved username, if available.
     pub name: Option<LinuxUsername>,
 }
 
@@ -467,11 +474,15 @@ impl fmt::Display for LinuxUser {
 ///
 /// Same design rationale as `LinuxUser` — gid is ground truth, name is a
 /// lookup result.
+///
+/// ## Fields:
+///
+/// - `gid` — numeric group ID; authoritative kernel identity.
+/// - `name` — resolved group name, if available; `None` if resolution was not performed or the
+///   gid has no name database entry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct LinuxGroup {
-    /// Numeric group ID — authoritative kernel identity.
     pub gid: crate::posix::primitives::Gid,
-    /// Resolved group name, if available.
     pub name: Option<LinuxGroupName>,
 }
 
@@ -678,6 +689,69 @@ impl fmt::Display for UserIdentity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}:{}", self.username, self.primary_group)
     }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// current_username — process-level session identity
+//
+// Separate from LinuxOwnership::resolve (which is for filesystem objects).
+// This resolves the *running process owner* for TUI header / audit display.
+// ────────────────────────────────────────────────────────────────────────────
+
+/// Resolve the current process's username for display in TUI headers and
+/// operator-facing session lines.
+///
+/// Resolution order:
+///
+/// 1. `USER` environment variable — preferred for interactive sessions.
+///    If set to a non-empty value, returned as-is without NSS lookup.
+///    (`DIRECT-IO-EXCEPTION`: `USER` is read for UX-only session display.
+///    No security decision is derived from this value. It is user-controlled
+///    and not validated beyond being non-empty.)
+/// 2. NSS lookup via `getuid()` → `/etc/passwd` (plus any configured name
+///    service: LDAP, SSSD, etc.).  Used when `USER` is absent or empty —
+///    common in non-interactive sessions, daemons, and containers.
+/// 3. `"(orphan)"` sentinel — emitted when both sources fail.  Matches the
+///    file-owner orphan convention used by `umrs_ls::identity::ORPHAN_SENTINEL`
+///    and makes the degraded environment visible rather than silently folding
+///    it into a numeric uid string.
+///
+/// The `None`-means-orphan signal from the NSS lookup is preserved at this
+/// layer; callers that need the typed `LinuxUser` should call
+/// [`LinuxOwnership::resolve`] directly.
+///
+/// # Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Audit Record Content — subject identity is a
+///   required field in session audit records; this function provides the
+///   operator-visible subject for every TUI session header.
+/// - **NIST SP 800-53 IA-2**: Identification and Authentication — visible
+///   identification of the running user supports operator accountability.
+#[must_use = "returns the current session username; discarding it wastes the NSS lookup"]
+pub fn current_username() -> String {
+    use nix::unistd::{Uid as NixUid, User as NixUser};
+
+    // Step 1: USER env var (UX-only, DIRECT-IO-EXCEPTION — see doc comment)
+    if let Ok(val) = std::env::var("USER")
+        && !val.is_empty()
+    {
+        return val;
+    }
+
+    // Step 2: NSS resolution via getuid()
+    let uid = NixUid::current();
+    if let Ok(Some(entry)) = NixUser::from_uid(uid)
+        && !entry.name.is_empty()
+    {
+        return entry.name;
+    }
+
+    // Step 3: orphan sentinel — uid has no NSS entry; surface as visible anomaly
+    log::warn!(
+        "current_username: uid {} has no NSS entry; session identity unresolvable",
+        uid.as_raw()
+    );
+    "(orphan)".to_owned()
 }
 
 // ────────────────────────────────────────────────────────────────────────────

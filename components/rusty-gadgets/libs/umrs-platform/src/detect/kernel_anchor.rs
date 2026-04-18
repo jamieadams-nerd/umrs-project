@@ -62,7 +62,9 @@ const MAX_PROC_READ: usize = 4_096;
 /// All reads use `ProcfsText` + `SecureReader::read_generic_text` for
 /// provenance-verified, fd-anchored procfs access.
 ///
-/// NIST SP 800-53 SI-7, SA-9, CM-6, CM-8.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7, SA-9, CM-6, CM-8.
 pub(super) fn run(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Integration tests for the xtask staging pipeline.
 //!
 //! Tests are placed in an external file (`xtask/tests/`) per project rules —

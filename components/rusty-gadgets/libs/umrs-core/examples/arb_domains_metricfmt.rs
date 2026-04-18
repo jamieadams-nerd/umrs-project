@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 use umrs_core::human::metricfmt::{PrefixStyle, auto_format};
 
 fn main() {

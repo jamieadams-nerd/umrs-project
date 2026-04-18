@@ -103,47 +103,44 @@ const SYS_MODULE_BASE: &str = "/sys/module";
 /// Exposed as `pub` to enable integration testing of the parser without
 /// filesystem interaction.
 ///
-/// NIST SP 800-53 CM-7: Least Functionality — `install <mod> /bin/true`
-/// is the sysadmin-standard mechanism for enforcing module load prevention.
-/// Detecting it closes the gap where a soft `blacklist` entry could be
-/// bypassed by an explicit `modprobe` call.
+/// ## Variants:
+///
+/// - `Options { module, params }` — `options <module> <param>=<value> [...]`.
+/// - `Blacklist { module }` — `blacklist <module>`: soft blacklist. Prevents automatic
+///   loading but can be bypassed by an explicit `modprobe` call.
+/// - `Install { module, command, is_hard_blacklist }` — `install <module> <command>`.
+///   When `command` is `/bin/true`, `/bin/false`, or `/usr/bin/true`, this is a hard
+///   blacklist: `modprobe <module>` executes the command instead of loading the module.
+///   `is_hard_blacklist` is `true` for these patterns. Other commands are recorded with
+///   `is_hard_blacklist: false` and logged for operator awareness.
+/// - `Comment` — comment or blank line; safely ignored.
+/// - `Unrecognised { keyword }` — recognised directive not handled in Phase 2b
+///   (`softdep`, `alias`, `override`); logged at debug and excluded from merged config.
+/// - `Malformed` — line is non-empty but does not match any known format.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-7**: `install <mod> /bin/true` is the sysadmin-standard
+///   mechanism for module load prevention; detecting it closes the gap where a soft
+///   `blacklist` entry could be bypassed by an explicit `modprobe` call.
 #[derive(Debug, PartialEq, Eq)]
 pub enum ParsedDirective<'a> {
-    /// `options <module> <param>=<value> [...]`
     Options {
         module: &'a str,
         params: Vec<(&'a str, &'a str)>,
     },
-    /// `blacklist <module>` — soft blacklist. Prevents automatic loading but
-    /// can be bypassed by an explicit `modprobe` call.
     Blacklist {
         module: &'a str,
     },
-    /// `install <module> <command>` — may be a hard blacklist.
-    ///
-    /// When `command` is `/bin/true`, `/bin/false`, or `/usr/bin/true`,
-    /// this is a hard blacklist: `modprobe <module>` silently succeeds but
-    /// the kernel's load request executes the command instead of loading the
-    /// module. The `is_hard_blacklist` field is `true` for these patterns.
-    ///
-    /// Other commands (e.g., `modprobe --ignore-install <module>`) are
-    /// complex redirections not equivalent to a blacklist. These are recorded
-    /// with `is_hard_blacklist: false` and logged for operator awareness.
     Install {
         module: &'a str,
         command: &'a str,
-        /// `true` if `command` is a recognised hard-blacklist sentinel
-        /// (`/bin/true`, `/bin/false`, or `/usr/bin/true`).
         is_hard_blacklist: bool,
     },
-    /// Comment or blank line — safely ignored.
     Comment,
-    /// Recognised directive not handled in Phase 2b (`softdep`, `alias`,
-    /// `override`).
     Unrecognised {
         keyword: &'a str,
     },
-    /// Line is non-empty but does not match any known format.
     Malformed,
 }
 
@@ -163,20 +160,26 @@ pub enum ParsedDirective<'a> {
 ///   (or `/bin/false`) directives. These redirect the kernel's load request
 ///   to a no-op command, preventing loading even with explicit `modprobe`.
 ///
-/// NIST SP 800-53 CM-6: provides the configured (persistence-layer) baseline for
-/// module parameter and blacklist contradiction detection.
-/// NIST SP 800-53 CM-7: Least Functionality — hard blacklist evidence distinguishes
-/// between bypass-resistant and bypass-susceptible module load prevention.
-/// NSA RTB RAIN: `ModprobeConfig` is constructed via a validated builder;
-/// callers receive a complete, validated value — not a partial `Result`.
+/// ## Fields:
+///
+/// - `options` — (private) `module_name → { param_name → (value, source_file) }`.
+/// - `blacklisted` — (private) `module_name → source_file`; soft-blacklisted modules
+///   via `blacklist <mod>` directives. Can be bypassed by explicit `modprobe`.
+/// - `hard_blacklisted` — (private) `module_name → source_file`; hard-blacklisted modules
+///   via `install <mod> /bin/true` or `/bin/false` directives. Bypass-resistant.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-6**: provides the configured (persistence-layer) baseline for
+///   module parameter and blacklist contradiction detection.
+/// - **NIST SP 800-53 CM-7**: hard blacklist evidence distinguishes between bypass-resistant
+///   and bypass-susceptible module load prevention.
+/// - **NSA RTB RAIN**: constructed via a validated builder; callers receive a complete,
+///   validated value — not a partial `Result`.
 #[must_use = "modprobe config carries module parameter findings — do not discard"]
 pub struct ModprobeConfig {
-    /// module_name → { param_name → (value, source_file) }
     options: HashMap<String, HashMap<String, (String, String)>>,
-    /// module_name → source_file (soft-blacklisted modules via `blacklist <mod>`)
     blacklisted: HashMap<String, String>,
-    /// module_name → source_file (hard-blacklisted modules via
-    /// `install <mod> /bin/true` or `install <mod> /bin/false`)
     hard_blacklisted: HashMap<String, String>,
 }
 
@@ -187,8 +190,10 @@ impl ModprobeConfig {
     /// `/etc/modprobe.d/` in ascending precedence order. Missing directories
     /// and unreadable files are silently skipped (logged at debug).
     ///
-    /// NIST SP 800-53 CM-6: collects the full configured baseline from all
-    /// modprobe.d persistence layers.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 CM-6: collects the full configured baseline from all
+    ///   modprobe.d persistence layers.
     #[must_use = "modprobe config must be examined for configured values"]
     pub fn load() -> Self {
         #[cfg(debug_assertions)]
@@ -243,10 +248,12 @@ impl ModprobeConfig {
 
     /// Look up the configured value for a module parameter.
     ///
-    /// Returns `Some(ConfiguredValue)` if a matching `options <module>
-    /// <param>=<value>` was found in any modprobe.d file, or `None` if absent.
+    /// Returns `Some(ConfiguredValue)` if a matching `options \<module\>
+    /// \<param>=\<value\>` was found in any modprobe.d file, or `None` if absent.
     ///
-    /// NIST SP 800-53 CM-6: returns the last-writer-wins effective configured value.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 CM-6: returns the last-writer-wins effective configured value.
     #[must_use = "module parameter configured value result must be examined"]
     pub fn get_option(&self, module: &str, param: &str) -> Option<ConfiguredValue> {
         self.options.get(module)?.get(param).map(|(value, source)| ConfiguredValue {
@@ -288,8 +295,10 @@ impl ModprobeConfig {
     /// invocation will silently succeed without loading the module. Soft
     /// blacklists (`blacklist <mod>`) can be bypassed by explicit modprobe.
     ///
-    /// NIST SP 800-53 CM-7: hard blacklist provides stronger load prevention
-    /// than soft blacklist; detecting it provides higher-confidence evidence.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 CM-7: hard blacklist provides stronger load prevention
+    ///   than soft blacklist; detecting it provides higher-confidence evidence.
     #[must_use = "hard blacklist check result must be examined — None means not hard-blacklisted"]
     pub fn is_hard_blacklisted(&self, module: &str) -> Option<bool> {
         if self.hard_blacklisted.contains_key(module) {
@@ -476,9 +485,11 @@ fn load_conf_file(
 /// Exposed as `pub` to enable integration testing of the parser without
 /// filesystem interaction.
 ///
-/// NIST SP 800-53 SI-10: Input Validation — fails closed on unrecognised content.
-/// NIST SP 800-53 CM-7: `install <mod> /bin/true` detection enables hard-blacklist
-/// evidence collection.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-10: Input Validation — fails closed on unrecognised content.
+/// - NIST SP 800-53 CM-7: `install <mod> /bin/true` detection enables hard-blacklist
+///   evidence collection.
 #[must_use = "modprobe.d line parse result must be examined — Malformed means the line is invalid"]
 pub fn parse_modprobe_line(line: &str) -> ParsedDirective<'_> {
     let trimmed = line.trim();
@@ -632,13 +643,15 @@ fn is_valid_module_name(name: &str) -> bool {
 /// which is a metadata operation. The actual parameter value read (below)
 /// is provenance-verified.
 ///
-/// NIST SP 800-53 CM-6: Trust Gate — do not attempt parameter reads when the
-/// module is absent.
-/// NIST SP 800-53 SI-10: Input Validation — `module_name` is validated against
-/// path-traversal characters before use. Module names containing `/`, `\0`, or
-/// `..` components are rejected; only the catalog-internal callers (which use
-/// compile-time constant names) are expected in practice, but the public API
-/// must guard against adversary-supplied input.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-6: Trust Gate — do not attempt parameter reads when the
+///   module is absent.
+/// - NIST SP 800-53 SI-10: Input Validation — `module_name` is validated against
+///   path-traversal characters before use. Module names containing `/`, `\0`, or
+///   `..` components are rejected; only the catalog-internal callers (which use
+///   compile-time constant names) are expected in practice, but the public API
+///   must guard against adversary-supplied input.
 ///
 /// Returns `false` immediately for an empty `module_name` or a name containing
 /// path-traversal characters, to prevent path construction anomalies.
@@ -684,10 +697,12 @@ pub fn is_module_loaded(module_name: &str) -> bool {
 /// come from compile-time catalog constants and are safe; this guard protects
 /// the public API surface against adversary-supplied names.
 ///
-/// NIST SP 800-53 SI-7: provenance-verified via `SYSFS_MAGIC`.
-/// NIST SP 800-53 SI-10: Input Validation — module and param names are
-/// validated against path-traversal characters before path construction.
-/// NSA RTB RAIN: Non-bypassable path through `SysfsText` + `SecureReader`.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: provenance-verified via `SYSFS_MAGIC`.
+/// - NIST SP 800-53 SI-10: Input Validation — module and param names are
+///   validated against path-traversal characters before path construction.
+/// - NSA RTB RAIN: Non-bypassable path through `SysfsText` + `SecureReader`.
 ///
 /// # Errors
 ///
@@ -751,8 +766,10 @@ pub fn read_module_param(module_name: &str, param_name: &str) -> io::Result<Opti
 /// - Module present in sysfs → `LiveValue::Bool(false)` (module loaded despite
 ///   potential blacklist entry).
 ///
-/// NIST SP 800-53 CM-6: contradiction detection for module blacklist state.
-/// NIST SP 800-53 AU-3: structured evidence for audit.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-6: contradiction detection for module blacklist state.
+/// - NIST SP 800-53 AU-3: structured evidence for audit.
 #[must_use = "blacklist configured-value result must be examined"]
 pub fn blacklist_configured_value(
     module_name: &str,
@@ -775,8 +792,10 @@ pub fn blacklist_configured_value(
 /// **Trust Gate**: returns `(configured, None)` without attempting a sysfs read
 /// if `is_module_loaded(module_name)` is false.
 ///
-/// NIST SP 800-53 CM-6: Trust Gate and configured-value lookup.
-/// NIST SP 800-53 SI-7: sysfs parameter read provenance-verified via SYSFS_MAGIC.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-6: Trust Gate and configured-value lookup.
+/// - NIST SP 800-53 SI-7: sysfs parameter read provenance-verified via SYSFS_MAGIC.
 #[must_use = "module param evaluation result must be examined"]
 pub fn param_configured_and_live(
     module_name: &str,

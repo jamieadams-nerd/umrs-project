@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Crate-level prelude for `umrs-core`.
 //!
 //! Re-exports the most commonly used console primitives so downstream crates

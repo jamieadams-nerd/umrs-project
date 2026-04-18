@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 use umrs_selinux::user::{SelinuxUser, UserError};
 
 #[test]

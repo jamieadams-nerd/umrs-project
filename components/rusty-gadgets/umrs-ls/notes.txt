@@ -1,0 +1,101 @@
+Code Review:
+
+
+# Missing copyright 
+Some source code files are missing copyright informaiton at the top of the file:
+
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
+
+
+# Cluttered enumerations
+Some enumerations don't read well because of inline comments. The inidividual
+variants shouuld be at the introduction of the enum, not next to each variants:
+
+Do not do this:
+```
+/// Classification of a sibling file relative to its base.
+///
+/// Used by display and JSON layers to render kind-specific labels
+/// (e.g., "3 rotations, 1 signature").
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SiblingKind {
+    /// Numeric rotation suffix: `.1`, `.2`, `-20260301`.
+    Rotation,
+    /// Compressed rotation: `.1.gz`, `.2.xz`, `.gz`, `.bz2`, `.xz`, `.zst`.
+    CompressedRotation,
+    /// Detached signature: `.sig`, `.asc`, `.p7s`.
+    Signature,
+    /// Integrity checksum: `.sha256`, `.sha512`, `.md5`.
+    Checksum,
+    /// Backup copy: `.bak`, `.orig`, `.old`.
+    Backup,
+    /// Any other sibling that matches the prefix rule.
+    Related,
+}
+```
+
+Do this instead of possible:
+```
+/// Classification of a sibling file relative to its base.
+///
+/// Used by display and JSON layers to render kind-specific labels
+/// (e.g., "3 rotations, 1 signature").
+/// 
+/// ## Variants:
+/// * rotation - Numeric suffix: `.1`, `.2`, `-20260301`.
+/// * compressed - `.1.gz`, `.2.xz`, `.gz`, `.bz2`, `.xz`, `.zst`.
+/// * signature - Detached sig `.sig`, `.asc`, `.p7s`.
+/// * Integrity checksum - `.sha256`, `.sha512`, `.md5`
+/// * Backup copy - `.bak`, `.orig`, `.old`.
+/// * related - Any other sibling that matches the prefix rule.
+///
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum SiblingKind {
+    Rotation,
+    CompressedRotation,
+    Signature,
+    Checksum,
+    Backup,
+    Related,
+}
+```
+
+
+## Classify functions:
+
+The pub fn classify_suffix() just seems a bit sloppy to me. all of those
+if statements.
+
+
+## ANSI Terminal stuff
+
+In main.rs, // TODO: Migrate to owo-colors (already in umrs-core) for type-safe colour
+
+
+## load catalogs in main.rs
+
+load_catalogs() doesn't seem very scalable as we add the remainder of the 5 eyes.
+Can of duct tape and stitching everytime we add a catalog.
+
+lookup_marking_detail() too.
+
+
+
+## In main.rs, the handle_enter() system_info 
+The display text for SystemLow and such, that might need to be reusable. Isn't that in levels.json?
+
+
+## Source code comments
+If source code has compliance reference in comments, then it should be preceeded with
+"## Compliance" header. MOst code has this.
+
+## Reptitive functions.
+In umrs-ls alone, I found three definitions of fn resolve_groupname() and resolve_username().
+Shouldn't those be in umrs-core? Or s a single place where we can validate input and ouptut.
+
+
+
+
+
+

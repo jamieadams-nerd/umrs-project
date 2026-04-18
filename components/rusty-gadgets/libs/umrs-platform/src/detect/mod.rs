@@ -89,28 +89,31 @@ use label_trust::LabelTrust;
 /// measurement with the phase that produced it. Variants appear in execution
 /// order.
 ///
-/// NIST SP 800-53 AU-8 — phase identification in audit timing records.
+/// ## Variants:
+///
+/// - `KernelAnchor` — Phase 1: procfs magic check, PID coherence, boot_id read,
+///   lockdown read.
+/// - `MountTopology` — Phase 2: mount namespace, `/proc/self/mountinfo`, statfs on `/etc`.
+/// - `ReleaseCandidate` — Phase 3: os-release path probe, statx metadata, symlink
+///   resolution.
+/// - `PkgSubstrate` — Phase 4: RPM/dpkg substrate probe, SELinux enforce Biba pre-check.
+/// - `FileOwnership` — Phase 5: package ownership query for the os-release candidate.
+/// - `IntegrityCheck` — Phase 6: SHA-256 digest computation and comparison against
+///   package DB.
+/// - `ReleaseParse` — Phase 7: TPI nom + split_once parsing, substrate corroboration,
+///   LabelTrust.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-8**: phase identification in audit timing records.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum DetectionPhase {
-    /// Phase 1 — procfs magic check, PID coherence, boot_id read, lockdown read.
     KernelAnchor,
-
-    /// Phase 2 — mount namespace, `/proc/self/mountinfo`, statfs on `/etc`.
     MountTopology,
-
-    /// Phase 3 — os-release path probe, statx metadata, symlink resolution.
     ReleaseCandidate,
-
-    /// Phase 4 — RPM/dpkg substrate probe, SELinux enforce Biba pre-check.
     PkgSubstrate,
-
-    /// Phase 5 — package ownership query for the os-release candidate.
     FileOwnership,
-
-    /// Phase 6 — SHA-256 digest computation and comparison against package DB.
     IntegrityCheck,
-
-    /// Phase 7 — TPI nom + split_once parsing, substrate corroboration, LabelTrust.
     ReleaseParse,
 }
 
@@ -123,8 +126,10 @@ impl DetectionPhase {
     /// phase names must be emitted without carrying kernel attribute values or
     /// security label data (NIST SP 800-53 SI-11 — Error Information Discipline).
     ///
-    /// NIST SP 800-53 AU-8 — phase label appears in per-phase timing records
-    /// to associate each duration measurement with its originating pipeline stage.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-8 — phase label appears in per-phase timing records
+    ///   to associate each duration measurement with its originating pipeline stage.
     #[must_use = "phase name is used to label audit timing records"]
     pub const fn name(self) -> &'static str {
         match self {
@@ -158,29 +163,25 @@ impl DetectionPhase {
 /// detected; the corresponding [`ConfidenceModel`] will contain a downgrade
 /// reason describing the anomaly.
 ///
-/// NIST SP 800-53 AU-8 — time stamps in audit records support temporal
-/// ordering and phase-interval analysis.
+/// ## Fields:
+///
+/// - `phase` — which phase this record covers.
+/// - `duration_ns` — elapsed time in CPU cycles (x86_64) or nanoseconds (other arches).
+///   Computed as `end_ts.saturating_sub(start_ts)` from `umrs_hw::read_hw_timestamp()`.
+///   Saturating subtraction prevents underflow on a non-invariant TSC.
+///   (NIST SP 800-53 AU-8)
+/// - `record_count` — number of new `EvidenceRecord`s pushed by this phase.
+///   Computed as `evidence.len()` delta using `saturating_sub` to prevent underflow.
+///   (NIST SP 800-53 AU-3)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-8**: time stamps in audit records support temporal ordering and
+///   phase-interval analysis.
 #[derive(Debug, Clone, Copy)]
 pub struct PhaseDuration {
-    /// Which phase this record covers.
     pub phase: DetectionPhase,
-
-    /// Elapsed time in CPU cycles (x86_64) or nanoseconds (other arches).
-    ///
-    /// Computed as `end_ts.saturating_sub(start_ts)` where both timestamps
-    /// are from `umrs_hw::read_hw_timestamp()`. Saturating subtraction
-    /// prevents underflow when a non-invariant TSC produces end < start.
-    ///
-    /// NIST SP 800-53 AU-8 — temporal precision in audit phase records.
     pub duration_ns: u64,
-
-    /// Number of new `EvidenceRecord`s pushed by this phase.
-    ///
-    /// Computed as `evidence.len()` after the phase minus `evidence.len()`
-    /// before it. Uses `saturating_sub` to prevent underflow.
-    ///
-    /// NIST SP 800-53 AU-3 — audit record completeness: documents how many
-    /// I/O events each phase produced.
     pub record_count: usize,
 }
 
@@ -194,32 +195,30 @@ pub struct PhaseDuration {
 /// `Err`. All other failures produce a downgraded `TrustLevel` within a
 /// successful `DetectionResult`.
 ///
-/// NIST SP 800-53 SA-8, SI-7 — fail-closed on kernel channel compromise.
+/// ## Variants:
+///
+/// - `ProcfsNotReal` — procfs failed the `PROC_SUPER_MAGIC` check. No kernel-anchored
+///   fact can be established; continuing would produce a result with no verifiable basis.
+/// - `PidCoherenceFailed` — the PID from `getpid(2)` does not match the PID parsed from
+///   `/proc/self/stat`. Fields `syscall` (getpid result) and `procfs` (parsed PID) are
+///   process IDs only — not sensitive data. (NIST SP 800-53 SI-7)
+/// - `KernelAnchorIo` — an I/O error occurred during the kernel anchor phase before
+///   any recovery was possible.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SA-8**, **SI-7**: fail-closed on kernel channel compromise.
 #[derive(Debug, Error)]
 pub enum DetectionError {
-    /// procfs failed the `PROC_SUPER_MAGIC` check — it is not real procfs.
-    ///
-    /// This means no kernel-anchored fact can be established. Continuing would
-    /// produce a result with no verifiable basis.
     #[error("procfs is not real procfs — cannot establish kernel anchor")]
     ProcfsNotReal,
 
-    /// PID coherence check failed: the PID returned by `getpid(2)` does not
-    /// match the PID parsed from `/proc/self/stat`.
-    ///
-    /// `syscall` and `procfs` values are process IDs — not sensitive data.
-    ///
-    /// NIST SP 800-53 SI-7 — kernel channel integrity failure.
     #[error("PID coherence broken: syscall={syscall} procfs={procfs}")]
     PidCoherenceFailed {
-        /// PID reported by the `getpid(2)` syscall.
         syscall: u32,
-        /// PID parsed from `/proc/self/stat`.
         procfs: u32,
     },
 
-    /// An I/O error occurred during the kernel anchor phase before any
-    /// recovery was possible.
     #[error("I/O error during kernel anchor: {0}")]
     KernelAnchorIo(#[from] std::io::Error),
 }
@@ -233,52 +232,37 @@ pub enum DetectionError {
 /// All fields that could not be determined are `None`. The `confidence` field
 /// explains why, via `downgrade_reasons` and `contradictions`.
 ///
-/// NIST SP 800-53 SA-8, CM-6, SI-7, AU-8.
+/// ## Fields:
+///
+/// - `substrate_identity` — OS identity derived from the package substrate (T3+),
+///   independent of the `os-release` label.
+/// - `os_release` — parsed and validated `os-release` fields, if the file was found
+///   and structurally valid. Present even when `label_trust` is `LabelClaim`.
+/// - `label_trust` — trust classification assigned to the `os-release` label.
+/// - `boot_id` — boot session UUID from `/proc/sys/kernel/random/boot_id`. All evidence
+///   is bound to this session. `None` if the kernel anchor phase could not read it.
+/// - `kernel_release` — kernel release string from `/proc/sys/kernel/osrelease`. Present
+///   at T1+; `None` only if the read failed after the anchor was established.
+///   (NIST SP 800-53 CM-8)
+/// - `confidence` — final confidence tier and any recorded contradictions or downgrade
+///   reasons.
+/// - `evidence` — full provenance record for every artifact consumed during detection.
+/// - `phase_durations` — per-phase timing and evidence-record counts; always seven entries
+///   in phase-execution order when `detect()` returns `Ok`.
+///   (NIST SP 800-53 AU-8)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SA-8**, **CM-6**, **SI-7**, **AU-8**.
 #[derive(Debug)]
 pub struct DetectionResult {
-    /// OS identity derived from the package substrate (T3+), independent of
-    /// the `os-release` label.
     pub substrate_identity: Option<SubstrateIdentity>,
-
-    /// Parsed and validated `os-release` fields, if the file was found and
-    /// structurally valid. Present even when `label_trust` is `LabelClaim`.
     pub os_release: Option<OsRelease>,
-
-    /// Trust classification assigned to the `os-release` label.
     pub label_trust: LabelTrust,
-
-    /// Boot session UUID from `/proc/sys/kernel/random/boot_id`.
-    ///
-    /// All evidence in this result is bound to this boot session.
-    /// `None` if the kernel anchor phase could not read it.
     pub boot_id: Option<String>,
-
-    /// Kernel release string from `/proc/sys/kernel/osrelease`.
-    ///
-    /// Present on any system where procfs is real (T1+). `None` only if the
-    /// read failed after the kernel anchor was established. The `corroborated`
-    /// field is `false` in Phase 1 — the anchor phase reads a single procfs
-    /// source; corroboration against `uname(2)` is not performed here.
-    ///
-    /// NIST SP 800-53 CM-8 — kernel version is a required component inventory
-    /// field. The release string uniquely identifies the running kernel build.
     pub kernel_release: Option<KernelRelease>,
-
-    /// Final confidence tier and any recorded contradictions or downgrade reasons.
     pub confidence: ConfidenceModel,
-
-    /// Full provenance record for every artifact consumed during detection.
     pub evidence: EvidenceBundle,
-
-    /// Per-phase timing and evidence-record counts for this detection run.
-    ///
-    /// Always contains exactly seven entries in phase-execution order when
-    /// `detect()` returns `Ok`. The `duration_ns` field of each entry is the
-    /// elapsed time (CPU cycles on x86_64, nanoseconds on other arches) for
-    /// that phase boundary.
-    ///
-    /// NIST SP 800-53 AU-8 — phase duration records support temporal ordering
-    /// and interval analysis in audit trails.
     pub phase_durations: Vec<PhaseDuration>,
 }
 
@@ -291,25 +275,21 @@ pub struct DetectionResult {
 /// Construct via `OsDetector::default()` for standard operating limits, or
 /// set individual limits explicitly for constrained or extended environments.
 ///
-/// NIST SP 800-53 SA-8, CM-6, SI-7.
+/// ## Fields:
+///
+/// - `max_read_bytes` — maximum bytes for a single bounded file read (default: 65536 / 64 KiB).
+///   Prevents unbounded allocation if a malformed or replaced file is encountered.
+/// - `max_mountinfo_bytes` — maximum bytes for the mountinfo read (default: 4,194,304 / 4 MiB).
+///   `/proc/self/mountinfo` can be large on systems with many bind mounts or inside containers.
+/// - `max_line_len` — maximum length of a single line in `os-release` (default: 512 bytes).
+///   Lines longer than this are rejected with `OsReleaseParseError::LineTooLong`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SA-8**, **CM-6**, **SI-7**.
 pub struct OsDetector {
-    /// Maximum bytes for a single bounded file read (default: 65536 / 64 KiB).
-    ///
-    /// Applies to os-release content and other single-value files. The limit
-    /// prevents unbounded allocation if a malformed or replaced file is
-    /// encountered. 64 KiB is far larger than any legitimate `os-release`.
     pub max_read_bytes: usize,
-
-    /// Maximum bytes for the mountinfo read (default: 4,194,304 / 4 MiB).
-    ///
-    /// `/proc/self/mountinfo` can be large on systems with many bind mounts or
-    /// inside containers. 4 MiB provides headroom while bounding allocation.
     pub max_mountinfo_bytes: usize,
-
-    /// Maximum length of a single line in `os-release` (default: 512 bytes).
-    ///
-    /// No legitimate `os-release` field value exceeds 512 bytes. Lines longer
-    /// than this are rejected with `OsReleaseParseError::LineTooLong`.
     pub max_line_len: usize,
 }
 
@@ -381,9 +361,11 @@ impl OsDetector {
     /// `DetectionResult::phase_durations` always contains exactly seven entries
     /// on success, one per phase in execution order.
     ///
-    /// NIST SP 800-53 SA-8, CM-6, SI-7, AU-8 — orchestrates a layered,
-    /// fail-closed platform verification pipeline; hard gates abort on kernel
-    /// channel compromise (SA-8); phase durations recorded per AU-8.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SA-8, CM-6, SI-7, AU-8 — orchestrates a layered,
+    ///   fail-closed platform verification pipeline; hard gates abort on kernel
+    ///   channel compromise (SA-8); phase durations recorded per AU-8.
     ///
     /// # Errors
     ///

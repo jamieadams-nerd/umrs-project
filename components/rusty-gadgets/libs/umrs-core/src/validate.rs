@@ -53,16 +53,19 @@ use std::sync::OnceLock;
 /// Domain-specific patterns (CUI markings, SELinux contexts, MLS ranges)
 /// live in their respective crates.
 ///
+/// ## Variants:
+///
+/// - `Email` — RFC 5322 simplified email address.
+/// - `RgbHex` — CSS-style RGB hex color (`#RRGGBB`).
+/// - `SafeString` — Printable ASCII string with no control characters.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 SI-10**: Information Input Validation
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum UmrsPattern {
-    /// RFC 5322 simplified email address.
     Email,
-    /// CSS-style RGB hex color (`#RRGGBB`).
     RgbHex,
-    /// Printable ASCII string with no control characters.
     SafeString,
 }
 

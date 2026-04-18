@@ -90,114 +90,115 @@ pub const fn style_hint_color(hint: StyleHint) -> Color {
 /// Construct once via `Theme::default()` and pass to all render functions.
 /// Override individual fields to customise for a specific binary.
 ///
-/// NIST SP 800-53 AU-3 — consistent visual language for security state.
+/// ## Fields:
+///
+/// *Core layout*
+///
+/// - `border` — outer border style (cyan, dim).
+/// - `tab_active` — active tab highlight style (cyan bold).
+/// - `tab_inactive` — inactive tab style (dim).
+/// - `data_key` — key column in data rows (dim cyan).
+/// - `data_value` — value column in data rows (white, no bold).
+/// - `header_name` — header report name (bold bright white).
+/// - `header_field` — header sub-fields (cyan).
+/// - `wizard` — wizard logo lines (green).
+/// - `status_text` — status bar text (bold white on colored background).
+///
+/// *Indicator badges*
+///
+/// - `indicator_active` — badge style for `IndicatorValue::Enabled` (green, bold).
+/// - `indicator_inactive` — badge style for `IndicatorValue::Disabled` (dark gray).
+/// - `indicator_unavailable` — badge style for `IndicatorValue::Unavailable` (yellow). Yellow
+///   signals a failed probe rather than a known-disabled state; visually distinct from
+///   `indicator_inactive` (dark gray) so operators can immediately distinguish "explicitly
+///   disabled" from "could not determine". NIST SP 800-53 CA-7.
+///
+/// *List and panel*
+///
+/// - `list_selection` — selected-row highlight in list widgets; a subtle warm highlight
+///   (black-on-light-yellow by default), distinct from the cyan of active tabs so the cursor
+///   position never gets confused with a selected tab. Every UMRS TUI tool reads from this
+///   single field, so a palette change propagates everywhere at once.
+///   NIST SP 800-53 AU-3.
+/// - `group_title` — group title style in the data panel (bold white). Group titles mark the
+///   start of a named section; bold white makes them stand out from dim-cyan key labels while
+///   remaining unobtrusive. NIST SP 800-53 AU-3.
+///
+/// *Dialog styles*
+///
+/// - `dialog_info_border` — border style for `Info` and `Confirm` dialogs (cyan).
+///   NIST SP 800-53 AU-3.
+/// - `dialog_error_border` — border style for `Error` dialogs (red).
+///   NIST SP 800-53 AU-3.
+/// - `dialog_security_border` — border style for `SecurityWarning` dialogs (yellow). Yellow
+///   signals a security-relevant warning; operators must make a deliberate choice before
+///   confirming; the yellow border reinforces heightened attention. NIST SP 800-53 SC-5.
+/// - `dialog_button_focused` — style for the currently focused dialog button (bold cyan on
+///   black). NIST SP 800-53 SC-5, SI-10.
+/// - `dialog_button_unfocused` — style for the unfocused dialog button (dim gray).
+/// - `dialog_title` — style for dialog title text (bold white).
+/// - `dialog_message` — style for dialog message body text (white).
+/// - `dialog_detail` — style for detail text inside dialogs (e.g., permission-denied path);
+///   lighter gray than `data_value` so secondary dialog text recedes without disappearing.
+///   NIST SP 800-53 SI-11.
+///
+/// *SELinux group-header palette*
+///
+/// - `selinux_type_bg` — background color for the SELinux type block in group-header rows.
+///   Dark terminals: dark navy (`#2D3A4A`); light terminals: pale slate (`#C8D0D8`); no-color:
+///   `Color::Reset`. NIST SP 800-53 AC-4.
+/// - `selinux_marking_bg` — background color for the SELinux marking block in group-header rows;
+///   one shade lighter than `selinux_type_bg` so the two blocks read as related but distinct.
+///   Dark terminals: `#3D4A5A`; light terminals: `#D8E0E8`; no-color: `Color::Reset`.
+///   NIST SP 800-53 AC-4.
+///
+/// *Miscellaneous render styles*
+///
+/// - `restricted_hint` — style for `<restricted>` group-header rows and cuddled-base summaries;
+///   dark gray + italic communicates "present but hidden". NIST SP 800-53 AC-3.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Consistent visual language for security state.
 #[derive(Debug, Clone)]
 pub struct Theme {
-    /// Outer border style (cyan, dim).
     pub border: Style,
-
-    /// Active tab highlight style (cyan bold).
     pub tab_active: Style,
-
-    /// Inactive tab style (dim).
     pub tab_inactive: Style,
-
-    /// Key column in data rows (dim cyan).
     pub data_key: Style,
-
-    /// Value column in data rows (white, no bold).
     pub data_value: Style,
-
-    /// Header report name (bold bright white).
     pub header_name: Style,
-
-    /// Header sub-fields (cyan).
     pub header_field: Style,
-
-    /// Wizard logo lines (green).
     pub wizard: Style,
-
-    /// Status bar text (bold white on colored background).
     pub status_text: Style,
-
-    /// Indicator badge style for `IndicatorValue::Enabled` (green, bold).
     pub indicator_active: Style,
-
-    /// Indicator badge style for `IndicatorValue::Disabled` (dark gray).
     pub indicator_inactive: Style,
-
-    /// Indicator badge style for `IndicatorValue::Unavailable` (yellow).
-    ///
-    /// Yellow signals that the kernel source could not be read — the probe
-    /// failed rather than returning a known-disabled state. This is visually
-    /// distinct from `indicator_inactive` (dark gray) so that operators can
-    /// immediately distinguish "explicitly disabled" from "could not determine".
-    ///
-    /// NIST SP 800-53 CA-7 — a failed probe must be distinguishable from a
-    /// known-disabled feature during continuous monitoring.
     pub indicator_unavailable: Style,
-
-    /// Selected-row highlight in list widgets.
-    ///
-    /// A subtle, warm highlight (black-on-light-yellow by default) —
-    /// distinct from the cyan of active tabs so the cursor position in a
-    /// list never gets confused with a selected tab.  Every UMRS TUI tool
-    /// reads from this single field, so a palette change propagates
-    /// everywhere at once.
-    ///
-    /// NIST SP 800-53 AU-3 — the current selection must be visually
-    /// unambiguous during operator review.
     pub list_selection: Style,
-
-    /// Group title style in the data panel (bold white).
-    ///
-    /// Group titles are visual organizers that mark the start of a named
-    /// section in the data panel. Bold white makes them stand out from
-    /// dim-cyan key labels while remaining unobtrusive.
-    ///
-    /// NIST SP 800-53 AU-3 — labelled sections improve audit record
-    /// readability; an assessor can locate assessment objects by group.
     pub group_title: Style,
 
     // -----------------------------------------------------------------------
     // Dialog styles
     // -----------------------------------------------------------------------
-    /// Border style for `Info` and `Confirm` dialogs (cyan).
-    ///
-    /// NIST SP 800-53 AU-3 — visually distinct dialog modes reduce operator
-    /// error when interpreting dialog severity.
     pub dialog_info_border: Style,
-
-    /// Border style for `Error` dialogs (red).
-    ///
-    /// NIST SP 800-53 AU-3 — error dialogs must be visually distinguishable
-    /// from informational dialogs without relying solely on text.
     pub dialog_error_border: Style,
-
-    /// Border style for `SecurityWarning` dialogs (yellow).
-    ///
-    /// Yellow signals a security-relevant warning — distinct from error (red)
-    /// and informational (cyan). Operators must make a deliberate choice before
-    /// confirming; the yellow border reinforces heightened attention.
-    ///
-    /// NIST SP 800-53 SC-5 — visual distinction reinforces the fail-safe
-    /// default (Cancel) by signaling that this dialog requires care.
     pub dialog_security_border: Style,
-
-    /// Style for the currently focused dialog button (bold cyan on black).
-    ///
-    /// NIST SP 800-53 SC-5, SI-10 — focused button must be unambiguously
-    /// distinguishable from the unfocused button.
     pub dialog_button_focused: Style,
-
-    /// Style for the unfocused dialog button (dim gray).
     pub dialog_button_unfocused: Style,
-
-    /// Style for dialog title text (bold white).
     pub dialog_title: Style,
-
-    /// Style for dialog message body text (white).
     pub dialog_message: Style,
+
+    // -----------------------------------------------------------------------
+    // SELinux group-header palette
+    // -----------------------------------------------------------------------
+    pub selinux_type_bg: Color,
+    pub selinux_marking_bg: Color,
+
+    // -----------------------------------------------------------------------
+    // Miscellaneous render styles
+    // -----------------------------------------------------------------------
+    pub restricted_hint: Style,
+    pub dialog_detail: Style,
 }
 
 impl Theme {
@@ -304,6 +305,13 @@ impl Theme {
             dialog_button_unfocused: dim,
             dialog_title: bold,
             dialog_message: plain,
+            // No-color: strip all background tints from group headers.
+            selinux_type_bg: Color::Reset,
+            selinux_marking_bg: Color::Reset,
+            // Restricted rows: italic only, no color.
+            restricted_hint: Style::default().add_modifier(Modifier::ITALIC),
+            // Dialog detail: dim, no color.
+            dialog_detail: dim,
         }
     }
 
@@ -343,6 +351,12 @@ impl Theme {
             dialog_button_unfocused: Style::default().fg(Color::DarkGray),
             dialog_title: Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
             dialog_message: Style::default().fg(Color::White),
+            // Dark navy / slate for the two-block group header banner.
+            selinux_type_bg: Color::Rgb(0x2D, 0x3A, 0x4A),
+            selinux_marking_bg: Color::Rgb(0x3D, 0x4A, 0x5A),
+            restricted_hint: Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
+            // RGB(180,180,180) — lighter than DarkGray, darker than White.
+            dialog_detail: Style::default().fg(Color::Rgb(180, 180, 180)),
         }
     }
 }

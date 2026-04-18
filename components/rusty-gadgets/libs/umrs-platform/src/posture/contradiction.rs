@@ -57,30 +57,22 @@
 /// NIST SP 800-53 CM-6: distinguishes between ephemeral hotfixes (live is better
 /// than config) and boot drift (config is better than live).
 /// NIST SP 800-53 AU-3: typed enum enables machine-readable audit classification.
+/// ## Variants:
+///
+/// - `EphemeralHotfix` — live value is hardened; configured value is not. A manual runtime
+///   `sysctl` write applied a hardening setting that is not persisted. The hardening will be
+///   lost on reboot. Action: persist the setting in sysctl.d.
+/// - `BootDrift` — configured value is hardened; live value is not. The sysctl.d
+///   configuration says the setting should be hardened, but the running kernel disagrees.
+///   Possible causes: sysctl.d was not applied at boot, the value was overwritten at runtime,
+///   or the kernel does not support this parameter.
+/// - `SourceUnavailable` — the live value could not be read but a configured value exists.
+///   The kernel node is absent (unsupported feature, missing kernel module) or a read error
+///   occurred. The configured value cannot be verified against the live state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ContradictionKind {
-    /// Live value is hardened; configured value is not.
-    ///
-    /// Interpretation: a manual runtime `sysctl` write applied a hardening
-    /// setting that is not persisted. The hardening will be lost on reboot.
-    /// Action: persist the setting in sysctl.d.
     EphemeralHotfix,
-
-    /// Configured value is hardened; live value is not.
-    ///
-    /// Interpretation: the sysctl.d configuration says the setting should be
-    /// hardened, but the running kernel disagrees. Possible causes: sysctl.d
-    /// was not applied at boot, the value was overwritten at runtime, or the
-    /// kernel does not support this parameter.
-    /// Action: investigate whether sysctl -p was run and check kernel version.
     BootDrift,
-
-    /// The live value could not be read but a configured value exists.
-    ///
-    /// Interpretation: the kernel node is absent (unsupported feature, missing
-    /// kernel module) or a read error occurred. The configured value cannot be
-    /// verified against the live state.
-    /// Action: check kernel version and module availability.
     SourceUnavailable,
 }
 

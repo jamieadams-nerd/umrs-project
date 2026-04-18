@@ -51,6 +51,18 @@ use crate::verbose;
 /// The private key is held in `Zeroizing<Vec<u8>>` so it is zeroed on drop
 /// and does not persist in freed heap memory after this struct is dropped.
 ///
+/// ## Fields:
+///
+/// - `cert_or_csr_pem` — PEM-encoded certificate (self-signed) or CSR.
+/// - `key_pem` — PEM-encoded private key (PKCS#8); zeroed on drop via `Zeroizing`.
+/// - `is_csr` — `true` when this is a CSR; `false` when self-signed certificate.
+/// - `algorithm` — algorithm string as it appears in the config (e.g., `"es256"`).
+/// - `curve_name` — human-readable EC curve name (e.g., `"P-256"`).
+/// - `key_bits` — key size in bits as a string (e.g., `"256"`).
+/// - `validity_days` — validity period in days; `None` when `is_csr` is `true` (CSRs have no
+///   validity period — the CA sets it when issuing the signed certificate).
+/// - `organization` — organization name from the config, embedded in the subject DN.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 SC-12**: `key_pem` is zeroized on drop.
@@ -59,29 +71,13 @@ use crate::verbose;
 #[must_use = "Generated key material must be written to disk or consumed; \
               discarding this value means the private key is permanently lost"]
 pub struct GeneratedCredentials {
-    /// PEM-encoded certificate (self-signed) or CSR.
     pub cert_or_csr_pem: Vec<u8>,
-
-    /// PEM-encoded private key (PKCS#8) — zeroed on drop.
     pub key_pem: Zeroizing<Vec<u8>>,
-
-    /// Whether this is a CSR (true) or self-signed certificate (false).
     pub is_csr: bool,
-
-    /// Algorithm string as it appears in the config (e.g. `"es256"`).
     pub algorithm: String,
-
-    /// Human-readable EC curve name (e.g. `"P-256"`).
     pub curve_name: String,
-
-    /// Key size in bits as a string (e.g. `"256"`).
     pub key_bits: String,
-
-    /// Validity period in days. `None` when `is_csr` is `true` (CSRs have no
-    /// validity period — the CA sets it when issuing the signed certificate).
     pub validity_days: Option<u32>,
-
-    /// Organization name from the config, embedded in the subject DN.
     pub organization: String,
 }
 

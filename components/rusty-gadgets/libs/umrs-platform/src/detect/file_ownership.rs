@@ -57,7 +57,10 @@ use super::substrate::{FileOwnership, PackageProbe};
 /// Returns `None` if the probe is absent, the stat record is missing, or
 /// the file is unowned.
 ///
-/// NIST SP 800-53 SI-7, AU-10. NSA RTB TOCTOU.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7, AU-10.
+/// - NSA RTB TOCTOU.
 pub(super) fn run(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,

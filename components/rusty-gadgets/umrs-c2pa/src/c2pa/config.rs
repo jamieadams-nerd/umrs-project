@@ -57,55 +57,63 @@ pub struct UmrsConfig {
 }
 
 /// Identity and signing credentials.
+///
+/// ## Fields:
+///
+/// - `claim_generator` — human-readable name embedded in every manifest produced by this system.
+/// - `organization` — organization name for display in chain-of-custody reports.
+/// - `cert_chain` — path to PEM-encoded certificate chain (leaf first, root last); if absent,
+///   an ephemeral self-signed cert is generated at runtime (test mode).
+/// - `private_key` — path to PEM-encoded private key corresponding to the leaf certificate; if
+///   absent, an ephemeral self-signed cert is generated at runtime (test mode).
+/// - `algorithm` — signing algorithm; must be in the FIPS-safe set: `es256 | es384 | es512 |
+///   ps256 | ps384 | ps512`; `ed25519` is intentionally excluded — unreliable on FIPS RHEL.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct IdentityConfig {
-    /// Human-readable name embedded in every manifest produced by this system.
     #[serde(default = "default_claim_generator")]
     pub claim_generator: String,
 
-    /// Organization name for display in chain-of-custody reports.
     #[serde(default = "default_organization")]
     pub organization: String,
 
-    /// Path to PEM-encoded certificate chain (leaf first, root last).
-    /// If absent, ephemeral self-signed cert is generated at runtime (test mode).
     pub cert_chain: Option<PathBuf>,
 
-    /// Path to PEM-encoded private key corresponding to the leaf certificate.
-    /// If absent, ephemeral self-signed cert is generated at runtime (test mode).
     pub private_key: Option<PathBuf>,
 
-    /// Signing algorithm. Must be in the FIPS-safe set.
-    /// Allowed: es256 | es384 | es512 | ps256 | ps384 | ps512
-    /// ed25519 is intentionally excluded — unreliable on FIPS RHEL.
     #[serde(default = "default_algorithm")]
     pub algorithm: String,
 }
 
 /// Optional Time Stamp Authority configuration.
+///
+/// ## Fields:
+///
+/// - `tsa_url` — TSA URL for trusted signing timestamps (e.g., `"http://timestamp.digicert.com"`);
+///   omit to sign without a TSA timestamp.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct TimestampConfig {
-    /// TSA URL for trusted signing timestamps (e.g. "<http://timestamp.digicert.com>").
-    /// Omit to sign without a TSA timestamp.
     pub tsa_url: Option<String>,
 }
 
 /// Ingest policy — action labels and reason strings.
+///
+/// ## Fields:
+///
+/// - `unsigned_action` — C2PA action label for files arriving without an existing manifest.
+/// - `unsigned_reason` — reason string embedded in the action assertion for unsigned files.
+/// - `signed_action` — C2PA action label for files arriving with an existing manifest.
+/// - `signed_reason` — reason string embedded in the action assertion for signed files.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PolicyConfig {
-    /// C2PA action label for files arriving without an existing manifest.
     #[serde(default = "default_unsigned_action")]
     pub unsigned_action: String,
 
-    /// Reason string embedded in the action assertion for unsigned files.
     #[serde(default = "default_unsigned_reason")]
     pub unsigned_reason: String,
 
-    /// C2PA action label for files arriving with an existing manifest.
     #[serde(default = "default_signed_action")]
     pub signed_action: String,
 
-    /// Reason string embedded in the action assertion for signed files.
     #[serde(default = "default_signed_reason")]
     pub signed_reason: String,
 }
@@ -114,38 +122,39 @@ pub struct PolicyConfig {
 ///
 /// All paths are fully configurable — no hardcoded default location.
 /// See `docs/trust-maintenance.md` for update procedures.
+///
+/// ## Fields:
+///
+/// - `trust_anchors` — path to PEM bundle of root CA certificates (C2PA official or
+///   org-specific); operator updates this file manually.
+/// - `user_anchors` — path to PEM bundle of additional user/org root CAs.
+/// - `allowed_list` — path to end-entity certificate allowlist (PEM or base64 SHA-256 hashes).
+/// - `trust_config` — path to EKU OID configuration file (one OID per line, `//` comments).
+/// - `verify_trust` — enable trust validation; defaults to `true` when any trust file is
+///   configured.
+/// - `ocsp_responder` — OCSP responder URL (skeleton — not fully implemented yet); organizations
+///   can point this to their own OCSP server when ready.
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
 pub struct TrustConfig {
-    /// Path to PEM bundle of root CA certificates (C2PA official or org-specific).
-    /// Operator updates this file manually.
     pub trust_anchors: Option<PathBuf>,
-
-    /// Path to PEM bundle of additional user/org root CAs.
     pub user_anchors: Option<PathBuf>,
-
-    /// Path to end-entity certificate allowlist (PEM or base64 SHA-256 hashes).
     pub allowed_list: Option<PathBuf>,
-
-    /// Path to EKU OID configuration file (one OID per line, `//` comments).
     pub trust_config: Option<PathBuf>,
-
-    /// Enable trust validation. Defaults to true when any trust file is configured.
     #[serde(default = "default_verify_trust")]
     pub verify_trust: bool,
-
-    /// OCSP responder URL (skeleton — not fully implemented yet).
-    /// Organizations can point this to their own OCSP server when ready.
     pub ocsp_responder: Option<String>,
 }
 
 /// Logging configuration.
+///
+/// ## Fields:
+///
+/// - `enabled` — enable or disable all logging output.
+/// - `level` — minimum log level: `off | error | warn | info | debug | trace`.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LoggingConfig {
-    /// Enable or disable all logging output.
     #[serde(default = "default_logging_enabled")]
     pub enabled: bool,
-
-    /// Minimum log level: off | error | warn | info | debug | trace
     #[serde(default = "default_log_level")]
     pub level: String,
 }

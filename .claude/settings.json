@@ -358,7 +358,16 @@
       "Bash(seinfo -t)",
       "Bash(command -v seinfo)",
       "Bash(command -v sesearch)",
-      "Bash(command -v semodule)"
+      "Bash(command -v semodule)",
+      "Bash(pdftotext /DEVELOPMENT/umrs-project/.claude/references/lsb-5/LSB-Core-generic.pdf -)",
+      "WebFetch(domain:systemd.io)",
+      "WebFetch(domain:www.lanana.org)",
+      "Bash(rm *)",
+      "Bash(mkdir -p /DEVELOPMENT/umrs-project/.claude/references/standards-terminology)",
+      "Bash(cp /DEVELOPMENT/umrs-project/.claude/knowledge/linux-fhs-2.3/term-glossary.md /DEVELOPMENT/umrs-project/.claude/references/standards-terminology/fhs-2.3-term-glossary.md)",
+      "Bash(cp /DEVELOPMENT/umrs-project/.claude/knowledge/lsb-5/term-glossary.md /DEVELOPMENT/umrs-project/.claude/references/standards-terminology/lsb-5-term-glossary.md)",
+      "Bash(cp /DEVELOPMENT/umrs-project/.claude/knowledge/systemd-uid-gid/term-glossary.md /DEVELOPMENT/umrs-project/.claude/references/standards-terminology/systemd-uid-gid-term-glossary.md)",
+      "Bash(awk -F'/' '{print $1\"/\"$2}')"
     ]
   },
   "enabledPlugins": {

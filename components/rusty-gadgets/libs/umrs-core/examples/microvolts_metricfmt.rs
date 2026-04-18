@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 use umrs_core::human::metricfmt::{FormatWarning, PrefixStyle, SIPrefix, format_in_prefix};
 
 fn main() {

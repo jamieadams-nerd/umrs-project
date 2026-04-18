@@ -40,18 +40,21 @@
 /// Variants map to the three supported field types: free text input,
 /// one-of-N selection, and boolean toggle.
 ///
-/// NIST SP 800-53 SI-10 — typed values prevent raw string injection into
-/// configuration writers.
+/// ## Variants:
+///
+/// - `Text(String)` — a free-form text value (e.g., a path, a name, a numeric string).
+/// - `Selection(String)` — a selection from a fixed set of options; the value is the selected
+///   option string.
+/// - `Toggle(bool)` — a boolean toggle.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-10**: typed values prevent raw string injection into configuration
+///   writers.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum FieldValue {
-    /// A free-form text value (e.g., a path, a name, a numeric string).
     Text(String),
-
-    /// A selection from a fixed set of options; the value is the selected
-    /// option string.
     Selection(String),
-
-    /// A boolean toggle.
     Toggle(bool),
 }
 
@@ -83,31 +86,26 @@ impl FieldValue {
 /// Callers store this alongside each `FieldDef` in `ConfigState::fields`.
 /// The renderer uses it to show inline validation feedback.
 ///
-/// NIST SP 800-53 SI-10 — validation results are typed enum variants,
-/// not raw strings; callers can query and count failures programmatically.
+/// ## Variants:
+///
+/// - `Ok` — the field value is valid.
+/// - `Error(String)` — the field value failed validation. The message is an operator-visible
+///   description of what is wrong and what a correct value looks like (e.g., `"Must be
+///   'enforcing', 'permissive', or 'disabled'"`). Must not contain classified data or key
+///   material. NIST SP 800-53 SI-11.
+/// - `Warning(String)` — the field value triggers a warning but is not strictly invalid; the
+///   user may save with a warning present. The message follows the same constraints as `Error`.
+/// - `Pending` — validation has not yet been run on this field (initial state).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-10**: validation results are typed enum variants, not raw strings;
+///   callers can query and count failures programmatically.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum ValidationResult {
-    /// The field value is valid.
     Ok,
-
-    /// The field value failed validation.
-    ///
-    /// The message is an operator-visible description of what is wrong and
-    /// what a correct value looks like (e.g., `"Must be 'enforcing', 'permissive',
-    /// or 'disabled'"`). The message must not contain classified data or
-    /// key material.
-    ///
-    /// NIST SP 800-53 SI-11 — error messages identify the condition without
-    /// revealing sensitive internal state.
     Error(String),
-
-    /// The field value triggers a warning but is not strictly invalid.
-    ///
-    /// The user may save with a warning present. The warning message follows
-    /// the same constraints as `Error`.
     Warning(String),
-
-    /// Validation has not yet been run on this field (initial state).
     Pending,
 }
 
@@ -150,45 +148,35 @@ impl ValidationResult {
 /// those traits. Callers reconstruct field definitions from their data model
 /// on each load.
 ///
-/// NIST SP 800-53 SI-10 — validation is mandatory; every field carries a
-/// validator. The `required` flag marks fields that must have a non-empty value.
-/// NIST SP 800-53 CM-3 — the `dirty` flag tracks unsaved changes at field
-/// granularity.
+/// ## Fields:
+///
+/// - `label` — human-readable label shown in the key column (e.g., `"SELINUX"`).
+/// - `value` — current committed value.
+/// - `edit_buffer` — in-progress value while the field is being edited; populated when edit mode
+///   is entered; committed to `value` when `ToggleEdit` exits and validation passes.
+/// - `editing` — whether this field is currently in edit mode.
+/// - `options` — available options for `Selection` fields; empty for `Text`/`Toggle`.
+/// - `validation` — last validation result.
+/// - `dirty` — whether this field has been modified since the last save. NIST SP 800-53 CM-3.
+/// - `required` — whether this field must have a non-empty value.
+/// - `validator` — validation closure called with the proposed `FieldValue`; must be pure (no
+///   side effects) and cheap to call; invoked on every `ToggleEdit` exit.
+///   NIST SP 800-53 SI-10: validation is mandatory and non-bypassable.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-10**: validation is mandatory; every field carries a validator; the
+///   `required` flag marks fields that must have a non-empty value.
+/// - **NIST SP 800-53 CM-3**: the `dirty` flag tracks unsaved changes at field granularity.
 pub struct FieldDef {
-    /// Human-readable label shown in the key column (e.g., `"SELINUX"`).
     pub label: String,
-
-    /// Current committed value.
     pub value: FieldValue,
-
-    /// Edit buffer — the in-progress value while the field is being edited.
-    ///
-    /// Populated when the field enters edit mode. The buffer is committed to
-    /// `value` when `ToggleEdit` exits edit mode and validation passes.
     pub edit_buffer: String,
-
-    /// Whether this field is currently in edit mode.
     pub editing: bool,
-
-    /// Available options for `Selection` fields (empty for `Text`/`Toggle`).
     pub options: Vec<String>,
-
-    /// Last validation result.
     pub validation: ValidationResult,
-
-    /// Whether this field has been modified since the last save.
     pub dirty: bool,
-
-    /// Whether this field must have a non-empty value.
     pub required: bool,
-
-    /// Validation closure. Called with the proposed `FieldValue`; returns
-    /// `ValidationResult`.
-    ///
-    /// The closure must be pure (no side effects) and cheap to call. It is
-    /// invoked on every `ToggleEdit` exit.
-    ///
-    /// NIST SP 800-53 SI-10 — validation is mandatory and non-bypassable.
     pub validator: Box<dyn Fn(&FieldValue) -> ValidationResult + Send>,
 }
 

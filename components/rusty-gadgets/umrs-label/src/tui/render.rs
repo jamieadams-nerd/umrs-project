@@ -253,13 +253,9 @@ fn render_system_posture_lines(frame: &mut Frame, area: Rect, ctx: &HeaderContex
 /// NIST SP 800-53 IA-2 — visible identification of the running user and
 /// process domain supports operator accountability.
 fn render_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
-    let username = std::env::var("USER").unwrap_or_else(|_| {
-        let uid = nix::unistd::Uid::current();
-        nix::unistd::User::from_uid(uid)
-            .ok()
-            .flatten()
-            .map_or_else(|| uid.as_raw().to_string(), |u| u.name)
-    });
+    // Resolved via umrs_selinux::posix::current_username(): prefers $USER,
+    // falls back to NSS (getuid → /etc/passwd), then "(orphan)" sentinel.
+    let username = umrs_selinux::posix::current_username();
 
     let (ctx_type, ctx_level) = umrs_selinux::utils::get_self_context().map_or_else(
         |_| ("<unavailable>".to_owned(), "-".to_owned()),

@@ -34,99 +34,146 @@
 /// stable iteration. The enum is `Copy` and `Hash` to support use as a map key
 /// and efficient pass-by-value throughout the posture pipeline.
 ///
-/// NIST SP 800-53 AU-3: typed indicator identity for audit records — avoids
-/// free-form strings that could be mis-parsed by downstream consumers.
-/// NSA RTB: Compile-Time Path Binding — the compiler enforces exhaustive
-/// handling of all variants.
+/// ## Variants:
+///
+/// *Kernel Self-Protection*
+/// - `KptrRestrict` — `kernel.kptr_restrict`: restrict exposure of kernel pointers in
+///   procfs and other interfaces.
+/// - `RandomizeVaSpace` — `kernel.randomize_va_space`: ASLR level (0=off, 1=partial,
+///   2=full).
+/// - `UnprivBpfDisabled` — `kernel.unprivileged_bpf_disabled`: prevent unprivileged BPF
+///   program loading (attack surface reduction).
+/// - `PerfEventParanoid` — `kernel.perf_event_paranoid`: restrict perf_event_open() access
+///   for unprivileged users.
+/// - `YamaPtraceScope` — `kernel.yama.ptrace_scope`: YAMA ptrace restriction level.
+/// - `DmesgRestrict` — `kernel.dmesg_restrict`: restrict dmesg access to privileged users.
+/// - `KexecLoadDisabled` — `kernel.kexec_load_disabled`: disable the kexec_load() syscall
+///   (prevents runtime kernel replacement).
+/// - `Sysrq` — `kernel.sysrq`: SysRq key bitmask; 0 = fully disabled.
+///
+/// *Kernel Integrity*
+/// - `ModulesDisabled` — `kernel.modules_disabled`: one-way latch preventing further kernel
+///   module loading. Reuses `ModuleLoadLatch` from kattrs.
+///
+/// *Process Isolation*
+/// - `UnprivUsernsClone` — `kernel.unprivileged_userns_clone`: block unprivileged user
+///   namespace creation (reduces container escape surface).
+///
+/// *Filesystem Safety*
+/// - `ProtectedSymlinks` — `fs.protected_symlinks`: prevent symlink following by non-owners
+///   in sticky directories.
+/// - `ProtectedHardlinks` — `fs.protected_hardlinks`: prevent hardlink creation to files
+///   the caller does not own.
+/// - `ProtectedFifos` — `fs.protected_fifos`: prevent privileged processes writing to
+///   attacker-created FIFOs in sticky directories.
+/// - `ProtectedRegular` — `fs.protected_regular`: prevent privileged processes writing to
+///   attacker-created regular files in sticky directories.
+/// - `SuidDumpable` — `fs.suid_dumpable`: controls whether SUID processes produce core
+///   dumps.
+///
+/// *Boot-time / Kernel Cmdline*
+/// - `Lockdown` — `lockdown=`: kernel lockdown level at boot. Reuses `KernelLockdown`
+///   from kattrs.
+/// - `ModuleSigEnforce` — `module.sig_enforce`: enforce kernel module signature
+///   verification.
+/// - `Mitigations` — `mitigations=`: umbrella cmdline flag governing CPU vulnerability
+///   mitigations (spectre, meltdown, etc.).
+/// - `Pti` — `pti=`: Page Table Isolation (Meltdown mitigation) override.
+/// - `RandomTrustCpu` — `random.trust_cpu`: whether to trust the CPU hardware RNG for
+///   early entropy seeding.
+/// - `RandomTrustBootloader` — `random.trust_bootloader`: whether to trust the
+///   bootloader-provided seed for early entropy.
+///
+/// *Special*
+/// - `FipsEnabled` — `/proc/sys/crypto/fips_enabled`: FIPS 140-2/3 mode active. Reuses
+///   `ProcFips` from kattrs.
+///
+/// *modprobe.d (Phase 2a)*
+/// - `NfConntrackAcct` — `nf_conntrack acct`: connection tracking accounting for audit
+///   trails. Configured via `options nf_conntrack acct=1`. Live value from
+///   `/sys/module/nf_conntrack/parameters/acct`.
+/// - `BluetoothBlacklisted` — `bluetooth` blacklisted in modprobe.d; Bluetooth stack is
+///   an attack surface on servers.
+/// - `UsbStorageBlacklisted` — `usb_storage` blacklisted in modprobe.d; USB mass storage
+///   is a data exfiltration vector.
+/// - `FirewireCoreBlacklisted` — `firewire_core` blacklisted in modprobe.d; FireWire DMA
+///   attacks bypass memory protection.
+/// - `ThunderboltBlacklisted` — `thunderbolt` blacklisted in modprobe.d; Thunderbolt DMA
+///   attacks bypass memory protection.
+///
+/// *CPU Mitigation Sub-indicators (Phase 2b)* — each checks that a specific CVE
+/// weakening override flag is ABSENT from `/proc/cmdline`
+/// (`DesiredValue::CmdlineAbsent`). (NIST SP 800-53 SI-16; NSA RTB)
+/// - `SpectreV2Off` — `spectre_v2=off` must be absent; disables Spectre v2 mitigation
+///   (retpoline, IBRS, EIBRS).
+/// - `SpectreV2UserOff` — `spectre_v2_user=off` must be absent; disables user-space
+///   Spectre v2 mitigation (IBPB/STIBP).
+/// - `MdsOff` — `mds=off` must be absent; disables MDS/RIDL/Fallout/ZombieLoad
+///   mitigations (CVE-2018-12126 et al.).
+/// - `TsxAsyncAbortOff` — `tsx_async_abort=off` must be absent; disables TSX Async Abort
+///   mitigation (CVE-2019-11135).
+/// - `L1tfOff` — `l1tf=off` must be absent; disables L1 Terminal Fault mitigation
+///   (CVE-2018-3615/3620/3646).
+/// - `RetbleedOff` — `retbleed=off` must be absent; disables RETBLEED mitigation
+///   (CVE-2022-29900/29901).
+/// - `SrbdsOff` — `srbds=off` must be absent; disables Special Register Buffer Data
+///   Sampling mitigation (CVE-2020-0543).
+/// - `NoSmtOff` — `nosmt=off` must be absent; re-enables SMT when `nosmt` was set,
+///   weakening MDS, L1TF, and cross-HT attack mitigations.
+///
+/// *Kernel Core Dump (Phase 2b)*
+/// - `CorePattern` — `kernel.core_pattern`: core dump disposition. Hardened state: value
+///   begins with `|` (piped to a registered handler such as `systemd-coredump`). Validated
+///   via TPI: structural (first byte is `|`) and semantic (handler path is a non-empty
+///   absolute path); fail closed on disagreement. (NIST SP 800-53 SC-28, CM-6)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: typed indicator identity for audit records — avoids
+///   free-form strings that could be mis-parsed by downstream consumers.
+/// - **NSA RTB**: Compile-Time Path Binding — the compiler enforces exhaustive handling
+///   of all variants.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum IndicatorId {
     // ── Kernel Self-Protection ──────────────────────────────────────────
-    /// `kernel.kptr_restrict` — restrict exposure of kernel pointers in
-    /// procfs and other interfaces.
     KptrRestrict,
-    /// `kernel.randomize_va_space` — ASLR level (0=off, 1=partial, 2=full).
     RandomizeVaSpace,
-    /// `kernel.unprivileged_bpf_disabled` — prevent unprivileged BPF program
-    /// loading (attack surface reduction).
     UnprivBpfDisabled,
-    /// `kernel.perf_event_paranoid` — restrict perf_event_open() access for
-    /// unprivileged users.
     PerfEventParanoid,
-    /// `kernel.yama.ptrace_scope` — YAMA ptrace restriction level.
     YamaPtraceScope,
-    /// `kernel.dmesg_restrict` — restrict dmesg access to privileged users.
     DmesgRestrict,
-    /// `kernel.kexec_load_disabled` — disable the kexec_load() syscall
-    /// (prevents runtime kernel replacement).
     KexecLoadDisabled,
-    /// `kernel.sysrq` — SysRq key bitmask; 0 = fully disabled.
     Sysrq,
 
     // ── Kernel Integrity ────────────────────────────────────────────────
-    /// `kernel.modules_disabled` — one-way latch preventing further kernel
-    /// module loading. Reuses `ModuleLoadLatch` from kattrs.
     ModulesDisabled,
 
     // ── Process Isolation ───────────────────────────────────────────────
-    /// `kernel.unprivileged_userns_clone` — block unprivileged user namespace
-    /// creation (reduces container escape surface).
     UnprivUsernsClone,
 
     // ── Filesystem Safety ───────────────────────────────────────────────
-    /// `fs.protected_symlinks` — prevent symlink following by non-owners in
-    /// sticky directories.
     ProtectedSymlinks,
-    /// `fs.protected_hardlinks` — prevent hardlink creation to files the
-    /// caller does not own.
     ProtectedHardlinks,
-    /// `fs.protected_fifos` — prevent privileged processes writing to
-    /// attacker-created FIFOs in sticky directories.
     ProtectedFifos,
-    /// `fs.protected_regular` — prevent privileged processes writing to
-    /// attacker-created regular files in sticky directories.
     ProtectedRegular,
-    /// `fs.suid_dumpable` — controls whether SUID processes produce core dumps.
     SuidDumpable,
 
     // ── Boot-time / kernel cmdline ──────────────────────────────────────
-    /// `lockdown=` — kernel lockdown level at boot. Reuses `KernelLockdown`
-    /// from kattrs.
     Lockdown,
-    /// `module.sig_enforce` — enforce kernel module signature verification.
     ModuleSigEnforce,
-    /// `mitigations=` — umbrella cmdline flag governing CPU vulnerability
-    /// mitigations (spectre, meltdown, etc.).
     Mitigations,
-    /// `pti=` — Page Table Isolation (Meltdown mitigation) override.
     Pti,
-    /// `random.trust_cpu` — whether to trust the CPU hardware RNG for early
-    /// entropy seeding.
     RandomTrustCpu,
-    /// `random.trust_bootloader` — whether to trust the bootloader-provided
-    /// seed for early entropy.
     RandomTrustBootloader,
 
     // ── Special ─────────────────────────────────────────────────────────
-    /// `/proc/sys/crypto/fips_enabled` — FIPS 140-2/3 mode active. Reuses
-    /// `ProcFips` from kattrs.
     FipsEnabled,
 
     // ── modprobe.d (Phase 2a) ────────────────────────────────────────────
-    /// `nf_conntrack acct` — connection tracking accounting for audit trails.
-    /// Configured via `options nf_conntrack acct=1` in modprobe.d.
-    /// Live value read from `/sys/module/nf_conntrack/parameters/acct`.
     NfConntrackAcct,
-    /// `bluetooth` — blacklisted in modprobe.d; Bluetooth stack is an attack
-    /// surface on servers. Live state: module directory absent = confirms blacklist.
     BluetoothBlacklisted,
-    /// `usb_storage` — blacklisted in modprobe.d; USB mass storage is a data
-    /// exfiltration vector. Live state: module directory absent = confirms blacklist.
     UsbStorageBlacklisted,
-    /// `firewire_core` — blacklisted in modprobe.d; FireWire DMA attacks
-    /// bypass memory protection. Live state: module directory absent = confirms blacklist.
     FirewireCoreBlacklisted,
-    /// `thunderbolt` — blacklisted in modprobe.d; Thunderbolt DMA attacks
-    /// bypass memory protection. Live state: module directory absent = confirms blacklist.
     ThunderboltBlacklisted,
 
     // ── CPU mitigation sub-indicators (Phase 2b) ─────────────────────────
@@ -137,46 +184,16 @@ pub enum IndicatorId {
     //
     // NIST SP 800-53 SI-16: Memory Protection — per-CVE mitigation overrides.
     // NSA RTB: CPU vulnerability mitigations must not be individually disabled.
-    /// `spectre_v2=off` — must be absent; explicitly disables Spectre v2
-    /// (Variant 2) mitigation (retpoline, IBRS, EIBRS).
     SpectreV2Off,
-    /// `spectre_v2_user=off` — must be absent; disables user-space Spectre v2
-    /// mitigation (IBPB/STIBP), leaving processes unable to opt in via
-    /// `prctl(PR_SET_SPECULATION_CTRL)`.
     SpectreV2UserOff,
-    /// `mds=off` — must be absent; disables Microarchitectural Data Sampling
-    /// (MDS/RIDL/Fallout/ZombieLoad) mitigations (CVE-2018-12126 et al.).
     MdsOff,
-    /// `tsx_async_abort=off` — must be absent; disables TSX Async Abort
-    /// mitigation (CVE-2019-11135, Intel processors with TSX).
     TsxAsyncAbortOff,
-    /// `l1tf=off` — must be absent; disables L1 Terminal Fault mitigation
-    /// (CVE-2018-3615/3620/3646, Intel processors).
     L1tfOff,
-    /// `retbleed=off` — must be absent; disables RETBLEED mitigation
-    /// (CVE-2022-29900/29901, branch predictor return address vulnerability).
     RetbleedOff,
-    /// `srbds=off` — must be absent; disables Special Register Buffer Data
-    /// Sampling mitigation (CVE-2020-0543, Intel processors).
     SrbdsOff,
-    /// `nosmt=off` — must be absent; re-enables Simultaneous Multi-Threading
-    /// (SMT) when `nosmt` was set. Weakens MDS, L1TF, and cross-HT attacks.
     NoSmtOff,
 
     // ── Kernel core dump (Phase 2b) ──────────────────────────────────────
-    /// `kernel.core_pattern` — core dump disposition.
-    ///
-    /// Hardened state: value begins with `|` (piped to a registered handler
-    /// such as `systemd-coredump`). A raw path value risks uncontrolled file
-    /// creation with sensitive process memory as content.
-    ///
-    /// Validated via TPI: structural (first byte is `|`) and semantic (handler
-    /// path is a non-empty absolute path). Both paths must agree; fail closed
-    /// on any disagreement.
-    ///
-    /// NIST SP 800-53 SC-28: Protection of Information at Rest — core dumps
-    /// contain process memory including key material and credentials.
-    /// NIST SP 800-53 CM-6: managed coredump handlers provide accountability.
     CorePattern,
 }
 
@@ -244,35 +261,34 @@ impl std::fmt::Display for IndicatorId {
 /// sources — essential for contradiction detection and for informing operators
 /// which reboot/sysctl command would remediate a finding.
 ///
-/// NIST SP 800-53 CM-6: Configuration Settings — provenance of the effective
-/// value determines the remediation path.
+/// ## Variants:
+///
+/// - `Sysctl` — runtime sysctl: live value from `/proc/sys/*`, configured value from
+///   the sysctl.d merge tree. Changes can take effect without a reboot.
+/// - `KernelCmdline` — kernel command line: live value from `/proc/cmdline`, configured
+///   value from bootloader entries (Phase 2). A reboot is required to change these.
+/// - `SecurityFs` — security filesystem: live value from `/sys/kernel/security/`
+///   (`SECURITYFS_MAGIC`). Controlled by kernel LSM state. Contradiction detection is
+///   not applicable (Phase 1). Example: `Lockdown` reads `/sys/kernel/security/lockdown`.
+///   (NSA RTB: paths verified against `SECURITYFS_MAGIC` at read time)
+/// - `DistroManaged` — live value from a kernel interface, but the canonical configuration
+///   channel is a distro tool (e.g., `fips-mode-setup`, `mokutil`). Configured value
+///   discovery is distro-specific.
+/// - `ModprobeConfig` — modprobe.d configured: live value from
+///   `/sys/module/<mod>/parameters/` or inferred from module-directory presence;
+///   configured value from the modprobe.d merge tree. Provenance-verified via
+///   `SYSFS_MAGIC`. (NSA RTB: sysfs reads verified against `SYSFS_MAGIC` at read time)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-6**: provenance of the effective value determines the
+///   remediation path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum IndicatorClass {
-    /// Runtime sysctl: live value from `/proc/sys/*`, configured value from
-    /// the sysctl.d merge tree. Changes can take effect without a reboot.
     Sysctl,
-    /// Kernel command line: live value from `/proc/cmdline`, configured value
-    /// from bootloader entries (Phase 2). A reboot is required to change these.
     KernelCmdline,
-    /// Security filesystem: live value from `/sys/kernel/security/` (securityfs,
-    /// `SECURITYFS_MAGIC`). Controlled by kernel LSM state, not sysctl or cmdline
-    /// key=value pairs. Phase 1: contradiction detection is not applicable.
-    ///
-    /// Example: `Lockdown` reads `/sys/kernel/security/lockdown`.
-    ///
-    /// NSA RTB: Compile-Time Path Binding — paths verified against
-    /// `SECURITYFS_MAGIC` at read time.
     SecurityFs,
-    /// Distro-managed: live value from a kernel interface, but the canonical
-    /// configuration channel is a distro tool (e.g., `fips-mode-setup`,
-    /// `mokutil`). Configured value discovery is distro-specific.
     DistroManaged,
-    /// modprobe.d configured: live value from `/sys/module/<mod>/parameters/`
-    /// or inferred from module-directory presence; configured value from the
-    /// modprobe.d merge tree. Provenance-verified via `SYSFS_MAGIC`.
-    ///
-    /// NSA RTB: Compile-Time Path Binding — sysfs reads verified against
-    /// `SYSFS_MAGIC` at read time.
     ModprobeConfig,
 }
 
@@ -285,17 +301,22 @@ pub enum IndicatorClass {
 /// Ordered ascending (`Medium < High < Critical`) to support
 /// `by_impact(min: AssuranceImpact)` filtering via `>=` comparison.
 ///
-/// NIST SP 800-53 CA-7: Continuous Monitoring — impact tier drives prioritisation
-/// of monitoring, alerting, and remediation effort.
-/// NIST SP 800-53 RA-3: Risk Assessment — impact tiers align with risk severity.
+/// ## Variants:
+///
+/// - `Medium` — meaningful security improvement but limited blast radius.
+/// - `High` — significant hardening; failure provides a useful attack primitive.
+/// - `Critical` — foundational control; failure directly enables serious attacks
+///   (kernel pointer leaks, full ASLR bypass, persistent module loading).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CA-7**: impact tier drives prioritisation of monitoring, alerting,
+///   and remediation effort.
+/// - **NIST SP 800-53 RA-3**: impact tiers align with risk severity.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AssuranceImpact {
-    /// Meaningful security improvement but limited blast radius.
     Medium,
-    /// Significant hardening; failure provides a useful attack primitive.
     High,
-    /// Foundational control; failure directly enables serious attacks
-    /// (kernel pointer leaks, full ASLR bypass, persistent module loading).
     Critical,
 }
 
@@ -309,30 +330,31 @@ pub enum AssuranceImpact {
 /// does not rely on string matching. The `meets` method implements the
 /// hardening check for each variant.
 ///
-/// NIST SP 800-53 CM-6: Configuration Settings — the desired value is the
-/// security baseline against which live and configured values are measured.
-/// NIST SP 800-53 SI-10: Input Validation — `meets` rejects unrecognised values.
+/// ## Variants:
+///
+/// - `Exact(u32)` — live value must equal this integer exactly (e.g., `kptr_restrict = 2`).
+/// - `AtLeast(u32)` — live value must be ≥ this threshold (e.g., `perf_event_paranoid >= 2`).
+/// - `AtMost(u32)` — live value must be ≤ this threshold (e.g., `suid_dumpable <= 0`).
+/// - `CmdlinePresent(&str)` — this token must be present in `/proc/cmdline`
+///   (e.g., `module.sig_enforce=1`).
+/// - `CmdlineAbsent(&str)` — this token must NOT be present in `/proc/cmdline`
+///   (e.g., `mitigations=off`).
+/// - `Custom` — evaluated by indicator-specific logic (e.g., `kernel.sysrq`). The
+///   `meets_integer` and `meets_signed_integer` methods return `None` for this variant;
+///   callers must invoke the indicator-specific validator instead.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-6**: the desired value is the security baseline against which
+///   live and configured values are measured.
+/// - **NIST SP 800-53 SI-10**: `meets` rejects unrecognised values.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DesiredValue {
-    /// Live value must equal this integer exactly.
-    /// Example: `kptr_restrict = 2`.
     Exact(u32),
-    /// Live value must be greater than or equal to this threshold.
-    /// Example: `perf_event_paranoid >= 2`.
     AtLeast(u32),
-    /// Live value must be less than or equal to this threshold.
-    /// Example: `suid_dumpable <= 0`.
     AtMost(u32),
-    /// This token must be present in `/proc/cmdline`.
-    /// Example: `module.sig_enforce=1`.
     CmdlinePresent(&'static str),
-    /// This token must NOT be present in `/proc/cmdline`.
-    /// Example: `mitigations=off`.
     CmdlineAbsent(&'static str),
-    /// Evaluated by custom indicator-specific logic (e.g., `kernel.sysrq`).
-    /// The `meets_integer` and `meets_signed_integer` methods always return
-    /// `None` for this variant; callers must invoke the indicator-specific
-    /// validator instead.
     Custom,
 }
 
@@ -419,21 +441,25 @@ fn cmdline_contains(cmdline: &str, token: &str) -> bool {
 /// signed value for display and audit output while enabling correct comparison
 /// against unsigned thresholds via `DesiredValue::meets_signed_integer`.
 ///
-/// NIST SP 800-53 CA-7: accurate representation of all kernel-valid values
-/// is required for reliable continuous monitoring.
+/// ## Variants:
+///
+/// - `Integer(u32)` — a sysctl unsigned integer value.
+/// - `SignedInteger(i32)` — a sysctl signed integer value for nodes that can emit negative
+///   values (e.g., `kernel.perf_event_paranoid = -1` means "unrestricted"). A negative
+///   value is a kernel-valid unhardened state; it must be represented faithfully.
+///   (NIST SP 800-53 CA-7)
+/// - `Text(String)` — a string value (cmdline token, lockdown mode, etc.).
+/// - `Bool(bool)` — a boolean value (e.g., FIPS enabled, modules_disabled).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CA-7**: accurate representation of all kernel-valid values is
+///   required for reliable continuous monitoring.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LiveValue {
-    /// A sysctl unsigned integer value.
     Integer(u32),
-    /// A sysctl signed integer value for nodes that can emit negative values
-    /// (e.g., `kernel.perf_event_paranoid = -1` means "unrestricted").
-    ///
-    /// NIST SP 800-53 CA-7: a negative value such as `-1` is a kernel-valid
-    /// unhardened state; it must be represented faithfully, not discarded.
     SignedInteger(i32),
-    /// A string value (cmdline token, lockdown mode, etc.).
     Text(String),
-    /// A boolean value (e.g., FIPS enabled, modules_disabled).
     Bool(bool),
 }
 
@@ -452,10 +478,14 @@ impl std::fmt::Display for LiveValue {
 /// sysctl.d merge tree or other persistence source.
 ///
 /// Always a string because sysctl.d files store values as text.
+///
+/// ## Fields:
+///
+/// - `raw` — the raw string value from the configuration file.
+/// - `source_file` — the file that last set this value (last-writer-wins in precedence
+///   order).
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ConfiguredValue {
-    /// The raw string value from the configuration file.
     pub raw: String,
-    /// The file that last set this value (last-writer-wins in precedence order).
     pub source_file: String,
 }

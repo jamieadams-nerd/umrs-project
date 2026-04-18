@@ -1,7 +1,7 @@
 ---
 name: security-auditor
 description: "Use this agent to audit source code and documentation for compliance gaps: missing NIST/CMMC/RTB control citations, unsubstantiated security claims, or inconsistencies between code comments and documentation. Produces audit reports and gap analyses. Invoke after implementing a new module, before a documentation release, or when preparing material for external review.\n\n<example>\nContext: A new module has been implemented and needs compliance annotation review before documentation is written.\nuser: \"Audit umrs-selinux/src/xattrs.rs for missing control citations.\"\nassistant: \"I'll use the security-auditor agent to review the file and produce a gap report.\"\n<commentary>\nReviewing source for missing compliance annotations is a core security-auditor responsibility.\n</commentary>\n</example>\n\n<example>\nContext: Documentation makes security claims that need to be verified against cited controls.\nuser: \"Check the deployment guide for any unsubstantiated security claims.\"\nassistant: \"I'll use the security-auditor agent to review the deployment guide and flag any claims without authoritative citations.\"\n<commentary>\nVerifying documentation accuracy against cited standards is within the security-auditor's scope.\n</commentary>\n</example>"
-tools: Read, Glob, Grep, Write
+tools: Read, Glob, Grep, Write, Bash
 model: sonnet
 color: red
 memory: project

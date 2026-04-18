@@ -32,39 +32,38 @@ use std::sync::OnceLock;
 
 /// CUI-specific validation pattern registry.
 ///
+/// ## Variants:
+///
+/// - `CuiMarking` — validates a CUI regulatory marking string. Accepts the full NARA banner
+///   syntax:
+///
+///   ```text
+///   CUI
+///   CUI//NOFORN
+///   CUI//FED ONLY
+///   CUI//CATEGORY
+///   CUI//SP-CATEGORY
+///   CUI//CAT1/CAT2
+///   CUI//SP-CAT1/CAT2
+///   CUI//CAT1//LDC
+///   CUI//SP-CTI/EXPT//NOFORN
+///   CUI//LEI//FED ONLY
+///   CUI//SP-CTI//REL TO USA, CAN, GBR
+///   ```
+///
+///   Structure: `CUI` optionally followed by `//CATEGORIES` where categories are
+///   `(SP-)?[A-Z][-A-Z]*` separated by single `/`, then optionally followed by `//LDC` where
+///   the LDC portion permits spaces and commas (needed for `FED ONLY`, `REL TO USA, CAN`). All
+///   category tokens must be uppercase ASCII. The `SP-` prefix is permitted on any category.
+///   Plain `CUI` with no categories is valid. Bare `CUI` with a direct LDC and no category
+///   (`CUI//NOFORN`) is also valid per 32 CFR Part 2002.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 SI-10**: Information Input Validation
 /// - **NIST SP 800-53 AC-16**: Security Attributes
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum CuiPattern {
-    /// Validates a CUI regulatory marking string.
-    ///
-    /// Accepts the full NARA banner syntax:
-    ///
-    /// ```text
-    /// CUI
-    /// CUI//NOFORN
-    /// CUI//FED ONLY
-    /// CUI//CATEGORY
-    /// CUI//SP-CATEGORY
-    /// CUI//CAT1/CAT2
-    /// CUI//SP-CAT1/CAT2
-    /// CUI//CAT1//LDC
-    /// CUI//SP-CTI/EXPT//NOFORN
-    /// CUI//LEI//FED ONLY
-    /// CUI//SP-CTI//REL TO USA, CAN, GBR
-    /// ```
-    ///
-    /// Structure: `CUI` optionally followed by `//CATEGORIES` where categories
-    /// are `(SP-)?[A-Z][-A-Z]*` separated by single `/`, then optionally
-    /// followed by `//LDC` where the LDC portion permits spaces and commas
-    /// (needed for `FED ONLY`, `REL TO USA, CAN`).
-    ///
-    /// All category tokens must be uppercase ASCII. The SP- prefix is permitted
-    /// on any category. Plain `CUI` with no categories is valid. Bare `CUI`
-    /// with a direct LDC and no category (`CUI//NOFORN`) is also valid per
-    /// 32 CFR Part 2002.
     CuiMarking,
 }
 

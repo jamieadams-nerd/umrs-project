@@ -22,10 +22,12 @@ use super::types::DualBool;
 
 /// SELinux enforcement mode attribute node (`/sys/fs/selinux/enforce`).
 ///
-/// NIST SP 800-53 AC-3: Access Enforcement — this attribute directly determines
-/// whether the kernel LSM enforces or merely audits policy decisions.
-/// NIST SP 800-53 AC-25: Reference Monitor — the enforcement bit is the kernel's
-/// reference monitor enable switch.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AC-3: Access Enforcement — this attribute directly determines
+///   whether the kernel LSM enforces or merely audits policy decisions.
+/// - NIST SP 800-53 AC-25: Reference Monitor — the enforcement bit is the kernel's
+///   reference monitor enable switch.
 pub struct SelinuxEnforce;
 impl KernelFileSource for SelinuxEnforce {
     type Output = super::types::EnforceState;
@@ -54,9 +56,11 @@ impl StaticSource for SelinuxEnforce {
 
 /// SELinux MLS capability attribute node (`/sys/fs/selinux/mls`).
 ///
-/// NIST SP 800-53 AC-16: Security and Privacy Attributes — confirms that the
-/// kernel policy supports Multi-Level Security labeling required for CUI
-/// compartment enforcement.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AC-16: Security and Privacy Attributes — confirms that the
+///   kernel policy supports Multi-Level Security labeling required for CUI
+///   compartment enforcement.
 pub struct SelinuxMls;
 impl KernelFileSource for SelinuxMls {
     type Output = bool;
@@ -83,9 +87,11 @@ impl StaticSource for SelinuxMls {
 
 /// SELinux policy version attribute node (`/sys/fs/selinux/policyvers`).
 ///
-/// NIST SP 800-53 AU-3: Audit Record Content — the policy version is a required
-/// component of any audit record involving SELinux access decisions, enabling
-/// post-incident reconstruction against the correct policy baseline.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-3: Audit Record Content — the policy version is a required
+///   component of any audit record involving SELinux access decisions, enabling
+///   post-incident reconstruction against the correct policy baseline.
 pub struct SelinuxPolicyVers;
 impl KernelFileSource for SelinuxPolicyVers {
     type Output = u32;
@@ -121,8 +127,10 @@ impl StaticSource for SelinuxPolicyVers {
 /// path prefix and binds `SELINUX_MAGIC` as the expected filesystem type at
 /// construction time. Must be read via `SecureReader::read_generic()`.
 ///
-/// NIST SP 800-53 SI-7: path prefix validation + fs magic binding prevents
-/// use of this reader on non-selinuxfs paths.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: path prefix validation + fs magic binding prevents
+///   use of this reader on non-selinuxfs paths.
 pub struct GenericKernelBool {
     pub(super) path: PathBuf,
     pub(super) expected_magic: nix::sys::statfs::FsType,
@@ -179,7 +187,9 @@ impl KernelFileSource for GenericKernelBool {
 /// binds `SELINUX_MAGIC` as the expected filesystem type. Must be read via
 /// `SecureReader::read_generic()`.
 ///
-/// NIST SP 800-53 SI-7: path prefix validation + fs magic binding.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: path prefix validation + fs magic binding.
 pub struct GenericDualBool {
     pub(super) path: PathBuf,
     pub(super) expected_magic: nix::sys::statfs::FsType,
@@ -251,9 +261,11 @@ impl SecureReader<GenericKernelBool> {
     /// filesystem magic does not match `SELINUX_MAGIC` (integrity failure),
     /// or if the byte content is not a valid boolean (`0` or `1`).
     ///
-    /// NIST SP 800-53 SI-10, SA-11, AC-3: the result is the live enforcement
-    /// state of a runtime SELinux boolean and must be examined — discarding it
-    /// silently loses the live enforcement state.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10, SA-11, AC-3: the result is the live enforcement
+    ///   state of a runtime SELinux boolean and must be examined — discarding it
+    ///   silently loses the live enforcement state.
     #[must_use = "SELinux boolean read result must be examined — \
                   discard silently loses the live enforcement state"]
     pub fn read_generic(&self, node: &GenericKernelBool) -> io::Result<bool> {
@@ -271,8 +283,10 @@ impl SecureReader<GenericDualBool> {
     /// or if the content cannot be parsed as two whitespace-separated boolean
     /// tokens.
     ///
-    /// NIST SP 800-53 SI-10, SA-11, AC-3: the result carries both the committed
-    /// and pending values of a kernel SELinux policy decision — must be examined.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10, SA-11, AC-3: the result carries both the committed
+    ///   and pending values of a kernel SELinux policy decision — must be examined.
     #[must_use = "SELinux boolean read result must be examined — \
                   discard silently loses the live enforcement state"]
     pub fn read_generic(&self, node: &GenericDualBool) -> io::Result<DualBool> {

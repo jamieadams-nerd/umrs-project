@@ -91,18 +91,18 @@ impl MlsLevel {
 }
 
 /// Errors that can occur while parsing an MLS level.
+///
+/// ## Variants:
+///
+/// - `Empty` — the input string was empty.
+/// - `InvalidFormat` — the level string was malformed.
+/// - `InvalidSensitivity` — the sensitivity component failed validation.
+/// - `InvalidCategory` — one or more categories failed validation.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum MlsLevelError {
-    /// The input string was empty.
     Empty,
-
-    /// The level string was malformed.
     InvalidFormat,
-
-    /// The sensitivity component failed validation.
     InvalidSensitivity,
-
-    /// One or more categories failed validation.
     InvalidCategory,
 }
 

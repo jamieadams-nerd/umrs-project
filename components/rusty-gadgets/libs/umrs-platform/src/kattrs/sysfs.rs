@@ -30,9 +30,11 @@ use super::traits::SecureReader;
 /// Value `0x62656572` from `linux/magic.h`. Not exposed as a named constant
 /// in nix 0.27 on this target, so defined locally.
 ///
-/// NIST SP 800-53 SI-7: magic verification prevents bind-mount spoofing of
-/// `/sys/` paths — an attacker with a bind-mount could substitute any
-/// filesystem; only genuine sysfs carries this magic.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: magic verification prevents bind-mount spoofing of
+///   `/sys/` paths — an attacker with a bind-mount could substitute any
+///   filesystem; only genuine sysfs carries this magic.
 #[expect(
     clippy::unreadable_literal,
     reason = "sysfs magic constant — the raw hex value is the canonical form from the kernel source"
@@ -56,9 +58,11 @@ pub const SYSFS_MAGIC: FsType = FsType(0x62656572_i64);
 /// substitute a different magic. All reads flow through
 /// `SecureReader::read_generic_text` — the single trusted engine.
 ///
-/// NIST SP 800-53 SI-7: provenance-verified read; magic check before any bytes
-/// are consumed. NSA RTB RAIN: Non-Bypassable — callers cannot skip the
-/// fstatfs gate.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: provenance-verified read; magic check before any bytes
+///   are consumed.
+/// - NSA RTB RAIN: Non-Bypassable — callers cannot skip the fstatfs gate.
 pub struct SysfsText {
     pub(super) path: PathBuf,
 }
@@ -71,8 +75,10 @@ impl SysfsText {
     /// Returns `io::ErrorKind::InvalidInput` if `path` does not start with
     /// `/sys/`.
     ///
-    /// NIST SP 800-53 SI-10: Input Validation — rejects non-sysfs paths
-    /// before any I/O is attempted.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10: Input Validation — rejects non-sysfs paths
+    ///   before any I/O is attempted.
     pub fn new(path: PathBuf) -> io::Result<Self> {
         if !path.starts_with("/sys/") {
             return Err(io::Error::new(
@@ -104,7 +110,9 @@ impl SecureReader<SysfsText> {
     /// magic does not match `SYSFS_MAGIC` (integrity failure), or if the
     /// file content is not valid UTF-8.
     ///
-    /// NIST SP 800-53 SI-7 / NSA RTB RAIN.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-7 / NSA RTB RAIN.
     pub fn read_generic_text(&self, node: &SysfsText) -> io::Result<String> {
         Self::execute_read_text(&node.path, SYSFS_MAGIC)
     }

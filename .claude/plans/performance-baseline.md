@@ -1,6 +1,6 @@
 # Performance Baseline Plan
 
-**Status:** Approved — ready for implementation
+**Status:** completed — criterion harnesses + 6 approved optimizations landed 2026-04-03
 **Created**: 2026-03-16
 **ROADMAP**: G3 (High-Assurance Platform), G6 (Tooling)
 **Scope**: umrs-platform, umrs-selinux, umrs-core

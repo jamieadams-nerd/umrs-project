@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Unicode typography and stylization utilities for the UMRS design system.
 //!
 //! Provides [`TypographyStyle`] and [`stylize`], which map standard ASCII
@@ -19,22 +21,21 @@
 /// This module provides functions to map standard ASCII alphanumeric
 /// characters to various Unicode stylistic sets (Bold, Double-Struck, etc.)
 /// while preserving punctuation and spacing.
+///
+/// ## Variants:
+///
+/// - `Bold` — 𝐀-𝐙 (0x1D400), 𝐚-𝐳 (0x1D41A), 𝟎-𝟗 (0x1D7CE)
+/// - `DoubleStruck` — 𝔸-ℤ (0x1D538), 𝕒-𝕫 (0x1D552), 𝟘-𝟡 (0x1D7D8)
+/// - `Circled` — Ⓐ-Ⓩ (0x24B6), ⓐ-ⓩ (0x24D0), ①-⑨ (0x2460)
+/// - `Gothic` — 𝔄-ℨ (0x1D504), 𝔞-𝔷 (0x1D51E) [No Digits]
+/// - `Script` — 𝒜-𝒵 (0x1D49C), 𝒶-𝓏 (0x1D4B6) [No Digits]
+/// - `Segmented` — seven-segment display style digits (0x1FBF0+)
 pub enum TypographyStyle {
-    /// 𝐀-𝐙 (0x1D400), 𝐚-𝐳 (0x1D41A), 𝟎-𝟗 (0x1D7CE)
     Bold,
-
-    /// 𝔸-ℤ (0x1D538), 𝕒-𝕫 (0x1D552), 𝟘-𝟡 (0x1D7D8)
     DoubleStruck,
-
-    /// Ⓐ-Ⓩ (0x24B6), ⓐ-ⓩ (0x24D0), ①-⑨ (0x2460)
     Circled,
-
-    /// 𝔄-ℨ (0x1D504), 𝔞-𝔷 (0x1D51E) [No Digits]
     Gothic,
-
-    /// 𝒜-𝒵 (0x1D49C), 𝒶-𝓏 (0x1D4B6) [No Digits]
     Script,
-
     Segmented,
 }
 

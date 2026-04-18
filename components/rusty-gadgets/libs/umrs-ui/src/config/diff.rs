@@ -30,19 +30,22 @@
 
 /// A single before/after comparison entry for one configuration field.
 ///
-/// NIST SP 800-53 CM-3 — each entry carries the field identity, the
-/// previous committed value, and the proposed new value.
-/// NIST SP 800-53 SI-11 — callers must mask any value that contains
-/// classified data or key material before constructing a `DiffEntry`.
+/// ## Fields:
+///
+/// - `label` — field label (from `FieldDef::label`).
+/// - `before` — the last committed value (before this editing session).
+/// - `after` — the proposed new value (current `FieldDef::value.display()`).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-3**: each entry carries the field identity, the previous committed
+///   value, and the proposed new value.
+/// - **NIST SP 800-53 SI-11**: callers must mask any value that contains classified data or key
+///   material before constructing a `DiffEntry`.
 #[derive(Debug, Clone)]
 pub struct DiffEntry {
-    /// Field label (from `FieldDef::label`).
     pub label: String,
-
-    /// The last committed value (before this editing session).
     pub before: String,
-
-    /// The proposed new value (current `FieldDef::value.display()`).
     pub after: String,
 }
 

@@ -170,6 +170,17 @@ TUI silently drops MCS range row for US catalog metadata panel.
 - [CUI LEI/INV audit](pattern_cui_lei_inv.md) — 21 actionable occurrences; active setrans.conf + labels-backup.json highest priority; blog uses it as shorthand too
 - Full report: `code/2026-04-15-cui-lei-inv-audit.md`
 
+## FHS/LSB/systemd Knowledge (updated 2026-04-18 -- quartet complete)
+
+- [Unified chain doc](../../../.claude/knowledge/fhs-lsb-systemd-CHAIN.md) — FHS 3.0→systemd file-hierarchy→LSB→systemd UIDS-GIDS→RHEL10 as compliance chain
+- [FHS 3.0 knowledge](../../../.claude/knowledge/linux-fhs-3.0/) — concept-index, cross-ref, SDRs, glossary; PREFERRED for all new work
+- [FHS 2.3 knowledge](../../../.claude/knowledge/linux-fhs-2.3/) — historical reference only; SDR-FHS-001 resolved
+- [systemd file-hierarchy(7) knowledge](../../../.claude/knowledge/systemd-file-hierarchy/) — RHEL 10 ground truth; state/cache semantics; RuntimeDirectory= guidance
+- [LSB 5.0 knowledge](../../../.claude/knowledge/lsb-5/) — section 23 UID/GID full breakdown
+- [systemd UIDS-GIDS knowledge](../../../.claude/knowledge/systemd-uid-gid/) — full range table, NSS rules, container guidance
+- **Skill drift all resolved 2026-04-18**: section 3.7.4 corrected (was 3.8); section 4.5 citation for key material corrected to 3.13.2 exception clause; SUB_UID_MIN corrected to 524288
+- **Key finding**: FHS section 4.5 is /usr/include (C headers). Do NOT cite it for key material decisions. Cite FHS 3.0 section 3.13.2 exception clause + NIST CM-6/SA-8.
+
 ## Reports Index
 - `2026-03-11-rpm-db-security-audit.md` — RPM findings
 - `2026-03-11-os-detection-umrs-platform-surface-audit.md` — detect pipeline

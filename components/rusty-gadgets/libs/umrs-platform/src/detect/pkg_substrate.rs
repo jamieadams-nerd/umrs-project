@@ -62,7 +62,10 @@ use super::substrate::{DpkgProbe, PackageProbe, RpmProbe};
 ///
 /// Returns the selected substrate identity and probe handle.
 ///
-/// NIST SP 800-53 CM-8, SA-12, SI-3, SI-7. NSA RTB RAIN.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SA-12, SI-3, SI-7.
+/// - NSA RTB RAIN.
 pub(super) fn run(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,

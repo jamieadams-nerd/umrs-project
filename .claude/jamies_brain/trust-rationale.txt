@@ -1,0 +1,182 @@
+Good question, and it cuts to the heart of what separates high-assurance code from merely correct code. Let me lay out the rationale, then the structural patterns.
+
+## The core rationale
+
+A normal function answers: **"What is the result?"**
+
+A high-assurance function answers three questions simultaneously:
+
+1. **What is the result?** (the value)
+2. **How do I know it's correct?** (the evidence)
+3. **How much should a downstream decision trust it?** (the trust level)
+
+The reason is epistemic, not stylistic. In a regulated system, the output of a function is often consumed by a policy decision — "should this user access this object?", "should this file be labeled Protected B?", "is this binary allowed to execute?". That decision is auditable and, potentially, legally defensible. If all the policy engine gets is a bare value, it has no basis to justify the decision later. You've stripped the provenance at the function boundary.
+
+High-assurance functions refuse to strip provenance. The evidence travels *with* the value.
+
+## The three-part return
+
+The general shape is:
+
+```rust
+pub fn detect_os() -> Result<Assured<OsRelease>, DetectError> { ... }
+
+pub struct Assured<T> {
+    pub value: T,
+    pub trust: TrustLevel,
+    pub evidence: EvidenceBundle,
+}
+```
+
+Each part has a distinct job:
+
+**Value** — the answer itself, ideally as a validated newtype (not a raw `String` or `u32`), so downstream code can't misuse it.
+
+**TrustLevel** — a coarse, ordered classification that policy can pattern-match on without having to inspect evidence internals. T0..T4, or `Unverified | Weak | Attested | Measured | HardwareRooted`, or whatever ladder fits the domain. The key property: it's *totally ordered* and *cheap to compare*.
+
+**EvidenceBundle** — the detailed provenance. What sources were consulted, what they said, what hashes were taken, what timestamps, what signatures verified. This is what ends up in the audit log and what an auditor examines when the trust level is challenged.
+
+## Why three parts and not one or two
+
+**Why not just return the value?** Because the caller has no way to make a risk-appropriate decision. A UID resolved from `/etc/passwd` alone is not the same as one resolved from `/etc/passwd` + SSSD + LDAP agreeing. If the function flattens both into `u32`, the caller can't distinguish.
+
+**Why not just value + evidence?** Because every policy site would then have to re-derive trust from raw evidence. That's expensive, error-prone, and means trust logic is scattered across the codebase. Centralize it: the function that *produced* the evidence is the one that knows how to weigh it, so it emits a `TrustLevel` summary. Policy sites compare trust levels; auditors read evidence.
+
+**Why not just value + trust?** Because trust without evidence is assertion without proof. When an auditor asks "why T3 and not T2?", the evidence bundle is the answer. Trust level alone is unfalsifiable.
+
+## Guidelines for designing these functions
+
+**1. Fail closed, not open.** If evidence collection fails partway, the function returns an error or a lower trust level — never a high trust level with gaps. `EvidenceBundle` fields should be non-optional where possible; if a source is expected and missing, that's a policy-relevant fact, not an `Option::None` to be ignored.
+
+**2. Evidence is immutable after construction.** Once the bundle is built, it is not edited. If you need to add evidence, you produce a new `Assured<T>` that *contains* or *references* the prior one. This preserves a tamper-evident chain.
+
+**3. TrustLevel is a function of evidence, computed once.** The rule for mapping evidence → trust lives in one place, typically a `TrustLevel::from_evidence(&EvidenceBundle)` associated function. This rule is itself auditable. Don't let callers synthesize `TrustLevel` out of band.
+
+**4. Monotonicity under composition.** When combining two `Assured<T>` values, the resulting trust level is at most `min(a.trust, b.trust)`. Composition never raises trust; it can only preserve or lower it. This is the single most important algebraic property — it's what lets you reason about pipelines.
+
+**5. Evidence captures the environment, not just the data.** Relevant config-file hashes (nsswitch.conf, authselect.conf), kernel version, SELinux policy hash, clock source — whatever was load-bearing for the result. If the environment changes, prior evidence becomes stale in a detectable way.
+
+**6. Make unverified paths explicit.** If a function *can* produce a `T0 / Unverified` result (e.g., in a degraded-mode or development build), that path should be visible in the type or require an explicit opt-in, not hidden behind a default. `Assured::<T>::unverified(value, reason)` with a required `reason: &'static str`.
+
+**7. Newtype the value.** `Assured<String>` is almost always wrong. `Assured<OsId>` where `OsId` is a validated newtype prevents downstream code from treating the value as ordinary data.
+
+**8. Separate production from consumption.** The producer side (detection, resolution, attestation) builds `Assured<T>`. The consumer side (policy, enforcement) takes `Assured<T>` and returns a decision. They meet at a well-defined type boundary. No "helpful" utility function silently unwraps evidence.
+
+## What it looks like in practice
+
+```rust
+pub enum TrustLevel { T0, T1, T2, T3, T4 }  // totally ordered
+
+pub struct EvidenceBundle {
+    pub collected_at: SystemTime,
+    pub sources: Vec<SourceRecord>,        // each with hash, outcome, latency
+    pub environment: EnvironmentSnapshot,  // config hashes, kernel, policy
+    pub correlation_id: CorrelationId,     // ties to audit log entry
+}
+
+pub struct Assured<T> {
+    value: T,
+    trust: TrustLevel,
+    evidence: EvidenceBundle,
+}
+
+impl<T> Assured<T> {
+    pub fn value(&self) -> &T { &self.value }
+    pub fn trust(&self) -> TrustLevel { self.trust }
+    pub fn evidence(&self) -> &EvidenceBundle { &self.evidence }
+
+    // Monotonic composition
+    pub fn zip<U>(self, other: Assured<U>) -> Assured<(T, U)> {
+        Assured {
+            value: (self.value, other.value),
+            trust: self.trust.min(other.trust),
+            evidence: EvidenceBundle::merge(self.evidence, other.evidence),
+        }
+    }
+}
+```
+
+Policy code then looks like:
+
+```rust
+match user.trust() {
+    TrustLevel::T3 | TrustLevel::T4 => allow(user.value()),
+    TrustLevel::T2                  => allow_with_stepup(user.value()),
+    _                               => deny_and_log(user.evidence()),
+}
+```
+
+The policy site is simple and auditable. The audit log gets the evidence. The trust ladder is centralized. The evidence is immutable. That's the shape.
+
+## The underlying principle
+
+Every high-assurance function is really a small court: it gathers testimony (evidence), weighs it under a published standard (trust mapping), and issues a ruling (value + trust). A normal function just returns the ruling. A high-assurance function returns the ruling *and* the record, because the record is what makes the ruling defensible when challenged.
+
+That's the whole idea. Everything else — the struct shapes, the monotonicity rule, the newtypes — is mechanism in service of that principle.
+
+
+
+
+Fair and important question. Let me be precise about what's inferred versus what's grounded.
+
+## What I inferred (i.e., my own construction)
+
+Essentially all of the structural specifics in that response were mine, not drawn from a citable source:
+
+- The three-part return shape (`value + trust + evidence`)
+- The `Assured<T>` type name and structure
+- The T0–T4 ladder
+- The monotonicity rule under composition (`min(a.trust, b.trust)`)
+- The "small court" framing
+- The specific guideline list (fail closed, immutability after construction, etc.)
+
+These are reasonable design patterns that align with high-assurance principles I've seen discussed in the literature, but I constructed the synthesis. I should have labeled it as such from the start. I presented it as if it were established doctrine, and it isn't — it's a design sketch.
+
+## What is grounded in real standards
+
+The *underlying principles* these patterns serve are real and citable, even though the specific Rust structure is not. Here are the actual controls and documents that speak to the relevant concerns — you should verify each against current revisions:
+
+**NIST SP 800-53 Rev. 5** (control catalog):
+- **AU-10** Non-repudiation — evidence that an action occurred and who performed it
+- **AU-2** Event Logging — what events must be captured
+- **AU-3** Content of Audit Records — what each record must contain
+- **SA-8** Security and Privacy Engineering Principles — includes "trustworthy system components"
+- **SI-7** Software, Firmware, and Information Integrity
+- **SC-16** Transmission of Security and Privacy Attributes — metadata binding
+
+**NIST SP 800-160 Vol. 1 Rev. 1** (Engineering Trustworthy Secure Systems) — discusses assurance evidence and the relationship between claims, evidence, and trust. This is the closest thing to a canonical source for the *idea* of bundling evidence with assertions.
+
+**NIST SP 800-160 Vol. 2 Rev. 1** (Developing Cyber-Resilient Systems) — addresses provenance and integrity of system state.
+
+**NIST SP 800-155** (BIOS Integrity Measurement Guidelines) — concrete example of evidence-bundle thinking for measured boot; worth reading for the vocabulary of "measurements" and "attestation evidence."
+
+**Common Criteria (ISO/IEC 15408)**:
+- **ASE_REQ** and **ASE_OBJ** families — security requirements and objectives must be traceable to evidence
+- **AVA_VAN** — vulnerability analysis evidence
+- The overall EAL framework is built around graduated assurance levels, which is where the intuition for a trust ladder comes from — but EAL is about *product evaluation*, not runtime trust levels in code. Don't conflate them.
+
+**NIST SP 800-53A Rev. 5** — assessment procedures; relevant because it defines what "evidence" means for each control.
+
+**RFC 4949** (Internet Security Glossary) — defines "assurance," "trust," "provenance" in a way that's citeable.
+
+**DoD RMF / NIST SP 800-37 Rev. 2** — the authorization package *is* essentially a large evidence bundle; the pattern of "claim + evidence + authorizing decision" at the system level is what I was echoing at the function level.
+
+## What I don't have a citation for
+
+The specific pattern of *"Rust functions should return `value + trust_level + evidence_bundle`"* — I know of no NIST, CC, or DoD document that prescribes this. It's a reasonable engineering translation of the principles above, but it is a **design choice**, not a requirement. You or your RTB team would be originating it, not implementing something mandated.
+
+The monotonicity rule (`min` under composition) is a standard result from lattice-based trust models in the academic literature (Denning's lattice model of information flow, 1976, and descendants), but I'd want to re-verify a specific citation before giving you one.
+
+## Recommendation
+
+If you want to formalize this pattern in UMRS, the defensible framing is:
+
+> "This module implements a runtime evidence-bundling pattern supporting AU-2, AU-3, AU-10, SA-8, and SI-7. The specific `Assured<T>` structure is a project-originated design; it is not prescribed by any cited standard."
+
+That's honest, it maps to real controls, and it doesn't claim authority it doesn't have.
+
+I'll keep this discipline going forward: structural advice labeled as design suggestion, only real control numbers cited, and I'll flag my own synthesis explicitly.
+
+
+
+

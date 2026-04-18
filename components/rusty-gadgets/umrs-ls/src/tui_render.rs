@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-
+//
 //! # tui_render — Custom TUI Renderer for umrs-ls
 //!
 //! Provides [`render_dir_browser`], the full-screen TUI renderer for the
@@ -49,15 +49,15 @@
 use chrono::{DateTime, Local, TimeZone as _};
 use ratatui::Frame;
 use ratatui::layout::{Constraint, Direction, Layout, Rect};
-use ratatui::style::{Color, Modifier, Style};
+use ratatui::style::{Modifier, Style};
 use ratatui::text::{Line, Span};
 use ratatui::widgets::{Block, BorderType, Borders, Clear, List, ListItem, ListState, Paragraph};
 
 use umrs_core::robots::WIZARD_SMALL;
-use umrs_ui::app::{HeaderContext, IndicatorValue, StatusLevel};
+use umrs_ui::app::{HeaderContext, IndicatorValue, StatusLevel, StyleHint};
 use umrs_ui::palette::palette_bg;
 use umrs_ui::text_fit::{display_width, truncate_left, truncate_right};
-use umrs_ui::theme::Theme;
+use umrs_ui::theme::{Theme, style_hint_color};
 use umrs_ui::viewer::{ViewerApp as _, ViewerState};
 
 use crate::viewer_app::DirViewerApp;
@@ -103,12 +103,15 @@ const KEY_LEGEND: &str = "  ↑↓: nav | Enter: open | ?: help | q: quit";
 // ---------------------------------------------------------------------------
 
 /// Which tab the `?` help popup is showing.
+///
+/// ## Variants:
+/// * navigation - Keys and navigation reference.
+/// * columns - Column legend (IOV markers, mode, name decorations).
+///
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum HelpTab {
-    /// Keys and navigation reference.
     #[default]
     Navigation,
-    /// Column legend (IOV markers, mode, name decorations).
     Columns,
 }
 
@@ -154,14 +157,17 @@ impl HelpOverlay {
 ///
 /// The bar shares layout space with the search bar — only one may be active
 /// at a time.  Mutual exclusion is enforced by the event loop.
+///
+/// ## Fields:
+///
+/// - `active` — whether the bar is currently accepting input.
+/// - `query` — accumulated path query.
+/// - `error` — optional error message from the last failed resolution; shown in the bar until
+///   the operator edits the query or dismisses.
 #[derive(Debug, Default)]
 pub struct GotoBar {
-    /// Whether the bar is currently accepting input.
     pub active: bool,
-    /// Accumulated path query.
     pub query: String,
-    /// Optional error message from the last failed resolution, shown in the
-    /// bar until the operator edits the query or dismisses.
     pub error: Option<String>,
 }
 
@@ -209,9 +215,11 @@ impl GotoBar {
 ///
 /// Call this inside `terminal.draw(|f| render_dir_browser(f, f.area(), ...))`.
 ///
-/// NIST SP 800-53 AU-3 — all identification, labeling, and audit-relevant
-/// fields appear in every rendered frame.
-/// NIST SP 800-53 AC-3 — rendering is unconditionally read-only.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: All identification, labeling, and audit-relevant
+///   fields appear in every rendered frame.
+/// - **NIST SP 800-53 AC-3**: Rendering is unconditionally read-only.
 #[expect(
     clippy::too_many_arguments,
     reason = "top-level TUI render aggregates all shared state; extracting would require a wrapper struct"
@@ -326,10 +334,12 @@ pub fn render_dir_browser(
 ///
 /// Indicator values are styled with `theme.indicator_style()`.
 ///
-/// NIST SP 800-53 AU-3 — hostname, OS, architecture, security posture,
-/// and data source path are present in every rendered frame.
-/// NIST SP 800-53 SI-7 — indicator values originate from provenance-verified
-/// kattr reads in `build_header_context`.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Hostname, OS, architecture, security posture,
+///   and data source path are present in every rendered frame.
+/// - **NIST SP 800-53 SI-7**: Indicator values originate from provenance-verified
+///   kattr reads in `build_header_context`.
 fn render_posture_header(
     frame: &mut Frame,
     area: Rect,
@@ -439,22 +449,18 @@ fn render_system_posture_lines(frame: &mut Frame, area: Rect, ctx: &HeaderContex
 /// All values are right-truncated to the remaining column budget so
 /// long usernames, long MLS ranges, or exotic domain types never overflow.
 ///
-/// NIST SP 800-53 AU-3 — subject identity is a required audit record field;
-/// surfacing it in every frame keeps the operator's mental model aligned with
-/// the audit log.
-/// NIST SP 800-53 IA-2 — visible identification of the running user and
-/// process domain supports operator accountability.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Subject identity is a required audit record
+///   field; surfacing it in every frame keeps the operator's mental model
+///   aligned with the audit log.
+/// - **NIST SP 800-53 IA-2**: Visible identification of the running user and
+///   process domain supports operator accountability.
 fn render_user_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
     // ── Username ──────────────────────────────────────────────────────
-    // Prefer $USER; fall back to NSS resolution via getuid, then to the
-    // raw uid if NSS is unavailable.
-    let username = std::env::var("USER").unwrap_or_else(|_| {
-        let uid = nix::unistd::Uid::current();
-        nix::unistd::User::from_uid(uid)
-            .ok()
-            .flatten()
-            .map_or_else(|| uid.as_raw().to_string(), |u| u.name)
-    });
+    // Resolved via umrs_selinux::posix::current_username(): prefers $USER,
+    // falls back to NSS (getuid → /etc/passwd), then "(orphan)" sentinel.
+    let username = umrs_selinux::posix::current_username();
 
     // ── Process SELinux context: domain type + level ──────────────────
     // Domain (type) gets its own row; level gets its own row.
@@ -476,7 +482,9 @@ fn render_user_session_lines(frame: &mut Frame, area: Rect, theme: &Theme) {
     let (domain_display, domain_style) = if is_unconfined {
         (
             format!("{ctx_type} \u{26A0}"),
-            Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(style_hint_color(StyleHint::TrustYellow))
+                .add_modifier(Modifier::BOLD),
         )
     } else {
         (ctx_type, theme.data_value)
@@ -569,10 +577,7 @@ fn render_directory_info_lines(frame: &mut Frame, area: Rect, app: &DirViewerApp
 
     let dir_line = Line::from(vec![
         Span::styled(dir_label, theme.data_key),
-        Span::styled(
-            format!("{mount_icon}{shown_path}"),
-            Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
-        ),
+        Span::styled(format!("{mount_icon}{shown_path}"), theme.header_name),
     ]);
 
     let dm = app.dir_meta();
@@ -593,13 +598,15 @@ fn render_directory_info_lines(frame: &mut Frame, area: Rect, app: &DirViewerApp
         (
             ICON_CHECK,
             format!(" Encrypted ({})", dm.encryption_label()),
-            Style::default().fg(Color::Green).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(style_hint_color(StyleHint::TrustGreen))
+                .add_modifier(Modifier::BOLD),
         )
     } else {
         (
             ICON_CROSS,
             " Unencrypted".to_owned(),
-            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+            Style::default().fg(style_hint_color(StyleHint::TrustRed)).add_modifier(Modifier::BOLD),
         )
     };
 
@@ -699,11 +706,14 @@ fn render_divider(frame: &mut Frame, area: Rect, parent_area: Rect, theme: &Them
 /// base still contribute to the tally so the operator sees true posture
 /// at a glance.
 ///
-/// NIST SP 800-53 AU-3 — labeled columns improve audit record readability.
-/// NIST SP 800-53 SI-7 — surfaces integrity-relevant observations without
-/// requiring the operator to expand every group.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Labeled columns improve audit record readability.
+/// - **NIST SP 800-53 SI-7**: Surfaces integrity-relevant observations without
+///   requiring the operator to expand every group.
 fn render_col_headers(frame: &mut Frame, area: Rect, state: &ViewerState, _theme: &Theme) {
-    let header_style = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
+    let header_style =
+        Style::default().fg(style_hint_color(StyleHint::Highlight)).add_modifier(Modifier::BOLD);
 
     let (risk, warn) = count_posture_flags(state);
 
@@ -737,7 +747,10 @@ fn render_col_headers(frame: &mut Frame, area: Rect, state: &ViewerState, _theme
 ///
 /// Returns `(risk_count, warn_count)`.
 ///
-/// NIST SP 800-53 AU-3, SI-7 — posture aggregation is audit-relevant.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3, SI-7**: Posture aggregation is audit-relevant;
+///   risk and warning counts appear in the column header for every rendered frame.
 fn count_posture_flags(state: &ViewerState) -> (usize, usize) {
     fn walk(node: &umrs_ui::viewer::tree::TreeNode, risk: &mut usize, warn: &mut usize) {
         match node.metadata.get("iov_o").map(String::as_str) {
@@ -771,17 +784,21 @@ fn build_posture_summary_spans(warn: usize, risk: usize) -> (Vec<Span<'static>>,
     let (label, label_style) = if risk > 0 {
         (
             "WARNING: ",
-            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+            Style::default().fg(style_hint_color(StyleHint::TrustRed)).add_modifier(Modifier::BOLD),
         )
     } else if warn > 0 {
         (
             "WARNING: ",
-            Style::default().fg(Color::Yellow).add_modifier(Modifier::BOLD),
+            Style::default()
+                .fg(style_hint_color(StyleHint::TrustYellow))
+                .add_modifier(Modifier::BOLD),
         )
     } else {
         (
             "CLEAN: ",
-            Style::default().fg(Color::Green).add_modifier(Modifier::DIM),
+            Style::default()
+                .fg(style_hint_color(StyleHint::TrustGreen))
+                .add_modifier(Modifier::DIM),
         )
     };
 
@@ -797,9 +814,10 @@ fn build_posture_summary_spans(warn: usize, risk: usize) -> (Vec<Span<'static>>,
         + risk_num.chars().count()
         + 1;
 
-    let warn_flag_style = Style::default().fg(Color::Yellow);
-    let risk_flag_style = Style::default().fg(Color::Red).add_modifier(Modifier::BOLD);
-    let sep_style = Style::default().fg(Color::DarkGray);
+    let warn_flag_style = Style::default().fg(style_hint_color(StyleHint::TrustYellow));
+    let risk_flag_style =
+        Style::default().fg(style_hint_color(StyleHint::TrustRed)).add_modifier(Modifier::BOLD);
+    let sep_style = Style::default().fg(style_hint_color(StyleHint::Dim));
 
     let spans = vec![
         Span::styled(label, label_style),
@@ -829,9 +847,11 @@ fn build_posture_summary_spans(warn: usize, risk: usize) -> (Vec<Span<'static>>,
 /// warm yellow by default).  Scroll is managed by ratatui's `ListState`
 /// with `.select()`.
 ///
-/// NIST SP 800-53 AC-4 — group headers make SELinux type and MCS marking
-/// prominent, surfacing information-flow boundary context for every entry.
-/// NIST SP 800-53 AU-3 — every entry row carries mode, owner, mtime, and name.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-4**: Group headers make SELinux type and MCS marking
+///   prominent, surfacing information-flow boundary context for every entry.
+/// - **NIST SP 800-53 AU-3**: Every entry row carries mode, owner, mtime, and name.
 fn render_listing(
     frame: &mut Frame,
     area: Rect,
@@ -873,7 +893,7 @@ fn render_listing(
         items.push(ListItem::new(Line::from("")));
         items.push(ListItem::new(Line::from(Span::styled(
             "  (empty directory)",
-            Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC),
+            theme.restricted_hint,
         ))));
 
         let block = Block::default().borders(Borders::NONE);
@@ -967,11 +987,13 @@ fn build_listing_item<'a>(
 /// BLACK_ON_CYAN  type     REVERSE 🭬 RESET REVERSE 🭬 marking   RESET UNDERLINE 🭬 fill RESET
 /// ```
 ///
-/// NIST SP 800-53 AC-4 — SELinux type and marking are visually prominent;
-/// the operator can immediately identify the information-flow boundary.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-4**: SELinux type and marking are visually prominent;
+///   the operator can immediately identify the information-flow boundary.
 fn build_group_header_item<'a>(
     node: &umrs_ui::viewer::tree::TreeNode,
-    _theme: &'a Theme,
+    theme: &'a Theme,
     us_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
     ca_catalog: Option<&umrs_labels::cui::catalog::Catalog>,
 ) -> ListItem<'a> {
@@ -988,10 +1010,9 @@ fn build_group_header_item<'a>(
 
     if is_restricted {
         // Restricted: dim italic + underline, like the CLI.
-        let restricted_style = Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC);
         let text = format!(" {chevron} {selinux_type:<19} :: {marking}");
         let fill = " ".repeat(80usize.saturating_sub(text.chars().count()));
-        let span = Span::styled(format!("{text}{fill}"), restricted_style);
+        let span = Span::styled(format!("{text}{fill}"), theme.restricted_hint);
         return ListItem::new(Line::from(vec![span]));
     }
 
@@ -1015,7 +1036,7 @@ fn build_group_header_item<'a>(
     // Per-index-group coloring can be added when the tree adapter carries catalog
     // metadata.
 
-    let type_bg = Color::Rgb(0x2D, 0x3A, 0x4A); // dark navy for SELinux type block
+    let type_bg = theme.selinux_type_bg;
     // Look up the NARA index group for this marking to get the right palette color.
     // Every file in the group shares the same marking — just look it up in the catalog.
 
@@ -1026,13 +1047,12 @@ fn build_group_header_item<'a>(
         .unwrap_or("");
 
     let _marking_bg = palette_bg(index_group);
-    // For testing, let's make the marking slightly lighter than the
-    // type field.
-    let marking_bg = Color::Rgb(0x3D, 0x4A, 0x5A);
+    // Marking block is one shade lighter than the type block (see Theme docs).
+    let marking_bg = theme.selinux_marking_bg;
 
     let chevron_span = Span::styled(
         chevron.to_owned(),
-        Style::default().fg(Color::White).add_modifier(Modifier::BOLD),
+        Style::default().fg(style_hint_color(StyleHint::Normal)).add_modifier(Modifier::BOLD),
     );
 
     // Type block: white text on type_bg, left-justified with a leading
@@ -1040,7 +1060,7 @@ fn build_group_header_item<'a>(
     // centered (centering made short vs long type names look misaligned).
     let type_span = Span::styled(
         format!(" {selinux_type:^20} "),
-        Style::default().fg(Color::White).bg(type_bg),
+        Style::default().fg(style_hint_color(StyleHint::Normal)).bg(type_bg),
     );
 
     // Transition 🭬: type_bg color pointing into marking_bg.
@@ -1050,7 +1070,7 @@ fn build_group_header_item<'a>(
     // CUI palette background.
     let marking_span = Span::styled(
         format!("{marking:^20} "),
-        Style::default().fg(Color::White).bg(marking_bg),
+        Style::default().fg(style_hint_color(StyleHint::Normal)).bg(marking_bg),
     );
 
     // Transition 🭬: marking_bg color pointing into the default background.
@@ -1088,8 +1108,10 @@ fn build_group_header_item<'a>(
 /// entries but are rendered in dim style with a `[kind]` annotation after the
 /// name.  No extra indent — columns must stay aligned across all rows.
 ///
-/// NIST SP 800-53 AU-3 — mode bits, ownership, and mtime are required audit
-/// record fields; all are present in every file entry row.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Mode bits, ownership, and mtime are required audit
+///   record fields; all are present in every file entry row.
 #[expect(
     clippy::too_many_lines,
     reason = "columnar row builder is a single logical unit; splitting sub-functions would obscure column alignment"
@@ -1107,7 +1129,9 @@ fn build_file_entry_item<'a>(
     if meta.get("is_parent_nav").map(String::as_str) == Some("true") {
         let path_display = meta.get("path").map(String::as_str).unwrap_or("..");
         let text = format!(" {ICON_PARENT} parent directory  ({path_display})");
-        let style = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
+        let style = Style::default()
+            .fg(style_hint_color(StyleHint::Highlight))
+            .add_modifier(Modifier::BOLD);
         return ListItem::new(Line::from(Span::styled(text, style)));
     }
 
@@ -1223,7 +1247,7 @@ fn build_file_entry_item<'a>(
     let mut spans: Vec<Span<'a>> = Vec::with_capacity(11);
     spans.push(Span::styled(
         base_indent.to_owned(),
-        Style::default().fg(Color::DarkGray),
+        Style::default().fg(style_hint_color(StyleHint::Dim)),
     ));
     append_iov_spans(&mut spans, iov_i, iov_o, iov_v, iov_e);
     spans.push(Span::raw(" ")); // gap between IOVE and MODE, matching header
@@ -1238,11 +1262,11 @@ fn build_file_entry_item<'a>(
     if is_cuddled_base {
         spans.push(Span::styled(
             cuddle_summary,
-            Style::default().fg(Color::DarkGray).add_modifier(Modifier::ITALIC | Modifier::DIM),
+            theme.restricted_hint.add_modifier(Modifier::DIM),
         ));
         spans.push(Span::styled(
             format!(" {cuddle_chevron}"),
-            Style::default().fg(Color::DarkGray),
+            Style::default().fg(style_hint_color(StyleHint::Dim)),
         ));
     }
     ListItem::new(Line::from(spans))
@@ -1263,7 +1287,10 @@ fn build_file_entry_item<'a>(
 ///   NIST SP 800-171 r3 §3.13.11 / CCCS ITSP.40.111; dim placeholder
 ///   otherwise.
 ///
-/// NIST SP 800-53 AU-3, SI-7, SC-28 — posture markers are audit-relevant.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3, SI-7, SC-28**: Posture markers are audit-relevant;
+///   presence of unencrypted CUI storage is a compliance-visible violation.
 fn append_iov_spans(
     spans: &mut Vec<Span<'_>>,
     iov_i: bool,
@@ -1276,32 +1303,44 @@ fn append_iov_spans(
     // alignment without competing with lit markers.
     let placeholder = Span::styled(
         ICON_PLACEHOLDER,
-        Style::default().fg(Color::DarkGray).add_modifier(Modifier::DIM),
+        Style::default().fg(style_hint_color(StyleHint::Dim)).add_modifier(Modifier::DIM),
     );
 
     spans.push(if iov_i {
-        Span::styled("I", Style::default().fg(Color::Red))
+        Span::styled(
+            "I",
+            Style::default().fg(style_hint_color(StyleHint::TrustRed)),
+        )
     } else {
         placeholder.clone()
     });
     spans.push(match iov_o {
         Some("risk") => Span::styled(
             ICON_FLAG.to_owned(),
-            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+            Style::default().fg(style_hint_color(StyleHint::TrustRed)).add_modifier(Modifier::BOLD),
         ),
-        Some("warning") => Span::styled(ICON_FLAG.to_owned(), Style::default().fg(Color::Yellow)),
+        Some("warning") => Span::styled(
+            ICON_FLAG.to_owned(),
+            Style::default().fg(style_hint_color(StyleHint::TrustYellow)),
+        ),
         _ => placeholder.clone(),
     });
     spans.push(if iov_v {
-        Span::styled("V", Style::default().fg(Color::Green))
+        Span::styled(
+            "V",
+            Style::default().fg(style_hint_color(StyleHint::TrustGreen)),
+        )
     } else {
         placeholder.clone()
     });
     spans.push(match iov_e {
-        Some("encrypted") => Span::styled(ICON_CHECK, Style::default().fg(Color::Green)),
+        Some("encrypted") => Span::styled(
+            ICON_CHECK,
+            Style::default().fg(style_hint_color(StyleHint::TrustGreen)),
+        ),
         Some("required_missing") => Span::styled(
             ICON_CROSS,
-            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+            Style::default().fg(style_hint_color(StyleHint::TrustRed)).add_modifier(Modifier::BOLD),
         ),
         _ => placeholder,
     });
@@ -1351,7 +1390,7 @@ fn render_goto_bar(frame: &mut Frame, area: Rect, goto: &GotoBar, theme: &Theme)
     if let Some(err) = goto.error.as_deref() {
         spans.push(Span::styled(
             format!("   {err}"),
-            Style::default().fg(Color::Red).add_modifier(Modifier::DIM),
+            Style::default().fg(style_hint_color(StyleHint::TrustRed)).add_modifier(Modifier::DIM),
         ));
     }
 
@@ -1374,8 +1413,10 @@ fn render_goto_bar(frame: &mut Frame, area: Rect, goto: &GotoBar, theme: &Theme)
 ///
 /// Separated from the listing above by a ├───┤ T-connector divider.
 ///
-/// NIST SP 800-53 AU-3 — scan timing and counts are always visible.
-/// NIST SP 800-53 SA-5 — inline key legend reduces reliance on external docs.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Scan timing and counts are always visible.
+/// - **NIST SP 800-53 SA-5**: Inline key legend reduces reliance on external docs.
 fn render_status_bar(frame: &mut Frame, area: Rect, app: &DirViewerApp, theme: &Theme) {
     use umrs_core::console::symbols::icons;
 
@@ -1447,22 +1488,19 @@ pub fn render_permission_denied(
     // Clear the area behind the dialog.
     frame.render_widget(Clear, dialog_area);
 
-    let border_style = Style::default().fg(Color::Red).add_modifier(Modifier::BOLD);
-
     let block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Double)
-        .border_style(border_style)
+        .border_style(theme.dialog_error_border)
         .title_alignment(Alignment::Center)
         .title(Span::styled(
             " Permission Denied ",
-            Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+            theme.dialog_error_border,
         ));
 
-    let _ = theme;
-    let path_style = Style::default().fg(Color::White).add_modifier(Modifier::BOLD);
-    let msg_style = Style::default().fg(Color::Rgb(180, 180, 180));
-    let hint_style = Style::default().fg(Color::DarkGray);
+    let path_style = theme.header_name;
+    let msg_style = theme.dialog_detail;
+    let hint_style = theme.tab_inactive;
 
     let lines = vec![
         Line::from(""),
@@ -1510,16 +1548,12 @@ pub fn render_help_overlay(frame: &mut Frame, area: Rect, overlay: &HelpOverlay,
 
     frame.render_widget(Clear, dialog_area);
 
-    let border_style = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
     let block = Block::default()
         .borders(Borders::ALL)
         .border_type(BorderType::Double)
-        .border_style(border_style)
+        .border_style(theme.dialog_info_border)
         .title_alignment(Alignment::Center)
-        .title(Span::styled(
-            " Help ",
-            Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD),
-        ));
+        .title(Span::styled(" Help ", theme.dialog_info_border));
 
     let inner = block.inner(dialog_area);
     frame.render_widget(block, dialog_area);
@@ -1539,11 +1573,9 @@ pub fn render_help_overlay(frame: &mut Frame, area: Rect, overlay: &HelpOverlay,
     };
 
     // Tab header: two pills, active one highlighted.
-    let active = Style::default().fg(Color::Black).bg(Color::Cyan).add_modifier(Modifier::BOLD);
-    let inactive = Style::default().fg(Color::DarkGray);
     let (nav_style, col_style) = match overlay.tab {
-        HelpTab::Navigation => (active, inactive),
-        HelpTab::Columns => (inactive, active),
+        HelpTab::Navigation => (theme.tab_active, theme.tab_inactive),
+        HelpTab::Columns => (theme.tab_inactive, theme.tab_active),
     };
     let tab_line = Line::from(vec![
         Span::raw("  "),
@@ -1568,18 +1600,18 @@ pub fn render_help_overlay(frame: &mut Frame, area: Rect, overlay: &HelpOverlay,
     frame.render_widget(Paragraph::new(body_lines), body_row);
 
     // Hint row at the bottom.
-    let hint_style = Style::default().fg(Color::DarkGray);
     let hint = Line::from(Span::styled(
         format!("  Tab / {ARROW_LEFT}{ARROW_RIGHT}: switch tab    ? or Esc: close  "),
-        hint_style,
+        theme.tab_inactive,
     ));
     frame.render_widget(Paragraph::new(hint), hint_row);
 }
 
 /// Key:description lines for the Navigation tab.
 fn help_navigation_lines<'a>() -> Vec<Line<'a>> {
-    let key_style = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
-    let text_style = Style::default().fg(Color::White);
+    let key_style =
+        Style::default().fg(style_hint_color(StyleHint::Highlight)).add_modifier(Modifier::BOLD);
+    let text_style = Style::default().fg(style_hint_color(StyleHint::Normal));
 
     let row = |k: String, d: &'a str| -> Line<'a> {
         Line::from(vec![
@@ -1612,10 +1644,15 @@ fn help_navigation_lines<'a>() -> Vec<Line<'a>> {
 }
 
 /// Column legend for the Columns tab.
+#[expect(
+    clippy::too_many_lines,
+    reason = "column legend is a single logical unit; splitting sub-functions would obscure the visual legend structure"
+)]
 fn help_columns_lines<'a>() -> Vec<Line<'a>> {
-    let key_style = Style::default().fg(Color::Cyan).add_modifier(Modifier::BOLD);
-    let text_style = Style::default().fg(Color::White);
-    let dim = Style::default().fg(Color::DarkGray);
+    let key_style =
+        Style::default().fg(style_hint_color(StyleHint::Highlight)).add_modifier(Modifier::BOLD);
+    let text_style = Style::default().fg(style_hint_color(StyleHint::Normal));
+    let dim = Style::default().fg(style_hint_color(StyleHint::Dim));
 
     let row = |k: String, d: &'a str| -> Line<'a> {
         Line::from(vec![
@@ -1634,37 +1671,53 @@ fn help_columns_lines<'a>() -> Vec<Line<'a>> {
         Line::from(""),
         Line::from(vec![
             Span::raw("    "),
-            Span::styled("I", Style::default().fg(Color::Red)),
+            Span::styled(
+                "I",
+                Style::default().fg(style_hint_color(StyleHint::TrustRed)),
+            ),
             Span::styled("  immutable flag set (chattr +i)", text_style),
         ]),
         Line::from(vec![
             Span::raw("    "),
             Span::styled(
                 ICON_FLAG,
-                Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+                Style::default()
+                    .fg(style_hint_color(StyleHint::TrustRed))
+                    .add_modifier(Modifier::BOLD),
             ),
             Span::styled("  security observation (Risk)", text_style),
         ]),
         Line::from(vec![
             Span::raw("    "),
-            Span::styled(ICON_FLAG, Style::default().fg(Color::Yellow)),
+            Span::styled(
+                ICON_FLAG,
+                Style::default().fg(style_hint_color(StyleHint::TrustYellow)),
+            ),
             Span::styled("  security observation (Warning)", text_style),
         ]),
         Line::from(vec![
             Span::raw("    "),
-            Span::styled("V", Style::default().fg(Color::Green)),
+            Span::styled(
+                "V",
+                Style::default().fg(style_hint_color(StyleHint::TrustGreen)),
+            ),
             Span::styled("  IMA hash present (integrity signed)", text_style),
         ]),
         Line::from(vec![
             Span::raw("    "),
-            Span::styled(ICON_CHECK, Style::default().fg(Color::Green)),
+            Span::styled(
+                ICON_CHECK,
+                Style::default().fg(style_hint_color(StyleHint::TrustGreen)),
+            ),
             Span::styled("  at-rest encryption present (LUKS / fscrypt)", text_style),
         ]),
         Line::from(vec![
             Span::raw("    "),
             Span::styled(
                 ICON_CROSS,
-                Style::default().fg(Color::Red).add_modifier(Modifier::BOLD),
+                Style::default()
+                    .fg(style_hint_color(StyleHint::TrustRed))
+                    .add_modifier(Modifier::BOLD),
             ),
             Span::styled(
                 "  CUI / Protected marking on unencrypted storage",

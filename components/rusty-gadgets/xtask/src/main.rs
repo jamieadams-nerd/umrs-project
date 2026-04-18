@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! xtask — workspace-level build automation for components/rusty-gadgets/.
 //!
 //! Provides sub-commands for formatting, linting, testing, staging, and

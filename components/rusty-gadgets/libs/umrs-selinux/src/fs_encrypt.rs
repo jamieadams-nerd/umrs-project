@@ -42,21 +42,23 @@ const ENCRYPTED_FS_TYPES: &[&str] =
 
 /// The source of encryption protecting a mounted filesystem.
 ///
-/// NIST SP 800-53 SC-28: Protection of Information at Rest.
-/// NSA RTB: typed result prevents silent conflation of encryption layers.
+/// ## Variants:
+///
+/// - `None` — no encryption detected at any layer.
+/// - `LuksDevice` — block device is LUKS-encrypted (kernel device-mapper "crypt" type).
+///   Detected via `/sys/class/block/{dev}/dm/type` == `"crypt"` or
+///   `/sys/class/block/{dev}/dm/uuid` prefix `"CRYPT-LUKS"`.
+/// - `EncryptedFilesystem(String)` — filesystem-level encryption; the inner string is the
+///   `fstype` from `/proc/mounts` (e.g., `"ecryptfs"`, `"fuse.gocryptfs"`).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SC-28**: Protection of Information at Rest.
+/// - **NSA RTB**: typed result prevents silent conflation of encryption layers.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum EncryptionSource {
-    /// No encryption detected at any layer.
     None,
-
-    /// Block device is LUKS-encrypted (kernel device-mapper "crypt" type).
-    ///
-    /// Detected via `/sys/class/block/{dev}/dm/type` == `"crypt"` or
-    /// `/sys/class/block/{dev}/dm/uuid` prefix `"CRYPT-LUKS"`.
     LuksDevice,
-
-    /// Filesystem-level encryption. The inner string is the `fstype`
-    /// from `/proc/mounts` (e.g., `"ecryptfs"`, `"fuse.gocryptfs"`).
     EncryptedFilesystem(String),
 }
 

@@ -24,6 +24,7 @@
 #![allow(clippy::doc_markdown)]
 
 pub mod grouping;
+pub mod identity;
 pub mod tree_adapter;
 pub mod tui_render;
 pub mod viewer_app;

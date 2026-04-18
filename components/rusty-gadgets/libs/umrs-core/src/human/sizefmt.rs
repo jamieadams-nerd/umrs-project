@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Human-readable byte size formatting for operator-facing output.
 //!
 //! Provides [`SizeBase`] (decimal SI vs. binary IEC) and [`SizeUnit`] for

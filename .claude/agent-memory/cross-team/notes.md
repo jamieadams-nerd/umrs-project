@@ -2,9 +2,49 @@
 
 ---
 
+## [2026-04-18] orchestrator → ALL: standards-terminology corpus now available
+
+**Status**: resolved 2026-04-18 -- Knox FHS 3.0 incremental pass complete. Lucia refresh queued.
+
+Knox completed a full familiarization pass on FHS / LSB 5.0 / systemd UIDS-GIDS. Researcher acquired FHS 3.0 and the RHEL 10 systemd `file-hierarchy(7)` man page. All agents should reach for these before citing filesystem layout, UID/GID ranges, or path conventions in code, docs, or policy.
+
+**Knowledge artifacts** (always-on, short):
+- `.claude/knowledge/linux-fhs-2.3/` — concept-index, term-glossary, cross-reference-map (2.3-based; will be superseded by 3.0 below)
+- `.claude/knowledge/lsb-5/` — same four artifacts
+- `.claude/knowledge/systemd-uid-gid/` — same four artifacts
+- `.claude/knowledge/fhs-lsb-systemd-CHAIN.md` — the interlocking story (formal → modern → implementation)
+
+**Raw corpora** (reach for only when the distillation is insufficient):
+- `.claude/references/linux-fhs-3.0/fhs-3.0.{txt,pdf}` — NEW, 2026-04-18
+- `.claude/references/linux-fhs-2.3/fhs-2.3.txt` — retained for historical citations
+- `.claude/references/lsb-5/*.{pdf,txt}` — 8 PDFs + pre-extracted text
+- `.claude/references/systemd-uid-gid/uids-gids.html`
+- `.claude/references/systemd-file-hierarchy/file-hierarchy.txt` — NEW, 2026-04-18, RHEL 10 systemd 257-23.el10
+
+**RAG**: new `standards-terminology` collection (28 chunks) ingests the three term-glossaries. Query when you need canonical terminology from any of the three sources without loading the full corpus.
+
+**Compliance seed report**: `.claude/references/reports/2026-04-17-uid-gid-compliance-reference.md` — three-source citation chain for the `umrs` system account.
+
+### Top drift findings (impact all teams)
+
+1. **`SUB_UID_MIN` = 524288, NOT 100000.** The `fhs-lsb-uid-gid` skill is wrong. Use 524288 everywhere. Knox to update skill; in the interim, match the compliance report.
+2. **FHS section numbers.** `§3.8`, `§3.13`, `§5.12`, `§4.5` are FHS **3.0** numbers. They do NOT exist in FHS 2.3. Until Knox's FHS 3.0 incremental pass lands, use prose citations ("FHS 2.3, under `/opt`").
+3. **`/run/umrs/` is canonical on RHEL 10.** Not `/var/run/umrs/`. systemd formalized `/run` in FHS 3.0; on RHEL 10 `/var/run` is a symlink.
+4. **LSB uses "should" on the dynamic UID range.** LSB alone is insufficient for any UID/GID compliance claim — always cite the three-source chain (LSB + systemd + RHEL 10 `login.defs`).
+5. **`<package>` vs `<provider>` under `/opt`.** UMRS uses `<package>` form (no LANANA registration needed). Deployment docs should state this explicitly to preempt auditor questions.
+
+### Action items
+
+- **tech-writer (Lucia)**: already familiarized against 2.3 — `standards-terminology-familiarization.md` in her memory. **Refresh required** after Knox's FHS 3.0 incremental pass lands.
+- **security-engineer**: deployment docs citing FHS section numbers must be reviewed against this note.
+- **rust-developer (Rusty)**: when touching path literals like `/opt/umrs`, `/etc/opt/umrs`, `/var/opt/umrs`, `/run/umrs`, cite FHS 3.0 § in doc comments.
+- **umrs-translator (Simone)**: terminology for French docs (systemd, user/system accounts, filesystem hierarchy) should flow from Lucia's normalized English terms, not re-translated.
+
+---
+
 ## [2026-04-17] orchestrator → Knox: LSB 5.0 + systemd + FHS familiarization needed
 
-**Status**: open
+**Status**: resolved 2026-04-18 — see entry above. Knox's artifacts under `.claude/knowledge/{linux-fhs-2.3,lsb-5,systemd-uid-gid}/`. FHS 3.0 + systemd `file-hierarchy(7)` incremental pass still pending.
 
 Jamie directs both the orchestrator and Knox to familiarize with:
 

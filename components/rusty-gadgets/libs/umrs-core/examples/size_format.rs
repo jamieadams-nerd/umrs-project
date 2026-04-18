@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 use umrs_core::human::sizefmt::{SizeBase, SizeUnit, auto_format, format_in_unit};
 
 fn main() {

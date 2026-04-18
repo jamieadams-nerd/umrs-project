@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 // tests/test_mcs_translator.rs
 //
 // Integration tests for umrs_selinux::mcs::translator

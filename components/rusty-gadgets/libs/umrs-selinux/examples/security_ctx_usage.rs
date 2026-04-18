@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 use std::str::FromStr;
 use umrs_selinux::context::SecurityContext;
 use umrs_selinux::role::SelinuxRole;

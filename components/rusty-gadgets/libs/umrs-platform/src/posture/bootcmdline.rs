@@ -85,8 +85,10 @@ const KERNEL_OSRELEASE: &str = "/proc/sys/kernel/osrelease";
 /// is returned. The caller must not treat `None` as an error condition — it
 /// means the configured cmdline is unavailable in this environment.
 ///
-/// NIST SP 800-53 CM-6: boot-persistence layer for cmdline indicators.
-/// NIST SP 800-53 CA-7: enables contradiction detection for cmdline indicators.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-6: boot-persistence layer for cmdline indicators.
+/// - NIST SP 800-53 CA-7: enables contradiction detection for cmdline indicators.
 #[must_use = "configured cmdline result must be examined — None means bootloader config unavailable"]
 pub fn read_configured_cmdline() -> Option<String> {
     #[cfg(debug_assertions)]
@@ -259,10 +261,12 @@ fn parse_bls_options(entry_path: &Path) -> Option<String> {
 /// logic can be exercised directly in tests without depending on
 /// `/boot/loader/entries/` being present (T-01 coverage gap resolution).
 ///
-/// NIST SP 800-53 SI-10: Input Validation — malformed lines are skipped;
-/// the field match is exact (not a substring match).
-/// NIST SP 800-53 CA-7: enables direct test coverage of the BLS parser logic
-/// in any environment, including CI systems without physical BLS entries.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-10: Input Validation — malformed lines are skipped;
+///   the field match is exact (not a substring match).
+/// - NIST SP 800-53 CA-7: enables direct test coverage of the BLS parser logic
+///   in any environment, including CI systems without physical BLS entries.
 #[must_use = "BLS field parse result must be examined"]
 pub fn parse_bls_content<'a>(content: &'a str, field: &str) -> Option<&'a str> {
     for line in content.lines() {

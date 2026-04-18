@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //use std::io::{self, Write};
 //use std::thread;
 //use std::time::Duration;

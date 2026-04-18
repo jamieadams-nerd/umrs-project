@@ -43,17 +43,22 @@ const SELINUX_MAGIC: i64 = 0xf97c_ff8c;
 /// Only populated when SELinux is enabled — the config file is not
 /// trustworthy when the kernel reports no active policy.
 ///
-/// NIST SP 800-53 CM-6: security configuration baseline item.
-/// CMMC Level 2 — CM.L2-3.4.1: establish baseline configurations.
+/// ## Variants:
+///
+/// - `Targeted` — `SELINUXTYPE=targeted`; type enforcement only.
+/// - `Mls` — `SELINUXTYPE=mls`; Multi-Level Security with full MLS enforcement.
+/// - `Minimum` — `SELINUXTYPE=minimum`; reduced targeted policy for constrained systems.
+/// - `Unknown(String)` — an unrecognised `SELINUXTYPE=` value, preserved verbatim.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-6**: security configuration baseline item.
+/// - **CMMC Level 2 CM.L2-3.4.1**: establish baseline configurations.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SelinuxPolicy {
-    /// `SELINUXTYPE=targeted` — type enforcement only.
     Targeted,
-    /// `SELINUXTYPE=mls` — Multi-Level Security with full MLS enforcement.
     Mls,
-    /// `SELINUXTYPE=minimum` — reduced targeted policy for constrained systems.
     Minimum,
-    /// An unrecognised `SELINUXTYPE=` value, preserved verbatim.
     Unknown(String),
 }
 

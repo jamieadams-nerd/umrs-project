@@ -37,167 +37,89 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 /// The keymap lookup returns `None` for unbound keys — callers silently
 /// ignore unrecognized input.
 ///
-/// NIST SP 800-53 AC-12 — session lifecycle (Quit) must be cleanly handled.
+/// ## Variants:
+///
+/// *Navigation*
+///
+/// - `Quit` — terminate the event loop and restore the terminal.
+/// - `NextTab` — move to the next tab (wraps around).
+/// - `PrevTab` — move to the previous tab (wraps around).
+/// - `ScrollUp` — scroll the data area up one line.
+/// - `ScrollDown` — scroll the data area down one line.
+/// - `PageUp` — scroll the data area up one page.
+/// - `PageDown` — scroll the data area down one page.
+/// - `Refresh` — request a data refresh (re-run detection or reload source data).
+///
+/// *Dialog*
+///
+/// - `DialogConfirm` — confirm the active dialog (typically Enter or Y); the calling binary sets
+///   `DialogState::response = Some(true)` in its event loop; callers must log the
+///   acknowledgement for `SecurityWarning` and `Confirm` dialogs. NIST SP 800-53 SI-10, AU-2.
+/// - `DialogCancel` — cancel or dismiss the active dialog (typically Esc or N); the calling
+///   binary sets `DialogState::response = Some(false)`; for single-button dialogs, equivalent to
+///   `DialogConfirm`. NIST SP 800-53 SI-10.
+/// - `DialogToggleFocus` — move focus between buttons in a two-button dialog (Tab / Left /
+///   Right); only meaningful for `SecurityWarning` and `Confirm` modes; the calling binary calls
+///   `DialogFocus::toggle()`. NIST SP 800-53 SC-5.
+/// - `ShowHelp` — open the in-TUI contextual help overlay for the current tab; bound to `?` and
+///   `F1` by default; the calling binary creates a `DialogState::info(...)` with
+///   context-appropriate help text. NIST SP 800-53 SA-5.
+///
+/// *ViewerApp actions (not bound in default keymap)*
+///
+/// - `Expand` — expand the currently selected tree node (Enter or Space); a no-op for
+///   already-expanded nodes and leaf nodes. NIST SP 800-53 AC-3.
+/// - `Collapse` — collapse the currently selected tree node; hides all descendants; no-op for
+///   already-collapsed nodes and leaves.
+/// - `Search` — activate the search/filter input bar in a viewer; bound to `/` by convention;
+///   the viewer state transitions to search mode. NIST SP 800-53 AU-3.
+/// - `Back` — navigate up one level in the tree hierarchy (Backspace); moves selection to the
+///   parent; no-op at the root.
+/// - `PanelSwitch` — switch focus between panels (Tree ↔ Detail in a viewer or equivalent);
+///   typical binding is `Tab` / `Shift-Tab` overriding `NextTab`/`PrevTab`. NIST SP 800-53 AC-3.
+///
+/// *ConfigApp actions (not bound in default keymap)*
+///
+/// - `Save` — persist all in-progress edits to their backing store (Ctrl+S); callers must emit
+///   a structured journald record and verify all validation results are clean.
+///   NIST SP 800-53 CM-3, AU-2, SI-10.
+/// - `Discard` — discard all in-progress edits and restore the last committed state (Ctrl+Z or
+///   Esc); callers should present a confirmation dialog when dirty fields exist.
+///   NIST SP 800-53 CM-3.
+/// - `ToggleEdit` — enter or exit edit mode for the focused field (Enter on a field); when in
+///   edit mode, commits the current buffer. NIST SP 800-53 SI-10.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-12**: session lifecycle (`Quit`) must be cleanly handled.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Action {
-    /// Terminate the event loop and restore the terminal.
+    // Navigation
     Quit,
-
-    /// Move to the next tab (wraps around).
     NextTab,
-
-    /// Move to the previous tab (wraps around).
     PrevTab,
-
-    /// Scroll the data area up one line.
     ScrollUp,
-
-    /// Scroll the data area down one line.
     ScrollDown,
-
-    /// Scroll the data area up one page.
     PageUp,
-
-    /// Scroll the data area down one page.
     PageDown,
-
-    /// Request a data refresh (re-run detection or reload source data).
     Refresh,
 
-    /// Confirm the active dialog (typically Enter or Y).
-    ///
-    /// The calling binary maps this action to the appropriate key events and
-    /// sets `DialogState::response = Some(true)` in its event loop.
-    ///
-    /// NIST SP 800-53 SI-10, AU-2 — explicit operator confirmation; callers
-    /// must log the acknowledgement for `SecurityWarning` and `Confirm` dialogs.
+    // Dialog
     DialogConfirm,
-
-    /// Cancel or dismiss the active dialog (typically Esc or N).
-    ///
-    /// The calling binary sets `DialogState::response = Some(false)` in its
-    /// event loop. For single-button dialogs (`Info`, `Error`), this is
-    /// equivalent to `DialogConfirm` — both dismiss the dialog.
-    ///
-    /// NIST SP 800-53 SI-10 — explicit operator dismissal.
     DialogCancel,
-
-    /// Move focus between buttons in a two-button dialog (Tab / Left / Right).
-    ///
-    /// Only meaningful for `SecurityWarning` and `Confirm` modes. The calling
-    /// binary calls `DialogFocus::toggle()` on `DialogState::focused` in
-    /// response to this action.
-    ///
-    /// NIST SP 800-53 SC-5 — focus navigation ensures the operator makes a
-    /// deliberate choice before confirming a security-affecting action.
     DialogToggleFocus,
-
-    /// Open the in-TUI contextual help overlay for the current tab.
-    ///
-    /// Bound to `?` and `F1` by default. The calling binary is responsible
-    /// for creating a `DialogState::info(...)` with context-appropriate help
-    /// text and displaying it via `render_dialog`.
-    ///
-    /// NIST SP 800-53 SA-5 — system documentation is accessible from within
-    /// the tool; operators do not need an external reference guide.
     ShowHelp,
 
-    // -----------------------------------------------------------------------
     // ViewerApp actions
-    // -----------------------------------------------------------------------
-    /// Expand the currently selected tree node (Enter or Space in viewer mode).
-    ///
-    /// When a collapsed node is selected, `Expand` opens it to reveal its
-    /// children. When an already-expanded node is selected, this action is
-    /// a no-op. Leaf nodes ignore `Expand`.
-    ///
-    /// Not bound in the default keymap — callers add bindings via `KeyMap::bind()`.
-    ///
-    /// NIST SP 800-53 AC-3 — navigation is gated on node type; leaf nodes do
-    /// not expose a false "expand" affordance that might mislead operators.
     Expand,
-
-    /// Collapse the currently selected tree node.
-    ///
-    /// Hides all descendants of the selected node. When the node is already
-    /// collapsed or is a leaf, this action is a no-op.
-    ///
-    /// Not bound in the default keymap.
     Collapse,
-
-    /// Activate the search/filter input bar in a viewer.
-    ///
-    /// Bound to `/` by convention (vim-style search activation). The viewer
-    /// state transitions to search mode; subsequent character input populates
-    /// the filter query.
-    ///
-    /// Not bound in the default keymap.
-    ///
-    /// NIST SP 800-53 AU-3 — search operates over visible data only; filtered
-    /// results remain scoped to what is already permitted for display.
     Search,
-
-    /// Navigate up one level in the tree hierarchy (Backspace).
-    ///
-    /// Moves selection to the parent of the currently selected node. At the
-    /// root, this action is a no-op.
-    ///
-    /// Not bound in the default keymap.
     Back,
-
-    /// Switch focus between panels (Tree ↔ Detail in a viewer, or equivalent).
-    ///
-    /// Not bound in the default keymap — callers add bindings via `KeyMap::bind()`.
-    /// Typical binding is `Tab` / `Shift-Tab`, overriding the default `NextTab`
-    /// / `PrevTab` bindings when a multi-panel layout is in use instead of a
-    /// tab-bar layout.
-    ///
-    /// NIST SP 800-53 AC-3 — explicit panel switching ensures the operator
-    /// always knows which panel is receiving keyboard input.
     PanelSwitch,
 
-    // -----------------------------------------------------------------------
     // ConfigApp actions
-    // -----------------------------------------------------------------------
-    /// Persist all in-progress edits to their backing store (Ctrl+S).
-    ///
-    /// The calling binary is responsible for emitting a structured journald
-    /// record identifying the changed fields, the operator identity, and the
-    /// timestamp. `Save` must only commit validated fields — the caller must
-    /// verify all validation results are clean before acting on this action.
-    ///
-    /// Not bound in the default keymap — callers add bindings via `KeyMap::bind()`.
-    ///
-    /// NIST SP 800-53 CM-3 — configuration changes require explicit operator
-    /// action and must be logged with before/after values.
-    /// NIST SP 800-53 AU-2 — the save event is an auditable operation.
-    /// NIST SP 800-53 SI-10 — only validated input may be committed.
     Save,
-
-    /// Discard all in-progress edits and restore the last committed state (Ctrl+Z or Esc).
-    ///
-    /// The calling binary should present a `DialogState::confirm(...)` when
-    /// dirty fields exist, so the operator must explicitly confirm discard.
-    /// An operator who accidentally hits Discard on a clean form should see
-    /// no confirmation — the form is already at the committed state.
-    ///
-    /// Not bound in the default keymap.
-    ///
-    /// NIST SP 800-53 CM-3 — discard must be an explicit, confirmed action
-    /// when unsaved edits are present.
     Discard,
-
-    /// Enter or exit edit mode for the focused field (Enter on a field).
-    ///
-    /// When a field is focused but not in edit mode, `ToggleEdit` activates
-    /// the in-place editor. When the field is already being edited,
-    /// `ToggleEdit` commits the current buffer (equivalent to pressing Enter
-    /// to accept the edited value).
-    ///
-    /// Not bound in the default keymap.
-    ///
-    /// NIST SP 800-53 SI-10 — field-level edit mode ensures input validation
-    /// is applied at the moment the operator commits each field value.
     ToggleEdit,
 }
 

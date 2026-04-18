@@ -49,20 +49,27 @@ use crate::posture::reader::{BootIdReader, CmdlineReader};
 /// Contains the live (kernel) value, the configured (sysctl.d) value,
 /// the hardening assessment, and any contradiction classification.
 ///
-/// NIST SP 800-53 AU-3: structured finding record.
-/// NIST SP 800-53 CM-6: live vs. configured comparison.
+/// ## Fields:
+///
+/// - `descriptor` — static catalog entry for this indicator.
+/// - `live_value` — the value currently active in the kernel; `None` if unreadable.
+/// - `configured_value` — the configured value from the persistence layer; `None` if
+///   absent.
+/// - `meets_desired` — whether the live value meets the desired hardened value; `None` if
+///   the live value was unreadable.
+/// - `contradiction` — contradiction classification, if live and configured values
+///   disagree.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: structured finding record.
+/// - **NIST SP 800-53 CM-6**: live vs. configured comparison.
 #[must_use = "indicator reports carry security posture findings — do not discard"]
 pub struct IndicatorReport {
-    /// Static catalog entry for this indicator.
     pub descriptor: &'static IndicatorDescriptor,
-    /// The value currently active in the kernel, or `None` if unreadable.
     pub live_value: Option<LiveValue>,
-    /// The configured value from the persistence layer, or `None` if absent.
     pub configured_value: Option<ConfiguredValue>,
-    /// Whether the live value meets the desired hardened value.
-    /// `None` if the live value was unreadable.
     pub meets_desired: Option<bool>,
-    /// Contradiction classification, if live and configured values disagree.
     pub contradiction: Option<ContradictionKind>,
 }
 
@@ -80,15 +87,20 @@ pub struct IndicatorReport {
 /// between two snapshots, the comparison is cross-boot and may reflect
 /// expected deltas.
 ///
-/// NIST SP 800-53 CA-7: Continuous Monitoring — atomic posture assessment unit.
-/// NIST SP 800-53 AU-3: temporal anchor via `collected_at` and `boot_id`.
+/// ## Fields:
+///
+/// - `reports` — all indicator reports, one per catalog entry, in catalog order.
+/// - `collected_at` — wall-clock time when this snapshot was collected.
+/// - `boot_id` — kernel boot ID (`/proc/sys/kernel/random/boot_id`), if readable.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CA-7**: atomic posture assessment unit for continuous monitoring.
+/// - **NIST SP 800-53 AU-3**: temporal anchor via `collected_at` and `boot_id`.
 #[must_use = "posture snapshots contain security findings — do not discard"]
 pub struct PostureSnapshot {
-    /// All indicator reports, one per catalog entry, in catalog order.
     pub reports: Vec<IndicatorReport>,
-    /// Wall-clock time when this snapshot was collected.
     pub collected_at: SystemTime,
-    /// Kernel boot ID (`/proc/sys/kernel/random/boot_id`), if readable.
     pub boot_id: Option<String>,
 }
 

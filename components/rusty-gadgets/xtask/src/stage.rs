@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Staging pipeline — builds the workspace, assembles compiled binaries,
 //! end-user scripts, configuration files, and man pages into a flat
 //! `staging/` directory tree for installer consumption.
@@ -486,17 +488,20 @@ const CONFIG_CRATES: &[&str] = &[
 ///
 /// The classification is filename-driven and deliberately coarse. The rules
 /// are defined in [`classify_config_file`].
+///
+/// ## Variants:
+///
+/// - `Database` — static package reference database; goes under `staging/share/umrs/`; per FHS
+///   2.3 §4.11 this is the `/usr/share/<package>` analogue.
+/// - `Template` — admin-editable configuration template; goes under
+///   `staging/share/umrs/templates/`; operators copy and customize these into `/etc/` (for UMRS:
+///   `/etc/selinux/<policy>/setrans.conf`).
+/// - `Unknown` — unclassified file; currently ignored with a diagnostic so that a stray README
+///   or backup file does not silently land in a reference database directory and get labeled as
+///   trusted package data.
 enum ConfigKind {
-    /// Static package reference database — goes under `staging/share/umrs/`.
-    /// Per FHS 2.3 §4.11 this is the `/usr/share/<package>` analogue.
     Database,
-    /// Admin-editable configuration template — goes under
-    /// `staging/share/umrs/templates/`. Operators copy and customize these
-    /// into `/etc/` (for UMRS: `/etc/selinux/<policy>/setrans.conf`).
     Template,
-    /// Unclassified file. Currently ignored with a diagnostic so that a
-    /// stray README or backup file does not silently land in a reference
-    /// database directory and get labeled as trusted package data.
     Unknown,
 }
 

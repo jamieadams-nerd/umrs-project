@@ -33,8 +33,10 @@ pub(crate) const MAX_KATTR_READ: usize = 64;
 
 /// Core contract for any file originating from a trusted Kernel Pseudo-FS.
 ///
-/// NIST SP 800-53 SI-7: Software and Information Integrity — every implementor
-/// must provide a parse function and the required kobject metadata constants.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: Software and Information Integrity — every implementor
+///   must provide a parse function and the required kobject metadata constants.
 pub trait KernelFileSource {
     type Output;
 
@@ -77,7 +79,9 @@ pub trait KernelFileSource {
 /// backing filesystem magic via fd-anchored `fstatfs` before parsing any
 /// bytes. The magic check cannot be bypassed via this path.
 ///
-/// NIST SP 800-53 SI-7: provenance-verified read path for all static nodes.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: provenance-verified read path for all static nodes.
 pub trait StaticSource: KernelFileSource + Sized {
     const PATH: &'static str;
     const EXPECTED_MAGIC: FsType = SELINUX_MAGIC;
@@ -90,8 +94,10 @@ pub trait StaticSource: KernelFileSource + Sized {
     /// the backing filesystem magic does not match `EXPECTED_MAGIC` (integrity
     /// failure), or if the byte content fails to parse.
     ///
-    /// NIST SP 800-53 SI-10, SA-11: the result carries the security-relevant
-    /// kernel attribute value and must not be silently discarded.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10, SA-11: the result carries the security-relevant
+    ///   kernel attribute value and must not be silently discarded.
     #[must_use = "kernel attribute read result carries the provenance-verified value — \
                   discarding it silently loses the security-relevant kernel state"]
     fn read() -> io::Result<Self::Output> {
@@ -113,7 +119,9 @@ pub trait StaticSource: KernelFileSource + Sized {
 /// Direct field construction is permitted but does not carry provenance proof;
 /// it is intended for display-format testing only.
 ///
-/// NIST SP 800-53 AU-3: Audit record completeness (what, when, where, outcome).
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-3: Audit record completeness (what, when, where, outcome).
 pub struct AttributeCard<T: KernelFileSource> {
     pub value: T::Output,
     pub path: &'static str,
@@ -167,8 +175,10 @@ Note:
 /// fd-anchored `fstatfs` to verify the filesystem magic — eliminating the
 /// TOCTOU window present in path-based magic checks — before parsing any bytes.
 ///
-/// NIST SP 800-53 SI-7: Software and Information Integrity.
-/// NSA RTB RAIN: Non-bypassable — all reads must flow through this type.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: Software and Information Integrity.
+/// - NSA RTB RAIN: Non-bypassable — all reads must flow through this type.
 pub struct SecureReader<T> {
     _marker: PhantomData<T>,
 }
@@ -235,8 +245,10 @@ impl<T: StaticSource> SecureReader<T> {
     /// the backing filesystem magic does not match `T::EXPECTED_MAGIC`
     /// (integrity failure), or if the byte content fails to parse.
     ///
-    /// NIST SP 800-53 SI-10, SA-11 / NSA RTB Fail Secure: the result carries
-    /// the security-relevant kernel attribute value and must be examined.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10, SA-11 / NSA RTB Fail Secure: the result carries
+    ///   the security-relevant kernel attribute value and must be examined.
     #[must_use = "kernel attribute read result carries the provenance-verified value — \
                   discarding it silently loses the security-relevant kernel state"]
     pub fn read(&self) -> io::Result<T::Output> {
@@ -262,7 +274,9 @@ where
     /// the backing filesystem magic does not match `T::EXPECTED_MAGIC`
     /// (integrity failure), or if the byte content fails to parse.
     ///
-    /// NIST SP 800-53 AU-3: Audit record completeness.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-3: Audit record completeness.
     #[must_use = "AttributeCard is the audit record for this kernel attribute read — \
                   discarding it loses the provenance-verified audit trail"]
     pub fn read_with_card(&self) -> io::Result<AttributeCard<T>> {

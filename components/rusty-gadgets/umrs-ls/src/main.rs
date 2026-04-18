@@ -72,6 +72,7 @@ use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 
 use clap::Parser;
+use owo_colors::{OwoColorize as _, Stream, Style};
 
 use crossterm::event::{self, Event, KeyCode, KeyModifiers};
 use serde::Serialize;
@@ -79,9 +80,10 @@ use serde::Serialize;
 use chrono::{DateTime, Local};
 use umrs_core::human::sizefmt::{SizeBase, auto_format as fmt_size};
 use umrs_core::i18n;
-use umrs_labels::cui::catalog::{Catalog, load_catalog};
+use umrs_labels::cui::catalog::{Catalog, LevelRegistry, load_catalog, load_levels};
 use umrs_labels::marking_to_detail;
 use umrs_ls::grouping::{FileGroup, SiblingKind, aggregate_size, group_entries, sibling_summary};
+use umrs_ls::identity::resolve_owner_display;
 use umrs_ls::tui_render::{
     GotoBar, HelpOverlay, render_dir_browser, render_help_overlay, render_permission_denied,
 };
@@ -154,18 +156,22 @@ struct JsonListing {
 /// Closed by Esc or q.  Tab / ← / → cycle the three audit card tabs;
 /// j / k / Up / Down / PageUp / PageDown scroll the active tab.
 ///
+/// ## Fields
+///
+/// * app - Pre-built audit card data for the selected file.
+/// * active_tab - Currently active tab (0 = Identity, 1 = Security, 2 = Observations).
+/// * scroll - Per-tab scroll offsets; indexed by `active_tab`.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AU-3**: The popup surfaces a complete audit card for the
 ///   selected file, ensuring the operator has all identity and security context
 ///   without leaving the directory view.
 /// - **NIST SP 800-53 AC-3**: MAC label state is visible on demand per node.
+///
 struct StatPopupState {
-    /// Pre-built audit card data for the selected file.
     app: FileStatApp,
-    /// Currently active tab (0 = Identity, 1 = Security, 2 = Observations).
     active_tab: usize,
-    /// Per-tab scroll offsets; indexed by `active_tab`.
     scroll: [u16; 3],
 }
 
@@ -173,24 +179,15 @@ const TERM_WIDTH: usize = 100;
 const ROW_INDENT: &str = "  "; // 2-space left indent on every row
 const NAME_PREFIX: &str = "   "; // 3-char icon zone before filename
 
-// CLI ANSI escape codes — used only when `DisplayConfig::use_color` is true.
-// NO_COLOR compliance: `use_color` is false when NO_COLOR is set (see argument
-// parsing in main()), so these escapes are never emitted when NO_COLOR is present.
+// Color output uses owo-colors for type-safe ANSI styling.
 //
-// TODO: Migrate to owo-colors (already in umrs-core) for type-safe colour
-// application and automatic NO_COLOR detection. The current approach is
-// correct but raw escapes are fragile and harder to audit than typed wrappers.
-const BOLD_RED: &str = "\x1b[1;31m";
-const DIM_ITALIC: &str = "\x1b[2;3m";
-const DIM: &str = "\x1b[2m";
-const GREEN: &str = "\x1b[32m";
-const RED: &str = "\x1b[31m";
-const RESET: &str = "\x1b[0m";
-const UNDERLINE: &str = "\x1b[4m";
-const REVERSE: &str = "\x1b[7m";
-const BLACK_ON_CYAN: &str = "\x1b[30;46m";
-// Cyan-on-black: used as the transition glyph between BLACK_ON_CYAN and REVERSE segments.
-const CYAN_ON_BLACK: &str = "\x1b[36;30m";
+// NO_COLOR compliance: `owo_colors::set_override(false)` is called at startup
+// when NO_COLOR is set or --color is absent, suppressing all color output
+// regardless of terminal capabilities (NIST SP 800-53 SI-11).
+//
+// All styled strings are produced via `OwoColorize` trait methods and only
+// emitted when `DisplayConfig::use_color` is true — the gate is checked before
+// any styled value is produced, so no escapes reach non-terminal sinks.
 
 // Runtime display configuration — colour switch, mount symbols, and loaded
 // secolor config.
@@ -259,12 +256,12 @@ fn try_load_catalog(candidates: &[&str]) -> Option<Catalog> {
 /// Returns `(us_catalog, ca_catalog)` where each is `Option<Catalog>`.
 /// Missing or unreadable files yield `None` — the popup degrades gracefully.
 ///
-/// Path resolution uses the documented override chain. Under the FHS 2.3
-/// §4.11 layout the reference databases live flat under
+/// Path resolution uses the documented override chain. Under the FHS 3.0
+/// §3.13 layout the reference databases live flat under
 /// `/opt/umrs/share/umrs/` — there is no `us/` or `ca/` subdirectory.
 ///
 ///   1. `UMRS_CONFIG_DIR` environment variable
-///   2. `/opt/umrs/share/umrs/`  (install default, FHS 2.3 §4.11)
+///   2. `/opt/umrs/share/umrs/`  (install default, FHS 3.0 §3.13)
 ///   3. CWD-relative `config/` subtree (development via `cargo run`)
 ///   4. `../umrs-label/config/` (workspace-relative dev fallback)
 ///
@@ -275,7 +272,7 @@ fn try_load_catalog(candidates: &[&str]) -> Option<Catalog> {
 ///   panics.
 /// - **NIST SP 800-53 CM-6**: Configuration Settings — catalog path resolves
 ///   under the documented install root before any other location.
-/// - **FHS 2.3 §4.11**: package-specific static reference data path.
+/// - **FHS 3.0 §3.13**: Package-specific static reference data path.
 fn load_catalogs() -> (Option<Catalog>, Option<Catalog>) {
     // Build the candidate list honoring the UMRS_CONFIG_DIR override chain.
     let config_dir_entry: Option<String> = std::env::var("UMRS_CONFIG_DIR").ok();
@@ -307,6 +304,31 @@ fn load_catalogs() -> (Option<Catalog>, Option<Catalog>) {
     (us, ca)
 }
 
+/// Load the MCS sensitivity level registry from `LEVELS.json`.
+///
+/// Uses the same path-resolution chain as `load_catalogs` so the operator
+/// override (`UMRS_CONFIG_DIR`) applies here too.  Returns `None` if no
+/// readable file is found — the system-info popup degrades to hardcoded
+/// fallback text rather than failing.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-16**: Security Attributes — level definitions are
+///   read from the authoritative `LEVELS.json` rather than embedded strings.
+/// - **FHS 3.0 §3.13**: Static data for `/opt/umrs/` packages lives under
+///   `/opt/umrs/share/umrs/`.
+fn load_levels_registry() -> Option<LevelRegistry> {
+    let config_dir_entry: Option<String> = std::env::var("UMRS_CONFIG_DIR").ok();
+    let mut candidates: Vec<String> = Vec::with_capacity(4);
+    if let Some(ref dir) = config_dir_entry {
+        candidates.push(format!("{dir}/LEVELS.json"));
+    }
+    candidates.push("/opt/umrs/share/umrs/LEVELS.json".to_owned());
+    candidates.push("config/LEVELS.json".to_owned());
+    candidates.push("../umrs-label/config/LEVELS.json".to_owned());
+    candidates.iter().find_map(|p| load_levels(p).ok())
+}
+
 /// Look up a marking string in the loaded catalogs and build a detail popup.
 ///
 /// Tries the US catalog first, then the Canadian catalog. For each catalog,
@@ -328,6 +350,7 @@ fn load_catalogs() -> (Option<Catalog>, Option<Catalog>) {
 ///
 /// - **NIST SP 800-53 AC-16**: Security Attributes — the popup shows the
 ///   full regulatory label definition for the marking applied to selected nodes.
+///   
 fn lookup_marking_detail(
     marking: &str,
     us_catalog: Option<&Catalog>,
@@ -537,7 +560,7 @@ fn main() -> io::Result<()> {
     }
 
     verbose!("Mode: TUI");
-    run_tui(target, flat_mode)
+    run_tui(target, flat_mode, args.color)
 }
 
 // ============================================================================
@@ -568,8 +591,10 @@ fn run_json(target: &str) -> io::Result<()> {
 /// that the TUI path can branch at the top of `main()` without touching any
 /// of the rendering logic.
 ///
-/// NIST SP 800-53 AU-3 — all identity, label, and observation fields required
-/// for audit are included in the tabular output.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: All identity, label, and observation fields
+///   required for audit are included in the tabular output.
 // Each parameter is a direct CLI flag. Wrapping in a sub-struct would obscure
 // the 1:1 mapping to user-visible flags without adding safety.
 #[expect(
@@ -603,7 +628,10 @@ fn run_cli(
 
     // NO_COLOR compliance: honor the env var regardless of --color flag.
     // `var_os` — presence is the signal, value is irrelevant (NIST SP 800-53 SI-11).
+    // owo_colors::set_override(false) suppresses all owo-colors output globally
+    // for this process; set_override(true) forces color even when piped.
     let use_color = color && std::env::var_os("NO_COLOR").is_none();
+    owo_colors::set_override(use_color);
     let cfg = DisplayConfig::build(use_color);
 
     let listing = list_directory(Path::new(target))?;
@@ -705,15 +733,17 @@ fn run_cli(
 /// | r | Refresh (re-scan current directory) |
 /// | `PageUp` / `PageDown` | Page navigation |
 ///
-/// NIST SP 800-53 AC-3 — navigation is read-only; no directory entries are
-/// created, deleted, or modified through the viewer interface.
-/// NIST SP 800-53 AU-3 — the viewer header carries tool identity, data source
-/// path, and entry counts on every rendered frame.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: Navigation is read-only; no directory entries are
+///   created, deleted, or modified through the viewer interface.
+/// - **NIST SP 800-53 AU-3**: The viewer header carries tool identity, data source
+///   path, and entry counts on every rendered frame.
 #[expect(
     clippy::too_many_lines,
     reason = "TUI event loop is inherently sequential; splitting would scatter the state machine"
 )]
-fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
+fn run_tui(target: &str, _flat_mode: bool, color: bool) -> io::Result<()> {
     // Canonicalize the target path so the header always shows an absolute path.
     let path = std::fs::canonicalize(target)?;
 
@@ -748,12 +778,22 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
         Action::Collapse,
     );
 
-    let theme = Theme::default();
+    // NO_COLOR compliance: mirror the same precedence as run_cli.
+    // `color` is the --color flag; NO_COLOR env (any non-empty value) overrides it.
+    // NIST SP 800-53 SI-11 — honor environment signals that govern output format.
+    let use_color = color && std::env::var_os("NO_COLOR").is_none();
+    let theme = if use_color {
+        Theme::dark()
+    } else {
+        Theme::no_color()
+    };
 
     // Load CUI catalogs for label detail popups.  Paths are tried in order;
     // the first successful load wins.  Missing catalogs yield `None` — the
     // popup degrades gracefully to "no data" rather than failing.
     let (us_catalog, ca_catalog) = load_catalogs();
+    // Load MCS sensitivity level registry for SystemLow/SystemHigh popup text.
+    let level_registry = load_levels_registry();
 
     // Build the header context once at startup.  OS name is read through
     // the umrs-platform OsDetector pipeline via detect_os_name(), which routes
@@ -1010,6 +1050,7 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
                                     &mut nav_error,
                                     us_catalog.as_ref(),
                                     ca_catalog.as_ref(),
+                                    level_registry.as_ref(),
                                     &mut label_popup,
                                     &mut stat_popup,
                                 );
@@ -1055,8 +1096,10 @@ fn run_tui(target: &str, _flat_mode: bool) -> io::Result<()> {
 ///
 /// Extracted from `handle_enter` to stay within the 100-line function limit.
 ///
-/// NIST SP 800-53 AU-3 — audit card data is built in a single, traceable
-/// construction step per file node selection.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Audit card data is built in a single, traceable
+///   construction step per file node selection.
 fn build_stat_popup_state(file_path: &Path) -> StatPopupState {
     let path_str = file_path.to_string_lossy().into_owned();
 
@@ -1102,13 +1145,20 @@ fn build_stat_popup_state(file_path: &Path) -> StatPopupState {
 /// On navigation error the display stays on the current listing — no crash, no
 /// silent state corruption.
 ///
-/// NIST SP 800-53 AC-3 — navigation is strictly read-only; this function never
-/// creates, modifies, or deletes directory entries.
-/// NIST SP 800-53 AC-16 — pressing Enter on a labeled node opens the full
-/// regulatory definition for the applied marking.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: Navigation is strictly read-only; this function
+///   never creates, modifies, or deletes directory entries.
+/// - **NIST SP 800-53 AC-16**: Pressing Enter on a labeled node opens the full
+///   regulatory definition for the applied marking.
 #[expect(
     clippy::too_many_lines,
     reason = "enter-key dispatch is a single state machine; splitting would scatter the priority logic"
+)]
+#[expect(
+    clippy::too_many_arguments,
+    reason = "enter-key handler is a single dispatch function; all arguments are distinct \
+              state owned by the event loop and cannot be merged without obscuring ownership"
 )]
 fn handle_enter(
     app: &mut DirViewerApp,
@@ -1116,6 +1166,7 @@ fn handle_enter(
     nav_error: &mut Option<(String, String)>,
     us_catalog: Option<&Catalog>,
     ca_catalog: Option<&Catalog>,
+    level_registry: Option<&LevelRegistry>,
     label_popup: &mut Option<(MarkingDetailData, u16)>,
     stat_popup: &mut Option<StatPopupState>,
 ) {
@@ -1144,40 +1195,52 @@ fn handle_enter(
     if node.metadata.get("kind").map(String::as_str) == Some("group_header")
         && let Some(marking_str) = node.metadata.get("marking")
     {
-        let system_info: Option<(&str, &str)> = match marking_str.as_str() {
-            "SystemLow" => Some((
-                "SystemLow (s0)",
-                "Default operating system sensitivity level. Every file and process \
-                 starts here under targeted SELinux policy. Files at SystemLow carry \
-                 no MCS category assignment — they are routine unclassified content \
-                 (binaries, libraries, configuration). \nA file with no category (bare s0) \
-                 displays as SystemLow in setrans.conf translations. New files inherit \
-                 the MCS range from their parent directory. \nIn MLS policy, s0 is the \
-                 lowest sensitivity tier; s1-s3 provide Bell-LaPadula dominance above it.",
-            )),
+        // SystemLow name and description come from LEVELS.json s0 when available.
+        // SystemHigh and SystemLow-SystemHigh are setrans.conf range aliases with
+        // no direct LEVELS.json equivalent; their text stays as compile-time constants.
+        let system_info: Option<(String, String)> = match marking_str.as_str() {
+            "SystemLow" => {
+                let (name, description) = level_registry
+                    .and_then(|r| r.level("s0"))
+                    .map(|def| (def.name.as_str(), def.description.as_str()))
+                    .unwrap_or((
+                        "SystemLow (s0)",
+                        "Default operating system sensitivity level. Every file and process \
+                         starts here under targeted SELinux policy. Files at SystemLow carry \
+                         no MCS category assignment — they are routine unclassified content \
+                         (binaries, libraries, configuration). \nA file with no category (bare \
+                         s0) displays as SystemLow in setrans.conf translations. New files \
+                         inherit the MCS range from their parent directory. \nIn MLS policy, s0 \
+                         is the lowest sensitivity tier; s1-s3 provide Bell-LaPadula dominance \
+                         above it.",
+                    ));
+                Some((name.to_owned(), description.to_owned()))
+            }
             "SystemLow-SystemHigh" => Some((
-                "SystemLow-SystemHigh (s0-s0:c0.c1023)",
+                "SystemLow-SystemHigh (s0-s0:c0.c1023)".to_owned(),
                 "Full MLS range spanning all sensitivity levels and all 1024 MCS \
                  categories. Processes with this range can access objects at any \
                  sensitivity level and any category combination. Typically assigned \
                  to trusted system daemons that must operate across all security \
-                 boundaries (e.g., SELinux-aware services, audit infrastructure).",
+                 boundaries (e.g., SELinux-aware services, audit infrastructure)."
+                    .to_owned(),
             )),
             "SystemHigh" => Some((
-                "SystemHigh (s0:c0.c1023)",
+                "SystemHigh (s0:c0.c1023)".to_owned(),
                 "Maximum MCS category set — all 1024 categories included at the s0 \
                  sensitivity level. Under targeted policy this is the theoretical \
                  ceiling. Files or processes at SystemHigh have access to every \
                  MCS category. In practice, only system services that must read \
-                 across all CUI categories operate at this level.",
+                 across all CUI categories operate at this level."
+                    .to_owned(),
             )),
             _ => None,
         };
         if let Some((name, description)) = system_info {
             let data = MarkingDetailData {
                 key: marking_str.clone(),
-                name_en: name.to_owned(),
-                description_en: description.to_owned(),
+                name_en: name,
+                description_en: description,
                 designation: "system".to_owned(),
                 ..MarkingDetailData::default()
             };
@@ -1268,8 +1331,10 @@ fn handle_enter(
 ///
 /// On success the bar is closed and the tree is reloaded.
 ///
-/// NIST SP 800-53 AC-3 — navigation is strictly read-only; no path operation
-/// mutates the filesystem.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: Navigation is strictly read-only; no path
+///   operation mutates the filesystem.
 fn handle_goto_submit(
     app: &mut DirViewerApp,
     state: &mut ViewerState,
@@ -1486,8 +1551,10 @@ fn longest_common_prefix<'a, I: IntoIterator<Item = &'a str>>(iter: I) -> String
 /// Esc while in search mode.  Making refresh a catch-all reset is the
 /// least surprising behaviour.
 ///
-/// NIST SP 800-53 AU-3 — re-scan updates the status bar timing so the
-/// operator can confirm the listing is current.
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Re-scan updates the status bar timing so the
+///   operator can confirm the listing is current.
 fn handle_refresh(app: &mut DirViewerApp, state: &mut ViewerState) {
     // Clear any active or committed search filter before re-scanning so the
     // operator sees the full refreshed listing.  Handles both "bar still
@@ -1526,7 +1593,7 @@ fn print_cuddle_line(fg: &FileGroup, cfg: &DisplayConfig) {
     let size_str = fmt_size(u128::from(agg), SizeBase::Binary);
     let line = format!("{ROW_INDENT}\u{2514} {summary}  {size_str} total");
     if cfg.use_color {
-        println!("{DIM}{line}{RESET}");
+        println!("{}", line.if_supports_color(Stream::Stdout, |t| t.dimmed()));
     } else {
         println!("{line}");
     }
@@ -1728,8 +1795,7 @@ fn cell_plain(entry: &ListEntry, col: Column, key: &GroupKey, cfg: &DisplayConfi
         Column::UidGid => {
             let uid = entry.dirent.ownership.user.uid.as_u32();
             let gid = entry.dirent.ownership.group.gid.as_u32();
-            let owner = resolve_username(uid);
-            let group = resolve_groupname(gid);
+            let (owner, group) = resolve_owner_display(uid, gid);
             format!("{owner}:{group}")
         }
         Column::Size => fmt_size(u128::from(entry.dirent.size.as_u64()), SizeBase::Binary),
@@ -1773,12 +1839,12 @@ fn cell_iov(entry: &ListEntry, cfg: &DisplayConfig) -> String {
 
     let i = if flags.contains(InodeSecurityFlags::IMMUTABLE) {
         if cfg.use_color {
-            format!("{RED}I{RESET}")
+            format!("{}", "I".if_supports_color(Stream::Stdout, |t| t.red()))
         } else {
             "I".to_owned()
         }
     } else if cfg.use_color {
-        format!("{DIM}-{RESET}")
+        format!("{}", "-".if_supports_color(Stream::Stdout, |t| t.dimmed()))
     } else {
         "-".to_owned()
     };
@@ -1792,24 +1858,27 @@ fn cell_iov(entry: &ListEntry, cfg: &DisplayConfig) -> String {
 
     let o = if posture_obs {
         if cfg.use_color {
-            format!("{BOLD_RED}O{RESET}")
+            format!(
+                "{}",
+                "O".if_supports_color(Stream::Stdout, |t| t.style(Style::new().red().bold()))
+            )
         } else {
             "O".to_owned()
         }
     } else if cfg.use_color {
-        format!("{DIM}-{RESET}")
+        format!("{}", "-".if_supports_color(Stream::Stdout, |t| t.dimmed()))
     } else {
         "-".to_owned()
     };
 
     let v = if flags.contains(InodeSecurityFlags::IMA_PRESENT) {
         if cfg.use_color {
-            format!("{GREEN}V{RESET}")
+            format!("{}", "V".if_supports_color(Stream::Stdout, |t| t.green()))
         } else {
             "V".to_owned()
         }
     } else if cfg.use_color {
-        format!("{DIM}-{RESET}")
+        format!("{}", "-".if_supports_color(Stream::Stdout, |t| t.dimmed()))
     } else {
         "-".to_owned()
     };
@@ -1842,48 +1911,62 @@ fn group_separator(key: &GroupKey, cfg: &DisplayConfig) -> String {
             range: &key.marking,
         };
         let colors = resolve_colors(&ctx, sc);
-        let type_out = ansi_fg(colors[2].fg, &key.selinux_type);
-        let marking_out = ansi_fg(colors[3].fg, &key.marking);
+        let Rgb {
+            r: tr,
+            g: tg,
+            b: tb,
+        } = colors[2].fg;
+        let Rgb {
+            r: mr,
+            g: mg,
+            b: mb,
+        } = colors[3].fg;
+        let type_out =
+            key.selinux_type.if_supports_color(Stream::Stdout, |t| t.truecolor(tr, tg, tb));
+        let marking_out =
+            key.marking.if_supports_color(Stream::Stdout, |t| t.truecolor(mr, mg, mb));
         return format!("{type_out} :: {marking_out} {fill}");
     }
 
     if key.selinux_type == "<restricted>" {
         let selinux_type = i18n::tr("<restricted>");
+        // Dim + italic + underline on the entire header line.
+        let body = format!("{selinux_type} :: {} {fill}", key.marking);
         format!(
-            "{DIM_ITALIC}{UNDERLINE}{0} :: {1} {fill}{RESET}",
-            selinux_type, key.marking
+            "{}",
+            body.if_supports_color(Stream::Stdout, |t| t
+                .style(Style::new().dimmed().italic().underline()))
         )
     } else {
-        // BE CAREFUL HERE! This combination of reverrse, colors, and unicode was challenging!
-        format!(
-            "{BLACK_ON_CYAN} {0:20} {REVERSE}{CYAN_ON_BLACK}\u{1FB6C}{RESET}{REVERSE}\u{1FB6C}{1:^20} {RESET}{UNDERLINE}\u{1FB6C}{fill}{RESET}",
-            key.selinux_type, key.marking
-        )
+        // BE CAREFUL HERE! This combination of reverse, colors, and unicode was challenging!
+        //
+        // The header is built from styled segments to preserve the exact terminal
+        // rendering: black-on-cyan for the type field, a reverse-video transition
+        // glyph, and a reverse-video marking field with an underlined tail fill.
+        //
+        // Each segment is styled individually and concatenated; owo-colors appends
+        // the SGR reset after each segment automatically, so no manual RESET is needed.
+        let type_field = format!(" {:20} ", key.selinux_type);
+        let seg_type = format!(
+            "{}",
+            type_field.if_supports_color(Stream::Stdout, |t| t.black().on_cyan())
+        );
+        // Transition glyph: cyan-on-black → visually bridges BLACK_ON_CYAN → REVERSE
+        let seg_transition = format!(
+            "{}",
+            "\u{1FB6C}".if_supports_color(Stream::Stdout, |t| t.cyan().on_black())
+        );
+        let marking_field = format!("\u{1FB6C}{:^20} ", key.marking);
+        let seg_marking = format!(
+            "{}",
+            marking_field.if_supports_color(Stream::Stdout, |t| t.reversed())
+        );
+        let seg_tail = format!(
+            "{}",
+            format!("\u{1FB6C}{fill}").if_supports_color(Stream::Stdout, |t| t.underline())
+        );
+        format!("{seg_type}{seg_transition}{seg_marking}{seg_tail}")
     }
-}
-
-//
-//Identity resolution
-//
-fn resolve_username(uid: u32) -> String {
-    match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(uid)) {
-        Ok(Some(u)) => u.name,
-        _ => uid.to_string(),
-    }
-}
-
-fn resolve_groupname(gid: u32) -> String {
-    match nix::unistd::Group::from_gid(nix::unistd::Gid::from_raw(gid)) {
-        Ok(Some(g)) => g.name,
-        _ => gid.to_string(),
-    }
-}
-
-// Applies a 24-bit RGB foreground colour using the SGR truecolor sequence.
-// The escape values are computed at call time from the Rgb argument and cannot
-// be pre-declared as constants. Only called when `DisplayConfig::use_color` is true.
-fn ansi_fg(rgb: Rgb, text: &str) -> String {
-    format!("\x1b[38;2;{};{};{}m{text}\x1b[0m", rgb.r, rgb.g, rgb.b)
 }
 
 const fn file_type_char(ft: FileType) -> char {

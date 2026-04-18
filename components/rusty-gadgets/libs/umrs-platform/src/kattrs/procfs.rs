@@ -30,9 +30,11 @@ use super::traits::{KernelFileSource, SecureReader, StaticSource};
 
 /// FIPS mode attribute node (`/proc/sys/crypto/fips_enabled`).
 ///
-/// NIST SP 800-53 SC-28 / SI-7: Protection of Information at Rest / Software
-/// Integrity — confirms that the kernel is operating with FIPS 140-2/140-3
-/// validated cryptographic primitives. Verified via `PROC_SUPER_MAGIC`.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SC-28 / SI-7: Protection of Information at Rest / Software
+///   Integrity — confirms that the kernel is operating with FIPS 140-2/140-3
+///   validated cryptographic primitives. Verified via `PROC_SUPER_MAGIC`.
 pub struct ProcFips;
 impl KernelFileSource for ProcFips {
     type Output = bool;
@@ -74,11 +76,13 @@ impl StaticSource for ProcFips {
 /// (fd-anchored `fstatfs` before any read) is the security layer that ensures
 /// the value originates from the kernel and not a bind-mounted substitute.
 ///
-/// NIST SP 800-53 CM-7: Least Functionality — a locked latch enforces that no
-/// new modules can extend the kernel attack surface at runtime.
-/// NIST SP 800-53 SI-7: Software and Information Integrity — the latch value is
-/// read from a provenance-verified kernel pseudo-filesystem.
-/// NSA RTB: minimized attack surface; no write path is provided here.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-7: Least Functionality — a locked latch enforces that no
+///   new modules can extend the kernel attack surface at runtime.
+/// - NIST SP 800-53 SI-7: Software and Information Integrity — the latch value is
+///   read from a provenance-verified kernel pseudo-filesystem.
+/// - NSA RTB: minimized attack surface; no write path is provided here.
 pub struct ModuleLoadLatch;
 impl KernelFileSource for ModuleLoadLatch {
     type Output = bool;
@@ -120,9 +124,11 @@ impl StaticSource for ModuleLoadLatch {
 /// and cannot be overridden by the caller. All reads flow through
 /// `SecureReader::read_generic_text` — the single trusted engine.
 ///
-/// NIST SP 800-53 SI-7: provenance-verified read; magic check before any bytes
-/// are consumed. NSA RTB RAIN: Non-Bypassable — callers cannot skip the
-/// fstatfs gate.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: provenance-verified read; magic check before any bytes
+///   are consumed.
+/// - NSA RTB RAIN: Non-Bypassable — callers cannot skip the fstatfs gate.
 pub struct ProcfsText {
     pub(super) path: PathBuf,
 }
@@ -135,8 +141,10 @@ impl ProcfsText {
     /// Returns `io::ErrorKind::InvalidInput` if `path` does not start with
     /// `/proc/`.
     ///
-    /// NIST SP 800-53 SI-10: Input Validation — rejects non-procfs paths
-    /// before any I/O is attempted.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10: Input Validation — rejects non-procfs paths
+    ///   before any I/O is attempted.
     pub fn new(path: PathBuf) -> io::Result<Self> {
         if !path.starts_with("/proc/") {
             return Err(io::Error::new(
@@ -168,7 +176,9 @@ impl SecureReader<ProcfsText> {
     /// magic does not match `PROC_SUPER_MAGIC` (integrity failure), or if the
     /// file content is not valid UTF-8.
     ///
-    /// NIST SP 800-53 SI-7 / NSA RTB RAIN.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-7 / NSA RTB RAIN.
     pub fn read_generic_text(&self, node: &ProcfsText) -> io::Result<String> {
         Self::execute_read_text(&node.path, PROC_SUPER_MAGIC)
     }

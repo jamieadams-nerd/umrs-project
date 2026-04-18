@@ -13,56 +13,43 @@
 //! path-based), from which source kind, what filesystem magic was observed,
 //! file metadata at the time of access, and whether parsing succeeded.
 //!
-//! ## Compliance
-//!
-//! - **NIST SP 800-53 AU-3**: Audit Record Content — records capture what was
-//!   read, when, from where, and with what outcome.
-//! - **NIST SP 800-53 AU-10**: Non-Repudiation — the evidence bundle is the
-//!   authoritative record of every artifact the detection pipeline consumed.
-//!   Callers cannot remove or modify records once pushed.
-//! - **NSA RTB**: provenance must be traceable. Every `EvidenceRecord` carries
-//!   the path requested, the resolved path (if different), and the filesystem
-//!   magic observed — enough to reconstruct the decision chain post-incident.
+#![doc = include_str!("../docs/compliance-evidence.md")]
 
 // ===========================================================================
 // SourceKind
 // ===========================================================================
-
 /// The origin class of a single piece of detection evidence.
 ///
 /// Used to classify each [`EvidenceRecord`] so that audit reviewers can
 /// immediately identify whether a value came from the kernel (procfs/sysfs),
 /// a regular filesystem file, a package database, or a resolved symlink.
 ///
-/// NIST SP 800-53 AU-3 — audit records must identify the source of the data.
+/// ## Variants:
+///
+/// - `Procfs` — data read from the procfs pseudo-filesystem (`/proc/`); provenance-verified
+///   via `PROC_SUPER_MAGIC` before any bytes are consumed.
+/// - `RegularFile` — data read from a regular file on a persistent filesystem
+///   (e.g., `/etc/os-release`, `/usr/lib/os-release`).
+/// - `PackageDb` — data read from a package manager database
+///   (e.g., RPM BDB/SQLite, dpkg status file).
+/// - `SymlinkTarget` — data obtained by resolving a symbolic link target; the resolved path
+///   is recorded in [`EvidenceRecord::path_resolved`].
+/// - `SysfsNode` — data read from the sysfs pseudo-filesystem (`/sys/`); provenance-verified
+///   via `SYSFS_MAGIC` before any bytes are consumed.
+/// - `StatfsResult` — data obtained from a `statfs(2)` syscall on a directory or path.
+///   Not a file read — records filesystem-level metadata for a path. No fd is opened.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: audit records must identify the source and acquisition method
+///   of every data element.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SourceKind {
-    /// Data read from the procfs pseudo-filesystem (`/proc/`).
-    /// Provenance-verified via `PROC_SUPER_MAGIC` before any bytes are consumed.
     Procfs,
-
-    /// Data read from a regular file on a persistent filesystem
-    /// (e.g., `/etc/os-release`, `/usr/lib/os-release`).
     RegularFile,
-
-    /// Data read from a package manager database
-    /// (e.g., RPM BDB/SQLite, dpkg status file).
     PackageDb,
-
-    /// Data obtained by resolving a symbolic link target.
-    /// The resolved target path is recorded in [`EvidenceRecord::path_resolved`].
     SymlinkTarget,
-
-    /// Data read from the sysfs pseudo-filesystem (`/sys/`).
-    /// Provenance-verified via `SYSFS_MAGIC` before any bytes are consumed.
     SysfsNode,
-
-    /// Data obtained from a `statfs(2)` syscall on a directory or path.
-    ///
-    /// Not a file read — records filesystem-level metadata for a path.
-    /// No file descriptor is opened.
-    ///
-    /// NIST SP 800-53 AU-3 — audit records must correctly identify data acquisition method.
     StatfsResult,
 }
 
@@ -77,31 +64,29 @@ pub enum SourceKind {
 /// separate `Option<uXX>` fields on `EvidenceRecord`) to make it explicit that
 /// these values arrive as a unit from one syscall — or are absent entirely.
 ///
-/// NIST SP 800-53 AU-3 — metadata is part of the audit record.
+/// ## Fields:
+///
+/// - `dev` — device ID of the filesystem containing the file.
+/// - `ino` — inode number.
+/// - `mode` — file type and permission bits (same layout as `st_mode`).
+/// - `uid` — user ID of the file owner.
+/// - `gid` — group ID of the file owner.
+/// - `nlink` — hard link count.
+/// - `size` — size in bytes.
+/// - `mtime` — last modification time (seconds since Unix epoch).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: metadata is part of the audit record.
 #[derive(Debug, Clone)]
 pub struct FileStat {
-    /// Device ID of the filesystem containing the file.
     pub dev: Option<u64>,
-
-    /// Inode number.
     pub ino: Option<u64>,
-
-    /// File type and permission bits (same layout as `st_mode`).
     pub mode: Option<u32>,
-
-    /// User ID of the file owner.
     pub uid: Option<u32>,
-
-    /// Group ID of the file owner.
     pub gid: Option<u32>,
-
-    /// Hard link count.
     pub nlink: Option<u64>,
-
-    /// Size in bytes.
     pub size: Option<u64>,
-
-    /// Last modification time (seconds since Unix epoch).
     pub mtime: Option<i64>,
 }
 
@@ -116,37 +101,43 @@ pub struct FileStat {
 /// flagged here as weak — callers should record the weakness and not treat
 /// MD5-verified files as having strong integrity guarantees.
 ///
-/// NIST SP 800-53 SI-7 — software integrity; algorithm selection matters.
-/// CMMC L2 SI.1.210 — integrity checking for software/firmware.
+/// ## Variants:
+///
+/// - `Sha256` — SHA-256; preferred algorithm.
+/// - `Sha512` — SHA-512; acceptable strong algorithm.
+/// - `Md5` — MD5; legacy only, present in older RPM databases. **Weak**: MD5 is
+///   cryptographically broken and must not be relied upon for security decisions.
+///   Record the digest for audit completeness but treat any file with only an MD5
+///   reference as having unverified integrity.
+/// - `Unknown(String)` — an algorithm string the parser did not recognise, preserved
+///   verbatim.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**: software integrity; algorithm selection matters.
+/// - **CMMC L2 SI.1.210**: integrity checking for software/firmware.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum DigestAlgorithm {
-    /// SHA-256 — preferred algorithm.
     Sha256,
-
-    /// SHA-512 — acceptable strong algorithm.
     Sha512,
-
-    /// MD5 — legacy only. Present in older RPM databases.
-    ///
-    /// **Weak**: MD5 is cryptographically broken and must not be relied upon
-    /// for security decisions. Record the digest for audit completeness but
-    /// treat any file with only an MD5 reference as having unverified integrity.
     Md5,
-
-    /// An algorithm string the parser did not recognise, preserved verbatim.
     Unknown(String),
 }
 
 /// A digest value from a package database, paired with its algorithm.
 ///
-/// NIST SP 800-53 SI-7, SC-28 — integrity at rest: the package DB digest is
-/// the reference value against which the on-disk file is compared.
+/// ## Fields:
+///
+/// - `algorithm` — the hash algorithm used to produce `value`.
+/// - `value` — raw digest bytes, as stored in the package database.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**, **SC-28**: integrity at rest — the package DB digest is the
+///   reference value against which the on-disk file is compared.
 #[derive(Debug, Clone)]
 pub struct PkgDigest {
-    /// The hash algorithm used to produce `value`.
     pub algorithm: DigestAlgorithm,
-
-    /// Raw digest bytes, as stored in the package database.
     pub value: Vec<u8>,
 }
 
@@ -166,60 +157,45 @@ pub struct PkgDigest {
 /// called, or `sha256` when Phase 5 did not run) are `None` — absence is
 /// always explicit.
 ///
-/// NIST SP 800-53 AU-3, AU-10 — audit record completeness and non-repudiation.
+/// ## Fields:
+///
+/// - `source_kind` — classification of the data source.
+/// - `opened_by_fd` — whether the file was opened via an fd-anchored call (e.g., `openat2`
+///   with `ResolveFlags`, or via `ProcfsText`/`SysfsText`). `false` means a path-based open
+///   was used — callers should note this in `notes`.
+/// - `path_requested` — the path as requested by the caller before any resolution.
+/// - `path_resolved` — the resolved path if `path_requested` was a symlink; `None` if not a
+///   symlink or resolution was not attempted.
+/// - `stat` — file metadata from a `statx(2)` call on the open fd, if collected; `None` if
+///   `statx` was not called for this record.
+/// - `fs_magic` — filesystem magic observed via `fstatfs(2)` on the open fd, if verified;
+///   `None` if provenance verification was not performed (e.g., package DB).
+/// - `sha256` — SHA-256 digest of the file content, if computed (Phase 5 only).
+/// - `pkg_digest` — digest from the package database for this path, if queried (Phase 5 only).
+/// - `parse_ok` — whether the content of this record was successfully parsed by the consuming
+///   phase. `false` means the read succeeded but the parse failed.
+/// - `notes` — free-form notes added by the phase runner. Must not contain security labels,
+///   credentials, or file content (NIST SP 800-53 SI-12). Strings longer than 64 characters
+///   should be truncated at the call site.
+/// - `duration_ns` — elapsed I/O time in CPU cycles (x86_64 RDTSCP) or nanoseconds (other
+///   arches). Computed as `end_ts.saturating_sub(start_ts)`. `None` if per-record timing was
+///   not captured. (NIST SP 800-53 AU-8)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**, **AU-10**: audit record completeness and non-repudiation.
 #[derive(Debug, Clone)]
 pub struct EvidenceRecord {
-    /// Classification of the data source.
     pub source_kind: SourceKind,
-
-    /// Whether the file was opened via an fd-anchored call (e.g., `openat2`
-    /// with `ResolveFlags`, or via `ProcfsText`/`SysfsText`). `false` means a
-    /// path-based open was used — callers should note this in `notes`.
     pub opened_by_fd: bool,
-
-    /// The path as requested by the caller before any resolution.
     pub path_requested: String,
-
-    /// The resolved path, if `path_requested` was a symlink. `None` if the
-    /// path was not a symlink or resolution was not attempted.
     pub path_resolved: Option<String>,
-
-    /// File metadata from a `statx(2)` call on the open fd, if collected.
-    /// `None` if `statx` was not called for this record.
     pub stat: Option<FileStat>,
-
-    /// Filesystem magic observed via `fstatfs(2)` on the open fd, if verified.
-    /// `None` if provenance verification was not performed (e.g., package DB).
     pub fs_magic: Option<u64>,
-
-    /// SHA-256 digest of the file content, if computed (Phase 5 only).
     pub sha256: Option<[u8; 32]>,
-
-    /// Digest from the package database for this path, if queried (Phase 5 only).
     pub pkg_digest: Option<PkgDigest>,
-
-    /// Whether the content of this record was successfully parsed by the
-    /// consuming phase. `false` means the read succeeded but the parse failed.
     pub parse_ok: bool,
-
-    /// Free-form notes added by the phase runner. Must not contain security
-    /// labels, credentials, or file content (NIST SP 800-53 SI-12). Strings
-    /// longer than 64 characters should be truncated at the call site.
     pub notes: Vec<String>,
-
-    /// Elapsed time for the I/O operation that produced this record.
-    ///
-    /// `Some(n)` where `n` is in CPU cycles (x86_64 RDTSCP) or nanoseconds
-    /// (other architectures via `CLOCK_MONOTONIC_RAW`). `None` if per-record
-    /// I/O timing was not captured for this record (e.g., package DB batch
-    /// queries where individual record timing is not meaningful).
-    ///
-    /// Computed as `end_ts.saturating_sub(start_ts)` using
-    /// `umrs_hw::read_hw_timestamp()`. Saturating subtraction prevents
-    /// underflow on a non-invariant TSC.
-    ///
-    /// NIST SP 800-53 AU-8 — per-record I/O timing supports fine-grained
-    /// temporal analysis of the detection audit trail.
     pub duration_ns: Option<u64>,
 }
 
@@ -243,9 +219,11 @@ impl Default for EvidenceRecord {
     /// `source_kind` and `path_requested` have no meaningful sentinel value —
     /// callers must always supply them explicitly.
     ///
-    /// NIST SP 800-53 AU-3 — audit record completeness: `parse_ok: false` is
-    /// the safe default; a record that forgets to set `parse_ok: true` is
-    /// conservatively treated as a failed parse rather than a silent success.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-3 — audit record completeness: `parse_ok: false` is
+    ///   the safe default; a record that forgets to set `parse_ok: true` is
+    ///   conservatively treated as a failed parse rather than a silent success.
     fn default() -> Self {
         Self {
             source_kind: SourceKind::RegularFile,
@@ -267,26 +245,29 @@ impl Default for EvidenceRecord {
 // EvidenceBundle
 // ===========================================================================
 
-/// Ordered, append-only collection of [`EvidenceRecord`]s for one detection run.
+/// Ordered, append-only collection of \[`EvidenceRecord`\]s for one detection run.
 ///
 /// Records are pushed in the order the detection pipeline encounters each
 /// artifact. The bundle is never reordered, deduplicated, or filtered — the
 /// complete sequence is the audit trail.
 ///
 /// The `records` field is private to enforce the AU-10 append-only invariant at
-/// the type-system level: callers can only add records via [`push`], never remove,
-/// reorder, or clear them. Use [`records`], [`iter`], or [`is_empty`]/[`len`] for
+/// the type-system level: callers can only add records via \[`push`\], never remove,
+/// reorder, or clear them. Use \[`records`\], \[`iter`\], or \[`is_empty`\]/\[`len`\] for
 /// read access.
 ///
-/// NIST SP 800-53 AU-3, AU-10 — the bundle is the authoritative provenance
-/// record for the detection run. Callers cannot remove or modify records once
-/// pushed.
+/// ## Fields:
+///
+/// - `records` — (private) all records accumulated during the detection run. Private to
+///   enforce AU-10 append-only non-repudiation; no caller outside this module can clear,
+///   pop, sort, or splice the inner `Vec`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**, **AU-10**: the bundle is the authoritative provenance record
+///   for the detection run. Callers cannot remove or modify records once pushed.
 #[derive(Debug, Default, Clone)]
 pub struct EvidenceBundle {
-    /// All records accumulated during the detection run.
-    ///
-    /// Private: enforces AU-10 append-only non-repudiation. No caller outside
-    /// this module can clear, pop, sort, or splice the inner Vec.
     records: Vec<EvidenceRecord>,
 }
 
@@ -307,15 +288,19 @@ impl EvidenceBundle {
     ///
     /// Records are never reordered or removed after being pushed.
     ///
-    /// NIST SP 800-53 AU-10 — records are append-only; callers cannot remove or reorder
-    /// entries after push.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-10 — records are append-only; callers cannot remove or reorder
+    ///   entries after push.
     pub fn push(&mut self, record: EvidenceRecord) {
         self.records.push(record);
     }
 
     /// Return an immutable slice of all records collected so far.
     ///
-    /// NIST SP 800-53 AU-10 — read-only access preserves the append-only invariant.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-10 — read-only access preserves the append-only invariant.
     #[must_use = "audit evidence records must be examined or stored — do not discard"]
     pub fn records(&self) -> &[EvidenceRecord] {
         &self.records
@@ -323,7 +308,9 @@ impl EvidenceBundle {
 
     /// Return an iterator over all records collected so far.
     ///
-    /// NIST SP 800-53 AU-10 — read-only iteration; callers cannot mutate records.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-10 — read-only iteration; callers cannot mutate records.
     pub fn iter(&self) -> std::slice::Iter<'_, EvidenceRecord> {
         self.records.iter()
     }

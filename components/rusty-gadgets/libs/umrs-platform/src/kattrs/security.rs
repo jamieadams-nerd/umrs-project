@@ -44,21 +44,27 @@ pub const SECURITYFS_MAGIC: FsType = FsType(0x7363_6673);
 /// Discriminants ascend with restrictiveness, enabling `Ord`-based comparisons
 /// such as "is the current lockdown level at least `Integrity`?"
 ///
-/// NIST SP 800-53 CM-7: Least Functionality — lockdown restricts kernel
-/// functionality to the minimum required.
-/// NIST SP 800-53 SC-39: Process Isolation — confidentiality lockdown prevents
-/// even privileged processes from extracting kernel secrets.
-/// NIST SP 800-53 SI-7: Software and Information Integrity — integrity lockdown
-/// prevents userspace from modifying kernel code or data.
-/// NSA RTB RAIN: once set, lockdown is non-bypassable at the kernel level.
+/// ## Variants:
+///
+/// - `None` — no lockdown active; privileged userspace retains full kernel access.
+/// - `Integrity` — integrity lockdown; prevents modifications to kernel code and data.
+/// - `Confidentiality` — confidentiality lockdown; additionally prevents extraction of
+///   kernel secrets.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-7**: lockdown restricts kernel functionality to the minimum
+///   required.
+/// - **NIST SP 800-53 SC-39**: confidentiality lockdown prevents even privileged processes
+///   from extracting kernel secrets.
+/// - **NIST SP 800-53 SI-7**: integrity lockdown prevents userspace from modifying kernel
+///   code or data.
+/// - **NSA RTB RAIN**: once set, lockdown is non-bypassable at the kernel level.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub enum LockdownMode {
-    /// No lockdown active — privileged userspace retains full kernel access.
     #[default]
     None = 0,
-    /// Integrity lockdown — prevents modifications to kernel code and data.
     Integrity = 1,
-    /// Confidentiality lockdown — additionally prevents extraction of kernel secrets.
     Confidentiality = 2,
 }
 
@@ -143,10 +149,12 @@ fn to_lockdown_mode(s: &str) -> io::Result<LockdownMode> {
 /// Provenance is verified via fd-anchored `fstatfs` against `SECURITYFS_MAGIC`
 /// before any bytes are read (NIST SP 800-53 SI-7).
 ///
-/// NIST SP 800-53 CM-7: Least Functionality.
-/// NIST SP 800-53 SC-39: Process Isolation.
-/// NIST SP 800-53 SI-7: Software and Information Integrity.
-/// NSA RTB RAIN: Non-bypassable, fail-closed TPI parsing.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-7: Least Functionality.
+/// - NIST SP 800-53 SC-39: Process Isolation.
+/// - NIST SP 800-53 SI-7: Software and Information Integrity.
+/// - NSA RTB RAIN: Non-bypassable, fail-closed TPI parsing.
 pub struct KernelLockdown;
 
 impl KernelFileSource for KernelLockdown {

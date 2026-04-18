@@ -45,9 +45,11 @@ fn parse_type_path_b(input: &str) -> io::Result<&str> {
 /// the type field from `context`. Returns `io::ErrorKind::PermissionDenied` if
 /// both paths succeed but disagree on the extracted type value.
 ///
-/// NIST SP 800-53 SI-7: Software and Information Integrity.
-/// NSA RTB VNSSA: deterministic, bounded parsing.
-/// NSA RTB RAIN: fail-closed on any ambiguity.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: Software and Information Integrity.
+/// - NSA RTB VNSSA: deterministic, bounded parsing.
+/// - NSA RTB RAIN: fail-closed on any ambiguity.
 pub fn validate_type_redundant(context: &str) -> io::Result<&str> {
     let (_, type_a) = parse_type_path_a(context)
         .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "Path A Logic Failure"))?;

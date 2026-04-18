@@ -43,13 +43,18 @@ use crate::secure_dirent::SecureDirent;
 /// `Ord` is derived so [`BTreeMap`] provides automatic lexicographic ordering:
 /// type-alpha first, then marking-alpha — no explicit sort step required.
 ///
-/// NIST SP 800-53 AC-4: information-flow labelling.
+/// ## Fields:
+///
+/// - `selinux_type` — SELinux type component; e.g., `bin_t`, `httpd_t`, `<unlabeled>`.
+/// - `marking` — setrans translation when available; raw level string otherwise.
+///   E.g., `CUI//INV/LEI` (alphabetized combined marking), `s0`, `<no-level>`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-4**: information-flow labelling.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct GroupKey {
-    /// SELinux type component — e.g., `bin_t`, `httpd_t`, `<unlabeled>`.
     pub selinux_type: String,
-    /// setrans translation when available; raw level string otherwise.
-    /// E.g., `CUI//INV/LEI` (alphabetized combined marking), `s0`, `<no-level>`.
     pub marking: String,
 }
 
@@ -61,13 +66,18 @@ pub struct GroupKey {
 /// [`ListEntry`] carries it here so the caller has everything needed to
 /// render a complete `ls`-style row.
 ///
-/// NIST SP 800-53 AU-3: `mtime` is a required audit record field.
+/// ## Fields:
+///
+/// - `dirent` — fully validated, security-enriched directory entry.
+/// - `mtime` — modification time captured from `DirEntry::metadata()`; `None` if the OS did
+///   not return a valid mtime.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: `mtime` is a required audit record field.
 #[derive(Debug, Clone)]
 pub struct ListEntry {
-    /// Fully validated, security-enriched directory entry.
     pub dirent: SecureDirent,
-    /// Modification time captured from `DirEntry::metadata()`.
-    /// `None` if the OS did not return a valid mtime.
     pub mtime: Option<SystemTime>,
 }
 
@@ -92,24 +102,24 @@ pub struct DirGroup {
 /// `Widget` or a slint data model can consume this struct directly in a
 /// future interactive phase.
 ///
-/// NIST SP 800-53 AU-3: complete directory audit record.
+/// ## Fields:
+///
+/// - `path` — the directory that was listed.
+/// - `groups` — groups sorted by [`GroupKey`] (type-alpha, then marking-alpha).
+/// - `access_denied` — filenames that could not be listed at all (e.g., `readdir` error on the
+///   entry). Access-denied entries are grouped under `<restricted>` in `groups` rather than
+///   collected here. Field retained for API stability; currently always empty.
+///   NIST SP 800-53 AU-3: an incomplete listing is itself an audit observation.
+/// - `elapsed_us` — wall-clock time of the listing operation in microseconds.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: complete directory audit record.
 #[derive(Debug, Clone)]
 pub struct DirListing {
-    /// The directory that was listed.
     pub path: PathBuf,
-
-    /// Groups sorted by [`GroupKey`] (type-alpha, then marking-alpha).
     pub groups: Vec<DirGroup>,
-
-    /// Filenames that could not be listed at all (e.g., `readdir` error on
-    /// the entry itself). Access-denied entries are now grouped under
-    /// `<restricted>` in [`DirListing::groups`] rather than collected here.
-    /// Field retained for API stability; currently always empty.
-    ///
-    /// NIST SP 800-53 AU-3: an incomplete listing is itself an audit observation.
     pub access_denied: Vec<String>,
-
-    /// Wall-clock time of the listing operation in microseconds.
     pub elapsed_us: u64,
 }
 
@@ -119,56 +129,38 @@ pub struct DirListing {
 /// Adding a new column requires: a new variant here, a rendering arm in the
 /// caller's cell renderer, and a label in `col_header()`.
 ///
-/// CMMC Level 2 — CM.L2-3.4.2: column vocabulary maps to security baseline
-/// items (mode bits, ownership, SELinux label, integrity flags).
+/// ## Variants:
+///
+/// - `Mode` — `drwxr-xr-x`; file-type char + 9 permission bits (10 chars total).
+/// - `Iov` — `I`=immutable, `O`=security observations present, `V`=IMA; 3-char security-posture
+///   marker. ACL presence is indicated by `+` in the `Mode` string.
+///   NIST SP 800-53 AU-9 (immutable), RA-5 (observations), SI-7 (IMA).
+/// - `SelinuxType` — SELinux type component extracted from the security context.
+///   NIST SP 800-53 AC-4.
+/// - `Marking` — setrans-translated marking, or raw level string when untranslated.
+///   E.g., `CUI//INV/LEI`, `s0`. NIST SP 800-53 AC-4 / CMMC AC.L2-3.1.3.
+/// - `UidGid` — `owner:group`; resolved names with numeric uid/gid fallback.
+///   NIST SP 800-53 AC-2, AC-3.
+/// - `Size` — file size in bytes; off by default. NIST SP 800-53 AU-3.
+/// - `Mtime` — modification time in `YYYY-MM-DD HH:MM` format. NIST SP 800-53 AU-3.
+/// - `Inode` — inode number; off by default. NIST SP 800-53 AU-3.
+/// - `Name` — filename; directories get a trailing `/`, executables get `*`. Always the final
+///   column; `ColumnSet::without` is a no-op for this variant.
+///
+/// ## Compliance
+///
+/// - **CMMC Level 2 CM.L2-3.4.2**: column vocabulary maps to security baseline items (mode bits,
+///   ownership, SELinux label, integrity flags).
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Column {
-    /// `drwxr-xr-x` — file-type char + 9 permission bits (10 chars total).
     Mode,
-
-    /// `I`=immutable · `O`=security observations present · `V`=IMA — 3-char
-    /// security-posture marker.  ACL presence is now indicated by `+` in the
-    /// [`Column::Mode`] string.
-    ///
-    /// NIST SP 800-53 AU-9 (immutable), RA-5 (observations), SI-7 (IMA).
     Iov,
-
-    /// SELinux type component extracted from the security context.
-    ///
-    /// NIST SP 800-53 AC-4.
     SelinuxType,
-
-    /// setrans-translated marking, or raw level string when untranslated.
-    ///
-    /// NIST SP 800-53 AC-4 / CMMC AC.L2-3.1.3.
     Marking,
-
-    /// `owner:group` — resolved names; numeric uid/gid used as fallback.
-    ///
-    /// NIST SP 800-53 AC-2, AC-3.
     UidGid,
-
-    /// File size in bytes. Off by default.
-    ///
-    /// NIST SP 800-53 AU-3.
     Size,
-
-    /// Modification time in `YYYY-MM-DD HH:MM` format.
-    ///
-    /// NIST SP 800-53 AU-3.
     Mtime,
-
-    /// Inode number. Off by default.
-    ///
-    /// NIST SP 800-53 AU-3.
     Inode,
-
-    /// Filename. Directories get a trailing `/`; executables get `*`.
-    ///
-    /// Always present as the final column. [`ColumnSet::without`] is a
-    /// no-op for this variant — removing the filename would produce
-    /// unusable output.
-    ///
     Name,
 }
 

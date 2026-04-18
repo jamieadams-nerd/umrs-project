@@ -145,14 +145,19 @@ pub fn build_status(observations: &[SecurityObservation]) -> StatusMessage {
 
 /// Filesystem metadata extracted from `/proc/mounts` for a file's path.
 ///
-/// NIST SP 800-53 SI-7 — filesystem origin is audit-relevant context for
-/// understanding access controls and encryption state.
+/// ## Fields:
+///
+/// - `device` — device node path (e.g., `/dev/sda1`).
+/// - `mount_point` — mount point (e.g., `/home`).
+/// - `fs_type` — filesystem type (e.g., `ext4`, `xfs`).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**: Filesystem origin is audit-relevant context for understanding
+///   access controls and encryption state.
 pub struct FsInfo {
-    /// Device node path (e.g., `/dev/sda1`).
     pub device: String,
-    /// Mount point (e.g., `/home`).
     pub mount_point: String,
-    /// Filesystem type (e.g., `ext4`, `xfs`).
     pub fs_type: String,
 }
 
@@ -206,10 +211,13 @@ pub fn find_fs_info(path: &Path) -> Option<FsInfo> {
 ///
 /// Display-only — not a trust-relevant assertion.  The caller must not use
 /// this in any policy decision.
+///
+/// ## Fields:
+///
+/// - `class` — ELF class string: `"ELF64"` or `"ELF32"`.
+/// - `elf_type` — ELF type string: `"Executable"`, `"Shared object (DSO/PIE)"`, etc.
 pub struct ElfInfo {
-    /// ELF class string: `"ELF64"` or `"ELF32"`.
     pub class: &'static str,
-    /// ELF type string: `"Executable"`, `"Shared object (DSO/PIE)"`, etc.
     pub elf_type: &'static str,
 }
 
@@ -394,12 +402,20 @@ pub fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Ve
         rows.push(DataRow::separator());
         rows.push(DataRow::separator());
         rows.push(DataRow::group_title("Computed Hashes"));
+        rows.push(DataRow::normal(" SHA-256", ""));
+        rows.push(DataRow::normal("", format!("  {sha256} ")));
         rows.push(DataRow::separator());
-        rows.push(DataRow::normal(" SHA-256:", ""));
-        rows.push(DataRow::normal("", format!("  {sha256}")));
-        rows.push(DataRow::separator());
-        rows.push(DataRow::normal(" SHA-384:", ""));
-        rows.push(DataRow::normal("", format!("  {sha384}")));
+        rows.push(DataRow::normal(" SHA-384", ""));
+        // SHA-384 is 96 hex chars — too wide to fit the popup on ~100-col
+        // terminals while preserving the mandatory 1-cell right margin.
+        // Split at 48 so each half fits even on a narrow popup. A trailing
+        // `\` on the first line signals continuation in the operator-
+        // familiar shell/Makefile convention, so the two halves cannot be
+        // misread as two independent 48-char hashes. Hex digits are
+        // `[0-9a-f]` so `\` never collides with hash content.
+        let (sha384_hi, sha384_lo) = sha384.split_at(48);
+        rows.push(DataRow::normal("", format!("  {sha384_hi} \\ ")));
+        rows.push(DataRow::normal("", format!("  {sha384_lo} ")));
     }
 
     rows.push(DataRow::separator());
@@ -697,42 +713,37 @@ pub fn build_observation_error_rows() -> Vec<DataRow> {
 /// individual tabs without invoking the `AuditCardApp` trait or taking a
 /// `&dyn AuditCardApp` reference.
 ///
-/// NIST SP 800-53 AC-3, AU-3, CA-7, SC-28, SI-7.
+/// ## Fields:
+///
+/// - `tabs` — tab definitions for the three-tab layout.
+/// - `identity_rows` — pre-built Identity tab rows.
+/// - `security_rows` — pre-built Security tab rows.
+/// - `observation_rows` — pre-built Observations tab rows.
+/// - `status` — status bar message derived from the observation list.
+/// - `report_subject` — subject path used as the report subject in the standalone TUI; stored
+///   as `String`; the `AuditCardApp` trait impl leaks this to a `&'static str` only in the
+///   standalone binary, where the allocation lifetime is the process lifetime.
+/// - `marking` — translated security marking for the file (e.g., `"SystemLow"`, `"CUI//LEI"`);
+///   `None` when the file has no MCS/MLS level; displayed in the upper-right corner of the popup
+///   tab bar. NIST SP 800-53 AC-16.
+/// - `marking_index_group` — index group for the marking (e.g., `"Critical Infrastructure"`);
+///   used to select the palette color in the popup tab bar; set by callers with catalog access
+///   (`umrs-ls`); `None` in standalone mode. NIST SP 800-53 AC-16.
+/// - `observation_count` — number of security observations (Risk + Warning + Good); used to show
+///   a flag icon on the Observations tab when `> 0`. NIST SP 800-53 CA-7.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3, AU-3, CA-7, SC-28, SI-7**: See individual field annotations above.
 pub struct FileStatApp {
-    /// Tab definitions for the three-tab layout.
     pub tabs: Vec<TabDef>,
-    /// Pre-built Identity tab rows.
     pub identity_rows: Vec<DataRow>,
-    /// Pre-built Security tab rows.
     pub security_rows: Vec<DataRow>,
-    /// Pre-built Observations tab rows.
     pub observation_rows: Vec<DataRow>,
-    /// Status bar message derived from the observation list.
     pub status: StatusMessage,
-    /// Subject path used as the report subject in the standalone TUI.
-    ///
-    /// Stored as `String`; the `AuditCardApp` trait impl leaks this to a
-    /// `&'static str` only in the standalone binary, where the allocation
-    /// lifetime is the process lifetime.
     pub report_subject: String,
-    /// Translated security marking for the file (e.g., `"SystemLow"`,
-    /// `"CUI//LEI"`).  `None` when the file has no MCS/MLS level.
-    ///
-    /// Displayed in the upper-right corner of the popup tab bar so the
-    /// operator always sees the marking context.
-    ///
-    /// NIST SP 800-53 AC-16 — security attribute visibility.
     pub marking: Option<String>,
-    /// Index group for the marking (e.g., `"Critical Infrastructure"`).
-    /// Used to select the palette color in the popup tab bar.
-    /// Set by callers with catalog access (umrs-ls); `None` in standalone mode.
-    ///
-    /// NIST SP 800-53 AC-16 — visual consistency across tools.
     pub marking_index_group: Option<String>,
-    /// Number of security observations (Risk + Warning + Good).
-    /// Used to show a flag icon on the Observations tab when > 0.
-    ///
-    /// NIST SP 800-53 CA-7 — finding count drives visual indicator.
     pub observation_count: usize,
 }
 

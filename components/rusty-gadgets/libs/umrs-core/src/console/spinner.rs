@@ -112,36 +112,27 @@ impl SpinnerStyle {
 ///
 /// All fields are optional. Any field not explicitly set will fall back
 /// to the corresponding default behavior defined by the spinner subsystem.
+///
+/// ## Fields:
+///
+/// - `style` — Optional animation style override; `None` uses the default spinner style.
+/// - `position` — Optional position override for the glyph relative to the message;
+///   `None` uses the default.
+/// - `final_marker` — Optional custom marker displayed when the spinner is stopped;
+///   `None` uses the style-specific default.
+/// - `spinner_color` — Optional ANSI color override for spinner glyph rendering;
+///   `None` uses the default color.
+/// - `message_color` — Optional ANSI color override for message text rendering;
+///   `None` uses the default color.
+/// - `frame_delay_ms` — Optional delay interval between animation frames, in milliseconds;
+///   `None` uses the default frame delay.
 #[derive(Default)]
 pub struct SpinnerOptions {
-    /// Optional animation style override for the spinner.
-    ///
-    /// If `None`, the default spinner style will be used.
     pub style: Option<SpinnerStyle>,
-
-    /// Optional position override for the spinner glyph relative to the message.
-    ///
-    /// If `None`, the default spinner position will be used.
     pub position: Option<SpinnerPosition>,
-
-    /// Optional custom marker displayed when the spinner is stopped.
-    ///
-    /// If `None`, the style-specific default final marker will be used.
     pub final_marker: Option<String>,
-
-    /// Optional ANSI color override for spinner glyph rendering.
-    ///
-    /// If `None`, the default spinner color will be used.
     pub spinner_color: Option<AnsiColor>,
-
-    /// Optional ANSI color override for spinner message text rendering.
-    ///
-    /// If `None`, the default message color will be used.
     pub message_color: Option<AnsiColor>,
-
-    /// Optional delay interval between animation frames, in milliseconds.
-    ///
-    /// If `None`, the default frame delay will be used.
     pub frame_delay_ms: Option<u64>,
 }
 

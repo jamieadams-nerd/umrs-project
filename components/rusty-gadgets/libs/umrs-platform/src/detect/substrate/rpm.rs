@@ -71,11 +71,16 @@ const TMPFS_MAGIC: i64 = 0x0102_1994;
 
 /// RPM package substrate probe.
 ///
-/// NIST SP 800-53 CM-7, CM-8, SA-12, SI-7.
+/// ## Fields:
+///
+/// - `db` — lazily-opened RPM database handle. `Mutex` allows `&self` access from the
+///   `PackageProbe` trait while still initialising on first use. `None` until `probe()`
+///   succeeds in opening the DB. (feature-gated on `rpm-db`)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-7**, **CM-8**, **SA-12**, **SI-7**.
 pub struct RpmProbe {
-    /// Lazily-opened RPM database handle. `Mutex` allows `&self` access
-    /// from the `PackageProbe` trait while still initialising on first use.
-    /// `Option<RpmDb>` is `None` until `probe()` succeeds in opening the DB.
     #[cfg(feature = "rpm-db")]
     db: Mutex<Option<RpmDb>>,
 }
@@ -408,9 +413,11 @@ fn installed_digest_inner(
 /// callers that need to surface database degradation separately from absent
 /// packages must match on the `Err` variant.
 ///
-/// NIST SP 800-53 CM-8 — component inventory query; structured error enables
-/// callers to detect degraded database state separately from absent packages.
-/// NIST SP 800-53 SA-12 — supply chain provenance verification.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8 — component inventory query; structured error enables
+///   callers to detect degraded database state separately from absent packages.
+/// - NIST SP 800-53 SA-12 — supply chain provenance verification.
 ///
 /// # Errors
 ///
@@ -434,7 +441,9 @@ pub fn is_installed(pkgname: &str) -> Result<bool, PackageQueryError> {
 
 /// Stub — `rpm-db` feature is disabled; always returns `DatabaseUnavailable`.
 ///
-/// NIST SP 800-53 CM-8, SA-12.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SA-12.
 ///
 /// # Errors
 ///

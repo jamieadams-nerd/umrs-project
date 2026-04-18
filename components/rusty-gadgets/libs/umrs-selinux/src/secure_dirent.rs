@@ -113,37 +113,31 @@ pub use self::path::{AbsolutePath, PathError, ValidatedFileName};
 /// prevented label verification.  An operator seeing `<parse-error>` should
 /// investigate the parser, not the policy.
 ///
-/// NIST SP 800-53 AU-3: audit record content.
-/// NIST SP 800-53 SI-12: accurate information management.
-/// NSA RTB RAIN: non-bypassability of the integrity gate.
+/// ## Variants:
+///
+/// - `Labeled(Box<SecurityContext>)` — a verified SELinux security context; both TPI paths
+///   agreed. Boxed to equalise variant sizes — without boxing the enum would be 232+ bytes on
+///   the stack.
+/// - `Unlabeled` — no SELinux xattr on this inode (kernel returned ENODATA or equivalent). On
+///   an MLS/targeted system, unlabeled objects cannot have MAC enforced. This is the
+///   authoritative "no label" state.
+/// - `ParseFailure` — the SELinux xattr was present but one or both TPI parse paths failed. The
+///   label is on the inode but its structure could not be verified. This is a code or validator
+///   defect — not an integrity attack. NIST SP 800-53 SI-12: do not display as `<unlabeled>`.
+/// - `TpiDisagreement` — both TPI paths succeeded but produced different security contexts.
+///   Potential integrity event; the label on disk may have been tampered with. Treat this object
+///   as unverifiable until the discrepancy is resolved. NIST SP 800-53 SI-7 / NSA RTB RAIN.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: audit record content.
+/// - **NIST SP 800-53 SI-12**: accurate information management.
+/// - **NSA RTB RAIN**: non-bypassability of the integrity gate.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SelinuxCtxState {
-    /// A verified SELinux security context — both TPI paths agreed.
-    ///
-    /// Boxed to equalise the size of enum variants (the other variants carry
-    /// no data). Without boxing the enum would be 232+ bytes on the stack.
     Labeled(Box<SecurityContext>),
-
-    /// No SELinux xattr on this inode (kernel returned ENODATA or equivalent).
-    ///
-    /// On an MLS/targeted system, unlabeled objects cannot have MAC enforced.
-    /// This is the authoritative "no label" state.
     Unlabeled,
-
-    /// The SELinux xattr was present but one or both TPI parse paths failed.
-    ///
-    /// The label is on the inode but its structure could not be verified.
-    /// This is a code or validator defect — not an integrity attack.
-    /// NIST SP 800-53 SI-12: do not display as `<unlabeled>`.
     ParseFailure,
-
-    /// Both TPI paths succeeded but produced different security contexts.
-    ///
-    /// Potential integrity event. The label on disk may have been tampered
-    /// with. Treat this object as unverifiable until the discrepancy is
-    /// resolved.
-    /// NIST SP 800-53 SI-7: integrity violation.
-    /// NSA RTB RAIN: redundancy cross-check failure.
     TpiDisagreement,
 }
 
@@ -211,24 +205,25 @@ pub const NAME_MAX: usize = 255;
 /// not errors — `from_path` returns `Ok` with `access_denied: true` set
 /// on the struct, which is the authoritative signal for that condition.
 ///
-/// NIST SP 800-53 AU-3: error variants carry sufficient detail for audit
-/// record generation without requiring string parsing by the caller.
+/// ## Variants:
+///
+/// - `Metadata(std::io::Error)` — `symlink_metadata()` failed; path is inaccessible.
+/// - `InvalidPath(PathError)` — path failed `AbsolutePath` validation.
+/// - `InvalidFileName` — filename component failed `ValidatedFileName` validation (non-UTF8,
+///   null byte, too long, or directory separator).
+/// - `SelinuxReadError(std::io::Error)` — SELinux xattr read failed.
+/// - `SelinuxParseError` — SELinux label bytes were not valid UTF-8 or failed both parse paths.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: error variants carry sufficient detail for audit record generation
+///   without requiring string parsing by the caller.
 #[derive(Debug)]
 pub enum SecDirError {
-    /// `symlink_metadata()` failed — path is inaccessible.
     Metadata(std::io::Error),
-
-    /// Path failed `AbsolutePath` validation.
     InvalidPath(PathError),
-
-    /// Filename component failed `ValidatedFileName` validation
-    /// (non-UTF8, null byte, too long, directory separator).
     InvalidFileName,
-
-    /// SELinux xattr read failed.
     SelinuxReadError(std::io::Error),
-
-    /// SELinux label bytes were not valid UTF-8 or failed both parse paths.
     SelinuxParseError,
 }
 
@@ -836,13 +831,37 @@ pub mod flags {
 ///
 /// All subsequent field access is on owned primitive data.
 ///
+/// ## Fields:
+///
+/// - `path` — validated absolute path; part of the audit record. NIST SP 800-53 AU-3.
+/// - `name` — validated filename component (no separators, null, or newline).
+/// - `file_type` — filesystem object type (regular file, directory, symlink, etc.).
+/// - `inode` — inode number; uniquely identifies the filesystem object. NIST SP 800-53 AU-3.
+/// - `size` — file size in bytes; part of a complete audit record. NIST SP 800-53 AU-3.
+/// - `mode` — DAC permission bits; setuid, setgid, world-writable baseline items.
+///   NIST SP 800-53 AC-3, CM-6.
+/// - `nlink` — hard link count; nlink > 1 on a non-directory is a finding.
+///   NIST SP 800-53 AC-3.
+/// - `dev` — device identity; required for mount-point detection. NIST SP 800-53 CM-6.
+/// - `ownership` — uid/gid as kernel-authoritative identifiers; no NSS lookup during scan
+///   (latency + TOCTOU risk). NIST SP 800-53 AC-2 / NSA RTB.
+/// - `selinux_label` — SELinux label state (verified context, unlabeled, parse-error, or TPI
+///   disagreement). Parsed via dual-path TPI gate (nom + FromStr cross-check).
+///   NIST SP 800-53 AC-3, AC-4, AU-3 / NSA RTB.
+/// - `sec_flags` — security-relevant inode flags: immutable, IMA, ACL, SELinux xattr.
+///   NIST SP 800-53 AU-9, SI-7, AC-3.
+/// - `is_mountpoint` — mount point status; a configuration finding. NIST SP 800-53 CM-6.
+/// - `encryption` — encryption source protecting this mount point; always
+///   `EncryptionSource::None` for non-mount-point entries. NIST SP 800-53 SC-28.
+/// - `access_denied` — access was denied during attribute reads; part of the audit record.
+///   NIST SP 800-53 AU-3.
+///
 /// ## Compliance
 ///
 /// See module-level documentation for full compliance reference list.
 #[derive(Debug, Clone)]
 pub struct SecureDirent {
     // Path identity
-    /// NIST SP 800-53 AU-3: path is part of the audit record.
     pub path: AbsolutePath,
     pub name: ValidatedFileName,
 
@@ -850,47 +869,20 @@ pub struct SecureDirent {
     pub file_type: FileType,
 
     // Inode metadata
-    /// NIST SP 800-53 AU-3: uniquely identifies the filesystem object.
     pub inode: posix::primitives::Inode,
-
-    /// NIST SP 800-53 AU-3: file size is part of a complete audit record.
     pub size: posix::primitives::FileSize,
-
-    /// NIST SP 800-53 AC-3: DAC permission bits consulted during access decisions.
-    /// NIST SP 800-53 CM-6: setuid, setgid, world-writable baseline items.
     pub mode: posix::primitives::FileMode,
-
-    /// NIST SP 800-53 AC-3: nlink > 1 on a non-directory is a finding.
     pub nlink: posix::primitives::HardLinkCount,
-
-    /// NIST SP 800-53 CM-6: device identity required for mount-point detection.
     pub dev: posix::primitives::DevId,
 
     // Ownership
-    /// NIST SP 800-53 AC-2: uid/gid are the kernel-authoritative identifiers.
-    /// NSA RTB: no NSS lookup during filesystem scan (latency + TOCTOU risk).
     pub ownership: posix::identity::LinuxOwnership,
 
-    // SEcurity Attributes
-    /// SELinux label state — verified context, unlabeled, parse-error, or
-    /// TPI disagreement. See [`SelinuxCtxState`] for the full invariant.
-    ///
-    /// NIST SP 800-53 AC-3/AC-4: MAC label for access and flow enforcement.
-    /// NIST SP 800-53 AU-3: label state is part of the audit record.
-    /// NSA RTB: parsed via dual-path TPI gate (nom + FromStr cross-check).
+    // Security Attributes
     pub selinux_label: SelinuxCtxState,
-
-    /// NIST SP 800-53 AU-9 / SI-7 / AC-3: immutable, IMA, ACL, SELinux xattr.
     pub sec_flags: InodeSecurityFlags,
-
-    /// NIST SP 800-53 CM-6: mount point status is a configuration finding.
     pub is_mountpoint: bool,
-
-    /// NIST SP 800-53 SC-28: encryption source protecting this mount point.
-    /// Always `EncryptionSource::None` for non-mount-point entries.
     pub encryption: crate::fs_encrypt::EncryptionSource,
-
-    /// NIST SP 800-53 AU-3: access denial is part of the audit record.
     pub access_denied: bool,
 }
 

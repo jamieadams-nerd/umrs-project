@@ -62,9 +62,11 @@ use crate::kattrs::traits::{KernelFileSource, StaticSource};
 /// implementation; all other sysctl-integer signals follow the same structure
 /// and are stamped out by `define_sysctl_signal!`.
 ///
-/// NIST SP 800-53 SI-7: reading from provenance-verified procfs.
-/// NIST SP 800-53 SC-39: information hiding prevents KASLR bypass.
-/// NSA RTB RAIN: Non-bypassable via `StaticSource::read()`.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: reading from provenance-verified procfs.
+/// - NIST SP 800-53 SC-39: information hiding prevents KASLR bypass.
+/// - NSA RTB RAIN: Non-bypassable via `StaticSource::read()`.
 pub struct KptrRestrict;
 
 impl KernelFileSource for KptrRestrict {
@@ -113,8 +115,10 @@ impl StaticSource for KptrRestrict {
 /// For sysctl nodes that can legitimately emit negative values (e.g.,
 /// `kernel.perf_event_paranoid = -1`), use `parse_sysctl_i32` instead.
 ///
-/// NIST SP 800-53 SI-10: Input Validation — rejects non-numeric content
-/// rather than silently defaulting.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-10: Input Validation — rejects non-numeric content
+///   rather than silently defaulting.
 ///
 /// # Errors
 ///
@@ -135,9 +139,11 @@ pub fn parse_sysctl_u32(data: &[u8]) -> io::Result<u32> {
 /// silently degrading the signal to `live_value: None` and producing a
 /// false-assurance picture where an unhardened system appears as data-unavailable.
 ///
-/// NIST SP 800-53 CA-7: must not discard valid kernel states; `-1` is a
-/// legitimate (unhardened) value that must be represented, not erased.
-/// NIST SP 800-53 SI-10: Input Validation — rejects non-numeric content.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CA-7: must not discard valid kernel states; `-1` is a
+///   legitimate (unhardened) value that must be represented, not erased.
+/// - NIST SP 800-53 SI-10: Input Validation — rejects non-numeric content.
 ///
 /// # Errors
 ///
@@ -436,13 +442,13 @@ define_sysctl_signal!(
 ///
 /// ## Compliance
 ///
-/// NIST SP 800-53 SC-28: Protection of Information at Rest — core dumps
-/// contain process memory; routing to a handler provides access control.
-/// NIST SP 800-53 CM-6: Configuration Settings — managed handler is the
-/// hardened baseline for all deployment environments.
-/// NIST SP 800-218 SSDF PW.4: TPI validation — two independent parse paths
-/// that fail closed on disagreement.
-/// NSA RTB RAIN: Non-bypassable via `StaticSource::read()`.
+/// - NIST SP 800-53 SC-28: Protection of Information at Rest — core dumps
+///   contain process memory; routing to a handler provides access control.
+/// - NIST SP 800-53 CM-6: Configuration Settings — managed handler is the
+///   hardened baseline for all deployment environments.
+/// - NIST SP 800-218 SSDF PW.4: TPI validation — two independent parse paths
+///   that fail closed on disagreement.
+/// - NSA RTB RAIN: Non-bypassable via `StaticSource::read()`.
 pub struct CorePatternReader;
 
 impl KernelFileSource for CorePatternReader {
@@ -485,17 +491,22 @@ impl StaticSource for CorePatternReader {
 /// binary — the hardened state. `RawPath` means a filesystem path is written
 /// directly. `Invalid` means the value failed to parse as either.
 ///
-/// NIST SP 800-53 SC-28: classification drives the hardening assessment.
+/// ## Variants:
+///
+/// - `ManagedHandler` — value starts with `|` and the handler path is a non-empty absolute
+///   path. Both TPI paths agree. Hardened state.
+/// - `RawPath` — value is a raw filesystem path (no leading `|`). Both TPI paths agree.
+///   Unhardened state.
+/// - `Invalid` — the two TPI paths disagreed or the value is empty. Fail-closed: treated
+///   as unhardened.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SC-28**: classification drives the hardening assessment.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CorePatternKind {
-    /// Value starts with `|` and the handler path is a non-empty absolute path.
-    /// Both TPI paths agree. Hardened state.
     ManagedHandler,
-    /// Value is a raw filesystem path (no leading `|`). Both TPI paths agree.
-    /// Unhardened state.
     RawPath,
-    /// The two TPI paths disagreed or the value is empty. Fail-closed: treated
-    /// as unhardened.
     Invalid,
 }
 
@@ -520,8 +531,10 @@ pub enum CorePatternKind {
 /// ## Pattern Execution Measurement
 /// Timing logged in debug builds.
 ///
-/// NIST SP 800-218 SSDF PW.4: TPI — two independent parse paths, fail closed.
-/// NIST SP 800-53 SI-10: Input Validation — rejects ambiguous or malformed input.
+/// ## Compliance
+///
+/// - NIST SP 800-218 SSDF PW.4: TPI — two independent parse paths, fail closed.
+/// - NIST SP 800-53 SI-10: Input Validation — rejects ambiguous or malformed input.
 #[must_use = "core_pattern classification drives hardening assessment — do not discard"]
 pub fn classify_core_pattern(value: &str) -> CorePatternKind {
     #[cfg(debug_assertions)]
@@ -589,8 +602,10 @@ fn classify_core_pattern_inner(value: &str) -> CorePatternKind {
 /// before consuming any bytes — identical provenance guarantees to the sysctl
 /// readers.
 ///
-/// NIST SP 800-53 SI-7: provenance-verified read.
-/// NSA RTB RAIN: Non-bypassable path through `SecureReader`.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: provenance-verified read.
+/// - NSA RTB RAIN: Non-bypassable path through `SecureReader`.
 pub struct CmdlineReader {
     content: String,
 }
@@ -598,7 +613,9 @@ pub struct CmdlineReader {
 impl CmdlineReader {
     /// Read `/proc/cmdline` through the provenance-verified `ProcfsText` path.
     ///
-    /// NIST SP 800-53 SI-7: provenance-verified read of `/proc/cmdline`.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-7: provenance-verified read of `/proc/cmdline`.
     ///
     /// # Errors
     ///
@@ -651,8 +668,10 @@ impl CmdlineReader {
 ///
 /// Implemented independently of the `detect` module as specified in the plan.
 ///
-/// NIST SP 800-53 AU-3: event content — boot ID provides temporal anchor for
-/// audit records.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-3: event content — boot ID provides temporal anchor for
+///   audit records.
 pub struct BootIdReader;
 
 impl BootIdReader {
@@ -697,7 +716,9 @@ impl BootIdReader {
 /// For `PerfEventParanoid`, which can emit signed values, use
 /// `read_live_sysctl_signed` instead.
 ///
-/// NIST SP 800-53 SI-7: all reads provenance-verified through `StaticSource`.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: all reads provenance-verified through `StaticSource`.
 ///
 /// # Errors
 ///
@@ -768,8 +789,10 @@ pub fn read_live_sysctl(id: crate::posture::indicator::IndicatorId) -> io::Resul
 /// - `Ok(None)` — node absent (kernel without coredump support)
 /// - `Err(_)` — I/O or provenance failure
 ///
-/// NIST SP 800-53 SI-7: provenance-verified read via PROC_SUPER_MAGIC.
-/// NIST SP 800-218 SSDF PW.4: TPI classification applied to the raw value.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: provenance-verified read via PROC_SUPER_MAGIC.
+/// - NIST SP 800-218 SSDF PW.4: TPI classification applied to the raw value.
 ///
 /// # Errors
 ///
@@ -794,9 +817,11 @@ pub fn read_live_core_pattern() -> io::Result<Option<(CorePatternKind, String)>>
 /// Currently handles `PerfEventParanoid`, which can emit `-1` ("unrestricted
 /// for all users"). All other signals pass through as `Ok(None)`.
 ///
-/// NIST SP 800-53 CA-7: represents the complete set of kernel-valid states,
-/// including negative values, so no valid unhardened state is silently discarded.
-/// NIST SP 800-53 SI-7: provenance-verified via `StaticSource`.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CA-7: represents the complete set of kernel-valid states,
+///   including negative values, so no valid unhardened state is silently discarded.
+/// - NIST SP 800-53 SI-7: provenance-verified via `StaticSource`.
 ///
 /// # Errors
 ///
@@ -824,7 +849,9 @@ pub fn read_live_sysctl_signed(
 /// verifies `SECURITYFS_MAGIC`. Returns `Ok(None)` if securityfs is not
 /// mounted.
 ///
-/// NIST SP 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7: provenance-verified via SECURITYFS_MAGIC.
 ///
 /// # Errors
 ///

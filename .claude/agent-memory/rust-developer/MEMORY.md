@@ -279,6 +279,25 @@ Callers in `main.rs` use `.en()` on `LocaleText` fields. `examples/labels.rs` us
 
 `umrs-ui/src/marking_detail.rs` `MarkingDetailData` retains separate `name_en/name_fr/description_en/description_fr` String fields — these are a display DTO populated by callers using `.en()` and `.fr()`; they are NOT changed.
 
+## std::env::set_var is unsafe (Rust edition note)
+
+In the Rust toolchain used by this project, `std::env::set_var` and
+`std::env::remove_var` are `unsafe`. Since `#![forbid(unsafe_code)]` is
+active workspace-wide, env-mutation tests cannot be written inline. Tests
+that depend on specific `USER`/`HOME`/env values must use the inherited
+environment from the shell invoker (best-effort) or be documented as
+"not testable with current toolchain constraints."
+
+## current_username() — canonical session-user resolver (added 2026-04-18)
+
+`umrs_selinux::posix::current_username() -> String`
+
+Single resolver for process-owner display in TUI headers. Prefers `USER`
+env var, falls back to NSS (`getuid` → `/etc/passwd`), then `"(orphan)"`.
+Exported from `posix` mod. Replaces identical inline nix closures that
+existed in `umrs-ls/src/tui_render.rs` and `umrs-label/src/tui/render.rs`.
+Tests: `umrs-selinux/tests/current_username_tests.rs` (3 tests).
+
 ## Theme::no_color() (added 2026-04-13)
 
 `Theme::no_color()` added to `libs/umrs-ui/src/theme.rs`. All 21 Style fields carry modifiers only (BOLD/DIM/REVERSED), no fg/bg Color. Use `std::env::var_os("NO_COLOR").is_some()` (not `var().is_ok()`) — presence is the signal, value is irrelevant. All three TUI tools now select the theme correctly: `umrs-label`, `umrs-stat`, `umrs-uname`. Tests in `theme_tests.rs` (13 new no_color_* tests). NIST SP 800-53 SI-11 + WCAG 1.4.1.

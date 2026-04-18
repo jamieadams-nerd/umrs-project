@@ -78,24 +78,25 @@ use fields::{FieldDef, ValidationResult};
 /// Config-contextual: identifies the tool, target resource, and current
 /// validation state. Does not include kernel security posture indicators.
 ///
-/// NIST SP 800-53 AU-3 — header fields ensure every rendered frame carries
-/// sufficient identification for audit record dating and scope.
-/// NIST SP 800-53 CM-3 — the `validation_summary` communicates whether the
-/// current form state is committable.
+/// ## Fields:
+///
+/// - `tool_name` — name of the configuration tool (e.g., `"SELinux Config Editor"`).
+/// - `config_target` — path or identifier of the configuration target
+///   (e.g., `"/etc/selinux/config"` or `"setrans.conf"`).
+/// - `validation_summary` — one-line validation summary shown in the header
+///   (e.g., `"all fields valid"` or `"2 errors"`); callers compute this from
+///   `ConfigState::validation_summary()` or provide their own format.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: header fields ensure every rendered frame carries sufficient
+///   identification for audit record dating and scope.
+/// - **NIST SP 800-53 CM-3**: the `validation_summary` communicates whether the current form
+///   state is committable.
 #[derive(Debug, Clone)]
 pub struct ConfigHeaderContext {
-    /// Name of the configuration tool (e.g., `"SELinux Config Editor"`).
     pub tool_name: String,
-
-    /// The path or identifier of the configuration target
-    /// (e.g., `"/etc/selinux/config"` or `"setrans.conf"`).
     pub config_target: String,
-
-    /// A one-line validation summary shown in the header
-    /// (e.g., `"all fields valid"` or `"2 errors"`).
-    ///
-    /// Callers compute this from `ConfigState::validation_summary()` or
-    /// provide their own format.
     pub validation_summary: String,
 }
 
@@ -125,39 +126,30 @@ impl ConfigHeaderContext {
 /// `ConfigStateEvent::None` (no change). `Save` and `DiscardConfirm` require
 /// the caller to perform I/O or show a confirmation dialog.
 ///
-/// NIST SP 800-53 CM-3 — save and discard are explicitly surfaced as events
-/// so callers cannot accidentally miss them.
-/// NIST SP 800-53 AU-2 — the `Save` event signals the caller to emit an
-/// audit record.
+/// ## Variants:
+///
+/// - `None` — no state change occurred; no re-render needed.
+/// - `Redraw` — state changed; the caller should re-render.
+/// - `Save` — the operator requested a save; the caller must: verify `state.can_save()`, perform
+///   I/O, emit an audit record, and call `state.mark_saved()`. NIST SP 800-53 CM-3 / AU-2.
+/// - `DiscardConfirm` — the operator requested a discard while dirty fields exist; the caller
+///   should show a confirmation dialog and call `state.discard_all()` if confirmed. When no
+///   dirty fields exist, `Discard` does not produce this event. NIST SP 800-53 CM-3.
+/// - `Quit` — the operator pressed Quit; if the form is dirty, the caller should show a
+///   confirmation dialog before setting `should_quit = true`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-3**: save and discard are explicitly surfaced as events so callers
+///   cannot accidentally miss them.
+/// - **NIST SP 800-53 AU-2**: the `Save` event signals the caller to emit an audit record.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 #[must_use = "ConfigStateEvent must be handled; discarding it may skip a required save or audit action"]
 pub enum ConfigStateEvent {
-    /// No state change occurred; no re-render needed.
     None,
-
-    /// State changed; the caller should re-render.
     Redraw,
-
-    /// The operator requested a save. The caller must: verify `state.can_save()`,
-    /// perform I/O, emit an audit record, and call `state.mark_saved()`.
-    ///
-    /// NIST SP 800-53 CM-3 / AU-2.
     Save,
-
-    /// The operator requested a discard while dirty fields exist. The caller
-    /// should show a confirmation dialog (`DialogState::confirm(...)`) and
-    /// call `state.discard_all()` if confirmed.
-    ///
-    /// When no dirty fields exist, `Discard` does not produce this event —
-    /// the form is already at the committed state.
-    ///
-    /// NIST SP 800-53 CM-3.
     DiscardConfirm,
-
-    /// The operator pressed Quit.
-    ///
-    /// If the form is dirty, the caller should show a confirmation dialog
-    /// before setting `should_quit = true`.
     Quit,
 }
 
@@ -221,27 +213,27 @@ pub trait ConfigApp {
 /// the app data struct so the event loop can mutate state while holding an
 /// immutable reference to the app.
 ///
-/// NIST SP 800-53 CM-3 — dirty tracking and save-gating are enforced here,
-/// not left to the caller.
-/// NSA RTB RAIN — `can_save()` must return `true` before `Save` is emitted;
-/// the state enforces this.
+/// ## Fields:
+///
+/// - `fields` — configuration field definitions (ordered for display); populate after
+///   constructing `ConfigState::new()`; each `FieldDef` carries its current value, edit state,
+///   validation result, and dirty flag.
+/// - `focused_field` — index of the currently focused field.
+/// - `active_tab` — active tab index.
+/// - `tab_count` (private) — total number of tabs.
+/// - `should_quit` — signal to the event loop that the application should terminate.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-3**: dirty tracking and save-gating are enforced here, not left to the
+///   caller.
+/// - **NSA RTB RAIN**: `can_save()` must return `true` before `Save` is emitted; the state
+///   enforces this.
 pub struct ConfigState {
-    /// Configuration field definitions (ordered for display).
-    ///
-    /// Populate after constructing `ConfigState::new()`. Each `FieldDef`
-    /// carries its current value, edit state, validation result, and dirty flag.
     pub fields: Vec<FieldDef>,
-
-    /// Index of the currently focused field.
     pub focused_field: usize,
-
-    /// Active tab index.
     pub active_tab: usize,
-
-    /// Total number of tabs.
     tab_count: usize,
-
-    /// Signal to the event loop that the application should terminate.
     pub should_quit: bool,
 }
 

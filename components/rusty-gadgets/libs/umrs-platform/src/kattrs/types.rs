@@ -9,9 +9,11 @@
 
 /// SELinux enforcement mode — the active security posture of the kernel LSM.
 ///
-/// NIST SP 800-53 AC-3: Access Enforcement — this value directly determines
-/// whether the kernel enforces or merely audits policy decisions.
-/// NSA RTB RAIN: the enforcement state is non-bypassable when read via `SecureReader`.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AC-3: Access Enforcement — this value directly determines
+///   whether the kernel enforces or merely audits policy decisions.
+/// - NSA RTB RAIN: the enforcement state is non-bypassable when read via `SecureReader`.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum EnforceState {
     Permissive = 0,
@@ -25,11 +27,13 @@ pub enum EnforceState {
 /// current active value and a pending value that takes effect when
 /// `commit_pending_bools` is written to selinuxfs.
 ///
-/// NIST SP 800-53 AC-3: Access Enforcement — the dual boolean represents the
-/// committed (current) and staged (pending) values of a kernel policy decision;
-/// both must be examined to determine the full enforcement picture.
-/// NIST SP 800-53 AC-6: Least Privilege — the pending state must be checked to
-/// detect uncommitted privilege changes that have not yet taken effect.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AC-3: Access Enforcement — the dual boolean represents the
+///   committed (current) and staged (pending) values of a kernel policy decision;
+///   both must be examined to determine the full enforcement picture.
+/// - NIST SP 800-53 AC-6: Least Privilege — the pending state must be checked to
+///   detect uncommitted privilege changes that have not yet taken effect.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct DualBool {
     pub current: bool,

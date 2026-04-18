@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Clean command — removes the `staging/` directory tree.
 //!
 //! This is the inverse of the staging pipeline: it deletes everything in

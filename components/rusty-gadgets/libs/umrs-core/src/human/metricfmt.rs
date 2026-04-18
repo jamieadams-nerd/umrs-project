@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Generic engineering and diagnostic magnitude formatting using practical SI prefixes.
 //!
 //! Formats an arbitrary scalar (`f64`) into a scaled value plus a prefix string, for

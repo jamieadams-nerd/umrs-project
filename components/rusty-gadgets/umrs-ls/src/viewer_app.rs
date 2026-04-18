@@ -52,6 +52,7 @@ use umrs_ui::app::{StatusLevel, StatusMessage, TabDef};
 use umrs_ui::viewer::tree::TreeModel;
 use umrs_ui::viewer::{ViewerApp, ViewerHeaderContext};
 
+use crate::identity::resolve_owner_display;
 use crate::tree_adapter::{ScanStats, build_tree, compute_stats};
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -63,32 +64,32 @@ use crate::tree_adapter::{ScanStats, build_tree, compute_stats};
 /// Displayed in the header panel beneath the directory path so the operator
 /// can see the directory's own security posture at a glance.
 ///
-/// NIST SP 800-53 AU-3 — mode, ownership, and MAC label of the listed
-/// directory are audit-relevant context.
+/// ## Fields:
+///
+/// - `mode` — mode string (e.g., `"drwxr-xr-x"`).
+/// - `owner` — owner username (or numeric uid).
+/// - `group` — group name (or numeric gid).
+/// - `selinux_type` — SELinux type (e.g., `"var_log_t"`).
+/// - `marking` — MCS/MLS marking (e.g., `"s0"`).
+/// - `is_mountpoint` — whether this directory is a mount point.
+/// - `encryption` — at-rest encryption source of the containing mount point, if any; `None`
+///   means the directory's backing mount point is not encrypted; `Some("LUKS")` means
+///   LUKS/dm-crypt protected; `Some(fs)` means filesystem-layer encryption (e.g.,
+///   `"ecryptfs"`, `"fuse.gocryptfs"`). NIST SP 800-53 SC-28.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Mode, ownership, and MAC label of the listed directory are
+///   audit-relevant context.
+/// - **NIST SP 800-53 SC-28**: At-rest protection posture is surfaced on every frame.
 #[derive(Debug, Clone)]
 pub struct DirMeta {
-    /// Mode string (e.g., `"drwxr-xr-x"`).
     pub mode: String,
-    /// Owner username (or numeric uid).
     pub owner: String,
-    /// Group name (or numeric gid).
     pub group: String,
-    /// SELinux type (e.g., `"var_log_t"`).
     pub selinux_type: String,
-    /// MCS/MLS marking (e.g., `"s0"`).
     pub marking: String,
-    /// Whether this directory is a mount point.
     pub is_mountpoint: bool,
-    /// At-rest encryption source of the containing mount point, if any.
-    ///
-    /// `None` means the directory's backing mount point is not encrypted.
-    /// `Some("LUKS")` means the block device is LUKS/dm-crypt protected.
-    /// `Some(fs)` means a filesystem-layer encryption is in use (e.g.,
-    /// `"ecryptfs"`, `"fuse.gocryptfs"`).
-    ///
-    /// NIST SP 800-53 SC-28 — at-rest protection posture of the listed
-    /// directory is surfaced on every frame so the operator can see it
-    /// alongside the marking.
     pub encryption: Option<String>,
 }
 
@@ -105,8 +106,7 @@ impl DirMeta {
             let mode = format!("{ft}{}", d.mode.as_mode_str());
             let uid = d.ownership.user.uid.as_u32();
             let gid = d.ownership.group.gid.as_u32();
-            let owner = resolve_username(uid);
-            let group = resolve_groupname(gid);
+            let (owner, group) = resolve_owner_display(uid, gid);
             let (selinux_type, marking) = extract_selinux_short(&d);
             let is_mountpoint = d.is_mountpoint;
             let encryption = detect_enclosing_encryption(path);
@@ -150,8 +150,7 @@ impl DirMeta {
         let ft = crate::tree_adapter::file_type_char_pub(file_type);
         let mode = format!("{ft}{}", file_mode.as_mode_str());
 
-        let owner = resolve_username(meta.uid());
-        let group = resolve_groupname(meta.gid());
+        let (owner, group) = resolve_owner_display(meta.uid(), meta.gid());
 
         let (selinux_type, marking) = selinux_from_path(path);
 
@@ -246,20 +245,25 @@ fn detect_enclosing_encryption(path: &Path) -> Option<String> {
 /// [`DirViewerApp::from_listing`] in tests.  Call [`DirViewerApp::navigate_to`]
 /// when the user selects a subdirectory.
 ///
-/// NIST SP 800-53 AC-3 / AC-4 — read-only view; the underlying listing is
-/// not mutated through the `ViewerApp` interface.
-/// NIST SP 800-53 AU-3 — header and status carry identification fields on
-/// every rendered frame.
+/// ## Fields:
+///
+/// - `current_path` (private) — current directory path being displayed.
+/// - `listing` (private) — the latest directory listing.
+/// - `stats` (private) — cached scan stats for the status bar.
+/// - `dir_meta` (private) — security metadata for the current directory itself.
+/// - `tabs` (private) — tab definitions; a single tab labelled `"Directory"`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3 / AC-4**: Read-only view; the underlying listing is not mutated
+///   through the `ViewerApp` interface.
+/// - **NIST SP 800-53 AU-3**: Header and status carry identification fields on every rendered
+///   frame.
 pub struct DirViewerApp {
-    /// Current directory path being displayed.
     current_path: PathBuf,
-    /// The latest directory listing.
     listing: DirListing,
-    /// Cached scan stats for the status bar.
     stats: ScanStats,
-    /// Security metadata for the current directory itself.
     dir_meta: DirMeta,
-    /// Tab definitions — a single tab labelled "Directory".
     tabs: Vec<TabDef>,
 }
 
@@ -483,22 +487,6 @@ fn format_elapsed(elapsed_us: u64) -> String {
         "<1ms".to_owned()
     } else {
         format!("{}ms", elapsed_us / MICROS_PER_MS)
-    }
-}
-
-/// Resolve a numeric UID to a username string.
-fn resolve_username(uid: u32) -> String {
-    match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(uid)) {
-        Ok(Some(u)) => u.name,
-        _ => uid.to_string(),
-    }
-}
-
-/// Resolve a numeric GID to a groupname string.
-fn resolve_groupname(gid: u32) -> String {
-    match nix::unistd::Group::from_gid(nix::unistd::Gid::from_raw(gid)) {
-        Ok(Some(g)) => g.name,
-        _ => gid.to_string(),
     }
 }
 

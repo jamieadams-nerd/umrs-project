@@ -60,35 +60,33 @@ pub type NodeId = Vec<usize>;
 ///
 /// Nodes may have zero or more children. Leaf nodes (`children.is_empty()`)
 /// cannot be expanded. Branch nodes can be expanded (showing children) or
-/// collapsed (hiding children). The `expanded` flag persists across filter
-/// changes.
+/// collapsed (hiding children). The `expanded` flag persists across filter changes.
 ///
-/// NIST SP 800-53 AU-3 — the `label`, `detail`, and `metadata` fields carry
-/// audit-relevant identification for each record in the browsed catalog.
+/// ## Fields:
+///
+/// - `label` — display label shown in the tree column.
+/// - `detail` — short detail string shown in the tree row to the right of the label
+///   (e.g., a code, count, or value summary); empty string if unused.
+/// - `expanded` — whether this node is currently expanded (children visible); leaf nodes
+///   ignore this field — it is kept at `false` for leaves.
+/// - `children` — child nodes (empty for leaves).
+/// - `metadata` — arbitrary key-value metadata shown in the detail panel when this node is
+///   selected; keys are ordered for stable display.
+/// - `visible` — whether this node is currently visible after filter application; `true` by
+///   default (no filter active); set to `false` by [`TreeModel::apply_filter`] for nodes that do
+///   not match the query and whose subtree contains no matches.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: The `label`, `detail`, and `metadata` fields carry audit-relevant
+///   identification for each record in the browsed catalog.
 #[derive(Debug, Clone)]
 pub struct TreeNode {
-    /// Display label shown in the tree column.
     pub label: String,
-
-    /// Short detail string shown in the tree row to the right of the label
-    /// (e.g., a code, count, or value summary). Empty string if unused.
     pub detail: String,
-
-    /// Whether this node is currently expanded (children visible).
-    /// Leaf nodes ignore this field — it is kept at `false` for leaves.
     pub expanded: bool,
-
-    /// Child nodes (empty for leaves).
     pub children: Vec<Self>,
-
-    /// Arbitrary key-value metadata shown in the detail panel when this
-    /// node is selected. Keys are ordered for stable display.
     pub metadata: BTreeMap<String, String>,
-
-    /// Whether this node is currently visible after filter application.
-    /// `true` by default (no filter active). Set to `false` by
-    /// [`TreeModel::apply_filter`] for nodes that do not match the query
-    /// and whose subtree contains no matches.
     pub visible: bool,
 }
 
@@ -154,29 +152,25 @@ impl TreeNode {
 /// An entry in the flat display list produced by [`TreeModel::rebuild_display`].
 ///
 /// The renderer iterates `TreeModel::display_list` to produce the tree column.
-/// Each entry carries everything needed to render one row without traversing
-/// the tree again.
+/// Each entry carries everything needed to render one row without traversing the tree again.
+///
+/// ## Fields:
+///
+/// - `path` — stable path identifying this node.
+/// - `depth` — depth in the tree (root nodes are depth 0).
+/// - `prefix` — cached indent prefix (avoids recomputing during render).
+/// - `label` — display label for this node.
+/// - `detail` — short detail string (may be empty).
+/// - `expandable` — whether the node can be expanded (has children and is currently collapsed).
+/// - `expanded` — whether the node is currently expanded.
 #[derive(Debug, Clone)]
 pub struct DisplayEntry {
-    /// Stable path identifying this node.
     pub path: NodeId,
-
-    /// Depth in the tree (root nodes are depth 0).
     pub depth: usize,
-
-    /// Cached indent prefix (avoids recomputing during render).
     pub prefix: String,
-
-    /// Display label for this node.
     pub label: String,
-
-    /// Short detail string (may be empty).
     pub detail: String,
-
-    /// Whether the node can be expanded (has children and is currently collapsed).
     pub expandable: bool,
-
-    /// Whether the node is currently expanded.
     pub expanded: bool,
 }
 
@@ -186,17 +180,21 @@ pub struct DisplayEntry {
 
 /// Owns the root nodes and the flat display list used by the renderer.
 ///
-/// Call [`TreeModel::rebuild_display`] after any topology or expansion
-/// change. The renderer reads only `display_list` and `selected_index`.
+/// Call [`TreeModel::rebuild_display`] after any topology or expansion change.
+/// The renderer reads only `display_list` and `selected_index`.
 ///
-/// NIST SP 800-53 AU-3 — the model carries all identification needed to
-/// render a complete, self-describing catalog view.
-/// NSA RTB — fail-closed: out-of-bounds path lookups return `None`.
+/// ## Fields:
+///
+/// - `roots` — root-level nodes.
+/// - `display_list` — flat ordered list of visible nodes, rebuilt after state changes.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: The model carries all identification needed to render a complete,
+///   self-describing catalog view.
+/// - **NSA RTB**: Fail-closed — out-of-bounds path lookups return `None`.
 pub struct TreeModel {
-    /// Root-level nodes.
     pub roots: Vec<TreeNode>,
-
-    /// Flat ordered list of visible nodes, rebuilt after state changes.
     pub display_list: Vec<DisplayEntry>,
 }
 

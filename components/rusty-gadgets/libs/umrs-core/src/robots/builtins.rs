@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Built-in static ASCII and Braille art assets for the UMRS robot mascot system.
 //!
 //! Provides [`ALL_ROBOTS`], a `&'static [&AsciiArtStatic]` slice enumerating every

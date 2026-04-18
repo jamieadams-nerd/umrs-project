@@ -63,65 +63,51 @@ pub const CATALOG_KERNEL_BASELINE: &str = "6.12.0";
 /// All instances are `const` and live in the `INDICATORS` array. No heap
 /// allocation is required to access the catalog.
 ///
-/// NIST SP 800-53 CM-6: each descriptor captures the security baseline
-/// (desired value) alongside its rationale and NIST control citation.
-/// NIST SP 800-53 AU-3: `nist_controls` provides the audit control mapping
-/// needed for compliance evidence generation.
-/// NIST SP 800-53 CA-2: `cce` provides assessment evidence traceability to
-/// the RHEL 10 STIG SCAP content where a direct mapping exists.
+/// ## Fields:
+///
+/// - `id` — the typed indicator identifier.
+/// - `class` — how this indicator is persisted and read.
+/// - `live_path` — the kernel pseudo-filesystem path from which the live value is read;
+///   for `KernelCmdline` indicators this is `/proc/cmdline`.
+/// - `sysctl_key` — the sysctl key used to look up this indicator in sysctl.d merge
+///   output; `None` for cmdline and special indicators that have no sysctl key.
+/// - `desired` — the hardened desired value for this indicator.
+/// - `impact` — security impact of this indicator not meeting its desired value.
+/// - `label` — short human-readable label (2–4 words) for column headers and compact
+///   display. Prefer `label` over truncating `rationale` for space-constrained output.
+///   (NIST SP 800-53 AU-3)
+/// - `rationale` — one-sentence rationale for the desired value.
+/// - `nist_controls` — applicable NIST SP 800-53 and NSA RTB control references.
+/// - `cce` — CCE identifier from the RHEL 10 STIG (`CCE-NNNNN-N`) if this indicator has
+///   a SCAP equivalent; `None` for UMRS-only hardening checks with no direct STIG analog.
+///   (NIST SP 800-53 CA-2)
+/// - `description` — multi-sentence description of what this indicator controls and its
+///   security impact if not hardened. Empty string for indicators without display-layer
+///   coverage yet. (NIST SP 800-53 SA-5)
+/// - `recommended` — operator-facing remediation guidance; `None` when no single
+///   remediation action is defined (e.g., site-policy-dependent values or CPU mitigation
+///   sub-indicators with context-dependent remediation). (NIST SP 800-53 CM-6)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-6**: each descriptor captures the security baseline (desired
+///   value) alongside its rationale and NIST control citation.
+/// - **NIST SP 800-53 AU-3**: `nist_controls` provides the audit control mapping needed
+///   for compliance evidence generation.
+/// - **NIST SP 800-53 CA-2**: `cce` provides assessment evidence traceability to the RHEL
+///   10 STIG SCAP content where a direct mapping exists.
 pub struct IndicatorDescriptor {
-    /// The typed indicator identifier.
     pub id: IndicatorId,
-    /// How this indicator is persisted and read.
     pub class: IndicatorClass,
-    /// The kernel pseudo-filesystem path from which the live value is read.
-    /// For `KernelCmdline` indicators this is `/proc/cmdline`.
     pub live_path: &'static str,
-    /// The sysctl key used to look up this indicator in sysctl.d merge output.
-    /// `None` for cmdline and special indicators that have no sysctl key.
     pub sysctl_key: Option<&'static str>,
-    /// The hardened desired value for this indicator.
     pub desired: DesiredValue,
-    /// Security impact of this indicator not meeting its desired value.
     pub impact: AssuranceImpact,
-    /// Short human-readable label suitable for column headers and compact display.
-    ///
-    /// Typically 2–4 words. Consumers should prefer `label` over truncating
-    /// `rationale` for space-constrained output such as TUI columns or audit
-    /// report tables.
-    ///
-    /// NIST SP 800-53 AU-3 — audit records must be identifiable by a concise,
-    /// stable label that does not require parsing the full rationale.
     pub label: &'static str,
-    /// One-sentence rationale for the desired value.
     pub rationale: &'static str,
-    /// Applicable NIST SP 800-53 and NSA RTB control references.
     pub nist_controls: &'static str,
-    /// CCE identifier from the RHEL 10 STIG, if this indicator has a SCAP
-    /// equivalent. Format: `CCE-NNNNN-N`. `None` for indicators that exceed
-    /// STIG coverage (UMRS-only hardening checks with no direct STIG analog).
-    ///
-    /// NIST SP 800-53 CA-2: assessment evidence traceability — links this
-    /// indicator to its authoritative SCAP content identifier for use in
-    /// automated compliance reporting and STIG gap analysis.
     pub cce: Option<&'static str>,
-    /// Multi-sentence description explaining what this indicator controls and
-    /// what the security impact is if it is not hardened.
-    ///
-    /// Intended for operator-facing display in TUI, CLI, and assessment reports.
-    /// Empty string for indicators that do not yet have display-layer coverage
-    /// (e.g., CPU mitigation sub-indicators pending Phase 2b TUI integration).
-    ///
-    /// NIST SP 800-53 SA-5: system documentation — inline descriptions reduce
-    /// operator reliance on external reference guides.
     pub description: &'static str,
-    /// Operator-facing remediation guidance shown when the indicator does not
-    /// meet the desired baseline. `None` when no single remediation action is
-    /// defined (e.g., indicators with site-policy-dependent desired values, or
-    /// CPU mitigation sub-indicators whose remediation is context-dependent).
-    ///
-    /// NIST SP 800-53 CM-6: configuration settings — remediation guidance
-    /// accompanies each failing configuration finding.
     pub recommended: Option<&'static str>,
 }
 

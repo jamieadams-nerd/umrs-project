@@ -16,17 +16,7 @@
 //! `detect/release_parse.rs`. This module provides only the types and their
 //! per-field validation logic.
 //!
-//! ## Compliance
-//!
-//! - **NIST SP 800-53 CM-8**: Information System Component Inventory —
-//!   component identity fields must be accurately typed. Untyped string soup
-//!   allows silent conflation of unrelated fields.
-//! - **NIST SP 800-53 SI-10**: Information Input Validation — all field values
-//!   are validated at construction. Callers cannot obtain an `OsId`, `VersionId`,
-//!   or `CpeName` from an input that fails the field's structural rules.
-//! - **NIST SP 800-53 SI-12**: Information Management and Retention — error
-//!   payloads truncated to 64 characters at log call sites (not here) to
-//!   prevent log flooding with user-controlled content.
+#![doc = include_str!("../docs/compliance-os_release.md")]
 
 use thiserror::Error;
 
@@ -37,62 +27,66 @@ use thiserror::Error;
 /// Errors that can occur when parsing individual `os-release` field values.
 ///
 /// Each variant carries a `String` payload containing the offending input,
-/// truncated to 64 characters at log and display call sites (NIST SP 800-53
-/// SI-12 — callers must apply truncation before surfacing in logs or error
-/// messages).
+/// truncated to 64 characters at log and display call sites
+/// (NIST SP 800-53 SI-12 — callers must apply truncation before surfacing in logs).
 ///
-/// NIST SP 800-53 SI-10 — input validation failure.
+/// ## Variants:
+///
+/// - `InvalidId(String)` — `ID=` or `ID_LIKE=` value failed character/length validation.
+/// - `InvalidName(String)` — `NAME=` or `PRETTY_NAME=` value failed length/UTF-8 validation.
+/// - `InvalidVersionId(String)` — `VERSION_ID=` value failed character/length validation.
+/// - `InvalidVersion(String)` — `VERSION=` value failed length validation.
+/// - `InvalidCodename(String)` — `VERSION_CODENAME=` value failed character/length validation.
+/// - `InvalidCpe(String)` — `CPE_NAME=` value failed prefix/length validation.
+/// - `InvalidUrl(String)` — `HOME_URL=` or similar URL field failed prefix/length validation.
+/// - `InvalidVariantId(String)` — `VARIANT_ID=` value failed character/length validation.
+/// - `InvalidBuildId(String)` — `BUILD_ID=` value failed character/length validation.
+/// - `DuplicateKey(String)` — a key appeared more than once in the file.
+/// - `NonUtf8` — file content contained non-UTF-8 bytes.
+/// - `LineTooLong(usize)` — a single line exceeded the configured maximum length.
+/// - `MissingRequired(String)` — a required field (`ID=`, `NAME=`) was absent.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-10**: input validation failure.
 #[derive(Debug, Clone, Error)]
 pub enum OsReleaseParseError {
-    /// `ID=` or `ID_LIKE=` value failed character/length validation.
     #[error("invalid ID field")]
     InvalidId(String),
 
-    /// `NAME=` or `PRETTY_NAME=` value failed length/UTF-8 validation.
     #[error("invalid NAME field")]
     InvalidName(String),
 
-    /// `VERSION_ID=` value failed character/length validation.
     #[error("invalid VERSION_ID field")]
     InvalidVersionId(String),
 
-    /// `VERSION=` value failed length validation.
     #[error("invalid VERSION field")]
     InvalidVersion(String),
 
-    /// `VERSION_CODENAME=` value failed character/length validation.
     #[error("invalid VERSION_CODENAME field")]
     InvalidCodename(String),
 
-    /// `CPE_NAME=` value failed prefix/length validation.
     #[error("invalid CPE_NAME field")]
     InvalidCpe(String),
 
-    /// `HOME_URL=` or similar URL field failed prefix/length validation.
     #[error("invalid URL field")]
     InvalidUrl(String),
 
-    /// `VARIANT_ID=` value failed character/length validation.
     #[error("invalid VARIANT_ID field")]
     InvalidVariantId(String),
 
-    /// `BUILD_ID=` value failed character/length validation.
     #[error("invalid BUILD_ID field")]
     InvalidBuildId(String),
 
-    /// A key appeared more than once in the file.
     #[error("duplicate key")]
     DuplicateKey(String),
 
-    /// File content contained non-UTF-8 bytes.
     #[error("non-UTF-8 content in os-release")]
     NonUtf8,
 
-    /// A single line exceeded the configured maximum length.
     #[error("line too long ({0} bytes)")]
     LineTooLong(usize),
 
-    /// A required field (`ID=`, `NAME=`) was absent.
     #[error("required field missing")]
     MissingRequired(String),
 }
@@ -106,7 +100,9 @@ pub enum OsReleaseParseError {
 /// Constraints: lowercase ASCII alphanumeric, hyphens, and underscores only;
 /// non-empty; at most 64 characters.
 ///
-/// NIST SP 800-53 CM-8, SI-10.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SI-10.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct OsId(String);
 
@@ -116,8 +112,10 @@ impl OsId {
     /// Leading/trailing whitespace and enclosing double-quotes are stripped
     /// before validation (matching `os-release(5)` quoting rules).
     ///
-    /// NIST SP 800-53 SI-10 — validates input to the security-critical OS identifier field
-    /// at construction.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10 — validates input to the security-critical OS identifier field
+    ///   at construction.
     ///
     /// # Errors
     ///
@@ -151,15 +149,19 @@ impl std::fmt::Display for OsId {
 ///
 /// Constraints: non-empty; at most 256 valid UTF-8 characters.
 ///
-/// NIST SP 800-53 CM-8, SI-10.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SI-10.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OsName(String);
 
 impl OsName {
     /// Parse and validate a `NAME=` or `PRETTY_NAME=` field value.
     ///
-    /// NIST SP 800-53 SI-10: Input Validation — validates OS name at
-    /// construction; rejects empty or oversized values.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10: Input Validation — validates OS name at
+    ///   construction; rejects empty or oversized values.
     ///
     /// # Errors
     ///
@@ -190,7 +192,9 @@ impl std::fmt::Display for OsName {
 /// Constraints: ASCII digits, dots, tildes, and hyphens only; non-empty;
 /// at most 32 characters. Examples: `"10.0"`, `"22.04"`, `"9"`.
 ///
-/// NIST SP 800-53 CM-8, SI-10.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SI-10.
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct VersionId(String);
 
@@ -228,15 +232,19 @@ impl std::fmt::Display for VersionId {
 ///
 /// Constraints: non-empty; at most 128 valid UTF-8 characters.
 ///
-/// NIST SP 800-53 CM-8, SI-10.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SI-10.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct OsVersion(String);
 
 impl OsVersion {
     /// Parse and validate a `VERSION=` field value.
     ///
-    /// NIST SP 800-53 SI-10: Input Validation — validates OS version string at
-    /// construction; rejects empty or oversized values.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10: Input Validation — validates OS version string at
+    ///   construction; rejects empty or oversized values.
     ///
     /// # Errors
     ///
@@ -260,15 +268,19 @@ impl OsVersion {
 ///
 /// Constraints: non-empty; at most 64 valid UTF-8 characters.
 ///
-/// NIST SP 800-53 CM-8, SI-10.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SI-10.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Codename(String);
 
 impl Codename {
     /// Parse and validate a `VERSION_CODENAME=` field value.
     ///
-    /// NIST SP 800-53 SI-10: Input Validation — validates distribution codename
-    /// at construction; rejects empty or oversized values.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10: Input Validation — validates distribution codename
+    ///   at construction; rejects empty or oversized values.
     ///
     /// # Errors
     ///
@@ -293,8 +305,10 @@ impl Codename {
 /// Constraints: must start with `"cpe:/"` (CPE 2.2) or `"cpe:2.3:"`
 /// (CPE 2.3); at most 256 characters.
 ///
-/// NIST SP 800-53 CM-8 — CPE identifiers enable mapping to the NVD
-/// vulnerability database for accurate patch state assessment.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8 — CPE identifiers enable mapping to the NVD
+///   vulnerability database for accurate patch state assessment.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CpeName(String);
 
@@ -324,8 +338,10 @@ impl CpeName {
 /// Constraints: must start with `"https://"` or `"http://"`;
 /// at most 512 characters.
 ///
-/// NIST SP 800-53 SI-10 — URL prefix validation prevents
-/// data URI or file URI injection.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-10 — URL prefix validation prevents
+///   data URI or file URI injection.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ValidatedUrl(String);
 
@@ -354,15 +370,19 @@ impl ValidatedUrl {
 ///
 /// Constraints: non-empty; at most 64 valid UTF-8 characters.
 ///
-/// NIST SP 800-53 CM-8, SI-10.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SI-10.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct VariantId(String);
 
 impl VariantId {
     /// Parse and validate a `VARIANT_ID=` field value.
     ///
-    /// NIST SP 800-53 SI-10: Input Validation — validates variant ID at
-    /// construction; rejects empty or oversized values.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-10: Input Validation — validates variant ID at
+    ///   construction; rejects empty or oversized values.
     ///
     /// # Errors
     ///
@@ -386,7 +406,9 @@ impl VariantId {
 ///
 /// Constraints: non-empty; at most 128 printable ASCII characters or spaces.
 ///
-/// NIST SP 800-53 CM-8, SI-10.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SI-10.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BuildId(String);
 
@@ -424,47 +446,42 @@ impl BuildId {
 /// Two-path independent parsing occurs in `detect/release_parse.rs`.
 /// This type is the target of that parse.
 ///
-/// NIST SP 800-53 CM-8 — typed component inventory; no string soup.
-/// NIST SP 800-53 SI-10 — all field values validated at construction.
+/// ## Fields:
+///
+/// - `id` — `ID=`: machine-readable distribution identifier (e.g., `"rhel"`, `"debian"`);
+///   required field.
+/// - `id_like` — `ID_LIKE=`: space-separated parent distribution identifiers; optional.
+/// - `name` — `NAME=`: human-readable distribution name; required field.
+/// - `version_id` — `VERSION_ID=`: machine-readable version string; optional.
+/// - `version` — `VERSION=`: human-readable version, may include codename; optional.
+/// - `version_codename` — `VERSION_CODENAME=`: distribution codename (e.g., `"bookworm"`);
+///   optional.
+/// - `pretty_name` — `PRETTY_NAME=`: display string for the OS; optional.
+/// - `home_url` — `HOME_URL=`: upstream project URL; optional.
+/// - `cpe_name` — `CPE_NAME=`: NIST NVD CPE identifier if present; optional. Presence
+///   enables accurate NVD vulnerability mapping. (NIST SP 800-53 CM-8)
+/// - `variant_id` — `VARIANT_ID=`: variant identifier (e.g., `"server"`, `"workstation"`);
+///   optional.
+/// - `build_id` — `BUILD_ID=`: immutable image build identifier; optional.
+/// - `ansi_color` — `ANSI_COLOR=`: terminal color hint; informational only, not validated.
+///   **MUST NOT** be used for policy or identity decisions.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**: typed component inventory; no raw string soup.
+/// - **NIST SP 800-53 SI-10**: all field values validated at construction.
 #[derive(Debug, Clone)]
 pub struct OsRelease {
-    /// `ID=` — machine-readable distribution identifier (e.g., `"rhel"`, `"debian"`).
-    /// Required field.
     pub id: OsId,
-
-    /// `ID_LIKE=` — space-separated parent distribution identifiers. Optional.
     pub id_like: Option<Vec<OsId>>,
-
-    /// `NAME=` — human-readable distribution name. Required field.
     pub name: OsName,
-
-    /// `VERSION_ID=` — machine-readable version string. Optional.
     pub version_id: Option<VersionId>,
-
-    /// `VERSION=` — human-readable version, may include codename. Optional.
     pub version: Option<OsVersion>,
-
-    /// `VERSION_CODENAME=` — distribution codename (e.g., `"bookworm"`). Optional.
     pub version_codename: Option<Codename>,
-
-    /// `PRETTY_NAME=` — display string for the OS. Optional.
     pub pretty_name: Option<OsName>,
-
-    /// `HOME_URL=` — upstream project URL. Optional.
     pub home_url: Option<ValidatedUrl>,
-
-    /// `CPE_NAME=` — NIST NVD CPE identifier if present. Optional.
-    /// Presence enables accurate NVD vulnerability mapping (NIST CM-8).
     pub cpe_name: Option<CpeName>,
-
-    /// `VARIANT_ID=` — variant identifier (e.g., `"server"`, `"workstation"`). Optional.
     pub variant_id: Option<VariantId>,
-
-    /// `BUILD_ID=` — immutable image build identifier. Optional.
     pub build_id: Option<BuildId>,
-
-    /// `ANSI_COLOR=` — terminal color hint. Informational only; not validated.
-    ///
-    /// **MUST NOT** be used for policy or identity decisions; informational display only.
     pub ansi_color: Option<String>,
 }

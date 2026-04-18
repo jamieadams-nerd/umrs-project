@@ -36,28 +36,34 @@ use umrs_selinux::utils::dirlist::ListEntry;
 ///
 /// Used by display and JSON layers to render kind-specific labels
 /// (e.g., "3 rotations, 1 signature").
+///
+/// ## Variants:
+/// * rotation - Numeric suffix: `.1`, `.2`, `-20260301`.
+/// * compressed - `.1.gz`, `.2.xz`, `.gz`, `.bz2`, `.xz`, `.zst`.
+/// * signature - Detached sig `.sig`, `.asc`, `.p7s`.
+/// * Integrity checksum - `.sha256`, `.sha512`, `.md5`
+/// * Backup copy - `.bak`, `.orig`, `.old`.
+/// * related - Any other sibling that matches the prefix rule.
+///
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SiblingKind {
-    /// Numeric rotation suffix: `.1`, `.2`, `-20260301`.
     Rotation,
-    /// Compressed rotation: `.1.gz`, `.2.xz`, `.gz`, `.bz2`, `.xz`, `.zst`.
     CompressedRotation,
-    /// Detached signature: `.sig`, `.asc`, `.p7s`.
     Signature,
-    /// Integrity checksum: `.sha256`, `.sha512`, `.md5`.
     Checksum,
-    /// Backup copy: `.bak`, `.orig`, `.old`.
     Backup,
-    /// Any other sibling that matches the prefix rule.
     Related,
 }
 
 /// A sibling file paired with its classification.
+///
+/// ## Fields:
+/// * entry - The full `ListEntry` — all security metadata is preserved.
+/// * kind - How this sibling relates to the base file.
+///
 #[derive(Debug, Clone)]
 pub struct Sibling {
-    /// The full `ListEntry` — all security metadata is preserved.
     pub entry: ListEntry,
-    /// How this sibling relates to the base file.
     pub kind: SiblingKind,
 }
 
@@ -65,11 +71,14 @@ pub struct Sibling {
 ///
 /// A standalone file (no siblings) is represented as a `FileGroup` with
 /// `siblings` equal to an empty `Vec`.
+///
+/// ## Fields
+/// * base - shortest-prefix entry that anchors this group.
+/// * siblings - All sibling entries, in the order they appeared in the input.
+///
 #[derive(Debug, Clone)]
 pub struct FileGroup {
-    /// The shortest-prefix entry that anchors this group.
     pub base: ListEntry,
-    /// All sibling entries, in the order they appeared in the input.
     pub siblings: Vec<Sibling>,
 }
 
@@ -133,11 +142,47 @@ fn is_independent_suffix(suffix: &str) -> bool {
     )
 }
 
+/// Static table mapping known file extensions to their [`SiblingKind`].
+///
+/// Each entry covers both the "bare rest" case (e.g., suffix is just `.gz`)
+/// and the "dotted extension" case (e.g., suffix is `.1.gz` where
+/// `Path::extension()` returns `"gz"`).  A single linear scan replaces the
+/// prior cascade of `if` chains.
+///
+/// ## Compliance
+///
+/// - **NSA RTB**: Deterministic Execution — O(n) scan over a fixed-length
+///   constant table; no heap allocation, no branching on external state.
+static SUFFIX_TABLE: &[(&str, SiblingKind)] = &[
+    // Compression formats → CompressedRotation
+    ("gz", SiblingKind::CompressedRotation),
+    ("bz2", SiblingKind::CompressedRotation),
+    ("xz", SiblingKind::CompressedRotation),
+    ("zst", SiblingKind::CompressedRotation),
+    // Detached signatures → Signature
+    ("sig", SiblingKind::Signature),
+    ("asc", SiblingKind::Signature),
+    ("p7s", SiblingKind::Signature),
+    // Integrity checksums → Checksum
+    ("sha256", SiblingKind::Checksum),
+    ("sha512", SiblingKind::Checksum),
+    ("sha384", SiblingKind::Checksum),
+    ("md5", SiblingKind::Checksum),
+    // Backup copies → Backup
+    ("bak", SiblingKind::Backup),
+    ("orig", SiblingKind::Backup),
+    ("old", SiblingKind::Backup),
+];
+
 /// Classify the suffix of a candidate name relative to its base.
 ///
 /// `suffix` is the portion of the candidate name after `base_name` (including
 /// the separator character).  For example, if `base_name = "boot.log"` and
 /// `candidate = "boot.log-20260301.gz"`, then `suffix = "-20260301.gz"`.
+///
+/// Classification consults [`SUFFIX_TABLE`] via a single linear scan —
+/// checking both the final path extension and the bare rest value — then
+/// falls through to numeric-rotation detection.
 #[must_use = "classification result must be used to build the Sibling record"]
 pub fn classify_suffix(suffix: &str) -> SiblingKind {
     // Strip the leading separator (`.`, `-`, `_`) for easier matching.
@@ -148,56 +193,16 @@ pub fn classify_suffix(suffix: &str) -> SiblingKind {
     // for dotted suffixes (e.g., "1.gz" → extension "gz").
     let ext = Path::new(rest).extension().and_then(|e| e.to_str()).unwrap_or("");
 
-    // Compressed rotation: the final extension is a known compression format.
-    // Also handle the bare-extension case (rest == "gz" etc.) where there is
-    // no dot in `rest` — Path::extension() returns None for bare words.
-    if ext.eq_ignore_ascii_case("gz")
-        || ext.eq_ignore_ascii_case("bz2")
-        || ext.eq_ignore_ascii_case("xz")
-        || ext.eq_ignore_ascii_case("zst")
-        || rest.eq_ignore_ascii_case("gz")
-        || rest.eq_ignore_ascii_case("bz2")
-        || rest.eq_ignore_ascii_case("xz")
-        || rest.eq_ignore_ascii_case("zst")
-    {
-        return SiblingKind::CompressedRotation;
+    // Single scan over the static table: match either the final extension
+    // (covers "1.gz" → CompressedRotation) or the full rest value
+    // (covers bare ".gz" → CompressedRotation).
+    for (token, kind) in SUFFIX_TABLE {
+        if ext.eq_ignore_ascii_case(token) || rest.eq_ignore_ascii_case(token) {
+            return kind.clone();
+        }
     }
 
-    // Signature files.
-    if ext.eq_ignore_ascii_case("sig")
-        || ext.eq_ignore_ascii_case("asc")
-        || ext.eq_ignore_ascii_case("p7s")
-        || rest.eq_ignore_ascii_case("sig")
-        || rest.eq_ignore_ascii_case("asc")
-        || rest.eq_ignore_ascii_case("p7s")
-    {
-        return SiblingKind::Signature;
-    }
-
-    // Checksum files.
-    if ext.eq_ignore_ascii_case("sha256")
-        || ext.eq_ignore_ascii_case("sha512")
-        || ext.eq_ignore_ascii_case("md5")
-        || rest.eq_ignore_ascii_case("sha256")
-        || rest.eq_ignore_ascii_case("sha512")
-        || rest.eq_ignore_ascii_case("md5")
-    {
-        return SiblingKind::Checksum;
-    }
-
-    // Backup files.
-    if ext.eq_ignore_ascii_case("bak")
-        || ext.eq_ignore_ascii_case("orig")
-        || ext.eq_ignore_ascii_case("old")
-        || rest.eq_ignore_ascii_case("bak")
-        || rest.eq_ignore_ascii_case("orig")
-        || rest.eq_ignore_ascii_case("old")
-    {
-        return SiblingKind::Backup;
-    }
-
-    // Rotation: pure numeric suffix, or a date-like numeric string.
-    // Accept: "1", "2", "20260301" — anything that is entirely ASCII digits.
+    // Rotation: pure numeric suffix or date-like numeric string ("1", "20260301").
     if rest.chars().all(|c| c.is_ascii_digit()) {
         return SiblingKind::Rotation;
     }
@@ -228,10 +233,13 @@ pub fn classify_suffix(suffix: &str) -> SiblingKind {
 ///
 /// The separator requirement prevents `file.log` from absorbing `file.logging`.
 ///
-/// # NIST SP 800-53 AC-3 / NSA RTB
+/// ## Compliance
 ///
-/// Grouping is purely a display concern.  No SELinux label, mode bit, or
-/// security observation is modified or suppressed.
+/// - **NIST SP 800-53 AC-3**: Access Enforcement — grouping is purely a
+///   display concern; no SELinux label, mode bit, or security observation is
+///   modified or suppressed.
+/// - **NSA RTB**: Deterministic Execution — algorithm produces identical
+///   output for identical sorted input across all invocations.
 #[must_use = "grouped result drives all subsequent display and JSON output"]
 pub fn group_entries(entries: &[ListEntry]) -> Vec<FileGroup> {
     let mut result: Vec<FileGroup> = Vec::new();

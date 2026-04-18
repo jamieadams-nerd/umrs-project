@@ -76,26 +76,27 @@ pub const XATTR_NAME_SELINUX: &str = "security.selinux";
 /// event.  Single-path failures are code defects and must never produce an
 /// ERROR log entry.
 ///
-/// NIST SP 800-53 SI-7: Software and Information Integrity.
-/// NSA RTB RAIN: Non-Bypassability.
+/// ## Variants:
+///
+/// - `PathAFailed(String)` — Path A (nom parser) failed; code or validator defect, not a
+///   security event. The reason string contains only the error kind, no raw input.
+///   NIST SP 800-53 SI-12: no sensitive data in error messages.
+/// - `PathBFailed(String)` — Path B (FromStr parser) failed; code or validator defect, not a
+///   security event. The reason string contains only the error kind.
+///   NIST SP 800-53 SI-12: no sensitive data in error messages.
+/// - `Disagreement(Box<SecurityContext>, Box<SecurityContext>)` — both paths succeeded but
+///   produced structurally different results. Potential integrity event — an adversary
+///   manipulating the xattr byte stream at the kernel interface could produce this outcome.
+///   NIST SP 800-53 SI-7 / NSA RTB RAIN.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**: Software and Information Integrity.
+/// - **NSA RTB RAIN**: Non-Bypassability.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum TpiError {
-    /// Path A (nom parser) failed. Code or validator defect — not a security
-    /// event. The reason string contains only the error kind, no raw input.
-    /// NIST SP 800-53 SI-12: no sensitive data in error messages.
     PathAFailed(String),
-
-    /// Path B (FromStr parser) failed. Code or validator defect — not a
-    /// security event. The reason string contains only the error kind.
-    /// NIST SP 800-53 SI-12: no sensitive data in error messages.
     PathBFailed(String),
-
-    /// Both paths succeeded but produced structurally different results.
-    ///
-    /// Potential integrity event — an adversary manipulating the xattr byte
-    /// stream at the kernel interface could produce this outcome.
-    /// NIST SP 800-53 SI-7: integrity violation.
-    /// NSA RTB RAIN: redundancy cross-check failure.
     Disagreement(Box<SecurityContext>, Box<SecurityContext>),
 }
 
@@ -137,20 +138,24 @@ impl fmt::Display for TpiError {
 /// read) from `Tpi` (label was present but could not be verified) to produce
 /// correct audit output.
 ///
-/// NIST SP 800-53 AU-3: audit record completeness requires this distinction.
-/// NIST SP 800-53 SI-7 / NSA RTB RAIN: TPI integrity.
+/// ## Variants:
+///
+/// - `OsError(io::Error)` — an OS-level error before or during the raw xattr read. `ENODATA`
+///   means the inode genuinely has no SELinux label; `EACCES`/`EPERM` means DAC or MAC
+///   prevented the read.
+/// - `Tpi(TpiError)` — the raw bytes are present but could not be verified via TPI. The label
+///   is on the inode but its integrity cannot be confirmed. Structurally different from an absent
+///   label.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: audit record completeness requires distinguishing `OsError` from
+///   `Tpi`.
+/// - **NIST SP 800-53 SI-7**: Software and Information Integrity.
+/// - **NSA RTB RAIN**: TPI integrity gate.
 #[derive(Debug)]
 pub enum XattrReadError {
-    /// An OS-level error before or during the raw xattr read.
-    ///
-    /// `ENODATA` means the inode genuinely has no SELinux label.
-    /// `EACCES`/`EPERM` means DAC or MAC prevented the read.
     OsError(io::Error),
-
-    /// The raw bytes are present but could not be verified via TPI.
-    ///
-    /// The label is on the inode but its integrity cannot be confirmed.
-    /// Structurally different from an absent label.
     Tpi(TpiError),
 }
 

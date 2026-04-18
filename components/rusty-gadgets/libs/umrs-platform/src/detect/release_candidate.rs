@@ -75,7 +75,10 @@ const S_IWOTH: u32 = 0o002;
 /// A returned `path` has passed permissions sanity and has `statx` metadata
 /// recorded in `evidence`.
 ///
-/// NIST SP 800-53 SI-7, CM-8. NSA RTB TOCTOU.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7, CM-8.
+/// - NSA RTB TOCTOU.
 pub(super) fn run(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,

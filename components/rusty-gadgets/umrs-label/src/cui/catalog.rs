@@ -56,27 +56,31 @@ pub use super::locale_text::LocaleText;
 /// form (`"United States CUI"`) and the Canadian locale-object form
 /// (`{"en_US": "...", "fr_CA": "..."}`).
 ///
+/// ## Fields:
+///
+/// - `catalog_name` — human-readable catalog name; absent in `LEVELS.json` which uses
+///   `description` instead; handles both flat-string (US) and locale-object (CA) JSON forms.
+/// - `version` — semantic version string (e.g., `"0.2.0"`).
+/// - `authority` — governing authority (e.g., `"NARA CUI Registry / 32 CFR Part 2002"`);
+///   absent in `LEVELS.json`.
+/// - `country_code` — ISO 3166-1 alpha-2 country code (e.g., `"US"`, `"CA"`); optional because
+///   `LEVELS.json` has no country association.
+/// - `mcs_category_range` — SELinux MCS category range allocated to this catalog (e.g.,
+///   `"c0-c199"`).
+/// - `extra` — nation-specific metadata fields not enumerated above (flattened from JSON).
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AC-16**: Provenance tracking for security attribute definitions.
 #[derive(Debug, Deserialize)]
 pub struct CatalogMetadata {
-    /// Human-readable catalog name. Absent in `LEVELS.json` which uses `description` instead.
-    /// Handles both flat-string (US) and locale-object (CA) JSON representations.
     #[serde(default)]
     pub catalog_name: LocaleText,
-    /// Semantic version string (e.g., `"0.2.0"`).
     pub version: String,
-    /// Governing authority (e.g., `"NARA CUI Registry / 32 CFR Part 2002"`).
-    /// Absent in `LEVELS.json`.
     #[serde(default)]
     pub authority: String,
-    /// ISO 3166-1 alpha-2 country code (e.g., `"US"`, `"CA"`). Optional
-    /// because the LEVELS.json file has no country association.
     pub country_code: Option<String>,
-    /// SELinux MCS category range allocated to this catalog (e.g., `"c0-c199"`).
     pub mcs_category_range: Option<String>,
-    /// Nation-specific metadata fields not enumerated above.
     #[serde(flatten)]
     pub extra: HashMap<String, serde_json::Value>,
 }
@@ -96,6 +100,17 @@ pub struct CatalogMetadata {
 /// `FED ONLY` (federal employees only). They appear at the end of a CUI banner
 /// after a double slash: `CUI//SP-CTI//NOFORN`.
 ///
+/// ## Fields:
+///
+/// - `name` — full human-readable name (may be bilingual).
+/// - `description` — description of when this LDC applies and what it means.
+/// - `banner_marking` — the token that appears in the banner (e.g., `"NOFORN"`,
+///   `"Attorney-Client"`).
+/// - `portion_marking` — short portion-marking abbreviation (e.g., `"NF"`, `"AC"`).
+/// - `parameterized` — whether this LDC requires a parameter (e.g., country codes for `REL TO`).
+/// - `category_restriction` — if present, this LDC may only be used with the named CUI category.
+/// - `mutually_exclusive_with` — LDC abbreviations that are mutually exclusive with this one.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AC-16**: LDCs are dissemination-control security attributes
@@ -103,20 +118,13 @@ pub struct CatalogMetadata {
 /// - **CMMC AC.L2-3.1.3**: Control CUI flow in accordance with approved authorizations.
 #[derive(Debug, Deserialize, Clone)]
 pub struct DisseminationControl {
-    /// Full human-readable name (may be bilingual).
     pub name: LocaleText,
-    /// Description of when this LDC applies and what it means.
     pub description: LocaleText,
-    /// The token that appears in the banner (e.g., `"NOFORN"`, `"Attorney-Client"`).
     pub banner_marking: Option<String>,
-    /// Short portion-marking abbreviation (e.g., `"NF"`, `"AC"`).
     pub portion_marking: Option<String>,
-    /// Whether this LDC requires a parameter (e.g., country codes for `REL TO`).
     #[serde(default)]
     pub parameterized: bool,
-    /// If present, this LDC may only be used with the named CUI category.
     pub category_restriction: Option<String>,
-    /// LDC abbreviations that are mutually exclusive with this one.
     #[serde(default)]
     pub mutually_exclusive_with: Vec<String>,
 }
@@ -135,23 +143,24 @@ pub struct DisseminationControl {
 /// US catalogs also include a `dissemination_controls` section (LDCs) that is
 /// separate from `markings`. Canadian catalogs omit this section.
 ///
+/// ## Fields:
+///
+/// - `metadata` — catalog provenance and MCS allocation metadata (from the `_metadata` key).
+/// - `markings` — regulatory marking registry (e.g., `"CUI//LEI"`, `"PROTECTED-A"`); both US
+///   and Canadian catalogs populate this key.
+/// - `dissemination_controls` — Limited Dissemination Controls (LDCs); US catalogs only; keyed
+///   by the LDC name (e.g., `"NOFORN"`, `"Attorney-Client"`); empty in Canadian catalogs.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AC-16**: Security Attributes — the catalog is the
 ///   authoritative source of CUI marking definitions used in security output.
 #[derive(Debug, Deserialize)]
 pub struct Catalog {
-    /// Catalog provenance and MCS allocation metadata.
     #[serde(rename = "_metadata")]
     pub metadata: Option<CatalogMetadata>,
-    /// Regulatory marking registry (e.g., `"CUI//LEI"`,
-    /// `"PROTECTED-A"`). Both US and Canadian catalogs populate this key.
     #[serde(default)]
     pub markings: HashMap<String, Marking>,
-    /// Limited Dissemination Controls (LDCs) — US catalogs only.
-    ///
-    /// Keyed by the LDC name (e.g., `"NOFORN"`, `"Attorney-Client"`).
-    /// Empty in Canadian catalogs.
     #[serde(default)]
     pub dissemination_controls: HashMap<String, DisseminationControl>,
 }
@@ -340,6 +349,42 @@ impl Catalog {
 /// locale-keyed sub-fields). Use `handling_as_str()` or `handling_as_object()`
 /// for typed access.
 ///
+/// ## Fields:
+///
+/// - `name` — full human-readable name (e.g., `"Law Enforcement Information"`); use `.en()` for
+///   English, `.fr()` for Canadian French.
+/// - `abbrv_name` — abbreviated name (e.g., `"LEI"`).
+/// - `index_group` — display-only grouping hint (e.g., `"Law Enforcement"`); no enforcement
+///   semantics.
+/// - `designation` — CUI designation: `"basic"`, `"specified"`, or `null`.
+/// - `description` — description of the marking; use `.en()` for English, `.fr()` for Canadian
+///   French; empty `LocaleText` when absent.
+/// - `level` — MCS sensitivity level identifier (e.g., `"s1"`).
+/// - `handling` — handling guidance — string (US) or structured object (Canadian); Canadian
+///   objects contain locale-keyed sub-fields; use `handling_as_object()` for typed access.
+/// - `handling_restrictions` — detailed handling restrictions (US catalogs).
+/// - `handling_group_id` — optional handling group identifier for grouping related markings;
+///   `null` in Canadian entries.
+/// - `required_warning_statement` — required warning statement associated with this marking, if
+///   any.
+/// - `required_dissemination_control` — required dissemination control suffix, if mandated by
+///   policy.
+/// - `category_base` — MCS category base (e.g., `"c200"`).
+/// - `category_range_reserved` — reserved MCS category range for future use (e.g.,
+///   `"c201-c299"`).
+/// - `palette_ref` — color palette reference key (links to `UMRS-PALETTE.json`).
+/// - `risk_domains` — risk domain identifiers associated with this marking.
+/// - `dissemination_controls` — dissemination controls — varies by nation (string, object, or
+///   null).
+/// - `us_cui_approximate_correspondence` — cross-reference to approximately equivalent US CUI
+///   categories.
+/// - `marking_banner` — display banner text (e.g., English `"PROTECTED A"`, French `"PROTÉGÉ
+///   A"`); use `.en()` or `.fr()`; `None` for US CUI entries without a separate banner field.
+/// - `authority_section` — governing authority section reference (e.g., `"J.2.4.2.3"`).
+/// - `phase_note` — implementation phase notes for UMRS-specific constraints.
+/// - `injury_examples` — injury examples (Canadian catalogs); use `.en()` or `.fr()`.
+/// - `other` — optional auxiliary metadata for forward compatibility (flattened JSON).
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AC-16**: Markings are the leaf-level security attributes
@@ -350,59 +395,29 @@ impl Catalog {
 ///   CUI and partner-nation controlled information.
 #[derive(Debug, Deserialize)]
 pub struct Marking {
-    /// Full human-readable name (e.g., `"Law Enforcement Information"`).
-    /// Use `.en()` for English, `.fr()` for Canadian French.
     pub name: LocaleText,
-    /// Abbreviated name (e.g., `"LEI"`).
     pub abbrv_name: String,
-    /// Display-only grouping hint (e.g., `"Law Enforcement"`). Carries no
-    /// enforcement semantics.
     pub index_group: Option<String>,
-    /// CUI designation: `"basic"`, `"specified"`, or `null`.
     pub designation: Option<String>,
-    /// Description of the marking. Use `.en()` for English, `.fr()` for
-    /// Canadian French. Empty `LocaleText` when absent.
     #[serde(default)]
     pub description: LocaleText,
-    /// MCS sensitivity level identifier (e.g., `"s1"`).
     pub level: Option<String>,
-    /// Handling guidance — string (US) or structured object (Canadian).
-    /// Canadian objects contain locale-keyed sub-fields; use `handling_as_object()`
-    /// and navigate the sub-keys directly as `serde_json::Value`.
     #[serde(default)]
     pub handling: serde_json::Value,
-    /// Detailed handling restrictions (US catalogs).
     pub handling_restrictions: Option<String>,
-    /// Optional handling group identifier for grouping related markings.
-    /// `null` in Canadian entries.
     pub handling_group_id: Option<String>,
-    /// Required warning statement associated with this marking, if any.
     pub required_warning_statement: Option<String>,
-    /// Required dissemination control suffix, if mandated by policy.
     pub required_dissemination_control: Option<String>,
-    /// MCS category base (e.g., `"c200"`).
     pub category_base: Option<String>,
-    /// Reserved MCS category range for future use (e.g., `"c201-c299"`).
     pub category_range_reserved: Option<String>,
-    /// Color palette reference key (links to UMRS-PALETTE.json).
     pub palette_ref: Option<String>,
-    /// Risk domain identifiers associated with this marking.
     pub risk_domains: Option<Vec<String>>,
-    /// Dissemination controls — varies by nation (string, object, or null).
     pub dissemination_controls: Option<serde_json::Value>,
-    /// Cross-reference to approximately equivalent US CUI categories.
     pub us_cui_approximate_correspondence: Option<String>,
-    /// Display banner text (e.g., English `"PROTECTED A"`, French `"PROTÉGÉ A"`).
-    /// Use `.en()` for English, `.fr()` for Canadian French.
-    /// `None` for US CUI entries that do not carry a separate banner field.
     pub marking_banner: Option<LocaleText>,
-    /// Governing authority section reference (e.g., `"J.2.4.2.3"`).
     pub authority_section: Option<String>,
-    /// Implementation phase notes for UMRS-specific constraints.
     pub phase_note: Option<String>,
-    /// Injury examples (Canadian catalogs). Use `.en()` or `.fr()`.
     pub injury_examples: Option<LocaleText>,
-    /// Optional auxiliary metadata for forward compatibility.
     #[serde(default)]
     pub other: serde_json::Value,
 }
@@ -474,17 +489,20 @@ impl Marking {
 /// Maps a sensitivity label (e.g., `"s1"`) to its name, description, and the
 /// nations that use it as their default controlled-information tier.
 ///
+/// ## Fields:
+///
+/// - `name` — human-readable level name (e.g., `"Controlled L1"`).
+/// - `description` — description of the sensitivity tier and its enforcement characteristics.
+/// - `nations` — nations that use this level as their primary controlled-information tier.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AC-16**: Sensitivity levels define the Bell-LaPadula
 ///   dominance ordering for multi-level security enforcement.
 #[derive(Debug, Deserialize)]
 pub struct LevelDefinition {
-    /// Human-readable level name (e.g., `"Controlled L1"`).
     pub name: String,
-    /// Description of the sensitivity tier and its enforcement characteristics.
     pub description: String,
-    /// Nations that use this level as their primary controlled-information tier.
     pub nations: Option<Vec<String>>,
 }
 
@@ -492,16 +510,19 @@ pub struct LevelDefinition {
 ///
 /// The `levels` map is keyed by sensitivity label string (e.g., `"s0"`, `"s1"`).
 ///
+/// ## Fields:
+///
+/// - `metadata` — provenance metadata for the levels file (from the `_metadata` key).
+/// - `levels` — map from sensitivity label (e.g., `"s1"`) to level definition.
+///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AC-16**: Security Attributes — the level registry is the
 ///   authoritative source of MCS sensitivity semantics across all Five Eyes catalogs.
 #[derive(Debug, Deserialize)]
 pub struct LevelRegistry {
-    /// Provenance metadata for the levels file.
     #[serde(rename = "_metadata")]
     pub metadata: Option<CatalogMetadata>,
-    /// Map from sensitivity label (e.g., `"s1"`) to level definition.
     pub levels: HashMap<String, LevelDefinition>,
 }
 

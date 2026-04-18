@@ -74,7 +74,10 @@ use super::substrate::FileOwnership;
 /// Returns `(Option<OsRelease>, LabelTrust)`. The label trust is always
 /// populated — even a failed parse returns `UntrustedLabelCandidate`.
 ///
-/// NIST SP 800-53 SI-7, CM-8, SI-10. NSA RTB TPI.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-7, CM-8, SI-10.
+/// - NSA RTB TPI.
 pub(super) fn run(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,

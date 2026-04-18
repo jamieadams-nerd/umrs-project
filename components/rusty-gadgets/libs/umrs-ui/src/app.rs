@@ -33,18 +33,23 @@ use crate::keymap::Action;
 /// Fail-closed: any read failure or unimplemented source maps to `Unavailable`,
 /// never to a false `Enabled` or `Disabled` assertion.
 ///
-/// NIST SP 800-53 SI-7: Software and Information Integrity — indicator values
-/// are derived exclusively from provenance-verified kernel attribute reads.
-/// NIST SP 800-53 CM-6: Configuration Settings — captures live kernel state,
-/// not assumed configuration.
+/// ## Variants:
+///
+/// - `Enabled(String)` — kernel attribute confirms the feature is enabled/enforcing.
+/// - `Disabled(String)` — kernel attribute confirms the feature is disabled/permissive.
+/// - `Unavailable` — source not yet implemented, or read failed; fail-closed default.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**: Software and Information Integrity — indicator values are derived
+///   exclusively from provenance-verified kernel attribute reads.
+/// - **NIST SP 800-53 CM-6**: Configuration Settings — captures live kernel state, not assumed
+///   configuration.
 #[derive(Debug, Clone, PartialEq, Eq)]
 #[must_use = "security indicator value must be inspected; discarding it hides the kernel state"]
 pub enum IndicatorValue {
-    /// Kernel attribute confirms the feature is enabled/enforcing.
     Enabled(String),
-    /// Kernel attribute confirms the feature is disabled/permissive.
     Disabled(String),
-    /// Source not yet implemented, or read failed — fail-closed default.
     Unavailable,
 }
 
@@ -61,25 +66,26 @@ pub enum IndicatorValue {
 /// baseline. A field becomes `Enabled` or `Disabled` only when a provenance-
 /// verified kernel attribute read succeeds.
 ///
-/// NIST SP 800-53 SI-7: Software and Information Integrity — all values
-/// originate from `SecureReader`-gated kernel attribute reads.
-/// NIST SP 800-53 CM-6: Configuration Settings — live kernel state, not
-/// static configuration.
+/// ## Fields:
+///
+/// - `selinux_status` — SELinux enforcement mode (`/sys/fs/selinux/enforce`).
+/// - `fips_mode` — FIPS 140-2/3 cryptographic mode (`/proc/sys/crypto/fips_enabled`).
+/// - `active_lsm` — active LSM list (`/sys/kernel/security/lsm` — TODO: not yet implemented).
+/// - `lockdown_mode` — kernel lockdown level (`/sys/kernel/security/lockdown`).
+/// - `secure_boot` — Secure Boot state (platform-specific — TODO: not yet implemented).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**: Software and Information Integrity — all values originate from
+///   `SecureReader`-gated kernel attribute reads.
+/// - **NIST SP 800-53 CM-6**: Configuration Settings — live kernel state, not static
+///   configuration.
 #[derive(Debug, Clone)]
 pub struct SecurityIndicators {
-    /// SELinux enforcement mode (`/sys/fs/selinux/enforce`).
     pub selinux_status: IndicatorValue,
-
-    /// FIPS 140-2/3 cryptographic mode (`/proc/sys/crypto/fips_enabled`).
     pub fips_mode: IndicatorValue,
-
-    /// Active LSM list (`/sys/kernel/security/lsm` — TODO: not yet implemented).
     pub active_lsm: IndicatorValue,
-
-    /// Kernel lockdown level (`/sys/kernel/security/lockdown`).
     pub lockdown_mode: IndicatorValue,
-
-    /// Secure Boot state (platform-specific — TODO: not yet implemented).
     pub secure_boot: IndicatorValue,
 }
 
@@ -133,67 +139,50 @@ impl Default for SecurityIndicators {
 /// set to `"unavailable"` on read failure (non-UEFI systems, permission errors).
 /// `indicators` are populated via provenance-verified kattr reads.
 ///
-/// NIST SP 800-53 AU-3 — every header field is labelled and sourced; the
-/// header uniquely identifies the host, tool, and collection time.
-/// NIST SP 800-53 CA-7 — `assessed_at` timestamps each collection event.
-/// NIST SP 800-53 SA-11 — `tool_name` and `tool_version` provide
-/// traceability to the specific tool version that collected the evidence.
+/// ## Fields:
+///
+/// - `indicators` — live kernel security posture indicators.
+/// - `tool_name` — tool name (the binary that produced this audit card); typically
+///   `env!("CARGO_PKG_NAME")` from the calling binary.
+/// - `tool_version` — tool version (the binary version that produced this audit card); typically
+///   `env!("CARGO_PKG_VERSION")`.
+/// - `assessed_at` — ISO-8601 timestamp of when detection was run; captured at tool startup
+///   before the detection pipeline runs; satisfies CA-7 requirement for timestamped collection
+///   events.
+/// - `hostname` — system hostname (display-only, from `uname(2)`); not a trust-relevant
+///   assertion; used only to label which host the card was collected on.
+/// - `kernel_version` — kernel release string (display-only, from `uname(2)`); provides platform
+///   context for the assessor.
+/// - `architecture` — CPU architecture (display-only, from `uname(2)` machine field); provides
+///   hardware context for the assessor (e.g., `"aarch64"`, `"x86_64"`); not a trust-relevant
+///   assertion.
+/// - `boot_id` — boot ID from `/proc/sys/kernel/random/boot_id` (display-only); used for
+///   journald log correlation (CA-7); set to `"unavailable"` if the procfs read fails.
+/// - `system_uuid` — system UUID from `/sys/class/dmi/id/product_uuid` (display-only); used for
+///   cross-run correlation; set to `"unavailable"` if the sysfs read fails (non-UEFI systems,
+///   permission errors).
+/// - `os_name` — operating system display name (supplied by the calling binary); populated from
+///   `PRETTY_NAME` in `/etc/os-release` when available, otherwise composed from `NAME` and
+///   `VERSION_ID`; display-only, not a trust-relevant assertion.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: every header field is labelled and sourced; the header uniquely
+///   identifies the host, tool, and collection time.
+/// - **NIST SP 800-53 CA-7**: `assessed_at` timestamps each collection event.
+/// - **NIST SP 800-53 SA-11**: `tool_name` and `tool_version` provide traceability to the
+///   specific tool version that collected the evidence.
 #[derive(Debug, Clone)]
 pub struct HeaderContext {
-    /// Live kernel security posture indicators.
     pub indicators: SecurityIndicators,
-
-    /// Tool name — the binary that produced this audit card.
-    ///
-    /// Typically `env!("CARGO_PKG_NAME")` from the calling binary.
     pub tool_name: String,
-
-    /// Tool version — the binary version that produced this audit card.
-    ///
-    /// Typically `env!("CARGO_PKG_VERSION")` from the calling binary.
     pub tool_version: String,
-
-    /// ISO-8601 timestamp of when detection was run.
-    ///
-    /// Captured at tool startup before the detection pipeline runs.
-    /// Satisfies CA-7 requirement for timestamped collection events.
     pub assessed_at: String,
-
-    /// System hostname — display-only, from `uname(2)`.
-    ///
-    /// Not a trust-relevant assertion. Used only to label which host
-    /// the card was collected on.
     pub hostname: String,
-
-    /// Kernel release string — display-only, from `uname(2)`.
-    ///
-    /// Provides platform context for the assessor.
     pub kernel_version: String,
-
-    /// CPU architecture — display-only, from `uname(2)` machine field.
-    ///
-    /// Provides hardware context for the assessor (e.g., `"aarch64"`,
-    /// `"x86_64"`). Not a trust-relevant assertion.
     pub architecture: String,
-
-    /// Boot ID from `/proc/sys/kernel/random/boot_id` (display-only).
-    ///
-    /// Used for journald log correlation (CA-7). Set to `"unavailable"` if
-    /// the procfs read fails.
     pub boot_id: String,
-
-    /// System UUID from `/sys/class/dmi/id/product_uuid` (display-only).
-    ///
-    /// Used for cross-run correlation. Set to `"unavailable"` if the
-    /// sysfs read fails (non-UEFI systems, permission errors).
     pub system_uuid: String,
-
-    /// Operating system display name — supplied by the calling binary.
-    ///
-    /// Populated from `PRETTY_NAME` in `/etc/os-release` when available;
-    /// otherwise composed from `NAME` and `VERSION_ID`. Set to
-    /// `"unavailable"` when OS detection does not run or cannot determine
-    /// the OS name. Display-only; not a trust-relevant assertion.
     pub os_name: String,
 }
 
@@ -206,25 +195,25 @@ pub struct HeaderContext {
 /// Maps to a foreground color in the theme. Callers use this to convey
 /// semantic meaning (e.g., trust tier) without hard-coding color values.
 ///
-/// NIST SP 800-53 AU-3 — security state is typed, not free-form strings.
+/// ## Variants:
+///
+/// - `Normal` — default foreground (white).
+/// - `Highlight` — cyan highlight for attention.
+/// - `Dim` — dimmed for secondary information.
+/// - `TrustGreen` — green; trust verified / positive security outcome.
+/// - `TrustYellow` — yellow; trust degraded / advisory condition.
+/// - `TrustRed` — red; trust failed / security concern.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: security state is typed, not free-form strings.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StyleHint {
-    /// Default foreground (white).
     Normal,
-
-    /// Cyan highlight for attention.
     Highlight,
-
-    /// Dimmed for secondary information.
     Dim,
-
-    /// Green — trust verified / positive security outcome.
     TrustGreen,
-
-    /// Yellow — trust degraded / advisory condition.
     TrustYellow,
-
-    /// Red — trust failed / security concern.
     TrustRed,
 }
 
@@ -237,19 +226,22 @@ pub enum StyleHint {
 /// Maps to a background color in the theme. Callers set the level to
 /// communicate the current security posture at a glance.
 ///
-/// NIST SP 800-53 AU-3, SI-5 — status must be visually unambiguous.
+/// ## Variants:
+///
+/// - `Info` — informational; no action required.
+/// - `Ok` — positive outcome; security posture is good.
+/// - `Warn` — advisory; degraded or uncertain state; review recommended.
+/// - `Error` — security concern or pipeline failure; action required.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: status must be visually unambiguous.
+/// - **NIST SP 800-53 SI-5**: security alert processing.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum StatusLevel {
-    /// Informational — no action required.
     Info,
-
-    /// Positive outcome — security posture is good.
     Ok,
-
-    /// Advisory — degraded or uncertain state; review recommended.
     Warn,
-
-    /// Error — security concern or pipeline failure; action required.
     Error,
 }
 
@@ -262,12 +254,14 @@ pub enum StatusLevel {
 /// The text is a short (≤80 char) summary suitable for single-line display.
 /// Must not contain security labels, credentials, or classified data
 /// (NIST SP 800-53 SI-12).
+///
+/// ## Fields:
+///
+/// - `level` — severity tier controlling the background color.
+/// - `text` — short display text; must not contain sensitive data.
 #[derive(Debug, Clone)]
 pub struct StatusMessage {
-    /// Severity tier controlling the background color.
     pub level: StatusLevel,
-
-    /// Short display text. Must not contain sensitive data.
     pub text: String,
 }
 
@@ -293,9 +287,12 @@ impl Default for StatusMessage {
 // ---------------------------------------------------------------------------
 
 /// Definition of a single tab in the tab bar.
+///
+/// ## Fields:
+///
+/// - `label` — display label shown in the tab bar.
 #[derive(Debug, Clone)]
 pub struct TabDef {
-    /// Display label shown in the tab bar.
     pub label: String,
 }
 
@@ -340,195 +337,88 @@ impl TabDef {
 /// security labels, credentials, or classified data in display strings
 /// (NIST SP 800-53 SI-12).
 ///
-/// NIST SP 800-53 AU-3 — every data item is labelled; no ambiguous blobs.
+/// ## Variants:
+///
+/// - `KeyValue { key, value, style_hint, highlight_key }` — standard single-column key-value
+///   row. `key` is the field name or label; `value` is the field value; `style_hint` is the
+///   visual hint applied to the value column; `highlight_key` — when `true`, the key label is
+///   rendered with the header field style (bright cyan) instead of the dim-cyan data key style.
+///   Use for summary rows where the key should match the header area — e.g., `"Kernel Version"`.
+/// - `TwoColumn { left_key, left_value, left_hint, right_key, right_value, right_hint }` — two
+///   key-value pairs rendered side-by-side; the panel area is split at the midpoint. Each half
+///   uses half the standard key column width.
+/// - `GroupTitle(String)` — section header rendered flush-left using the `group_title` theme
+///   style. Items under the title should be indented by prepending `"  "` (two spaces) to the
+///   `key` in subsequent rows. Group titles are visual organizers only — no semantic enforcement.
+/// - `Separator` — blank separator line.
+/// - `IndicatorRow { key, value, description, recommendation, contradiction, configured_line,
+///   style_hint }` — multi-line indicator row for the Kernel Security tab. `key` is the
+///   indicator name (may include leading spaces for group indentation). `value` is the live
+///   kernel value string (already translated by the caller). `description` is a plain-language
+///   description of what the indicator controls; omitted when empty. `recommendation` — when
+///   `Some`, rendered as a dim italic `[ Recommended: <value> ]` line; `None` for hardened
+///   indicators. `contradiction` — when `Some`, a `⚠` marker line is rendered; `BootDrift` uses
+///   `TrustRed`, `EphemeralHotfix` uses `TrustYellow`, `SourceUnavailable` uses `Dim`; the `⚠`
+///   symbol ensures visibility without relying on color (WCAG 1.4.1). `configured_line` — when
+///   `Some`, a dim line in the format `"Configured: <raw> (from <source_file>)"`. `style_hint`
+///   is applied to the value string. The key column width is computed dynamically from all
+///   `IndicatorRow` entries. An implicit trailing blank line provides visual separation.
+///   NIST SP 800-53 AU-3, CM-6, CA-7.
+/// - `TableRow { col1, col2, col3, style_hint }` — fixed three-column table row. `col1` is the
+///   evidence type label; `col2` is the source path or identifier; `col3` is the verification
+///   outcome. `style_hint` is applied to `col3`. Column strings must not exceed fixed widths;
+///   callers are responsible for truncation. NIST SP 800-53 AU-3.
+/// - `TableHeader { col1, col2, col3 }` — table column header row rendered with bold key styling
+///   across all columns. Emitted once per evidence group before the first `TableRow`.
+///   NIST SP 800-53 AU-3.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: every data item is labelled; no ambiguous blobs.
+/// - **NIST SP 800-53 SI-12**: key, value, and description strings are rendered verbatim;
+///   callers must not include security labels, credentials, or classified data.
 #[derive(Debug, Clone)]
 pub enum DataRow {
-    /// Standard single-column key-value row.
     KeyValue {
-        /// Field name or label.
         key: String,
-        /// Field value or description.
         value: String,
-        /// Visual hint applied to the value column.
         style_hint: StyleHint,
-        /// When `true`, the key label is rendered with the header field style
-        /// (bright cyan) instead of the dim-cyan data key style.
-        ///
-        /// Use for summary rows where the key label should visually match the
-        /// header area labels — e.g., `"Kernel Version"` and `"Indicators"` in
-        /// the kernel security pinned summary. Default is `false`.
         highlight_key: bool,
     },
 
-    /// Two key-value pairs rendered side-by-side.
-    ///
-    /// The panel area is split at the midpoint. The left pair occupies the
-    /// left half; the right pair occupies the right half. Each half uses
-    /// half the standard key column width.
     TwoColumn {
-        /// Key for the left column.
         left_key: String,
-        /// Value for the left column.
         left_value: String,
-        /// Style hint for the left value.
         left_hint: StyleHint,
-        /// Key for the right column.
         right_key: String,
-        /// Value for the right column.
         right_value: String,
-        /// Style hint for the right value.
         right_hint: StyleHint,
     },
 
-    /// Section header rendered flush-left using the `group_title` theme style.
-    ///
-    /// ## Indentation convention
-    ///
-    /// Items that logically belong under a group title should be indented by
-    /// the caller prepending `"  "` (two spaces) to the `key` string in
-    /// subsequent `KeyValue` and `TwoColumn` rows. The library does not enforce
-    /// or track indentation state — this is a presentation convention only.
-    ///
-    /// ## Semantic scope
-    ///
-    /// Group titles carry no semantic enforcement. They are visual organizers
-    /// only. The caller is responsible for placing the correct rows under the
-    /// correct group title. Misplacement does not produce a rendering error,
-    /// but it may mislead an assessor who interprets the visual grouping as
-    /// an accurate representation of data source boundaries.
     GroupTitle(String),
 
-    /// Blank separator line.
     Separator,
 
-    /// Multi-line indicator row for the Kernel Security tab.
-    ///
-    /// Rendered as:
-    /// ```text
-    ///   <key padded to max key width> : <value>
-    ///                                   <description line 1 (dim, italic)>
-    ///                                   <description line 2 if wrapped>
-    ///                                   ⚠ <contradiction message>
-    ///                                   Configured: <raw> (from <source_file>)
-    ///                                   [ Recommended: <value> ]
-    ///
-    /// ```
-    ///
-    /// The key column width is computed dynamically by the data panel at
-    /// render time by scanning all `IndicatorRow` entries in the row list
-    /// and using the longest key. This guarantees indicator names are never
-    /// truncated regardless of how the catalog grows.
-    ///
-    /// The implicit trailing blank line provides visual separation between
-    /// indicators without requiring the caller to insert `Separator` rows.
-    ///
-    /// ## Contradiction display order
-    ///
-    /// When both a contradiction and a recommendation are present, the
-    /// contradiction appears first — it describes an active disagreement
-    /// between the running kernel and the persisted configuration, which is
-    /// more urgent than a recommendation to harden. The configured-value line
-    /// follows the contradiction so the operator can see what the config says.
-    ///
-    /// ## Trust Boundary
-    ///
-    /// Key, value, and description strings are rendered verbatim. Callers
-    /// must not include security labels, credentials, or classified data
-    /// (NIST SP 800-53 SI-12).
-    ///
-    /// NIST SP 800-53 AU-3 — indicator key, live value, and description are
-    /// all present on the same row group so the assessor has full context.
-    /// NIST SP 800-53 CM-6 — description text explains the security purpose
-    /// of each configuration setting without requiring an external guide.
-    /// NIST SP 800-53 CA-7 — live/configured contradictions are surfaced
-    /// continuously so the assessor cannot miss a configuration drift event.
     IndicatorRow {
-        /// Indicator name (may include leading spaces for group indentation).
         key: String,
-        /// Live kernel value string (already translated by the caller).
         value: String,
-        /// Plain-language description of what this indicator controls.
-        ///
-        /// May be empty; when empty, the description lines are omitted.
         description: &'static str,
-        /// Recommended setting shown when the indicator is not hardened.
-        ///
-        /// When `Some`, rendered below the configured line (if any) as a dim
-        /// italic `[ Recommended: <value> ]` line. `None` when the indicator
-        /// already meets the hardened baseline.
-        ///
-        /// NIST SP 800-53 CM-6 — remediation guidance accompanies each
-        /// failing configuration setting.
         recommendation: Option<&'static str>,
-        /// Live/configured contradiction detected for this indicator.
-        ///
-        /// When `Some`, a `⚠` marker line is rendered below the description
-        /// and before the configured-value line. The style applied depends on
-        /// the kind: `BootDrift` uses `TrustRed` (security failure — the
-        /// operator expected hardening that is absent at runtime);
-        /// `EphemeralHotfix` uses `TrustYellow` (warning — hardening is
-        /// present but will be lost on reboot); `SourceUnavailable` uses `Dim`
-        /// (verification is impossible but not an immediate security failure).
-        ///
-        /// The `⚠` symbol ensures the marker is visible without relying on
-        /// color alone (WCAG 1.4.1 / NO_COLOR compliance).
-        ///
-        /// NIST SP 800-53 CA-7 — contradiction kind is a typed finding that
-        /// operators can assess without an external reference.
         contradiction: Option<ContradictionKind>,
-        /// Pre-formatted configured-value line shown below the contradiction.
-        ///
-        /// Format: `"Configured: <raw> (from <source_file>)"`. `None` when no
-        /// persisted configuration was found for this indicator.
-        ///
-        /// NIST SP 800-53 CM-6 — shows what the configuration file says so
-        /// the operator can compare it against the live kernel value above.
         configured_line: Option<String>,
-        /// Visual hint applied to the value string.
         style_hint: StyleHint,
     },
 
-    /// A fixed three-column table row for structured evidence display.
-    ///
-    /// Used for evidence chains and similar structured, labelled data. Columns
-    /// are left-aligned; widths are fixed by the constants in `data_panel`.
-    ///
-    /// `style_hint` is applied to `col3` (the verification / outcome column),
-    /// which conveys the security-relevant result at a glance. `col1` and
-    /// `col2` are rendered with the standard key and value styles respectively.
-    ///
-    /// ## Trust Boundary
-    ///
-    /// Column strings are rendered verbatim. Callers must not include security
-    /// labels, credentials, or classified data (NIST SP 800-53 SI-12). Path
-    /// strings must be truncated to column width at the call site.
-    ///
-    /// NIST SP 800-53 AU-3 — evidence records are labelled and structured;
-    /// each row names its type, source, and verification outcome.
     TableRow {
-        /// Evidence type label (column 1 — `Evidence Type`).
         col1: String,
-        /// Source path or identifier (column 2 — `Source`).
         col2: String,
-        /// Verification outcome string (column 3 — `Verification`).
         col3: String,
-        /// Visual hint applied to the verification column.
         style_hint: StyleHint,
     },
 
-    /// Table column header row rendered with bold key styling across all columns.
-    ///
-    /// Emitted once per evidence group, immediately after the `GroupTitle` row
-    /// and before the first `TableRow`. Provides column labels so the table is
-    /// self-describing.
-    ///
-    /// NIST SP 800-53 AU-3 — every field in the evidence table is labelled.
     TableHeader {
-        /// Label for column 1.
         col1: String,
-        /// Label for column 2.
         col2: String,
-        /// Label for column 3.
         col3: String,
     },
 }
@@ -793,18 +683,20 @@ impl DataRow {
 /// [`AuditCardApp::data_rows_right`] instead of `data_rows`. The two
 /// column slices scroll together using the shared [`AuditCardState::scroll_offset`].
 ///
+/// ## Variants:
+///
+/// - `Full` — single full-width column; default behavior, backward-compatible.
+/// - `TwoColumn` — two independent vertical columns side-by-side, each 50% of the panel width;
+///   left and right rows are supplied by separate trait methods.
+///
 /// ## Compliance
 ///
-/// - **NIST SP 800-53 AU-3**: Structured presentation ensures every labelled
-///   field remains visible and legible regardless of layout mode.
+/// - **NIST SP 800-53 AU-3**: structured presentation ensures every labelled field remains
+///   visible and legible regardless of layout mode.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum ColumnLayout {
-    /// Single full-width column — default behavior, backward-compatible.
     #[default]
     Full,
-
-    /// Two independent vertical columns side-by-side, each 50% of the panel
-    /// width. Left and right rows are supplied by separate trait methods.
     TwoColumn,
 }
 
@@ -825,20 +717,21 @@ pub enum ColumnLayout {
 /// security labels, credentials, or classified data (NIST SP 800-53 SI-12).
 /// This field is for identification metadata only, not policy data.
 ///
-/// NIST SP 800-53 AU-3 — labelled header fields ensure every audit card is
-/// self-identifying: report, host, subject, and supplemental context are all
-/// present on every rendered frame.
+/// ## Fields:
+///
+/// - `label` — display label for the left column (e.g., `"Version"`).
+/// - `value` — display value for the right column; must not contain security labels, credentials,
+///   or classified data (NIST SP 800-53 SI-12).
+/// - `style_hint` — visual style hint applied to the value column.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: labelled header fields ensure every audit card is self-identifying;
+///   report, host, subject, and supplemental context are all present on every rendered frame.
 #[derive(Debug, Clone)]
 pub struct HeaderField {
-    /// Display label for the left column (e.g., `"Version"`).
     pub label: String,
-
-    /// Display value for the right column.
-    ///
-    /// Must not contain security labels, credentials, or classified data.
     pub value: String,
-
-    /// Visual style hint applied to the value column.
     pub style_hint: StyleHint,
 }
 
@@ -1012,18 +905,20 @@ pub trait AuditCardApp {
 /// Owned by the calling binary. Updated via [`handle_action`] in the event loop.
 /// Passed alongside the immutable `AuditCardApp` impl to the render function.
 ///
-/// NIST SP 800-53 AC-2 — `should_quit` drives clean session termination.
+/// ## Fields:
+///
+/// - `active_tab` — index of the currently displayed tab (0-based).
+/// - `tab_count` (private) — total number of tabs; set at construction and does not change.
+/// - `scroll_offset` — current vertical scroll offset into the data panel.
+/// - `should_quit` — set to `true` by `Action::Quit`; the event loop exits when `true`.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-2**: `should_quit` drives clean session termination.
 pub struct AuditCardState {
-    /// Index of the currently displayed tab (0-based).
     pub active_tab: usize,
-
-    /// Total number of tabs (set at construction; does not change).
     tab_count: usize,
-
-    /// Current vertical scroll offset into the data panel.
     pub scroll_offset: usize,
-
-    /// Set to `true` by [`Action::Quit`]; the event loop exits when this is `true`.
     pub should_quit: bool,
 }
 

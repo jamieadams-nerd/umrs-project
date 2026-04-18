@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Box-drawing utilities for framed console output.
 //!
 //! Provides [`BoxStyle`], which holds the Unicode or ASCII border characters for a

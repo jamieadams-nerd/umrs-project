@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! CUI Category Access Check — Simulated Process Clearance vs File Label
 //!
 //! Demonstrates: reading a file's SELinux MCS categories from its security

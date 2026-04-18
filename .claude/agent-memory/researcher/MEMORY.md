@@ -1,7 +1,7 @@
 # Researcher Agent Memory — "The Librarian"
 # Alias: The Librarian (always include "The"). Real name: T. Librarian.
 # Portrait: docs/modules/ai-transparency/images/librarian.png
-# Last updated: 2026-04-02 (audit-logging collection: 7 docs downloaded to .claude/research/audit-logging/)
+# Last updated: 2026-04-18 (FHS 3.0 + systemd file-hierarchy acquired; standards-terminology RAG created)
 
 ## Session Constraints
 - [Session tool constraints](feedback-session-constraints.md) — Bash/WebFetch unavailable workarounds, Canada.ca curl tips
@@ -15,6 +15,11 @@ bash -c 'curl -L -s --max-time 60 -A "Mozilla/5.0" "<pdf-url>" > <dest.pdf>'
 ```
 Rules: MUST use `>` inside bash -c string. `curl -o <path>` as separate arg is blocked by sandbox.
 Verify PDF: `head -c 4 <file>` must show `%PDF`.
+
+## Source Availability (updated 2026-04-18)
+
+- freedesktop.org: `https://www.freedesktop.org/software/systemd/man/` **BLOCKED (HTTP 418)** — both `/latest/` and non-versioned URLs; use local `man 7 <page> | col -bx` instead for systemd man pages; RHEL 10 installed version is authoritative for UMRS deployment target
+- refspecs.linuxfoundation.org: curl WORKS (HTTP 200); FHS 3.0 text + PDF both at `https://refspecs.linuxfoundation.org/FHS_3.0/fhs-3.0.{txt,pdf}`
 
 ## Source Availability (updated 2026-03-23)
 
@@ -49,6 +54,7 @@ Collections and status as of 2026-03-15:
 |---|---|---|---|
 | selinux-notebook/20240430 | github.com/SELinuxProject | ✓ Ingested | 691 |
 | linux-fhs-2-3 | linux-fhs-2.3/fhs-2.3.txt | ✓ Ingested | 45 |
+| standards-terminology | knowledge glossaries: FHS 2.3, LSB 5.0, systemd-uid-gid | ✓ Ingested 2026-04-18 | 28 |
 | kernel-docs | kernel.org docs tree (268MB, 12.9K files) | ✓ Ingested | 22,738 |
 | access-control | Various (see manifest) | ✓ Ingested | 1,360 |
 | doc-structure | 7 sources (divio, diataxis, antora, redhat-modular, write-the-docs, google-style, gitlab-docs) | ✓ Ingested | 102 |
@@ -211,6 +217,7 @@ Verification command: `cd umrs-c2pa && cargo run tests/fixtures/trusted/<new-pho
 - RAG ingestion pending: accreditation-artifacts, tui-cli, info-theory-foundations, all 2026-03-22 Tier 1 collections
 - OSCAL v1.1.2 schemas: DOWNLOADED (2026-03-23) — 8 JSON schemas + 6 FedRAMP Rev5 profiles in `.claude/references/oscal-schemas/`; manifest updated; RAG ingestion BLOCKED — needs `Bash(RAG_CHROMA_PATH=... python ingest.py --collection oscal-schemas 2>&1)` added to settings.json allowlist
 - DISA RHEL 10 STIG: NOT YET PUBLISHED as of 2026-03-17; monitor public.cyber.mil
+- **Knox follow-on**: systemd file-hierarchy(7) man page acquired 2026-04-18; Knox familiarization pass PENDING (do not run — flag to Jamie first); covers /run, /var/lib, /etc/systemd/, credentials dirs, state/cache separation
 - Version check due 2026-05-12
 - Full pending list: see `research-priorities.md` in this directory
 - CPU corpus: see `cpu-corpus-state.md` for phase state

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 // tests/primitives.rs
 //
 // Tests for posix/primitives.rs — Inode, DevId, HardLinkCount,

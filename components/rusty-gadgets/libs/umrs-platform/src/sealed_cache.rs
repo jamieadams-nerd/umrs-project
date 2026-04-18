@@ -41,20 +41,7 @@
 //! The key is never written to disk. The `SealingKey` type implements `ZeroizeOnDrop`
 //! — the key bytes are overwritten with zeros when the `SealedCache` is dropped.
 //!
-//! ## Compliance
-//!
-//! - **NIST SP 800-53 SC-28**: Protection of information at rest — the HMAC seal
-//!   provides integrity protection while the result resides in the in-memory cache.
-//! - **NIST SP 800-53 SC-12**: Cryptographic key management — the sealing key is
-//!   ephemeral, boot-session-bound, never persisted, and zeroized on drop.
-//! - **NIST SP 800-53 SI-7**: Software and information integrity — seal verification
-//!   detects substitution; seal failure triggers re-verification.
-//! - **NIST SP 800-53 AU-3**: Audit record content — seal failures are logged with
-//!   `log::warn!` producing auditable anomaly records.
-//! - **NIST SP 800-218 SSDF PW.4**: Secure coding — fail-closed behavior (PW.4.1),
-//!   ephemeral key management to limit exposure.
-//! - **FIPS 180-4**: Secure Hash Standard — SHA-256 used for HMAC-based
-//!   cache integrity verification.
+#![doc = include_str!("../docs/compliance-sealed_cache.md")]
 
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
@@ -81,8 +68,10 @@ pub const DEFAULT_TTL_SECS: u64 = 30;
 /// Maximum permitted TTL. Enforced at construction — callers cannot raise
 /// the TTL above this value even if they try.
 ///
-/// NIST SP 800-53 SC-28 — limiting cache lifetime limits the integrity
-/// exposure window. Five minutes is the ceiling regardless of caller request.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SC-28 — limiting cache lifetime limits the integrity
+///   exposure window. Five minutes is the ceiling regardless of caller request.
 pub const MAX_TTL_SECS: u64 = 300;
 
 // ===========================================================================
@@ -165,15 +154,15 @@ impl SealingKey {
 /// result fields that are security-relevant. The `tag` is the HMAC-SHA-256
 /// over those bytes. The `expires_at` instant is set at construction and
 /// checked before tag verification.
+///
+/// ## Fields:
+///
+/// - `payload` — canonical byte encoding of the sealed fields (layout: see `build_payload()`).
+/// - `tag` — HMAC-SHA-256 tag over `payload`.
+/// - `expires_at` — expiry instant; the entry is invalid after this point.
 struct SealedEntry {
-    /// Canonical byte encoding of the sealed fields.
-    /// Layout: see `build_payload()`.
     payload: Vec<u8>,
-
-    /// HMAC-SHA-256 tag over `payload`.
     tag: [u8; 32],
-
-    /// Expiry — the entry is invalid after this instant.
     expires_at: Instant,
 }
 
@@ -185,12 +174,15 @@ struct SealedEntry {
 ///
 /// These are not exposed to callers — a seal failure simply triggers a
 /// pipeline re-run and a `log::warn!`.
+///
+/// ## Variants:
+///
+/// - `HmacInit` — HMAC construction failed (algorithm mismatch — should not occur with a
+///   32-byte key, but handled defensively).
+/// - `TagMismatch` — HMAC tag did not match the payload; substitution detected.
 #[derive(Debug)]
 enum SealError {
-    /// HMAC construction failed (algorithm mismatch — should not occur with a
-    /// 32-byte key, but handled defensively).
     HmacInit,
-    /// HMAC tag did not match the payload — substitution detected.
     TagMismatch,
 }
 
@@ -361,29 +353,26 @@ fn verify_tag(key: &SealingKey, payload: &[u8], expected_tag: &[u8; 32]) -> Resu
 ///
 /// The sealing key is zeroized when `SealedCache` is dropped.
 ///
-/// NIST SP 800-53 SC-28, SC-12, SI-7, AU-3.
-/// NIST SP 800-218 SSDF PW.4.
+/// ## Fields:
+///
+/// - `detector` — (private) the underlying detector, run on cache miss or seal failure.
+/// - `key` — (private) ephemeral sealing key, zeroized on drop. `None` if key derivation
+///   failed (boot_id absent) — caching is also disabled in this case.
+/// - `entry` — (private) the current sealed entry, if any.
+/// - `ttl` — (private) entry TTL, capped at `MAX_TTL_SECS`; the expiry instant is computed
+///   at seal time, not at construction.
+/// - `caching_enabled` — (private) `false` if FIPS mode is active or key derivation failed;
+///   when `false`, every query runs the full pipeline. (NIST SP 800-53 SC-13)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SC-28**, **SC-12**, **SI-7**, **AU-3**.
+/// - **NIST SP 800-218 SSDF PW.4**.
 pub struct SealedCache {
-    /// The underlying detector, run on cache miss or seal failure.
     detector: OsDetector,
-
-    /// Ephemeral sealing key. Zeroized on drop.
-    ///
-    /// `None` if key derivation failed (boot_id absent) — caching is
-    /// also disabled in this case.
     key: Option<SealingKey>,
-
-    /// The current sealed entry, if any.
     entry: Option<SealedEntry>,
-
-    /// Entry TTL, capped at `MAX_TTL_SECS`. The expiry instant is
-    /// computed at seal time, not at construction.
     ttl: Duration,
-
-    /// `false` if FIPS mode is active or key derivation failed.
-    /// When `false`, every query runs the full pipeline.
-    ///
-    /// NIST SP 800-53 SC-13 — FIPS gate: no unvalidated HMAC in FIPS mode.
     caching_enabled: bool,
 }
 
@@ -397,7 +386,9 @@ impl SealedCache {
     /// Construction always succeeds — the cache falls back to running the
     /// pipeline on every query if any initialization step fails.
     ///
-    /// NIST SP 800-53 SC-12, SC-28, SC-13.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SC-12, SC-28, SC-13.
     #[must_use = "SealedCache must be retained to benefit from caching"]
     pub fn new(detector: OsDetector) -> Self {
         Self::with_ttl(detector, DEFAULT_TTL_SECS)
@@ -409,8 +400,10 @@ impl SealedCache {
     /// higher than the ceiling silently applies the ceiling — the cache must not
     /// be configured for long-lived persistence.
     ///
-    /// NIST SP 800-53 SC-28 — limiting cache lifetime limits the integrity
-    /// exposure window.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SC-28 — limiting cache lifetime limits the integrity
+    ///   exposure window.
     #[must_use = "SealedCache must be retained to benefit from caching"]
     pub fn with_ttl(detector: OsDetector, ttl_secs: u64) -> Self {
         #[cfg(debug_assertions)]
@@ -452,8 +445,10 @@ impl SealedCache {
     /// Seal failure is logged at `warn!` level and treated identically to a
     /// cache miss — the caller receives a fresh, pipeline-verified result.
     ///
-    /// NIST SP 800-53 SC-28, SI-7 — sealed cache with fail-closed on
-    /// verification failure.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SC-28, SI-7 — sealed cache with fail-closed on
+    ///   verification failure.
     ///
     /// # Errors
     ///
@@ -628,8 +623,10 @@ impl SealedCache {
 
     /// Return the configured TTL for cache entries.
     ///
-    /// NIST SP 800-53 SC-28 — TTL bounds the integrity exposure window; ignoring
-    /// it may mask a misconfiguration that allows entries to persist too long.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SC-28 — TTL bounds the integrity exposure window; ignoring
+    ///   it may mask a misconfiguration that allows entries to persist too long.
     #[must_use = "TTL is a security parameter; ignoring it may mask misconfiguration"]
     pub const fn ttl(&self) -> Duration {
         self.ttl
@@ -772,17 +769,22 @@ fn read_proc_self_stat_starttime() -> Option<u64> {
 /// Used in tests and diagnostics to inspect cache state without exposing
 /// internals. Does not expose the sealing key or payload bytes.
 ///
-/// NIST SP 800-53 AU-3 — diagnostic state is observable without leaking
-/// security-sensitive fields.
+/// ## Variants:
+///
+/// - `Empty` — no entry is stored (cache miss, expired, or never filled).
+/// - `Live` — an entry is stored and its TTL has not yet expired.
+/// - `Expired` — an entry exists but its TTL has expired.
+/// - `Disabled` — caching is disabled (FIPS active or boot_id absent).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: diagnostic state is observable without leaking
+///   security-sensitive fields.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CacheStatus {
-    /// No entry is stored (cache miss, expired, or never filled).
     Empty,
-    /// An entry is stored and its TTL has not yet expired.
     Live,
-    /// An entry exists but its TTL has expired.
     Expired,
-    /// Caching is disabled (FIPS active or boot_id absent).
     Disabled,
 }
 

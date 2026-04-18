@@ -44,7 +44,9 @@ use crate::kattrs::{ProcfsText, SecureReader};
 ///
 /// Never returns `Err` — all failures downgrade confidence and continue.
 ///
-/// NIST SP 800-53 CM-8, SC-39.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SC-39.
 pub(super) fn run(
     evidence: &mut EvidenceBundle,
     confidence: &mut ConfidenceModel,

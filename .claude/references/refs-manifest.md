@@ -1679,6 +1679,59 @@ user and group names (§23.2) and filesystem layout requirements complementing F
 
 ---
 
+### Filesystem Hierarchy Standard 3.0
+
+| Field | Value |
+|---|---|
+| Full title | Filesystem Hierarchy Standard |
+| Issuing authority | LSB Workgroup, The Linux Foundation |
+| Version | 3.0 |
+| Published | 2015 |
+| Downloaded | 2026-04-18 |
+| Local path (text) | `linux-fhs-3.0/fhs-3.0.txt` |
+| Local path (PDF) | `linux-fhs-3.0/fhs-3.0.pdf` |
+| Source URL (text) | https://refspecs.linuxfoundation.org/FHS_3.0/fhs-3.0.txt |
+| Source URL (PDF) | https://refspecs.linuxfoundation.org/FHS_3.0/fhs-3.0.pdf |
+| SHA-256 (text) | `ec52379984c85fdeddea6fabd5a84c8c358016e4d7c616995c2b147451d127b3` |
+| SHA-256 (PDF) | `53d239e569a2d7b31a74fa09d585368c0f5a164e4624723fa2894660dd10fd23` |
+| Status | ✓ Downloaded |
+| Relevance | `fhs-lsb-uid-gid` skill, `/opt/umrs`, `/etc/opt/umrs`, `/var/opt/umrs`, `/etc/keys/umrs`, deployment, FHS-3.13, FHS-3.15, FHS-4.5, FHS-5.12 |
+
+**Key relevance**: Current FHS version, matching RHEL 10 reality. Formalizes `/run` (§3.15)
+as a first-class directory (superseding `/var/run`), which is absent from FHS 2.3. All section
+numbers cited in the `fhs-lsb-uid-gid` skill resolve correctly: §3.8 (`/home`/`/etc/opt`
+convention), §3.13 (`/opt` — UMRS install root), §3.15 (`/run`), §4.5 (`/usr/include` —
+rationale for placing `/etc/keys/umrs/` outside `/opt`), §5.12 (`/var/opt` — UMRS variable
+data). FHS 2.3 is retained at `linux-fhs-2.3/` for historical reference.
+
+---
+
+### systemd file-hierarchy(7) — RHEL 10 Man Page
+
+| Field | Value |
+|---|---|
+| Full title | file-hierarchy(7) — File system hierarchy overview |
+| Issuing authority | systemd project (RHEL 10 package: systemd 257-23.el10) |
+| Version | systemd 257 (257-23.el10-g881b59a) |
+| Downloaded | 2026-04-18 |
+| Local path | `systemd-file-hierarchy/file-hierarchy.txt` |
+| Source | Local system: `man 7 file-hierarchy \| col -bx` |
+| Source URL (upstream, bot-blocked) | https://www.freedesktop.org/software/systemd/man/latest/file-hierarchy.html |
+| SHA-256 | `3131f8042829040660a44014b75a60fb0cfd8b8837874478cc206237eb140390` |
+| Status | ✓ Downloaded (local man page) |
+| Relevance | `/run`, `/var/lib`, `/etc/systemd/`, `/usr/lib/systemd/`, credentials directories, deployment, state/cache separation, `fhs-lsb-uid-gid` skill |
+
+**Key relevance**: Authoritative systemd path semantics for RHEL 10. Complements FHS 3.0 and
+LSB 5.0 with systemd-specific conventions: `/run` (ephemeral, supersedes `/var/run`),
+`/var/lib/<service>` (persistent state), `/etc/systemd/` (local config), `/usr/lib/systemd/`
+(vendor units), credentials directories (runtime secret injection), and
+`/var/cache/<service>` vs `/var/lib/<service>` separation. Upstream HTML blocked (HTTP 418)
+from freedesktop.org; the RHEL 10 installed man page is the ground-truth for the deployment target.
+Together with FHS 3.0 and the LSB 5.0 UID/GID chapter, this completes the standards quartet
+for UMRS filesystem layout and service account decisions.
+
+---
+
 ### systemd Users, Groups, UIDs and GIDs Specification
 
 | Field | Value |

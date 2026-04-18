@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
-
 //! # tree_adapter — DirListing → TreeModel Conversion
 //!
 //! Converts a [`DirListing`] (from `umrs_selinux::utils::dirlist`) into a
@@ -57,37 +56,32 @@ use umrs_selinux::utils::dirlist::{DirListing, ListEntry};
 use umrs_ui::viewer::tree::{TreeModel, TreeNode};
 
 use crate::grouping::{FileGroup, SiblingKind, group_entries, sibling_summary};
-
-// ────────────────────────────────────────────────────────────────────────────
-// ScanStats
-// ────────────────────────────────────────────────────────────────────────────
+use crate::identity::resolve_owner_display;
 
 /// Aggregate counts derived from a [`DirListing`], used by the status bar.
 ///
 /// Computed by [`compute_stats`] in O(n) over all groups.
 ///
-/// NIST SP 800-53 AU-3 — counts are audit-relevant: a directory with an
-/// unexpectedly large number of restricted entries warrants investigation.
+/// ## Fields
+/// - file_count - Number of regular (non-directory) entries across all groups.
+/// - dir_count - Number of directory entries across all groups.
+/// - elapsed_us - Original listing elapsed time from [`DirListing::elapsed_us`].
+///
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-3 — counts are audit-relevant: a directory with an
+///   unexpectedly large number of restricted entries warrants investigation.
+///
+///
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct ScanStats {
-    /// Number of regular (non-directory) entries across all groups.
     pub file_count: usize,
-    /// Number of directory entries across all groups.
     pub dir_count: usize,
-    /// Original listing elapsed time from [`DirListing::elapsed_us`].
     pub elapsed_us: u64,
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// Restricted group sentinel
-// ────────────────────────────────────────────────────────────────────────────
-
 /// The SELinux type sentinel used by `dirlist.rs` for access-denied entries.
 const RESTRICTED_TYPE: &str = "<restricted>";
-
-// ────────────────────────────────────────────────────────────────────────────
-// Public API
-// ────────────────────────────────────────────────────────────────────────────
 
 /// Convert a [`DirListing`] into a [`TreeModel`] ready for the TUI viewer.
 ///
@@ -109,7 +103,10 @@ const RESTRICTED_TYPE: &str = "<restricted>";
 /// - `group_entries()` is O(n) single-pass per group.
 /// - No NSS lookups, no file I/O.
 ///
+/// ## Compliance
+///
 /// NIST SP 800-53 AC-3 / AC-4 / AU-3 / NSA RTB Deterministic Execution.
+///
 #[must_use = "the returned TreeModel must be displayed; constructing and discarding it wastes work"]
 pub fn build_tree(listing: &DirListing, current_path: &Path, dir_encrypted: bool) -> TreeModel {
     #[cfg(debug_assertions)]
@@ -186,7 +183,9 @@ pub fn build_tree(listing: &DirListing, current_path: &Path, dir_encrypted: bool
 /// Iterates all entries across all groups in a single pass. The
 /// `elapsed_us` field is copied directly from the listing's own timing.
 ///
-/// NIST SP 800-53 AU-3 — counts contribute to the status bar audit summary.
+/// ## Compliance
+///  - NIST SP 800-53 AU-3 — counts contribute to the status bar audit summary.
+///
 #[must_use = "ScanStats is the only output; discarding it means the status bar cannot display counts"]
 pub fn compute_stats(listing: &DirListing) -> ScanStats {
     let mut file_count: usize = 0;
@@ -209,10 +208,6 @@ pub fn compute_stats(listing: &DirListing) -> ScanStats {
     }
 }
 
-// ────────────────────────────────────────────────────────────────────────────
-// Private helpers
-// ────────────────────────────────────────────────────────────────────────────
-
 /// Build the `..` (parent directory) navigation leaf node.
 ///
 /// Uses `\u{21EA}` (upwards arrow) as the display icon
@@ -220,6 +215,7 @@ pub fn compute_stats(listing: &DirListing) -> ScanStats {
 ///
 /// The node carries `is_dir = "true"` and `name = ".."` so the event loop
 /// triggers directory navigation when it is activated.
+///
 fn make_parent_nav_entry(parent_path: &Path) -> TreeNode {
     let path_str = parent_path.to_string_lossy().into_owned();
     let mut node = TreeNode::leaf(
@@ -244,9 +240,9 @@ fn make_parent_nav_entry(parent_path: &Path) -> TreeNode {
 /// point and applied to every entry's `iov_e` metadata — files sitting
 /// inside an encrypted mount all receive the green check regardless of
 /// whether they carry individual encryption xattrs.
+///
 fn build_file_group_node(fg: &FileGroup, dir_encrypted: bool) -> TreeNode {
     if fg.siblings.is_empty() {
-        // Standalone file — leaf node.
         entry_leaf_node(&fg.base, dir_encrypted)
     } else {
         // Cuddled base — branch node, expanded by default.
@@ -323,9 +319,12 @@ fn entry_detail(entry: &ListEntry) -> String {
 /// (any MCS category present), `iov_e` is set to `"required_missing"` so
 /// the renderer can raise a red compliance ballot.
 ///
-/// NIST SP 800-53 AU-3 — every node carries complete audit record fields.
-/// NIST SP 800-53 AC-3 / AC-4 — SELinux context and mode bits are preserved.
-/// NIST SP 800-53 SC-28 — at-rest encryption state is recorded per entry.
+/// ## Compliance
+///
+/// - NIST SP 800-53 AU-3 — every node carries complete audit record fields.
+/// - NIST SP 800-53 AC-3 / AC-4 — SELinux context and mode bits are preserved.
+/// - NIST SP 800-53 SC-28 — at-rest encryption state is recorded per entry.
+///
 fn populate_entry_metadata(
     meta: &mut BTreeMap<String, String>,
     entry: &ListEntry,
@@ -340,12 +339,14 @@ fn populate_entry_metadata(
     let mode_bits = dirent.mode.as_mode_str();
     meta.insert("mode".to_owned(), format!("{file_type_char}{mode_bits}"));
 
-    // Resolve uid/gid to username/groupname via NSS.  Falls back to the
-    // numeric id string if NSS resolution fails (e.g., unmapped UIDs).
+    // Resolve uid/gid to username/groupname via NSS.  Orphaned accounts
+    // (no passwd/group/NSS entry) are rendered as "(orphan)" — preserving
+    // the UnresolvedOwner/UnresolvedGroup security observation signal.
     let uid = dirent.ownership.user.uid.as_u32();
     let gid = dirent.ownership.group.gid.as_u32();
-    meta.insert("owner".to_owned(), resolve_username(uid));
-    meta.insert("group".to_owned(), resolve_groupname(gid));
+    let (owner, group) = resolve_owner_display(uid, gid);
+    meta.insert("owner".to_owned(), owner);
+    meta.insert("group".to_owned(), group);
 
     meta.insert("size".to_owned(), dirent.size.as_u64().to_string());
 
@@ -463,8 +464,9 @@ fn populate_entry_metadata(
 /// `"<parse-error>"`, and `"<unverifiable>"` — an unlabeled entry cannot
 /// be known to require encryption from the marking alone.
 ///
-/// NIST SP 800-171 r3 §3.13.11; CCCS ITSP.40.111; TB Directive on
-/// Security Management.
+/// ## Compliance
+/// - NIST SP 800-171 r3 §3.13.11; CCCS ITSP.40.111; TB Directive on Security Management.
+///
 fn marking_requires_encryption(marking: &str) -> bool {
     marking.contains(":c")
 }
@@ -533,26 +535,5 @@ const fn sibling_kind_str(kind: &SiblingKind) -> &'static str {
         SiblingKind::Checksum => "checksum",
         SiblingKind::Backup => "backup",
         SiblingKind::Related => "related",
-    }
-}
-
-/// Resolve a numeric UID to a username string.
-///
-/// Falls back to the numeric UID as a string if NSS resolution fails
-/// (e.g., unmapped UIDs from network filesystems).
-fn resolve_username(uid: u32) -> String {
-    match nix::unistd::User::from_uid(nix::unistd::Uid::from_raw(uid)) {
-        Ok(Some(u)) => u.name,
-        _ => uid.to_string(),
-    }
-}
-
-/// Resolve a numeric GID to a groupname string.
-///
-/// Falls back to the numeric GID as a string if NSS resolution fails.
-fn resolve_groupname(gid: u32) -> String {
-    match nix::unistd::Group::from_gid(nix::unistd::Gid::from_raw(gid)) {
-        Ok(Some(g)) => g.name,
-        _ => gid.to_string(),
     }
 }

@@ -21,9 +21,11 @@
 //! 3. Add its `Display` match arm with the descriptive message.
 //! 4. Add detection logic in `SecureDirent::security_observations()`.
 //!
-//! NIST SP 800-53 CA-7: Continuous monitoring.
-//! NIST SP 800-53 RA-5: Vulnerability scanning.
-//! CMMC Level 2 CA.L2-3.12.1: Periodic security control assessment.
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 CA-7**: Continuous monitoring.
+//! - **NIST SP 800-53 RA-5**: Vulnerability scanning.
+//! - **CMMC Level 2 CA.L2-3.12.1**: Periodic security control assessment.
 
 use std::fmt;
 
@@ -37,13 +39,16 @@ use crate::posix::primitives::{Gid, Uid};
 /// Use this to filter, score, or display observations without pattern-matching
 /// every variant. Callers that check `kind() == ObservationKind::Risk` remain
 /// correct as new variants are added.
+///
+/// ## Variants:
+///
+/// - `Good` — positive security signal; the object is doing something right.
+/// - `Warning` — condition warrants attention but may be intentional or acceptable.
+/// - `Risk` — clear negative finding with direct security relevance.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum ObservationKind {
-    /// Positive security signal — the object is doing something right.
     Good,
-    /// Condition warrants attention but may be intentional or acceptable.
     Warning,
-    /// Clear negative finding with direct security relevance.
     Risk,
 }
 
@@ -59,121 +64,99 @@ pub enum ObservationKind {
 /// every variant — this keeps calling code stable as new observations
 /// are added.
 ///
-/// NIST SP 800-53 CA-7: Continuous monitoring.
-/// NIST SP 800-53 RA-5: Vulnerability scanning.
+/// ## Variants:
+///
+/// *Risk*
+///
+/// - `WorldWritable` — world-writable file or directory; any user can modify. Does not fire on
+///   symbolic links (world-writable mode is expected on symlinks). NIST SP 800-53 AC-3 /
+///   CMMC AC.L1-3.1.1.
+/// - `NoSelinuxContext` — no SELinux context available; file is unlabeled. On an MLS system this
+///   is a critical finding: MAC cannot be enforced on an unlabeled object. NIST SP 800-53 AC-4 /
+///   CMMC AC.L2-3.1.3.
+/// - `SetuidWritable` — setuid binary is also group- or world-writable; direct privilege
+///   escalation vector. Owner-write on a setuid file is accepted; group- or world-write is not.
+///   NIST SP 800-53 CM-6 / CMMC CM.L2-3.4.2.
+/// - `TpiDisagreement` — both TPI parse paths succeeded but produced structurally different
+///   security contexts. This is a potential integrity event: an adversary manipulating the xattr
+///   byte stream at the kernel interface could produce this outcome. Reserve for the TPI
+///   Disagreement case only; do not emit for single-path failures (those produce
+///   `SelinuxParseFailure`). NIST SP 800-53 SI-7 / NSA RTB RAIN.
+///
+/// *Warning*
+///
+/// - `SetuidBitSet` — setuid bit set; privilege escalation risk if exploited. Common on system
+///   binaries (`sudo`, `passwd`); warrants audit coverage. NIST SP 800-53 CM-6 /
+///   CMMC CM.L2-3.4.2.
+/// - `SetgidBitSet` — setgid bit set; group privilege escalation risk. NIST SP 800-53 CM-6.
+/// - `HardLinked { nlink: u32 }` — file has multiple hard links; same inode reachable via
+///   multiple paths. On SELinux systems the MAC label follows the inode, so policy is enforced on
+///   all paths; the concern is audit trail complexity. Symbolic links are preferred in
+///   high-assurance environments because they carry their own inode and SELinux controls
+///   symlink-following permission separately. `nlink` is the hard link count from `stat`.
+///   NIST SP 800-53 AC-3.
+/// - `RootOwnedExcessiveWrite` — root-owned regular file with group-writable or world-writable
+///   permissions, or with extended POSIX ACLs that may grant non-owner write access. Standard
+///   `0755 root:root` posture does NOT fire this — only permission sets that allow non-root
+///   modification of a root-owned file. NIST SP 800-53 CM-5 / CMMC CM.L2-3.4.5.
+/// - `UnresolvedOwner { uid: Uid }` — uid has no entry in `/etc/passwd`; orphaned file owner.
+///   Indicates a deleted account that still owns files on disk. Does not fire for uids that
+///   resolve normally (including uid 0). `uid` is the numeric uid of the orphaned owner.
+///   NIST SP 800-53 AC-2.
+/// - `UnresolvedGroup { gid: Gid }` — gid has no entry in `/etc/group`; orphaned group
+///   ownership. `gid` is the numeric gid of the orphaned group. NIST SP 800-53 AC-2.
+/// - `AccessDenied` — access was denied when opening the entry for attribute reads. Security
+///   attributes (SELinux context, IMA hash, inode flags) could not be fully collected. May
+///   indicate a correctly tightened directory (e.g., mode 711) that intentionally restricts
+///   inspection, or a MAC policy decision. Treated as Warning because restricted access is a
+///   valid and desirable posture in tightened deployments. NIST SP 800-53 AU-3.
+/// - `SelinuxParseFailure` — a SELinux xattr was present but one or both TPI parse paths
+///   failed. The label is on the inode but could not be verified. This is a code/validator
+///   defect — distinct from a genuinely unlabeled inode (`NoSelinuxContext`) and from a TPI
+///   integrity disagreement (`TpiDisagreement`). Displayed as `<parse-error>` rather than
+///   `<unlabeled>` to prevent false negatives in audit output. NIST SP 800-53 AU-3, SI-12.
+///
+/// *Good*
+///
+/// - `ImaHashPresent` — an IMA integrity hash (`security.ima` xattr) is present on this file;
+///   the inode is under active integrity measurement or appraisal. NIST SP 800-53 SI-7 /
+///   CMMC SI.L2-3.14.1.
+/// - `ImmutableFlagSet` — the immutable inode flag (`FS_IMMUTABLE_FL`) is set; content cannot
+///   be modified, renamed, or deleted until the flag is cleared, even by root.
+///   NIST SP 800-53 AU-9, CM-5.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CA-7**: Continuous monitoring.
+/// - **NIST SP 800-53 RA-5**: Vulnerability scanning.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum SecurityObservation {
     // ── Risk ──────────────────────────────────────────────────────────────────
-    /// World-writable file or directory — any user can modify.
-    /// Does not fire on symbolic links (world-writable mode is expected on symlinks).
-    /// NIST SP 800-53 AC-3 / CMMC AC.L1-3.1.1.
     WorldWritable,
-
-    /// No SELinux context available — file is unlabeled.
-    /// On an MLS system this is a critical finding: MAC cannot be enforced
-    /// on an unlabeled object.
-    /// NIST SP 800-53 AC-4 / CMMC AC.L2-3.1.3.
     NoSelinuxContext,
-
-    /// Setuid binary is also group- or world-writable — direct privilege
-    /// escalation vector. Owner-write on a setuid file is accepted;
-    /// group- or world-write is not.
-    /// NIST SP 800-53 CM-6 / CMMC CM.L2-3.4.2.
     SetuidWritable,
 
     // ── Warning ───────────────────────────────────────────────────────────────
-    /// Setuid bit set — privilege escalation risk if exploited.
-    /// Common on system binaries (`sudo`, `passwd`); warrants audit coverage.
-    /// NIST SP 800-53 CM-6 / CMMC CM.L2-3.4.2.
     SetuidBitSet,
-
-    /// Setgid bit set — group privilege escalation risk.
-    /// NIST SP 800-53 CM-6.
     SetgidBitSet,
-
-    /// File has multiple hard links — same inode reachable via multiple paths.
-    /// On SELinux systems the MAC label follows the inode, so policy is
-    /// enforced on all paths; the concern is audit trail complexity.
-    /// Symbolic links are preferred in high-assurance environments because
-    /// they carry their own inode and SELinux controls symlink-following
-    /// permission separately.
-    /// NIST SP 800-53 AC-3.
     HardLinked {
-        /// Hard link count from `stat`.
         nlink: u32,
     },
-
-    /// Root-owned regular file with group-writable or world-writable
-    /// permissions, or with extended POSIX ACLs that may grant non-owner
-    /// write access. Standard `0755 root:root` posture does NOT fire this
-    /// — only permission sets that allow non-root modification of a
-    /// root-owned file.
-    /// NIST SP 800-53 CM-5 / CMMC CM.L2-3.4.5.
     RootOwnedExcessiveWrite,
-
-    /// Uid has no entry in `/etc/passwd` — orphaned file owner.
-    /// Indicates a deleted account that still owns files on disk.
-    /// Does not fire for uids that resolve normally (including uid 0).
-    /// NIST SP 800-53 AC-2: Account Management.
     UnresolvedOwner {
-        /// Numeric uid of the orphaned owner.
         uid: Uid,
     },
-
-    /// Gid has no entry in `/etc/group` — orphaned group ownership.
-    /// NIST SP 800-53 AC-2: Account Management.
     UnresolvedGroup {
-        /// Numeric gid of the orphaned group.
         gid: Gid,
     },
-
-    /// Access was denied when opening the entry for attribute reads.
-    /// Security attributes (SELinux context, IMA hash, inode flags) could
-    /// not be fully collected. This may indicate a correctly tightened
-    /// directory (e.g., mode 711) that intentionally restricts inspection,
-    /// or a MAC policy decision. Treated as Warning because restricted
-    /// access is a valid and desirable posture in tightened deployments.
-    /// NIST SP 800-53 AU-3: incomplete audit record indicator.
     AccessDenied,
-
-    /// A SELinux xattr was present but one or both TPI parse paths failed.
-    ///
-    /// The label is on the inode but could not be verified. This is a
-    /// code/validator defect — distinct from a genuinely unlabeled inode
-    /// (`NoSelinuxContext`) and from a TPI integrity disagreement
-    /// (`TpiDisagreement`).
-    ///
-    /// Display as `<parse-error>` rather than `<unlabeled>` to prevent false
-    /// negatives in audit output (NIST SP 800-53 AU-3: accurate audit records).
-    /// NIST SP 800-53 SI-12: information management.
     SelinuxParseFailure,
 
-    // ── Risk ──────────────────────────────────────────────────────────────────
-    // (continued below the Good block — TpiDisagreement is Risk)
-
     // ── Good ──────────────────────────────────────────────────────────────────
-    /// An IMA integrity hash (`security.ima` xattr) is present on this file.
-    /// The inode is under active integrity measurement or appraisal.
-    /// NIST SP 800-53 SI-7 / CMMC SI.L2-3.14.1.
     ImaHashPresent,
-
-    /// The immutable inode flag (`FS_IMMUTABLE_FL`) is set.
-    /// Content cannot be modified, renamed, or deleted until the flag is
-    /// cleared — even by root.
-    /// NIST SP 800-53 AU-9, CM-5.
     ImmutableFlagSet,
 
     // ── Risk (integrity events) ────────────────────────────────────────────────
-    /// Both TPI parse paths succeeded but produced structurally different
-    /// security contexts.
-    ///
-    /// This is a potential integrity event: an adversary manipulating the
-    /// xattr byte stream at the kernel interface could produce this outcome.
-    /// Reserve this for the TPI Disagreement case only — do not emit this for
-    /// single-path failures (those produce `SelinuxParseFailure`).
-    ///
-    /// NIST SP 800-53 SI-7: software and information integrity.
-    /// NSA RTB RAIN: redundancy cross-check failure.
     TpiDisagreement,
     // ── Add new observations above this line ──────────────────────────────────
 }

@@ -100,37 +100,32 @@ use crate::theme::Theme;
 /// sufficient for reversible operations and advisory warnings. Phase 10
 /// (Control Text Pop-Up) may require the text-entry pattern.
 ///
-/// NIST SP 800-53 AC-3 — security-affecting actions require a distinct
-/// confirmation path.
-/// NIST SP 800-53 SC-5 — fail-safe default (Cancel) protects against
-/// accidental confirmation under time pressure.
-/// NIST SP 800-53 SI-10 — dialog state validates operator intent.
+/// ## Variants:
+///
+/// - `Info` — informational message; single \[OK\] button to dismiss. Response is always
+///   `Some(true)` when dismissed.
+/// - `Error` — error condition; single \[OK\] button, error border styling. Response is always
+///   `Some(true)` when dismissed.
+/// - `SecurityWarning` — security-serious warning; two-button (\[Cancel\] / \[OK\]) dialog.
+///   Default focus is `Secondary` (Cancel). Operator must actively move focus to \[OK\] before
+///   confirming. Use for any action that modifies security policy, changes enforcement mode, or
+///   is difficult to undo. NIST SP 800-53 SC-5: fail-safe default prevents reflexive
+///   confirmation.
+/// - `Confirm` — confirmation prompt; two-button (\[No\] / \[Yes\]) dialog. Default focus is
+///   `Secondary` (No). Use for operations that require explicit operator acknowledgement. For
+///   destructive or irreversible operations, consider `SecurityWarning` mode instead.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AC-3**: security-affecting actions require a distinct confirmation path.
+/// - **NIST SP 800-53 SC-5**: fail-safe default (Cancel) protects against accidental
+///   confirmation under time pressure.
+/// - **NIST SP 800-53 SI-10**: dialog state validates operator intent.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DialogMode {
-    /// Informational message — single \[OK\] button to dismiss.
-    ///
-    /// Response is always `Some(true)` when dismissed.
     Info,
-
-    /// Error condition — single \[OK\] button, error border styling.
-    ///
-    /// Response is always `Some(true)` when dismissed.
     Error,
-
-    /// Security-serious warning — two-button (\[Cancel\] / \[OK\]) dialog.
-    ///
-    /// Default focus is `Secondary` (Cancel). Operator must actively move
-    /// focus to \[OK\] before confirming. Use for any action that modifies
-    /// security policy, changes enforcement mode, or is difficult to undo.
-    ///
-    /// NIST SP 800-53 SC-5 — fail-safe default prevents reflexive confirmation.
     SecurityWarning,
-
-    /// Confirmation prompt — two-button (\[No\] / \[Yes\]) dialog.
-    ///
-    /// Default focus is `Secondary` (No). Use for operations that require
-    /// explicit operator acknowledgement. For destructive or irreversible
-    /// operations, consider `SecurityWarning` mode instead.
     Confirm,
 }
 
@@ -145,13 +140,19 @@ pub enum DialogMode {
 /// `Confirm`) start with `Secondary` focus so a reflexive Enter keypress
 /// never confirms a security-affecting action.
 ///
-/// NIST SP 800-53 SC-5, SI-10 — conservative default prevents accidental
-/// confirmation of security-relevant operations.
+/// ## Variants:
+///
+/// - `Primary` — the affirmative button (OK / Yes) has focus.
+/// - `Secondary` — the dismissal button (Cancel / No) has focus.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SC-5**: conservative default prevents accidental confirmation of
+///   security-relevant operations.
+/// - **NIST SP 800-53 SI-10**: dialog focus validates operator intent.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum DialogFocus {
-    /// The affirmative button (OK / Yes) has focus.
     Primary,
-    /// The dismissal button (Cancel / No) has focus.
     Secondary,
 }
 
@@ -220,57 +221,39 @@ impl DialogFocus {
 /// is an auditable event that must appear in the audit trail.
 /// NIST SP 800-53 AU-3 — audit records must include who, what, and when.
 ///
-/// NIST SP 800-53 SI-10 — dialog state is the validated gateway for
-/// operator intent; callers must not bypass it.
-/// NIST SP 800-53 AC-2 — explicit lifecycle; no hidden modal state.
-/// NIST SP 800-53 AC-3 — security-affecting operations require a distinct
-/// confirmation path (see `DialogMode::SecurityWarning`).
+/// ## Fields:
+///
+/// - `response` — user response: `None` = pending, `Some(true)` = confirmed, `Some(false)` =
+///   cancelled. Set by the calling binary's event loop; never set by the render path.
+/// - `message` — message displayed to the operator inside the dialog box. Must not contain
+///   security labels, credentials, or classified data (NIST SP 800-53 SI-12). Keep concise —
+///   the dialog minimum width is 40 characters; messages longer than `area.width - 8` are
+///   clipped.
+/// - `mode` — mode controlling button labels and visual styling.
+/// - `focused` — currently focused button (for two-button dialog modes). Irrelevant for
+///   single-button modes (`Info`, `Error`) — the sole button always has implicit focus.
+/// - `scroll_offset` — current vertical scroll offset (lines scrolled past the top). Advance via
+///   `scroll_up` and `scroll_down`. Reset to 0 when a new dialog is constructed.
+/// - `total_lines` — total rendered lines in the message content; written by `render_dialog`
+///   each frame; used by `scroll_down` to clamp offset. Do not set manually.
+/// - `visible_height` — visible height of the message area in the last rendered frame (lines);
+///   written by `render_dialog` each frame. Do not set manually.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-10**: dialog state is the validated gateway for operator intent;
+///   callers must not bypass it.
+/// - **NIST SP 800-53 AC-2**: explicit lifecycle; no hidden modal state.
+/// - **NIST SP 800-53 AC-3**: security-affecting operations require a distinct confirmation path
+///   (see `DialogMode::SecurityWarning`).
 #[derive(Debug, Clone)]
 pub struct DialogState {
-    /// User response: `None` = pending, `Some(true)` = confirmed, `Some(false)` = cancelled.
-    ///
-    /// Set by the calling binary's event loop. Never set by the render path.
     pub response: Option<bool>,
-
-    /// The message displayed to the operator inside the dialog box.
-    ///
-    /// Must not contain security labels, credentials, or classified data
-    /// (NIST SP 800-53 SI-12). Keep concise — the dialog minimum width
-    /// is 40 characters; messages longer than `area.width - 8` are clipped.
     pub message: String,
-
-    /// The mode controlling button labels and visual styling.
     pub mode: DialogMode,
-
-    /// Currently focused button (for two-button dialog modes).
-    ///
-    /// Irrelevant for single-button modes (`Info`, `Error`) — the sole
-    /// button always has implicit focus. For two-button modes, the caller
-    /// toggles this field in response to `DialogToggleFocus` actions.
     pub focused: DialogFocus,
-
-    /// Current vertical scroll offset (lines scrolled past the top).
-    ///
-    /// Advance via [`DialogState::scroll_up`] and [`DialogState::scroll_down`].
-    /// Read by [`render_dialog`] to apply `.scroll()` on the message paragraph.
-    /// Reset to 0 whenever a new dialog is constructed.
     pub scroll_offset: u16,
-
-    /// Total rendered lines in the message content.
-    ///
-    /// Written by [`render_dialog`] each frame from `count_dialog_lines`.
-    /// Used by [`DialogState::scroll_down`] to clamp the offset at the last
-    /// line of content. Do not set this field manually — it is owned by
-    /// [`render_dialog`] and overwritten on every frame.
     pub total_lines: u16,
-
-    /// Visible height of the message area in the last rendered frame (lines).
-    ///
-    /// Written by [`render_dialog`] each frame. Used by
-    /// [`DialogState::scroll_down`] to compute the maximum scroll offset
-    /// without requiring the caller to pass terminal geometry. Do not set
-    /// this field manually — it is owned by [`render_dialog`] and
-    /// overwritten on every frame.
     pub visible_height: u16,
 }
 

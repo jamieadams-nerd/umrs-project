@@ -1,5 +1,5 @@
 ---
-name: Rust coding conventions — source headers, use ordering, doc tests, test tags, i18n
+name: Rust coding conventions — source headers, use ordering, doc tests, test tags, i18n, doc-comment conventions
 description: Project-specific coding conventions not captured in CLAUDE.md or rules files
 type: feedback
 ---
@@ -108,3 +108,25 @@ i18n assets live at the repository top level, not inside crates.
 
 **Why:** Translation of security labels or identifiers would corrupt semantics. Library-level translation breaks the separation between typed values and display strings.
 **How to apply:** At every new string — ask "is this interactive, user-facing, and in a binary?" If not, do not wrap.
+
+---
+
+## Doc-Comment Conventions (Conventions A/B/C — applied project-wide 2026-04-18)
+
+### Convention A — Enum doc-comments use `## Variants:` in the main block
+
+Per-variant `///` comments are removed from variant declarations. Content is consolidated into a `## Variants:` section in the enum's own doc block. For struct variants with named fields, inner field docs are also moved into the variant description.
+
+**Exception:** `#[derive(Parser)]` / `#[derive(Subcommand)]` enums (clap CLI types) — `///` on variants and enum fields are rendered by clap as `--help` text. These MUST remain as per-item doc comments and must NOT be migrated to a `## Variants:` block.
+
+### Convention B — Struct doc-comments use `## Fields:` in the main block
+
+Per-field `///` comments are removed from field declarations. Content is consolidated into a `## Fields:` section in the struct's own doc block. Private fields are listed with `(private)` notation.
+
+**Exception:** `#[derive(Parser)]` structs (clap CLI types) — `///` on fields are rendered by clap as argument help text. These MUST remain as per-field doc comments.
+
+### Convention C — `## Compliance` header for NIST/CMMC/RTB citations
+
+Bare NIST SP 800-53, NIST SP 800-171, CMMC, FIPS, RTB, or RMF control citations in doc comments are placed under a `## Compliance` markdown header and formatted as dash-bullet list items.
+
+**Applies to:** Module-level `//!` blocks, struct/enum-level `///` blocks, function-level `///` blocks.

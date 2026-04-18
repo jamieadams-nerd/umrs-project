@@ -64,7 +64,9 @@ use nom::number::complete::be_u32;
 /// Maximum blob size we will attempt to parse. 16 MiB is generous headroom.
 /// Legitimate RPM headers are typically < 1 MiB.
 ///
-/// NIST SP 800-53 SI-10 — bounded input prevents excessive allocation.
+/// ## Compliance
+///
+/// - NIST SP 800-53 SI-10 — bounded input prevents excessive allocation.
 pub const MAX_BLOB_BYTES: usize = 16 * 1024 * 1024;
 
 /// Maximum number of index entries accepted per header. RPM headers for the
@@ -96,49 +98,53 @@ const TYPE_STRING_ARRAY: u32 = 8;
 /// Errors produced by `parse_rpm_header`.
 ///
 /// All variants carry only structural or size information — never file content,
-/// security labels, or user data. NIST SP 800-53 SI-12.
+/// security labels, or user data.
+///
+/// ## Variants:
+///
+/// - `TooLarge(usize)` — blob exceeds `MAX_BLOB_BYTES`.
+/// - `TooShort` — blob is shorter than the 8-byte header prefix.
+/// - `InvalidIndexCount(u32)` — `nindex` exceeds `MAX_INDEX_ENTRIES`.
+/// - `TpiDisagreement` — Path A and Path B index-entry results disagreed.
+/// - `OffsetOutOfBounds { tag, offset, store_len }` — an index entry's offset + data size
+///   exceeds the store length.
+/// - `MissingNulTerminator { tag }` — a STRING or STRING_ARRAY entry has no nul terminator
+///   within the store.
+/// - `Utf8Error { tag }` — a STRING or STRING_ARRAY entry is not valid UTF-8.
+/// - `InvalidDirindex { file_idx, dir_idx, dir_count }` — a DIRINDEXES entry references a
+///   directory slot that does not exist.
+/// - `ArrayLengthMismatch { expected, dirindexes, digests }` — the per-file tag arrays
+///   (basenames, dirindexes, filedigests) have inconsistent lengths. A mismatch indicates
+///   corruption or tampering. (NSA RTB fail-closed; NIST SP 800-53 SI-10)
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-12**: error payloads carry only structural or size information.
 #[derive(Debug)]
 pub enum RpmHeaderError {
-    /// Blob exceeds `MAX_BLOB_BYTES`.
     TooLarge(usize),
-    /// Blob is shorter than the 8-byte header prefix.
     TooShort,
-    /// `nindex` exceeds `MAX_INDEX_ENTRIES`.
     InvalidIndexCount(u32),
-    /// Path A and Path B index-entry results disagreed.
     TpiDisagreement,
-    /// An index entry's offset + data size exceeds the store length.
     OffsetOutOfBounds {
         tag: u32,
         offset: u32,
         store_len: u32,
     },
-    /// A STRING or STRING_ARRAY entry has no nul terminator within the store.
     MissingNulTerminator {
         tag: u32,
     },
-    /// A STRING or STRING_ARRAY entry is not valid UTF-8.
     Utf8Error {
         tag: u32,
     },
-    /// A DIRINDEXES entry references a directory slot that does not exist.
     InvalidDirindex {
         file_idx: usize,
         dir_idx: u32,
         dir_count: usize,
     },
-    /// The per-file tag arrays have inconsistent lengths — the header is malformed.
-    ///
-    /// All three arrays (basenames, dirindexes, filedigests) must have the same
-    /// element count. A mismatch indicates corruption or tampering.
-    ///
-    /// NSA RTB fail-closed; NIST SP 800-53 SI-10 — information accuracy.
     ArrayLengthMismatch {
-        /// Expected length (basenames count).
         expected: usize,
-        /// Actual length of the dirindexes array.
         dirindexes: usize,
-        /// Actual length of the filedigests array.
         digests: usize,
     },
 }
@@ -238,29 +244,34 @@ impl From<u32> for RpmDigestAlgo {
 }
 
 /// A single file entry reconstructed from RPM header tags.
+///
+/// ## Fields:
+///
+/// - `full_path` — absolute path as stored in the RPM database.
+/// - `digest_hex` — hex-encoded digest string from `FILEDIGESTS`.
+/// - `digest_algo` — algorithm that produced `digest_hex`.
 #[derive(Debug, Clone)]
 pub struct RpmFileEntry {
-    /// Absolute path as stored in the RPM database.
     pub full_path: String,
-    /// Hex-encoded digest string from `FILEDIGESTS`.
     pub digest_hex: String,
-    /// Algorithm that produced `digest_hex`.
     pub digest_algo: RpmDigestAlgo,
 }
 
 /// Parsed RPM header with package metadata and file list.
+///
+/// ## Fields:
+///
+/// - `name` — package name (`NAME` tag, 1000).
+/// - `version` — package version string (`VERSION` tag, 1001).
+/// - `release` — package release string (`RELEASE` tag, 1002). Not used in the current
+///   pipeline but retained for completeness and future use (e.g., full NVR display).
+/// - `files` — reconstructed file list with digests.
 #[derive(Debug)]
 pub struct RpmHeader {
-    /// Package name (`NAME` tag, 1000).
     pub name: Option<String>,
-    /// Package version string (`VERSION` tag, 1001).
     pub version: Option<String>,
-    /// Package release string (`RELEASE` tag, 1002).
-    /// Not used in the current pipeline but retained for completeness and
-    /// future use (e.g., full `name-version-release` NVR display).
     #[allow(dead_code)]
     pub release: Option<String>,
-    /// Reconstructed file list with digests.
     pub files: Vec<RpmFileEntry>,
 }
 

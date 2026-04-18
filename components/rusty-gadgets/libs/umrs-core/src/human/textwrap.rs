@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
 //! Text wrapping utilities for fixed-width console output.
 //!
 //! Provides [`text_wrap`], which wraps an input string to a specified column

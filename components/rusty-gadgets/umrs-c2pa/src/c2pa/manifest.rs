@@ -57,13 +57,15 @@ use crate::verbose;
 
 /// Trust evaluation for a single entry in the chain of custody.
 ///
+/// ## Variants:
+///
 /// | Status        | Display         | Meaning |
 /// |---------------|-----------------|---------|
 /// | `Trusted`     | `TRUSTED`       | Cert chain verified against a C2PA Trust List root CA |
-/// | `Untrusted`   | `UNVERIFIED`    | Signature present but not validated against a trust list |
+/// | `Untrusted`   | `UNVERIFIED`    | Signature present but not validated against a trust list; the CA is not on the Trust List or no trust list was configured — not necessarily bad, just unverified |
 /// | `Invalid`     | `INVALID`       | Signature verification failed or asset hash mismatch |
 /// | `Revoked`     | `REVOKED`       | Signing certificate was revoked by the issuing CA |
-/// | `NoTrustList` | `NO TRUST LIST` | No trust list configured — cannot evaluate trust |
+/// | `NoTrustList` | `NO TRUST LIST` | No trust list configured — cannot evaluate trust; distinct from `Untrusted`: validation was not even attempted |
 ///
 /// ## Compliance
 ///
@@ -75,22 +77,14 @@ use crate::verbose;
               discarding it means trust decisions are silently bypassed"]
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub enum TrustStatus {
-    /// Cert chain leads to a root CA in the C2PA Trust List.
     #[serde(rename = "TRUSTED")]
     Trusted,
-    /// Signature is present but the CA is not on the Trust List,
-    /// or no trust list was configured. The signature has not been
-    /// validated — it is not necessarily bad, just unverified.
     #[serde(rename = "UNVERIFIED")]
     Untrusted,
-    /// Signature verification failed, or asset hash does not match.
     #[serde(rename = "INVALID")]
     Invalid,
-    /// Certificate was revoked by the issuing CA.
     #[serde(rename = "REVOKED")]
     Revoked,
-    /// No trust list is configured, so trust cannot be evaluated.
-    /// Distinct from Untrusted: this means we did not even attempt validation.
     #[serde(rename = "NO_TRUST_LIST")]
     NoTrustList,
 }
@@ -128,21 +122,20 @@ impl std::fmt::Display for TrustStatus {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(tag = "kind")]
 pub enum TrustFinding {
-    /// The image was signed before the trust-list issuing CA's `Not Before`
-    /// date. This is a temporal certificate rotation mismatch, not evidence
-    /// of tampering. The CA in the trust list is the *replacement* cert issued
-    /// after Adobe (or another vendor) rotated their issuing CA. Images signed
-    /// before the rotation carry the old cert, which is not in the trust list.
-    ///
-    /// **Operator action:** Obtain images signed after the CA rotation date
-    /// (after `trust_cert_not_before`), or add the old issuing CA to
-    /// `user_anchors` to validate pre-rotation images.
+    /// - `IssuerRotationMismatch { image_signed, trust_cert_not_before, subject_cn }` —
+    ///   the image was signed before the trust-list issuing CA's `Not Before` date; this is a
+    ///   temporal certificate rotation mismatch, not evidence of tampering. The CA in the trust
+    ///   list is the replacement cert issued after the vendor (e.g., Adobe) rotated their issuing
+    ///   CA; images signed before the rotation carry the old cert, which is not in the trust list.
+    ///   `image_signed` is the signing timestamp from the manifest (RFC 3339 / UTC string);
+    ///   `trust_cert_not_before` is the `Not Before` date of the matching trust-list cert
+    ///   (human-readable); `subject_cn` is the subject CN of the trust-list cert that was
+    ///   temporally mismatched.
+    ///   **Operator action:** obtain images signed after the CA rotation date, or add the old
+    ///   issuing CA to `user_anchors` to validate pre-rotation images.
     IssuerRotationMismatch {
-        /// Signing timestamp extracted from the manifest (RFC 3339 / UTC string).
         image_signed: String,
-        /// `Not Before` date of the matching trust-list cert (human-readable).
         trust_cert_not_before: String,
-        /// Subject CN of the trust-list cert that was temporally mismatched.
         subject_cn: String,
     },
 }
@@ -166,37 +159,32 @@ impl std::fmt::Display for TrustFinding {
 
 /// A single entry in the chain of custody, extracted from one manifest
 /// in the manifest store.
+///
+/// ## Fields:
+///
+/// - `signer_name` — signer identity from the cert CN or `claim_generator` field.
+/// - `issuer` — CA that issued the signing certificate.
+/// - `signed_at` — signing timestamp, if present.
+/// - `trust_status` — trust evaluation for this entry.
+/// - `trust_finding` — structured diagnostic for `UNVERIFIED` entries when a specific cause can
+///   be determined (e.g., [`TrustFinding::IssuerRotationMismatch`]); `None` for `TRUSTED`,
+///   `INVALID`, `REVOKED`, and `NO_TRUST_LIST` entries, and for `UNVERIFIED` entries where no
+///   specific cause is identified.
+/// - `algorithm` — signing algorithm used (e.g., `"es256"`).
+/// - `generator` — claim generator name (e.g., `"ChatGPT"`, `"UMRS Reference System"`).
+/// - `generator_version` — claim generator version, if available (e.g., `"0.67.1"`).
+/// - `security_label` — security marking from a `umrs.security-label` assertion, if present.
 #[derive(Debug, Clone, Serialize)]
 pub struct ChainEntry {
-    /// Signer identity — from the cert CN or `claim_generator` field.
     pub signer_name: String,
-
-    /// CA that issued the signing certificate.
     pub issuer: String,
-
-    /// Signing timestamp, if present.
     pub signed_at: Option<String>,
-
-    /// Trust evaluation for this entry.
     pub trust_status: TrustStatus,
-
-    /// Structured diagnostic for `UNVERIFIED` entries, when a specific
-    /// cause can be determined (e.g., [`TrustFinding::IssuerRotationMismatch`]).
-    /// `None` for `TRUSTED`, `INVALID`, `REVOKED`, and `NO_TRUST_LIST` entries,
-    /// and for `UNVERIFIED` entries where no specific cause is identified.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub trust_finding: Option<TrustFinding>,
-
-    /// Signing algorithm used (e.g. "es256").
     pub algorithm: String,
-
-    /// Claim generator name (e.g. "`ChatGPT`", "UMRS Reference System").
     pub generator: String,
-
-    /// Claim generator version, if available (e.g. "0.67.1").
     pub generator_version: Option<String>,
-
-    /// Security label / marking from a `umrs.security-label` assertion, if present.
     pub security_label: Option<String>,
 }
 

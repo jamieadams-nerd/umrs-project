@@ -55,24 +55,25 @@ use crate::os_identity::SubstrateIdentity;
 /// is: `Ok(true)` = installed, `Ok(false)` = not installed,
 /// `Err(_)` = query could not complete.
 ///
-/// NIST SP 800-53 CM-8 — component inventory queries must surface read errors
-/// separately from absent-package results so operators can distinguish a
-/// missing package from a degraded database.
-/// NIST SP 800-53 AU-3 — structured error types enable machine-readable audit
-/// trail generation.
+/// ## Variants:
+///
+/// - `DatabaseUnavailable` — the package database could not be opened. The RPM database
+///   file is absent, unreadable, or the `rpm-db` feature is not compiled in.
+/// - `QueryFailed` — the database opened successfully but the query itself failed. The
+///   database may be corrupt, locked, or encountered an unexpected schema.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**: component inventory queries must surface read errors
+///   separately from absent-package results so operators can distinguish a missing package
+///   from a degraded database.
+/// - **NIST SP 800-53 AU-3**: structured error types enable machine-readable audit trail
+///   generation.
 #[derive(Debug, Error)]
 pub enum PackageQueryError {
-    /// The package database could not be opened.
-    ///
-    /// The RPM database file is absent, unreadable, or the `rpm-db` feature
-    /// is not compiled in. The query could not be attempted.
     #[error("RPM database unavailable — cannot query package installation status")]
     DatabaseUnavailable,
 
-    /// The database opened successfully but the query itself failed.
-    ///
-    /// The database may be corrupt, locked, or the query encountered an
-    /// unexpected schema. The result is indeterminate.
     #[error("package installation query failed — database may be corrupt or locked")]
     QueryFailed,
 }
@@ -87,26 +88,26 @@ pub enum PackageQueryError {
 /// `parse_ok` flag indicates whether the DB was readable and structurally
 /// valid. Callers must check `parse_ok` before relying on `identity`.
 ///
-/// NIST SP 800-53 CM-8, SA-12.
+/// ## Fields:
+///
+/// - `probe_name` — short identifier for the probe implementation (e.g., `"rpm"`, `"dpkg"`).
+/// - `parse_ok` — whether the package database was opened and structurally validated.
+/// - `can_query_ownership` — whether this probe can answer file ownership queries.
+/// - `can_verify_digest` — whether this probe can return installed file digests.
+/// - `identity` — substrate-derived identity if `parse_ok` is `true` and ≥2 facts were
+///   corroborated; `None` if the probe failed or insufficient facts were found.
+/// - `evidence` — provenance record for the probe attempt itself.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 CM-8**, **SA-12**.
 #[derive(Debug)]
 pub struct ProbeResult {
-    /// Short identifier for the probe implementation (e.g., `"rpm"`, `"dpkg"`).
     pub probe_name: &'static str,
-
-    /// Whether the package database was opened and structurally validated.
     pub parse_ok: bool,
-
-    /// Whether this probe can answer file ownership queries.
     pub can_query_ownership: bool,
-
-    /// Whether this probe can return installed file digests.
     pub can_verify_digest: bool,
-
-    /// Substrate-derived identity, if `parse_ok` is `true` and ≥2 facts were
-    /// corroborated. `None` if the probe failed or insufficient facts found.
     pub identity: Option<SubstrateIdentity>,
-
-    /// Provenance record for the probe attempt itself.
     pub evidence: EvidenceRecord,
 }
 
@@ -118,17 +119,22 @@ pub struct ProbeResult {
 ///
 /// Returned by `PackageProbe::query_ownership`. The `evidence_trail` records
 /// which DB entries were used to establish the claim, enabling post-incident
-/// reconstruction (NIST SP 800-53 AU-10).
+/// reconstruction.
+///
+/// ## Fields:
+///
+/// - `package_name` — name of the package that claims ownership of the file.
+/// - `package_version` — version string of the owning package.
+/// - `evidence_trail` — DB record references that proved ownership. Must not contain file
+///   content or security labels (NIST SP 800-53 SI-12).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-10**: post-incident reconstruction via evidence trail.
 #[derive(Debug, Clone)]
 pub struct FileOwnership {
-    /// Name of the package that claims ownership of the file.
     pub package_name: String,
-
-    /// Version string of the owning package.
     pub package_version: String,
-
-    /// DB record references that proved ownership. Must not contain file
-    /// content or security labels (NIST SP 800-53 SI-12).
     pub evidence_trail: Vec<String>,
 }
 
@@ -141,17 +147,20 @@ pub struct FileOwnership {
 /// This is the reference value used in Phase 5 (`integrity_check`) to verify
 /// the on-disk file has not been tampered with.
 ///
-/// NIST SP 800-53 SI-7, SC-28 — integrity at rest.
-/// CMMC L2 SI.1.210 — integrity checking for software/firmware.
+/// ## Fields:
+///
+/// - `path` — the path this digest was recorded against in the package DB.
+/// - `algorithm` — the hash algorithm used to produce `value`.
+/// - `value` — raw digest bytes as stored in the package database.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-7**, **SC-28**: integrity at rest.
+/// - **CMMC L2 SI.1.210**: integrity checking for software/firmware.
 #[derive(Debug, Clone)]
 pub struct InstalledDigest {
-    /// The path this digest was recorded against in the package DB.
     pub path: String,
-
-    /// The hash algorithm used to produce `value`.
     pub algorithm: DigestAlgorithm,
-
-    /// Raw digest bytes as stored in the package database.
     pub value: Vec<u8>,
 }
 
@@ -170,8 +179,10 @@ pub struct InstalledDigest {
 /// - Never invoke external commands.
 /// - Be `Send + Sync` to support future parallel probing.
 ///
-/// NIST SP 800-53 CM-7: Least Functionality.
-/// NIST SP 800-53 SA-12: Supply Chain Risk Management.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-7: Least Functionality.
+/// - NIST SP 800-53 SA-12: Supply Chain Risk Management.
 pub trait PackageProbe: Send + Sync {
     /// Attempt to open and validate the package database.
     ///

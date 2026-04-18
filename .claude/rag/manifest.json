@@ -37140,5 +37140,33 @@
     "chunks_stored": 185,
     "collection": "information-architecture/standards",
     "ingested_date": "2026-03-23T08:42:25.910335+00:00"
+  },
+  "standards-terminology/SOURCE.md": {
+    "hash": "66cac91fecfabe1b",
+    "converted_to": "converted/standards-terminology/SOURCE.md",
+    "chunks_stored": 1,
+    "collection": "standards-terminology",
+    "ingested_date": "2026-04-18T15:26:38.186309+00:00"
+  },
+  "standards-terminology/fhs-2.3-term-glossary.md": {
+    "hash": "26c85cacd8b71fce",
+    "converted_to": "converted/standards-terminology/fhs-2.3-term-glossary.md",
+    "chunks_stored": 7,
+    "collection": "standards-terminology",
+    "ingested_date": "2026-04-18T15:26:38.325525+00:00"
+  },
+  "standards-terminology/lsb-5-term-glossary.md": {
+    "hash": "fe0731260701c248",
+    "converted_to": "converted/standards-terminology/lsb-5-term-glossary.md",
+    "chunks_stored": 7,
+    "collection": "standards-terminology",
+    "ingested_date": "2026-04-18T15:26:38.591806+00:00"
+  },
+  "standards-terminology/systemd-uid-gid-term-glossary.md": {
+    "hash": "1492afd2b2e409a9",
+    "converted_to": "converted/standards-terminology/systemd-uid-gid-term-glossary.md",
+    "chunks_stored": 13,
+    "collection": "standards-terminology",
+    "ingested_date": "2026-04-18T15:26:38.990745+00:00"
   }
 }

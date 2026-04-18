@@ -61,20 +61,22 @@ use tree::TreeModel;
 /// Tool-contextual: identifies the tool, data source, and record count.
 /// Does not include kernel security posture indicators.
 ///
-/// NIST SP 800-53 AU-3 — identification fields ensure every rendered frame
-/// carries sufficient context for independent review.
+/// ## Fields:
+///
+/// - `tool_name` — name of the tool or report (e.g., `"umrs-labels"` or `"CUI Catalog Browser"`).
+/// - `data_source` — data source description (e.g., `"US CUI Catalog v0.1.0"` or `/srv/labels`).
+/// - `record_count` — total number of top-level records in the catalog or dataset.
+/// - `summary_description` — optional one-line summary (e.g., `"15 categories, 127 subcategories"`).
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Identification fields ensure every rendered frame carries
+///   sufficient context for independent review.
 #[derive(Debug, Clone)]
 pub struct ViewerHeaderContext {
-    /// Name of the tool or report (e.g., `"umrs-labels"` or `"CUI Catalog Browser"`).
     pub tool_name: String,
-
-    /// Data source description (e.g., `"US CUI Catalog v0.1.0"` or `/srv/labels`).
     pub data_source: String,
-
-    /// Total number of top-level records in the catalog or dataset.
     pub record_count: usize,
-
-    /// Optional one-line summary description (e.g., `"15 categories, 127 subcategories"`).
     pub summary_description: Option<String>,
 }
 
@@ -178,39 +180,35 @@ pub trait ViewerApp {
 /// from the app data struct so the event loop can mutate state while holding
 /// an immutable reference to the app.
 ///
-/// NIST SP 800-53 AU-3 — breadcrumb and selection state provide navigation
-/// context that is rendered in every frame.
-/// NSA RTB — state mutations are gated by action variants; no direct field
-/// writes are possible through the public API (fields are accessible for
-/// initialization only).
+/// ## Fields:
+///
+/// - `tree` — the tree data model (owned by state, populated by the caller).
+/// - `selected_index` — currently selected index in `tree.display_list`.
+/// - `scroll_offset` — vertical scroll offset (retained for custom scroll logic; ratatui `List`
+///   manages its own scroll via `ListState`).
+/// - `active_tab` — active tab index.
+/// - `tab_count` (private) — total number of tabs; used for wrap-around navigation.
+/// - `breadcrumb` (private) — labels of ancestor nodes from root to the currently selected node,
+///   in order.
+/// - `search_active` — whether the search bar is currently active.
+/// - `search_query` — current search query string (accumulated character by character).
+/// - `should_quit` — signal to the event loop that the application should terminate.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 AU-3**: Breadcrumb and selection state provide navigation context
+///   rendered in every frame.
+/// - **NSA RTB**: State mutations are gated by action variants; no direct field writes are
+///   possible through the public API (fields are accessible for initialization only).
 pub struct ViewerState {
-    /// The tree data model (owned by state, populated by the caller).
     pub tree: TreeModel,
-
-    /// Currently selected index in `tree.display_list`.
     pub selected_index: usize,
-
-    /// Vertical scroll offset (for future use — ratatui `List` manages its
-    /// own scroll via `ListState`; this is retained for custom scroll logic).
     pub scroll_offset: usize,
-
-    /// Active tab index.
     pub active_tab: usize,
-
-    /// Total number of tabs (used for wrap-around navigation).
     tab_count: usize,
-
-    /// Breadcrumb trail — labels of ancestor nodes from root to the
-    /// currently selected node, in order.
     breadcrumb: Vec<String>,
-
-    /// Whether the search bar is currently active.
     pub search_active: bool,
-
-    /// Current search query string (accumulated character by character).
     pub search_query: String,
-
-    /// Signal to the event loop that the application should terminate.
     pub should_quit: bool,
 }
 

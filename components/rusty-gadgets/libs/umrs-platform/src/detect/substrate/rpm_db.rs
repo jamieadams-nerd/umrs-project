@@ -74,16 +74,23 @@ pub const RPM_DB_PATH: &str = "/var/lib/rpm/rpmdb.sqlite";
 /// Errors produced by RPM DB operations.
 ///
 /// Variant payloads carry only structural or type information — never file
-/// content, security labels, or user data. NIST SP 800-53 SI-12.
+/// content, security labels, or user data.
+///
+/// ## Variants:
+///
+/// - `Sqlite` — a SQLite error from `rusqlite`.
+/// - `HeaderParse` — a header blob parse error from `rpm_header`.
+/// - `Io` — an I/O error (e.g., checking DB existence).
+/// - `HexDecode` — a hex-decode error when converting a digest string to bytes.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SI-12**: error payloads carry only structural information.
 #[derive(Debug)]
 pub enum RpmDbError {
-    /// A SQLite error from `rusqlite`.
     Sqlite(rusqlite::Error),
-    /// A header blob parse error from `rpm_header`.
     HeaderParse(rpm_header::RpmHeaderError),
-    /// An I/O error (e.g., checking DB existence).
     Io(std::io::Error),
-    /// A hex-decode error when converting a digest string to bytes.
     HexDecode,
 }
 
@@ -129,8 +136,10 @@ impl From<std::io::Error> for RpmDbError {
 /// Opened with `SQLITE_OPEN_READONLY | SQLITE_OPEN_NO_MUTEX`. The connection
 /// is opened once and reused for all queries — no second open-by-path.
 ///
-/// NIST SP 800-53 CM-8, SA-12 — component inventory queries.
-/// NSA RTB TOCTOU — single open, fd reuse.
+/// ## Compliance
+///
+/// - NIST SP 800-53 CM-8, SA-12 — component inventory queries.
+/// - NSA RTB TOCTOU — single open, fd reuse.
 pub struct RpmDb {
     // Connection does not implement Debug; we implement it manually.
     conn: Connection,
@@ -154,8 +163,10 @@ impl RpmDb {
     /// database, or if the `Packages` table is absent (indicating the path
     /// does not point to a valid RPM database).
     ///
-    /// NIST SP 800-53 AU-3 — evidence pushed regardless of outcome.
-    /// NIST SP 800-53 CM-8, SA-12.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 AU-3 — evidence pushed regardless of outcome.
+    /// - NIST SP 800-53 CM-8, SA-12.
     pub fn open(bundle: &mut EvidenceBundle) -> Result<Self, RpmDbError> {
         let flags = OpenFlags::SQLITE_OPEN_READ_ONLY | OpenFlags::SQLITE_OPEN_NO_MUTEX;
         let conn = match Connection::open_with_flags(RPM_DB_PATH, flags) {
@@ -215,8 +226,10 @@ impl RpmDb {
     /// Returns `RpmDbError::Sqlite` if the `Basenames` query fails due to a
     /// SQLite error.
     ///
-    /// NIST SP 800-53 CM-8 — ownership query.
-    /// NIST SP 800-53 SA-12 — provenance establishment.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 CM-8 — ownership query.
+    /// - NIST SP 800-53 SA-12 — provenance establishment.
     pub fn query_file_owner(
         &self,
         path: &Path,
@@ -284,8 +297,10 @@ impl RpmDb {
     /// Returns `RpmDbError::Sqlite` if the `Basenames` query fails, or
     /// `RpmDbError::HexDecode` if the stored digest hex string is malformed.
     ///
-    /// NIST SP 800-53 SI-7 — reference digest for integrity verification.
-    /// NIST SP 800-53 CM-8 — provenance record.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 SI-7 — reference digest for integrity verification.
+    /// - NIST SP 800-53 CM-8 — provenance record.
     pub fn query_file_digest(
         &self,
         path: &Path,
@@ -358,7 +373,9 @@ impl RpmDb {
     ///
     /// Returns `RpmDbError::Sqlite` if the `Name` table query fails.
     ///
-    /// NIST SP 800-53 CM-8 — component inventory, evidence-based identity.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 CM-8 — component inventory, evidence-based identity.
     pub fn infer_distro(&self) -> Result<Option<(crate::os_identity::Distro, String)>, RpmDbError> {
         use crate::os_identity::Distro;
 
@@ -390,8 +407,10 @@ impl RpmDb {
     /// Returns `RpmDbError::Sqlite` if the `Name` table query fails with an
     /// error other than `QueryReturnedNoRows` (which is treated as `false`).
     ///
-    /// NIST SP 800-53 CM-8 — component inventory check.
-    /// NIST SP 800-53 SA-12 — supply chain provenance.
+    /// ## Compliance
+    ///
+    /// - NIST SP 800-53 CM-8 — component inventory check.
+    /// - NIST SP 800-53 SA-12 — supply chain provenance.
     pub fn is_installed(&self, pkgname: &str) -> Result<bool, RpmDbError> {
         match self.conn.query_row(
             "SELECT 1 FROM Name WHERE key = ?1 LIMIT 1",
