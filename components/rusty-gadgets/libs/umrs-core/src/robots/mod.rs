@@ -5,6 +5,12 @@
 //!
 //! This module contains normalized ASCII art used for console rendering.
 //! The generator tool produces instances of these structures.
+//!
+//! ## Compliance
+//!
+//! No security controls apply — this module renders decorative ASCII art
+//! mascots for console output. It contains no security logic, no credential
+//! handling, and no audit-relevant state.
 
 mod data;
 

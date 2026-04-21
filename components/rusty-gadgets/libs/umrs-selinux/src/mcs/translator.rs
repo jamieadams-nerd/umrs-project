@@ -85,6 +85,24 @@
 //!
 //! No security state is hidden from the auditor.
 //!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-4**: Information Flow Enforcement — lattice dominance
+//!   checks (`SecurityLevel::dominates`) enforce the MLS/MCS read authorization
+//!   model; no string-based comparison shortcuts are used.
+//! - **NIST SP 800-53 AC-16**: Security and Privacy Attributes — the translator
+//!   maps kernel MCS/MLS ranges to human-readable regulatory markings (e.g.,
+//!   NARA CUI labels); accurate label rendering is required for correct
+//!   attribute display and downstream access decisions.
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — the sidecar `details` map
+//!   preserves inline setrans.conf comments alongside labels, ensuring audit
+//!   records can carry the full regulatory annotation for each marking.
+//! - **NSA RTB**: Deterministic Execution — the parser uses a single explicit
+//!   imperative path with no heuristic fallback; ambiguous or malformed input
+//!   is rejected loudly at ingestion time.
+//! - **NSA RTB**: Fail-Closed — when no translation exists for a range, the
+//!   raw kernel string is surfaced rather than a fabricated or default marking.
+//!
 // ===========================================================================
 use log::{debug, info, warn};
 use std::collections::BTreeMap;

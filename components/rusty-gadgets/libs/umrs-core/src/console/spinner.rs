@@ -14,6 +14,14 @@
 //! - Accurate progress measurement or task completion estimation
 //! - Asynchronous task scheduling or concurrency management
 //! - Terminal capability detection or feature negotiation
+//!
+//! ## Compliance
+//!
+//! No security controls apply — this module renders decorative terminal
+//! progress animations for human-facing CLI operations. It contains no
+//! security logic, no credential handling, and no audit-relevant state.
+//! Callers are responsible for ensuring spinner messages do not contain
+//! sensitive data; the module imposes no restriction on message content.
 //
 
 use std::io::{self, Write};

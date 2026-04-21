@@ -86,3 +86,6 @@ rustix = { version = "1", features = ["process"] }
 # depend on gettext-rs directly for ngettext() plural forms.
 gettext-rs = { version = "0.7", features = ["gettext-system"] }
 umrs-core  = { path = "../libs/umrs-core" }
+
+[lints]
+workspace = true

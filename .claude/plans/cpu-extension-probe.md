@@ -2,9 +2,12 @@
 name: CPU Extension Probe
 path: components/rusty-gadgets/umrs-platform
 agent: rust-developer
-status: backburner — next release, not Cantrip (2026-03-23). CPU corpus complete 2026-03-18.
 split-from: umrs-platform-posture-and-cross-platform.md (2026-03-18)
 ---
+
+# Plan: CPU Extension Probe
+
+**Status:** Approved — grouped with `umrs-tool-init.md` as ready-to-execute implementation work. Prerequisites (kernel-security-posture-probe + cpu-security-corpus-plan) must complete before phase work begins.
 
 ## Purpose
 

@@ -31,6 +31,16 @@
 //! | `sealed_cache` | `SealedCache`, `CacheStatus`, `DEFAULT_TTL_SECS`, `MAX_TTL_SECS` — SEC pattern |
 //! | `timestamp` | `BootSessionTimestamp`, `BootSessionDuration`, `TimestampError` — nanosecond audit ordering |
 //!
+//! ## Compliance
+//!
+//! Security control citations for this crate are maintained in
+//! `docs/compliance-lib.md` and rendered below via `include_str!`. The
+//! primary controls are: **NIST SP 800-53 SI-7** (provenance verification),
+//! **CA-7** (continuous monitoring), **CM-6** (configuration settings),
+//! **SC-12/SC-28** (key management via `SealedCache`), **AU-3** (audit
+//! record content), **NIST SP 800-218 SSDF PW.4** (secure coding), and
+//! **NSA RTB RAIN** (non-bypassable kernel attribute read routing).
+//!
 #![doc = include_str!("../docs/compliance-lib.md")]
 #![forbid(unsafe_code)]
 #![warn(clippy::pedantic)]

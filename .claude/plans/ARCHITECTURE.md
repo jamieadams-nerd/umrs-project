@@ -1,5 +1,7 @@
 # UMRS Architecture Reference
 
+**Status:** reference — living document (single source of truth for structural and architectural constraints)
+
 This file contains workspace layout, crate dependency constraints, module maps, and
 architectural review triggers extracted from `CLAUDE.md` during the 2026-03-18
 housekeeping pass. It is the single source of truth for structural and architectural

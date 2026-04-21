@@ -28,6 +28,8 @@ crossterm     = "0.28"
 nix           = { version = "0.27", features = ["user", "fs"] }
 
 [lints.clippy]
+# UMRS workspace guardrail — see components/rusty-gadgets/clippy.toml.
+disallowed_methods    = "warn"
 missing_errors_doc    = { level = "allow", priority = 1 }
 missing_panics_doc    = { level = "allow", priority = 1 }
 doc_markdown          = { level = "allow", priority = 1 }

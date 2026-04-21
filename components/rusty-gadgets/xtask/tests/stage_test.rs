@@ -27,6 +27,14 @@
 //! - `NIST SP 800-53 CM-8` — Component Inventory: the `EXPECTED_BINARIES`
 //!   self-check test guards the integrity of the declared artifact manifest.
 
+// Integration tests for dev-time build tooling. Reading Cargo.toml and walking
+// target/ directories through std::fs is expected here; the UMRS secure-
+// filesystem guardrail does not apply to xtask.
+#![allow(
+    clippy::disallowed_methods,
+    reason = "xtask tests — not production code"
+)]
+
 use std::fs::{self, File};
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;

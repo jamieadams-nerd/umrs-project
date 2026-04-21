@@ -143,5 +143,7 @@ name = "platform_bench"
 harness = false
 
 [lints.clippy]
+# UMRS workspace guardrail — see components/rusty-gadgets/clippy.toml.
+disallowed_methods  = "warn"
 unreadable_literal  = { level = "allow", priority = 1 }
 missing_errors_doc  = { level = "allow", priority = 1 }

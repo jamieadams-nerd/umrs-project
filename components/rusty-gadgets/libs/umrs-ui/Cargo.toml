@@ -21,6 +21,8 @@ log = "0.4"
 unicode-width = "0.2"
 
 [lints.clippy]
+# UMRS workspace guardrail — see components/rusty-gadgets/clippy.toml.
+disallowed_methods = "warn"
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }
 unwrap_used = "deny"

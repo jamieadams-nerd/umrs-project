@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2025 Jamie Adams
+// Crate: umrs-core
+// Module: robots/data
 //! ASCII art data structures and normalization for the UMRS robot mascot system.
 //!
 //! Provides [`AsciiArt`] (owned, heap-allocated) and [`AsciiArtStatic`] (borrowed,

@@ -1,0 +1,833 @@
+    Checking umrs-core v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/libs/umrs-core)
+    Checking umrs-hw v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/libs/umrs-hw)
+    Checking ciborium-io v0.2.2
+    Checking crossbeam-utils v0.8.21
+    Checking ciborium-ll v0.2.2
+    Checking plotters-backend v0.3.7
+    Checking ciborium v0.2.2
+    Checking plotters-svg v0.3.7
+warning: use of a disallowed method `std::fs::File::open`
+  --> libs/umrs-core/src/lib.rs:68:26
+   |
+68 |     let mut file = match fs::File::open(path) {
+   |                          ^^^^^^^^^^^^^^
+   |
+   = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+   = note: requested on the command line with `-W clippy::disallowed-methods`
+
+    Checking crossbeam-epoch v0.9.18
+    Checking itertools v0.10.5
+warning: `umrs-core` (lib) generated 1 warning
+    Checking umrs-platform v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/libs/umrs-platform)
+    Checking crossbeam-deque v0.8.6
+    Checking cast v0.3.0
+    Checking same-file v1.0.6
+    Checking rayon-core v1.13.0
+    Checking walkdir v2.5.0
+    Checking plotters v0.3.7
+    Checking rayon v1.11.0
+    Checking criterion-plot v0.5.0
+    Checking tinytemplate v1.2.1
+    Checking anes v0.1.6
+    Checking oorandom v11.1.5
+warning: use of a disallowed method `std::fs::File::open`
+   --> libs/umrs-platform/src/detect/integrity_check.rs:189:26
+    |
+189 |     let mut file = match File::open(candidate) {
+    |                          ^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+    Checking coset v0.4.2
+    Checking xtask v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/xtask)
+warning: use of a disallowed method `std::fs::File::open`
+   --> libs/umrs-platform/src/detect/release_parse.rs:238:22
+    |
+238 |     let file = match std::fs::File::open(candidate) {
+    |                      ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::File::open`
+   --> libs/umrs-platform/src/kattrs/traits.rs:216:24
+    |
+216 |         let mut file = File::open(path)?;
+    |                        ^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::File::open`
+   --> libs/umrs-platform/src/kattrs/traits.rs:307:24
+    |
+307 |         let mut file = File::open(path)?;
+    |                        ^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/src/stage.rs:249:9
+    |
+249 |         fs::read_dir(&target_dir).with_context(|| format!("reading {}", target_dir.display()))?;
+    |         ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> libs/umrs-platform/src/posture/bootcmdline.rs:134:25
+    |
+134 |     let entries = match std::fs::read_dir(dir) {
+    |                         ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/src/stage.rs:364:9
+    |
+364 |         fs::read_dir(&scripts_dir).with_context(|| format!("reading {}", scripts_dir.display()))?;
+    |         ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/src/stage.rs:423:9
+    |
+423 |         fs::read_dir(search_dir).with_context(|| format!("reading {}", search_dir.display()))?;
+    |         ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/src/stage.rs:574:22
+    |
+574 |         for entry in fs::read_dir(&config_dir)
+    |                      ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> libs/umrs-platform/src/posture/bootcmdline.rs:317:25
+    |
+317 |     let content = match std::fs::read_to_string(entry_path) {
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/src/stage.rs:726:31
+    |
+726 |     let mut entries: Vec<_> = fs::read_dir(src_dir)
+    |                               ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/src/stage.rs:812:27
+    |
+812 |         let locale_dirs = fs::read_dir(&crate_locale)
+    |                           ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/src/stage.rs:840:17
+    |
+840 |                 fs::read_dir(&src_lc).with_context(|| format!("reading {}", src_lc.display()))?
+    |                 ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> libs/umrs-platform/src/posture/configured.rs:191:41
+    |
+191 |     let mut files: Vec<PathBuf> = match std::fs::read_dir(dir) {
+    |                                         ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+  --> xtask/src/main.rs:39:18
+   |
+39 |     for entry in fs::read_dir(workspace_root)? {
+   |                  ^^^^^^^^^^^^
+   |
+   = note: Use umrs_selinux::utils::dirlist::list_directory.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+  --> xtask/src/main.rs:67:18
+   |
+67 |     for entry in fs::read_dir(dir)? {
+   |                  ^^^^^^^^^^^^
+   |
+   = note: Use umrs_selinux::utils::dirlist::list_directory.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_to_string`
+  --> xtask/src/main.rs:74:17
+   |
+74 |                 fs::read_to_string(&path).with_context(|| format!("reading {}", path.display()))?;
+   |                 ^^^^^^^^^^^^^^^^^^
+   |
+   = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> libs/umrs-platform/src/posture/configured.rs:237:19
+    |
+237 |     let content = std::fs::read_to_string(path)?;
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `xtask` (bin "xtask" test) generated 10 warnings
+warning: use of a disallowed method `std::fs::metadata`
+   --> libs/umrs-platform/src/posture/fips_cross.rs:263:18
+    |
+263 |     let exists = std::fs::metadata(SYSTEM_FIPS_MARKER).is_ok();
+    |                  ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> libs/umrs-platform/src/posture/fips_cross.rs:285:11
+    |
+285 |     match std::fs::read_to_string(CRYPTO_POLICY_STATE) {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> libs/umrs-platform/src/posture/modprobe.rs:350:41
+    |
+350 |     let mut files: Vec<PathBuf> = match std::fs::read_dir(dir) {
+    |                                         ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> libs/umrs-platform/src/posture/modprobe.rs:397:19
+    |
+397 |     let content = std::fs::read_to_string(path)?;
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/tests/stage_test.rs:311:18
+    |
+311 |     for entry in fs::read_dir(src)? {
+    |                  ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/tests/stage_test.rs:381:47
+    |
+381 |     let would_error = scripts_dir.exists() && fs::read_dir(&scripts_dir).is_err();
+    |                                               ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::metadata`
+   --> xtask/tests/stage_test.rs:467:16
+    |
+467 |     let meta = fs::metadata(&script).expect("stat script");
+    |                ^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/tests/stage_test.rs:550:26
+    |
+550 |     if let Ok(entries) = fs::read_dir(scripts_dir) {
+    |                          ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/tests/stage_test.rs:569:26
+    |
+569 |     if let Ok(entries) = fs::read_dir(scripts_dir) {
+    |                          ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/tests/stage_test.rs:578:38
+    |
+578 |             if let Ok(sub_entries) = fs::read_dir(&path) {
+    |                                      ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/tests/stage_test.rs:611:26
+    |
+611 |     if let Ok(entries) = fs::read_dir(scripts_dir) {
+    |                          ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/tests/stage_test.rs:630:26
+    |
+630 |     if let Ok(entries) = fs::read_dir(scripts_dir) {
+    |                          ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_dir`
+   --> xtask/tests/stage_test.rs:639:38
+    |
+639 |             if let Ok(sub_entries) = fs::read_dir(&path) {
+    |                                      ^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::utils::dirlist::list_directory.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `xtask` (test "stage_test") generated 9 warnings
+    Checking c2pa v0.78.8
+warning: `umrs-platform` (lib) generated 12 warnings
+    Checking umrs-selinux v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/libs/umrs-selinux)
+warning: `xtask` (bin "xtask") generated 10 warnings (10 duplicates)
+    Checking criterion v0.5.1
+    Checking umrs-ui v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/libs/umrs-ui)
+    Checking umrs-label v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/umrs-label)
+warning: use of a disallowed method `std::process::exit`
+   --> libs/umrs-core/examples/console2.rs:190:5
+    |
+190 |     std::process::exit(0);
+    |     ^^^^^^^^^^^^^^^^^^
+    |
+    = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: `umrs-core` (example "console2") generated 1 warning
+    Checking umrs-stat v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/umrs-stat)
+warning: use of a disallowed method `std::fs::File::open`
+   --> umrs-stat/src/lib.rs:238:17
+    |
+238 |     let mut f = std::fs::File::open(path).ok()?;
+    |                 ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::fs::File::open`
+   --> umrs-stat/src/lib.rs:301:16
+    |
+301 |     let file = std::fs::File::open(path).ok()?;
+    |                ^^^^^^^^^^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_link`
+   --> umrs-stat/src/lib.rs:365:28
+    |
+365 |         let target = match std::fs::read_link(path) {
+    |                            ^^^^^^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet — flag the gap rather than rolling your own.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-stat` (lib) generated 3 warnings
+warning: use of a disallowed method `std::boxed::Box::leak`
+  --> umrs-stat/src/main.rs:74:9
+   |
+74 |         Box::leak(self.0.report_subject.clone().into_boxed_str())
+   |         ^^^^^^^^^
+   |
+   = note: MEM02: intentional memory leak. If truly required (global singletons, FFI), document the lifetime argument explicitly.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+   = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::process::exit`
+   --> umrs-stat/src/main.rs:165:9
+    |
+165 |         std::process::exit(1);
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+    = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-stat` (bin "umrs-stat") generated 2 warnings (1 duplicate)
+warning: `umrs-stat` (bin "umrs-stat" test) generated 2 warnings (1 duplicate)
+warning: use of a disallowed method `std::fs::File::open`
+   --> umrs-label/src/cui/catalog.rs:181:16
+    |
+181 |     let file = File::open(path_ref)
+    |                ^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::fs::File::open`
+   --> umrs-label/src/cui/catalog.rs:537:16
+    |
+537 |     let file = File::open(path_ref)
+    |                ^^^^^^^^^^
+    |
+    = note: Use umrs_selinux::secure_dirent::SecureDirent::from_path (TOCTOU-safe, fd-anchored).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-stat` (lib test) generated 3 warnings (3 duplicates)
+warning: `umrs-label` (lib) generated 2 warnings
+    Checking umrs-ls v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/umrs-ls)
+warning: use of a disallowed method `std::process::exit`
+   --> umrs-label/src/main.rs:207:9
+    |
+207 |         std::process::exit(2);
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+    = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::process::exit`
+   --> umrs-label/src/main.rs:229:9
+    |
+229 |         std::process::exit(0);
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+    = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-label` (bin "umrs-label") generated 2 warnings (1 duplicate)
+warning: `umrs-label` (bin "umrs-label" test) generated 2 warnings (1 duplicate)
+warning: use of a disallowed method `std::fs::symlink_metadata`
+   --> umrs-ls/src/viewer_app.rs:144:24
+    |
+144 |         let Ok(meta) = std::fs::symlink_metadata(path) else {
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::os::unix::fs::MetadataExt::mode`
+   --> umrs-ls/src/viewer_app.rs:148:50
+    |
+148 |         let file_mode = FileMode::from_mode(meta.mode());
+    |                                                  ^^^^
+    |
+    = note: Prefer SecureDirent::mode / FileMode helpers (is_world_writable, is_setuid, is_setgid, is_sticky).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::os::unix::fs::MetadataExt::mode`
+   --> umrs-ls/src/viewer_app.rs:149:50
+    |
+149 |         let file_type = FileType::from_mode(meta.mode());
+    |                                                  ^^^^
+    |
+    = note: Prefer SecureDirent::mode / FileMode helpers (is_world_writable, is_setuid, is_setgid, is_sticky).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::symlink_metadata`
+   --> umrs-ls/src/viewer_app.rs:159:17
+    |
+159 |                 std::fs::symlink_metadata(parent).map_or(true, |pm| pm.dev() != meta.dev())
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-ls` (lib) generated 4 warnings
+warning: use of a disallowed method `std::process::exit`
+  --> umrs-label/examples/label_registry.rs:25:9
+   |
+25 |         std::process::exit(2);
+   |         ^^^^^^^^^^^^^^^^^^
+   |
+   = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+   = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::process::exit`
+  --> umrs-label/examples/labels.rs:16:9
+   |
+16 |         std::process::exit(1);
+   |         ^^^^^^^^^^^^^^^^^^
+   |
+   = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+   = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::process::exit`
+  --> umrs-label/examples/labels.rs:21:9
+   |
+21 |         std::process::exit(2);
+   |         ^^^^^^^^^^^^^^^^^^
+   |
+   = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-label` (example "label_registry") generated 1 warning
+warning: `umrs-label` (example "labels") generated 2 warnings
+warning: use of a disallowed method `std::fs::read_dir`
+    --> umrs-ls/src/main.rs:1466:22
+     |
+1466 |     let read = match std::fs::read_dir(&parent_path) {
+     |                      ^^^^^^^^^^^^^^^^^
+     |
+     = note: Use umrs_selinux::utils::dirlist::list_directory.
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+     = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: `umrs-ls` (bin "umrs-ls" test) generated 1 warning
+warning: `umrs-ls` (lib test) generated 4 warnings (4 duplicates)
+    Checking umrs-uname v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/umrs-uname)
+warning: `umrs-ls` (bin "umrs-ls") generated 1 warning (1 duplicate)
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> umrs-label/tests/setrans_tests.rs:123:19
+    |
+123 |     let content = std::fs::read_to_string(path)
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: `umrs-label` (test "setrans_tests") generated 1 warning
+warning: use of a disallowed method `std::process::exit`
+    --> umrs-uname/src/main.rs:1824:9
+     |
+1824 |         std::process::exit(0);
+     |         ^^^^^^^^^^^^^^^^^^
+     |
+     = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+     = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::process::exit`
+    --> umrs-uname/src/main.rs:1828:9
+     |
+1828 |         std::process::exit(0);
+     |         ^^^^^^^^^^^^^^^^^^
+     |
+     = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-uname` (bin "umrs-uname" test) generated 2 warnings
+warning: `umrs-uname` (bin "umrs-uname") generated 2 warnings (2 duplicates)
+warning: `umrs-label` (lib test) generated 2 warnings (2 duplicates)
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> libs/umrs-platform/tests/sealed_cache_tests.rs:225:11
+    |
+225 |     match std::fs::read_to_string("/proc/sys/crypto/fips_enabled") {
+    |           ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::mem::drop`
+   --> libs/umrs-platform/tests/sealed_cache_tests.rs:276:5
+    |
+276 |     drop(cache); // must not panic; key bytes are zeroized here
+    |     ^^^^
+    |
+    = note: MEM00: dropping a value explicitly is almost always a sign of a lifetime-management mistake.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::mem::drop`
+   --> libs/umrs-platform/tests/sealed_cache_tests.rs:288:5
+    |
+288 |     drop(a);
+    |     ^^^^
+    |
+    = note: MEM00: dropping a value explicitly is almost always a sign of a lifetime-management mistake.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::mem::drop`
+   --> libs/umrs-platform/tests/sealed_cache_tests.rs:289:5
+    |
+289 |     drop(c);
+    |     ^^^^
+    |
+    = note: MEM00: dropping a value explicitly is almost always a sign of a lifetime-management mistake.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::mem::drop`
+   --> libs/umrs-platform/tests/sealed_cache_tests.rs:290:5
+    |
+290 |     drop(b);
+    |     ^^^^
+    |
+    = note: MEM00: dropping a value explicitly is almost always a sign of a lifetime-management mistake.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-platform` (test "sealed_cache_tests") generated 5 warnings
+warning: use of a disallowed method `std::process::exit`
+  --> libs/umrs-platform/examples/timestamp_demo.rs:96:13
+   |
+96 |             std::process::exit(1);
+   |             ^^^^^^^^^^^^^^^^^^
+   |
+   = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+   = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: `umrs-platform` (example "timestamp_demo") generated 1 warning
+warning: use of a disallowed method `std::process::exit`
+  --> libs/umrs-platform/examples/sealed_cache_demo.rs:43:13
+   |
+43 |             std::process::exit(1);
+   |             ^^^^^^^^^^^^^^^^^^
+   |
+   = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+   = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::process::exit`
+  --> libs/umrs-platform/examples/sealed_cache_demo.rs:87:13
+   |
+87 |             std::process::exit(1);
+   |             ^^^^^^^^^^^^^^^^^^
+   |
+   = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-platform` (example "sealed_cache_demo") generated 2 warnings
+warning: `umrs-platform` (lib test) generated 12 warnings (12 duplicates)
+warning: `umrs-core` (lib test) generated 1 warning (1 duplicate)
+    Checking umrs-c2pa v0.1.0 (/DEVEL/umrs-project/components/rusty-gadgets/umrs-c2pa)
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/creds.rs:250:28
+    |
+250 |     let cert_bytes = match std::fs::read(cert_path) {
+    |                            ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/creds.rs:270:47
+    |
+270 |     let key_bytes: Zeroizing<Vec<u8>> = match std::fs::read(key_path) {
+    |                                               ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::metadata`
+   --> umrs-c2pa/src/c2pa/creds.rs:444:11
+    |
+444 |     match std::fs::metadata(key_path) {
+    |           ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::os::unix::fs::MetadataExt::mode`
+   --> umrs-c2pa/src/c2pa/creds.rs:452:29
+    |
+452 |             let mode = meta.mode() & 0o777;
+    |                             ^^^^
+    |
+    = note: Prefer SecureDirent::mode / FileMode helpers (is_world_writable, is_setuid, is_setgid, is_sticky).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> umrs-c2pa/src/c2pa/creds.rs:509:18
+    |
+509 |     let status = std::fs::read_to_string("/proc/self/status").ok()?;
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/ingest.rs:154:24
+    |
+154 |     let source_bytes = std::fs::read(source_path).map_err(InspectError::Io)?;
+    |                        ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/ingest.rs:349:17
+    |
+349 |     let bytes = std::fs::read(path).map_err(InspectError::Io)?;
+    |                 ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/ingest.rs:375:17
+    |
+375 |     let bytes = std::fs::read(path).map_err(InspectError::Io)?;
+    |                 ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> umrs-c2pa/src/c2pa/manifest.rs:485:30
+    |
+485 |         && let Ok(content) = std::fs::read_to_string(path)
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read_to_string`
+   --> umrs-c2pa/src/c2pa/manifest.rs:490:30
+    |
+490 |         && let Ok(content) = std::fs::read_to_string(path)
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: For /proc use SecureReader<ProcfsText>; for /sys use SecureReader<SysfsText>; otherwise open via SecureDirent.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/signer.rs:394:5
+    |
+394 |     std::fs::read(path).map_err(InspectError::Io)
+    |     ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/validate.rs:194:11
+    |
+194 |     match std::fs::read(path) {
+    |           ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::metadata`
+   --> umrs-c2pa/src/c2pa/validate.rs:231:15
+    |
+231 |         match std::fs::metadata(path) {
+    |               ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::os::unix::fs::MetadataExt::mode`
+   --> umrs-c2pa/src/c2pa/validate.rs:233:33
+    |
+233 |                 let mode = meta.mode() & 0o777;
+    |                                 ^^^^
+    |
+    = note: Prefer SecureDirent::mode / FileMode helpers (is_world_writable, is_setuid, is_setgid, is_sticky).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/validate.rs:286:11
+    |
+286 |     match std::fs::read(path) {
+    |           ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::metadata`
+   --> umrs-c2pa/src/c2pa/validate.rs:409:15
+    |
+409 |         match std::fs::metadata(path) {
+    |               ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::metadata`
+   --> umrs-c2pa/src/c2pa/validate.rs:433:15
+    |
+433 |         match std::fs::metadata(path) {
+    |               ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::read`
+   --> umrs-c2pa/src/c2pa/validate.rs:468:11
+    |
+468 |     match std::fs::read(path) {
+    |           ^^^^^^^^^^^^^
+    |
+    = note: No UMRS equivalent yet; if you need bytes from a file, open via SecureDirent and read from the fd.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::fs::metadata`
+   --> umrs-c2pa/src/c2pa/validate.rs:525:11
+    |
+525 |     match std::fs::metadata(path) {
+    |           ^^^^^^^^^^^^^^^^^
+    |
+    = note: Use SecureDirent::from_path; read fields from the returned struct.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: use of a disallowed method `std::os::unix::fs::MetadataExt::mode`
+   --> umrs-c2pa/src/c2pa/validate.rs:528:29
+    |
+528 |             let mode = meta.mode() & 0o777;
+    |                             ^^^^
+    |
+    = note: Prefer SecureDirent::mode / FileMode helpers (is_world_writable, is_setuid, is_setgid, is_sticky).
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-c2pa` (lib test) generated 20 warnings
+warning: `umrs-c2pa` (lib) generated 20 warnings (20 duplicates)
+warning: use of a disallowed method `std::process::exit`
+   --> umrs-c2pa/src/main.rs:460:9
+    |
+460 |         std::process::exit(1);
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+    = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+    = note: requested on the command line with `-W clippy::disallowed-methods`
+
+warning: use of a disallowed method `std::process::exit`
+   --> umrs-c2pa/src/main.rs:815:9
+    |
+815 |         std::process::exit(1);
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+    = note: Skips Drop on live RAII resources. Return an exit code from main() instead.
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.93.0/index.html#disallowed_methods
+
+warning: `umrs-c2pa` (bin "umrs-c2pa" test) generated 2 warnings
+warning: `umrs-c2pa` (bin "umrs-c2pa") generated 2 warnings (2 duplicates)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.65s

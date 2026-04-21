@@ -42,6 +42,18 @@
 //! validation to prevent malformed security contexts and improve
 //! assurance in higher-level labeling systems.
 //!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — `SelinuxType` is the domain
+//!   (type) component of the SELinux security context; correct type identity is
+//!   the primary enforcement anchor for Type Enforcement (TE) policy decisions.
+//! - **NIST SP 800-53 AC-16**: Security and Privacy Attributes — type identifiers
+//!   are validated at construction time to ensure only well-formed, policy-legal
+//!   values are admitted into security context structures.
+//! - **NSA RTB RAIN**: Non-Bypassable — the private constructor and newtype
+//!   wrapper ensure callers cannot instantiate an unvalidated `SelinuxType`;
+//!   every value of this type has passed the format invariant.
+//!
 // =============================================================================
 use std::fmt;
 use std::str::FromStr;

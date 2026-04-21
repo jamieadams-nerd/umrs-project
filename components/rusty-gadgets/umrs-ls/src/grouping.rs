@@ -1,3 +1,7 @@
+// SPDX-License-Identifier: MIT
+// Copyright (c) 2026 Jamie Adams (a.k.a. Imodium Operator)
+// Crate: umrs-ls
+// Module: grouping
 //! # grouping — File Cuddling / Compact View
 //!
 //! Groups a sorted slice of [`ListEntry`] values into [`FileGroup`] records,

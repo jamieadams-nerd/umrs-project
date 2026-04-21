@@ -24,6 +24,17 @@
 //! - Terminal capability probing or feature detection
 //! - Full color system abstraction beyond basic ANSI escape codes
 //! - Cross-platform console API support outside ANSI terminals
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 SI-11**: Error Handling — by centralizing all escape
+//!   sequences in this module, callers can suppress color output in response to
+//!   `NO_COLOR` or `--json` flags without scattering inline escape literals;
+//!   this prevents formatting noise from contaminating structured output used
+//!   for audit or machine consumption.
+//! - **NSA RTB**: Least Privilege / Minimal Footprint — the module contains
+//!   only static constants and pure formatting functions; no I/O, no state, no
+//!   side effects outside the returned string.
 
 /// ESC character
 pub const ESC: &str = "\x1b";

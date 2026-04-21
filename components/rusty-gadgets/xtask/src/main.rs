@@ -15,6 +15,14 @@
 //!   enforces documentation completeness at build time.
 
 #![forbid(unsafe_code)]
+// xtask is dev-time build tooling, not production code. It legitimately reads
+// Cargo.toml, walks target/ directories, and invokes `cargo` subcommands, so
+// the UMRS secure-filesystem guardrail does not apply here. Crate-wide allow
+// keeps the workspace clippy signal focused on production crates.
+#![allow(
+    clippy::disallowed_methods,
+    reason = "build tooling — see crate-level rationale above"
+)]
 
 mod clean;
 mod stage;

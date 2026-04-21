@@ -18,6 +18,23 @@
 //! Non-goals:
 //! - End-user CLI interfaces
 //! - Tool-specific business logic
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AU-3**: Audit Record Content — the `audit` sub-module
+//!   provides structured, machine-consumable audit event types for cross-tool
+//!   use.
+//! - **NIST SP 800-53 CM-6**: Configuration Settings — `UmrsState` persists
+//!   validated platform configuration; `load_state`/`save_state` use atomic
+//!   rename to prevent partial-write corruption.
+//! - **NIST SP 800-53 SI-11**: Error Handling — structured error returns
+//!   throughout; no sensitive data surfaces in user-visible error strings.
+//! - **NIST SP 800-218 SSDF PW.4**: Secure Coding — `#![forbid(unsafe_code)]`
+//!   provides a compile-time proof of memory-safe execution across all crate
+//!   consumers.
+//! - **NSA RTB RAIN**: Non-Bypassable — shared validation and audit primitives
+//!   are centralized here; each consuming crate cannot skip them by reimplementing
+//!   local alternatives.
 //
 
 use std::fs;

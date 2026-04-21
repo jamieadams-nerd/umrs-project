@@ -34,6 +34,15 @@
 //!   cargo test -p umrs-platform --test sealed_cache_tests
 //! =============================================================================
 
+// Explicit drop() calls below verify ZeroizeOnDrop semantics for the sealing
+// key (NIST SP 800-53 SC-12). That is the behavior under test, not an
+// accidental early-release — so the disallowed-methods guardrail is waived at
+// file scope rather than annotated per call site.
+#![allow(
+    clippy::disallowed_methods,
+    reason = "ZeroizeOnDrop verification — see NIST SP 800-53 SC-12 tests below"
+)]
+
 use umrs_platform::{CacheStatus, DEFAULT_TTL_SECS, MAX_TTL_SECS, SealedCache, detect::OsDetector};
 
 // =============================================================================

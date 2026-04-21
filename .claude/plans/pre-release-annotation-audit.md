@@ -1,7 +1,7 @@
 # Pre-Release Annotation Audit Scope
 
 **Date:** 2026-03-21
-**Status:** draft — Herb to author full scope document
+**Status:** completed (2026-04-20) — SPDX headers and `## Compliance` sections landed on every Rust source file in the workspace (238 files). Convention C passes done for umrs-core, umrs-selinux, umrs-platform, umrs-hw, umrs-ui, and all binary crates. Future crates (umrs-assess, umrs-mcs, umrs-state, umrs-logspace) will get their own pass when implemented.
 **Author:** Herb (The IRS)
 **ROADMAP Goals:** G7 (Public Project)
 **Milestones:** M4 (Public Release) — must be complete before any public release

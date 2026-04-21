@@ -21,3 +21,14 @@ members = [
 # same defensive behavior that debug builds provide across all workspace members.
 [profile.release]
 overflow-checks = true
+
+# Workspace-wide clippy lints. Member crates opt in with `[lints] workspace = true`.
+# The `disallowed_methods` list itself lives in `clippy.toml` alongside this file.
+#
+# Phase A: `warn` so the workspace builds cleanly while existing call sites are
+# triaged. Phase B flips this to `deny` once each offending call has been either
+# refactored to the UMRS equivalent or annotated with
+#   #[allow(clippy::disallowed_methods, reason = "...")]
+# The `reason = "..."` clause requires clippy 1.81+.
+[workspace.lints.clippy]
+disallowed_methods = "warn"

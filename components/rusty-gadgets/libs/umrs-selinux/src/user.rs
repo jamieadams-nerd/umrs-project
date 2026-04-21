@@ -7,6 +7,18 @@
 //! This module models only the identifier primitive — not policy
 //! bindings or clearance mappings.
 //!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 AC-3**: Access Enforcement — `SelinuxUser` is the user
+//!   component of the SELinux security context; it anchors the identity that
+//!   role-set authorization rules are evaluated against.
+//! - **NIST SP 800-53 AC-16**: Security and Privacy Attributes — user
+//!   identifiers are validated at construction time to ensure only well-formed,
+//!   policy-legal values are admitted into security context structures.
+//! - **NSA RTB RAIN**: Non-Bypassable — the private constructor and newtype
+//!   wrapper ensure callers cannot instantiate an unvalidated `SelinuxUser`;
+//!   every value of this type has passed the format invariant.
+//!
 
 use std::fmt;
 use std::str::FromStr;

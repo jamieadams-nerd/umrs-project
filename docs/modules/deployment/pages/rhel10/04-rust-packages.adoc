@@ -99,6 +99,13 @@ sudo dnf install -y \
     rust-toolset \
     jq \
     rust-analyzer \
+    pkgconf-pkg-config \
+    openssl-devel \
+    perl-core \
+    sqlite-devel \ 
+    nodejs \
+    npm \
+    clippy \
     make
 ----
 

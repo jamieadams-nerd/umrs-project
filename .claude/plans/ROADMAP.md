@@ -1,5 +1,6 @@
 # UMRS ROADMAP
 
+**Status:** reference — living document (tracks G1–G10 goals and M1–M5 milestones)
 **Updated:** 2026-04-15
 
 High-assurance Rust platform for system security on Linux.

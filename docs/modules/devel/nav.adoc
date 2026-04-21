@@ -12,6 +12,9 @@
 ** xref:rust-must-use-contract.adoc[Compile-time contract enforcement: #[must_use\]]
 ** xref:nom-parser.adoc[The nom parser combinator]
 
+* Secure API Inventory
+** xref:file-operations-task.adoc[File operations]
+
 * Platform Internals
 ** xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]
 ** xref:posture-probe.adoc[Posture Probe — Developer Guide]

@@ -34,5 +34,9 @@ log = { version = "0.4", features = ["release_max_level_info"] }
 rustix = { version = "1", features = ["time"] }
 
 [lints.clippy]
+# UMRS workspace guardrail — see components/rusty-gadgets/clippy.toml.
+# Duplicated here (not `workspace = true`) because this crate has per-crate
+# overrides that Cargo forbids combining with workspace inheritance.
+disallowed_methods = "warn"
 unreadable_literal = { level = "allow", priority = 1 }
 missing_errors_doc = { level = "allow", priority = 1 }

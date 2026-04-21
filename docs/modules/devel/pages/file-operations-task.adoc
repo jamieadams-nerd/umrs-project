@@ -1,0 +1,200 @@
+= File Operations — Secure API Inventory
+
+For developers new to UMRS. You need to do something basic with files — here's the secure alternative from our stack. If the UMRS column says `(none)`, flag it on the task board rather than rolling your own.
+
+== Opening and reading files
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| Open a file for reading (TOCTOU-safe, fd-anchored)
+| `File::open(path)` — re-resolves path on every follow-up call
+| `umrs_selinux::secure_dirent::SecureDirent::from_path` — opens once; all further reads use the fd
+| no
+| —
+
+| Read a file as bytes
+| `std::fs::read`
+| (none)
+| —
+| —
+
+| Read a file as text
+| `std::fs::read_to_string`
+| (none)
+| —
+| —
+
+| Read a file from `/proc`
+| `std::fs::read_to_string("/proc/...")`
+| `umrs_platform::kattrs::SecureReader<ProcfsText>::read_generic_text`
+| no
+| T1
+
+| Read a file from `/sys`
+| `std::fs::read_to_string("/sys/...")`
+| `umrs_platform::kattrs::SecureReader<SysfsText>::read_generic_text`
+| no
+| T1
+|===
+
+== Directories
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| Enumerate a directory
+| `std::fs::read_dir`
+| `umrs_selinux::utils::dirlist::list_directory`
+| no
+| —
+|===
+
+== File metadata
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| `stat(2)` — follows symlinks
+| `fs::metadata(path)`
+| `SecureDirent::from_path` (read fields from the returned struct)
+| no
+| —
+
+| `lstat(2)` — symlink's own metadata
+| `fs::symlink_metadata(path)`
+| `SecureDirent::from_path`
+| no
+| —
+|===
+
+== DAC (mode, uid, gid)
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| Read mode + ownership for a path
+| `Metadata::mode/uid/gid`
+| `SecureDirent::mode` + `SecureDirent::ownership`
+| no
+| —
+
+| Check world-writable / setuid / setgid / sticky
+| manual bitmask on `st_mode`
+| `FileMode::is_world_writable` / `is_setuid` / `is_setgid` / `is_sticky`
+| no
+| —
+|===
+
+== SELinux file labels (`security.selinux` xattr)
+
+UMRS does not link against `libselinux`. Label reads are pure Rust via `fgetxattr(2)`. The UMRS function names mirror the libselinux trio so anyone reaching for `getfilecon(3)` lands on the right call.
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| Read a file's SELinux label (follows symlinks)
+| `getfilecon(3)` or `getxattr(2, "security.selinux")`
+| `umrs_selinux::utils::get_file_context`
+| no
+| —
+
+| Read the label without following symlinks
+| `lgetfilecon(3)` or `lgetxattr(2, "security.selinux")`
+| `umrs_selinux::utils::lget_file_context`
+| no
+| —
+
+| Read the label from an open fd
+| `fgetfilecon(3)` or `fgetxattr(2, "security.selinux")`
+| `umrs_selinux::utils::fget_file_context`
+| no
+| —
+
+| Set a file's SELinux label
+| `setfilecon(3)` / `setxattr(2, "security.selinux")`
+| (none)
+| —
+| —
+|===
+
+== Extended attributes (xattrs)
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| Read a named xattr from an open fd
+| `fgetxattr(2)`
+| `umrs_selinux::xattrs::SecureXattrReader::read_raw`
+| no
+| —
+
+| List all xattrs on a path or fd
+| `listxattr(2)` / `flistxattr(2)`
+| (none)
+| —
+| —
+
+| Set or remove an xattr
+| `setxattr(2)` / `removexattr(2)`
+| (none)
+| —
+| —
+|===
+
+== Symlinks
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| Read a symlink target
+| `std::fs::read_link` / `readlink(2)`
+| (none)
+| —
+| —
+|===
+
+== Package database lookups
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| Open the RPM package database
+| `sqlite3_open_v2(..., SQLITE_OPEN_READONLY)`
+| `umrs_platform::detect::substrate::rpm_db::RpmDb::open`
+| yes
+| T3
+
+| Find which package owns a file
+| manual SQL via `rusqlite`
+| `RpmDb::query_file_owner`
+| yes
+| T3
+
+| Get the expected digest for a packaged file
+| manual SQL via `rusqlite`
+| `RpmDb::query_file_digest`
+| yes
+| T4
+|===
+
+== At-rest encryption
+
+[cols="2,3,3,1,1",options="header"]
+|===
+| Task | Traditional | UMRS secure method | Evidence | Trust
+
+| Detect whether a mount point is encrypted
+| `statfs` + parse `/etc/crypttab`
+| `umrs_selinux::fs_encrypt::detect_mount_encryption`
+| no
+| —
+|===

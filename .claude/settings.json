@@ -367,7 +367,12 @@
       "Bash(cp /DEVELOPMENT/umrs-project/.claude/knowledge/linux-fhs-2.3/term-glossary.md /DEVELOPMENT/umrs-project/.claude/references/standards-terminology/fhs-2.3-term-glossary.md)",
       "Bash(cp /DEVELOPMENT/umrs-project/.claude/knowledge/lsb-5/term-glossary.md /DEVELOPMENT/umrs-project/.claude/references/standards-terminology/lsb-5-term-glossary.md)",
       "Bash(cp /DEVELOPMENT/umrs-project/.claude/knowledge/systemd-uid-gid/term-glossary.md /DEVELOPMENT/umrs-project/.claude/references/standards-terminology/systemd-uid-gid-term-glossary.md)",
-      "Bash(awk -F'/' '{print $1\"/\"$2}')"
+      "Bash(awk -F'/' '{print $1\"/\"$2}')",
+      "Bash(xargs -0 -I{} sh -c 'head -1 \"{}\" | grep -q \"SPDX-License-Identifier\" || echo \"{}\"')",
+      "Bash(rustfmt --version)",
+      "Bash(rustup component *)",
+      "Bash(tee -a /DEVEL/umrs-project/.claude/logs/task-log.md)",
+      "Bash(xargs -0 -I{} sh -c 'head -1 \"{}\" | grep -q \"SPDX-License-Identifier\" || echo \"MISSING: {}\"')"
     ]
   },
   "enabledPlugins": {

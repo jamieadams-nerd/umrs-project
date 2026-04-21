@@ -28,6 +28,18 @@
 //!
 //! - Full gettext or ICU-style localization frameworks
 //! - Runtime translation loading from external sources
+//!
+//! ## Compliance
+//!
+//! - **NIST SP 800-53 SI-11**: Error Handling — translated messages carry user-
+//!   visible diagnostic text only; no security labels, credentials, or classified
+//!   data are permitted in locale catalog entries.
+//! - **NIST SP 800-53 CM-7**: Least Functionality — the module reads only the
+//!   `UMRS_LOCALEDIR` environment variable (on the scrub allowlist) and binds a
+//!   single gettext domain; no other environment state is consumed or propagated.
+//! - **NSA RTB**: Fail-Safe Defaults — untranslated message IDs are returned
+//!   verbatim when no catalog entry exists; the subsystem never silently discards
+//!   output or substitutes fabricated strings.
 //
 
 use gettextrs::{LocaleCategory, bindtextdomain, dgettext, setlocale};

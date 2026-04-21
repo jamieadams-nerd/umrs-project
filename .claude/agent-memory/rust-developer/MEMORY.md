@@ -65,6 +65,7 @@ OpenSSL is a system-wide trust anchor — binary analysis must trace linkage to 
 ## Toolchain
 
 - Rust 1.92+; `is_multiple_of()` stable; let-chain guards stable
+- `cargo fmt` and `cargo clippy` are NOT installed on this RHEL 10 host. Use `cargo check` to verify builds. `cargo xtask fmt/clippy` will fail — note this when reporting exit criteria.
 
 ## System Prerequisites
 
