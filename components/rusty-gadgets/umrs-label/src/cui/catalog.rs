@@ -34,10 +34,36 @@
 
 use serde::Deserialize;
 use std::collections::HashMap;
-use std::fs::File;
-use std::io::BufReader;
 use std::path::Path;
+use umrs_selinux::secure_file;
 use umrs_selinux::status::{SelinuxPolicy, selinux_policy};
+
+/// Maximum byte size for a CUI catalog or level registry JSON file.
+///
+/// Current catalogs are approximately 38 KiB; this cap is ~110× the largest
+/// observed catalog, providing substantial headroom for growth (new CUI markings,
+/// Five Eyes additions, expanded bilingual content). Matches the
+/// `OsDetector::max_mountinfo_bytes` precedent (4_194_304) established for
+/// bounded kernel reads.
+///
+/// Project convention: named bounded-read limits at the call site
+/// (`OsDetector::max_read_bytes` / `max_mountinfo_bytes` /
+/// `rpm_header::MAX_BLOB_BYTES`). Bound prevents unbounded allocation on a
+/// malformed or adversarial catalog file.
+///
+/// ## Compliance
+///
+/// - **NIST SP 800-53 SC-5**: Denial of Service Protection — caps per-read
+///   allocation to prevent resource exhaustion on adversarial input.
+/// - **NIST SP 800-53 SI-10**: Information Input Validation — enforces an
+///   explicit upper bound on untrusted file size before deserialization.
+/// - **CWE-400**: Uncontrolled Resource Consumption — bounded read prevents
+///   unbounded heap growth from a malformed or oversized catalog.
+/// - **CWE-770**: Allocation of Resources Without Limits or Throttling —
+///   explicit cap at the I/O boundary before any allocation occurs.
+///
+/// See devel:bounded-reads.adoc for the project-wide bounded-read catalog.
+pub const MAX_CATALOG_BYTES: usize = 4_194_304; // 4 MiB
 
 pub use super::locale_text::LocaleText;
 
@@ -178,12 +204,15 @@ pub fn load_catalog<P: AsRef<Path>>(path: P) -> Result<Catalog, String> {
     // marking information. Catalog integrity verification (SHA-256 against a
     // known-good manifest) is planned for a future phase. Until then, catalog
     // files are trusted based on filesystem permissions and SELinux type enforcement.
-    let file = File::open(path_ref)
-        .map_err(|e| format!("Failed to open {}: {}", path_ref.display(), e))?;
+    //
+    // TOCTOU-safe: secure_file::read_bytes opens the file once and reads both
+    // metadata and content through the same fd.
+    // NIST SP 800-53 SI-10: MAX_CATALOG_BYTES caps allocation on adversarial input.
+    let (_dirent, bytes) =
+        secure_file::read_bytes(path_ref, MAX_CATALOG_BYTES)
+            .map_err(|e| format!("Failed to open {}: {}", path_ref.display(), e))?;
 
-    let reader = BufReader::new(file);
-
-    serde_json::from_reader(reader)
+    serde_json::from_slice(&bytes)
         .map_err(|e| format!("Failed to parse JSON {}: {}", path_ref.display(), e))
 }
 
@@ -534,12 +563,14 @@ pub struct LevelRegistry {
 pub fn load_levels<P: AsRef<Path>>(path: P) -> Result<LevelRegistry, String> {
     let path_ref = path.as_ref();
 
-    let file = File::open(path_ref)
-        .map_err(|e| format!("Failed to open {}: {}", path_ref.display(), e))?;
+    // TOCTOU-safe: secure_file::read_bytes opens the file once and reads both
+    // metadata and content through the same fd.
+    // NIST SP 800-53 SI-10: MAX_CATALOG_BYTES caps allocation on adversarial input.
+    let (_dirent, bytes) =
+        secure_file::read_bytes(path_ref, MAX_CATALOG_BYTES)
+            .map_err(|e| format!("Failed to open {}: {}", path_ref.display(), e))?;
 
-    let reader = BufReader::new(file);
-
-    serde_json::from_reader(reader)
+    serde_json::from_slice(&bytes)
         .map_err(|e| format!("Failed to parse JSON {}: {}", path_ref.display(), e))
 }
 

@@ -372,7 +372,17 @@
       "Bash(rustfmt --version)",
       "Bash(rustup component *)",
       "Bash(tee -a /DEVEL/umrs-project/.claude/logs/task-log.md)",
-      "Bash(xargs -0 -I{} sh -c 'head -1 \"{}\" | grep -q \"SPDX-License-Identifier\" || echo \"MISSING: {}\"')"
+      "Bash(xargs -0 -I{} sh -c 'head -1 \"{}\" | grep -q \"SPDX-License-Identifier\" || echo \"MISSING: {}\"')",
+      "Bash(dnf list *)",
+      "Bash(tee /tmp/clippy-phase-b-step2.log)",
+      "Bash(awk '{print $2}')",
+      "Bash(awk -F/ '{print $1}')",
+      "Bash(awk -F/ '{print $1\"/\"$2}')",
+      "Bash(mkdir -p /DEVEL/umrs-project/.claude/reports/code)",
+      "Bash(cp /tmp/clippy-phase-b-step2.log /DEVEL/umrs-project/.claude/reports/code/2026-04-20-phase-b-step2-clippy-raw.log)",
+      "Bash(tee /tmp/clippy-phase-b-step2b.log)",
+      "Bash(awk -F/ '{if \\($1==\"libs\"\\) print $1\"/\"$2; else print $1}')",
+      "Bash(awk '/^warning: use of a disallowed method/{method=$0; getline line2; if \\(line2 ~ /libs\\\\/umrs-platform|umrs-platform\\\\/src|umrs-platform\\\\/examples/ || line2 ~ /--> libs\\\\/umrs-platform/\\) {print method; print line2; while \\(\\(getline x\\) > 0 && x !~ /^warning:/ && x !~ /^    Finished/ && x !~ /^error:/\\) {print x; if \\(x ~ /^$/\\) break}; print \"\"}}' /DEVEL/umrs-project/.claude/reports/code/2026-04-20-phase-b-step2b-clippy-after-clutter.log)"
     ]
   },
   "enabledPlugins": {

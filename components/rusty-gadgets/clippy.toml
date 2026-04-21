@@ -26,7 +26,7 @@ disallowed-methods = [
     { path = "std::fs::read_dir",             reason = "Use umrs_selinux::utils::dirlist::list_directory." },
     { path = "std::fs::metadata",             reason = "Use SecureDirent::from_path; read fields from the returned struct." },
     { path = "std::fs::symlink_metadata",     reason = "Use SecureDirent::from_path; read fields from the returned struct." },
-    { path = "std::fs::read_link",            reason = "No UMRS equivalent yet — flag the gap rather than rolling your own." },
+    { path = "std::fs::read_link",            reason = "Use SecureDirent::symlink_target — captured at construction via readlinkat(2), display-only. Do not call read_link directly." },
 
     # -- DAC / xattrs (obtain via the typed wrappers, not raw syscalls) ----
     { path = "std::os::unix::fs::MetadataExt::mode",  reason = "Prefer SecureDirent::mode / FileMode helpers (is_world_writable, is_setuid, is_setgid, is_sticky)." },
@@ -55,9 +55,12 @@ disallowed-methods = [
     { path = "std::str::from_utf8_unchecked", reason = "Bypasses UTF-8 validation. Use std::str::from_utf8 and handle the error, or document why the input is guaranteed valid." },
 
     # ---------------------------------------------------------------------------
-    # Process control — libraries must not call these; binaries do so only
-    # from main() with an explicit justification.
+    # Process control (SEI CERT C++ ERR50-CPP "Do not abruptly terminate the
+    # program") — libraries must not call these; binaries do so only from main()
+    # with an explicit justification. The C++ rule applies to Rust because
+    # std::process::exit / std::process::abort are the direct language-level
+    # equivalents of std::exit / std::abort and skip destructors in the same way.
     # ---------------------------------------------------------------------------
-    { path = "std::process::exit",            reason = "Skips Drop on live RAII resources. Return an exit code from main() instead." },
-    { path = "std::process::abort",           reason = "Terminates without cleanup. Only valid in response to an already-observed unrecoverable invariant violation." },
+    { path = "std::process::exit",            reason = "ERR50-CPP: skips Drop on live RAII resources. Return an exit code (or a type implementing Termination) from main() instead." },
+    { path = "std::process::abort",           reason = "ERR50-CPP: terminates without destructor cleanup. Only valid in response to an already-observed unrecoverable invariant violation." },
 ]

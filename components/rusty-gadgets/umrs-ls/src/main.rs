@@ -1419,18 +1419,8 @@ fn resolve_goto_path(query: &str, cwd: &Path) -> PathBuf {
 /// - **N matches** → completes the stem to the longest common prefix of
 ///   all matches (no change if the stem is already that prefix).
 ///
-/// # Direct I/O Exception
-///
-/// `std::fs::read_dir` is used here rather than the UMRS listing pipeline.
-/// This is a justified exception because:
-///
-/// - The System State Read Prohibition covers system paths (`/etc/`, `/proc/`,
-///   `/sys/`, `/run/`). Tab completion operates on **user-directed arbitrary
-///   paths** — not system state — making the prohibition inapplicable.
-/// - The operation is UX-only (no security decision, no audit surface).
-///
-/// DIRECT-IO-EXCEPTION: user-directed arbitrary path traversal for keystroke
-/// completion. Reviewed 2026-04-08.
+/// Uses [`list_directory`] from the UMRS listing pipeline for directory
+/// traversal.  No raw `read_dir` call remains in this function.
 fn complete_goto_query(goto: &mut GotoBar) {
     // Work on an owned copy so we can borrow `goto` mutably at the end.
     let query = goto.query.clone();
@@ -1463,8 +1453,8 @@ fn complete_goto_query(goto: &mut GotoBar) {
         PathBuf::from(parent_str)
     };
 
-    let read = match std::fs::read_dir(&parent_path) {
-        Ok(r) => r,
+    let listing = match list_directory(&parent_path) {
+        Ok(l) => l,
         Err(e) => {
             goto.error = Some(format!("{}: {e}", parent_path.display()));
             return;
@@ -1473,11 +1463,13 @@ fn complete_goto_query(goto: &mut GotoBar) {
 
     // Collect (name, is_dir) for every entry whose name starts with `stem`.
     let mut matches: Vec<(String, bool)> = Vec::new();
-    for entry in read.flatten() {
-        let name = entry.file_name().to_string_lossy().into_owned();
-        if name.starts_with(stem) {
-            let is_dir = entry.file_type().map(|ft| ft.is_dir()).unwrap_or(false);
-            matches.push((name, is_dir));
+    for group in &listing.groups {
+        for entry in &group.entries {
+            let name = entry.dirent.name.as_str();
+            if name.starts_with(stem) {
+                let is_dir = entry.dirent.file_type.is_directory();
+                matches.push((name.to_owned(), is_dir));
+            }
         }
     }
 

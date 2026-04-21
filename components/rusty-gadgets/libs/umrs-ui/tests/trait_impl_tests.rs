@@ -38,7 +38,7 @@ impl AuditCardApp for MockApp {
         "Test Report"
     }
 
-    fn report_subject(&self) -> &'static str {
+    fn report_subject(&self) -> &str {
         "mock.host.example"
     }
 
@@ -276,7 +276,7 @@ impl AuditCardApp for MockAppWithFields {
         "Fields Test"
     }
 
-    fn report_subject(&self) -> &'static str {
+    fn report_subject(&self) -> &str {
         "test.subject"
     }
 
@@ -366,7 +366,7 @@ impl AuditCardApp for MockAppThreeTabs {
         "Three Tab Test"
     }
 
-    fn report_subject(&self) -> &'static str {
+    fn report_subject(&self) -> &str {
         "mock.host.example"
     }
 

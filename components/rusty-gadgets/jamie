@@ -1,0 +1,45 @@
+ Four distinct security profiles, not one:                                                                         
+                  
+  L1 — TOCTOU-safe open. Fd-anchored, no reopen, no magic check, no evidence. "User gave me a path, I open it once  
+  and read what's there."
+  - Fits: umrs-stat, umrs-ls, catalog JSON loads, load_state.                                                       
+  - Needed guarantees: single openat/open → all later work off the fd; no silent re-resolve.                        
+                                                                                            
+  L2 — Provenance-verified kernel read. L1 + fstatfs magic check against expected FS (PROC_SUPER_MAGIC / SYSFS_MAGIC
+   / SECURITYFS_MAGIC); typed wrapper enforces path prefix at compile time. Emits an EvidenceRecord but not a full  
+  bundle.                                                                                                           
+  - Fits: /proc/cmdline, /sys/kernel/security/lockdown, /sys/fs/selinux/*.                                          
+  - This is what kattrs::SecureReader<ProcfsText/SysfsText> already does — but its internal File::open is what's    
+  firing the warning at traits.rs:216,307. It's a self-reference: the secure engine calls the disallowed raw    
+  primitive because no L1 exists yet.                                                                               
+                                     
+  L3 — Trust-bearing measured read. L2 + (dev, ino) pinning + digest + EvidenceBundle that can feed a               
+  ConfidenceModel to produce T0–T4.                                                                                 
+  - Fits: /etc/os-release hashing (integrity_check.rs:189), FIPS attestation, anything where the bytes themselves
+  participate in a trust rating.                                                                                    
+                                
+  L4 — Credential/secret read. L3 + DAC guard (mode ≤ 0600, uid match, SELinux type expectation) + Zeroizing buffer 
+  + no temp copies.                                                                                                 
+  - Fits: C2PA private key, future sealed-cache unwrap.
+                                                                                                                    
+  Where each tier can live (and what that unlocks)
+                                                                                                                    
+  L1 (fd-anchored open + read, pure)         → umrs-core   ← no new edges
+  L2 (+ fstatfs magic check)                 → umrs-core   ← still self-contained                                   
+  L3 (+ EvidenceBundle / ConfidenceModel)    → umrs-platform                                                        
+  L4 (+ DAC guard + Zeroizing)               → umrs-platform or a new umrs-secrets                                  
+                                                                                                                    
+  L1 and L2 are pure: no EvidenceBundle, no SecurityContext, no cross-crate types. They can live in umrs-core —     
+  which is a leaf, has no internal deps, and is already depended on by everyone above. That's the unblock. No arrow 
+  inversion, no extracting SecureDirent out of selinux.                                                             
+                  
+  That's the refactoring insight:                                                                                   
+  - Today, SecureDirent (in selinux) is trying to be a do-it-all: TOCTOU safety + metadata + SELinux label + xattrs.
+   That's why it ended up at the top of the stack.                                                                  
+  - Split it. The TOCTOU-safe open + metadata half belongs in umrs-core at L1. The SELinux label read half stays
+  where it is.                                                                                                      
+  - The kattrs engine then rests on the L1 primitive from umrs-core instead of raw File::open, and the warning at   
+  kattrs/traits.rs:216 dissolves.
+
+
+

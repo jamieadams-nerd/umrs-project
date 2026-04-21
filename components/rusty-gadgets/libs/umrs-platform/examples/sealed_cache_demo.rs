@@ -10,7 +10,7 @@
 
 use umrs_platform::{SealedCache, TrustLevel, detect::OsDetector};
 
-fn main() {
+fn main() -> std::process::ExitCode {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("debug")).init();
 
     println!("=== Sealed Evidence Cache (SEC) Demo ===\n");
@@ -40,7 +40,7 @@ fn main() {
         Ok(r) => r,
         Err(e) => {
             eprintln!("Detection pipeline failed (hard gate): {e}");
-            std::process::exit(1);
+            return std::process::ExitCode::from(1);
         }
     };
     let elapsed1 = t0.elapsed();
@@ -84,7 +84,7 @@ fn main() {
         Ok(r) => r,
         Err(e) => {
             eprintln!("Second query failed: {e}");
-            std::process::exit(1);
+            return std::process::ExitCode::from(1);
         }
     };
     let elapsed2 = t1.elapsed();
@@ -112,4 +112,5 @@ fn main() {
     println!("    NIST SP 800-53 SC-12 — ephemeral key, zeroized on drop");
     println!("    NIST SP 800-53 SI-7  — seal failure → re-verify, not stale data");
     println!("    NIST SP 800-53 AU-3  — seal failures logged with log::warn!");
+    std::process::ExitCode::SUCCESS
 }

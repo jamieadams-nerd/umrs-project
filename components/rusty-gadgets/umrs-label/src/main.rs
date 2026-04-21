@@ -135,7 +135,7 @@ struct Args {
 // Entry point
 // ---------------------------------------------------------------------------
 
-fn main() {
+fn main() -> std::process::ExitCode {
     // Initialize gettext catalog before any i18n::tr() calls.
     // NIST SP 800-53 SI-11 — locale is resolved at startup, not on demand.
     i18n::init("umrs-label");
@@ -202,10 +202,13 @@ fn main() {
     verbose!("CA catalog: {}", ca_catalog_path);
 
     // Load US catalog (required).
-    let us_catalog = catalog::load_catalog(&us_catalog_path).unwrap_or_else(|e| {
-        eprintln!("[FAIL] Could not load US catalog: {e}");
-        std::process::exit(2);
-    });
+    let us_catalog = match catalog::load_catalog(&us_catalog_path) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("[FAIL] Could not load US catalog: {e}");
+            return std::process::ExitCode::from(2);
+        }
+    };
     verbose!(
         "US catalog loaded: {} markings",
         us_catalog.iter_markings().count()
@@ -226,17 +229,18 @@ fn main() {
 
     if json_mode {
         eprintln!("[INFO] --json output is not yet implemented for umrs-label");
-        std::process::exit(0);
+        return std::process::ExitCode::SUCCESS;
     }
 
     if cli_mode || !io::stdout().is_terminal() {
         verbose!("Mode: CLI");
         run_cli(&us_catalog, ca_catalog.as_ref());
-        return;
+        return std::process::ExitCode::SUCCESS;
     }
 
     verbose!("Mode: TUI");
     run_tui(us_catalog, ca_catalog);
+    std::process::ExitCode::SUCCESS
 }
 
 // ---------------------------------------------------------------------------

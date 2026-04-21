@@ -55,10 +55,8 @@ use umrs_ui::theme::Theme;
 
 /// Wrapper that implements `AuditCardApp` for the standalone TUI binary.
 ///
-/// The `report_subject()` method leaks the path string to `&'static str` for
-/// the binary's process lifetime.  This is intentional and acceptable for a
-/// single-shot CLI tool; the `FileStatApp` library type uses `String` instead
-/// so it can be embedded in longer-running contexts like `umrs-ls`.
+/// Borrows `report_subject` directly from the inner `FileStatApp::report_subject`
+/// field (a `String`) — no allocation or leak required.
 ///
 /// NIST SP 800-53 AU-3 — every audit card in standalone mode is
 /// self-identifying via report name and subject.
@@ -69,9 +67,8 @@ impl AuditCardApp for StandaloneAuditCard {
         "File Security Audit"
     }
 
-    fn report_subject(&self) -> &'static str {
-        // Leak once per process lifetime — acceptable for a CLI binary.
-        Box::leak(self.0.report_subject.clone().into_boxed_str())
+    fn report_subject(&self) -> &str {
+        &self.0.report_subject
     }
 
     fn card_title(&self) -> String {
@@ -136,7 +133,7 @@ struct Args {
 // Entry point
 // ---------------------------------------------------------------------------
 
-fn main() {
+fn main() -> std::process::ExitCode {
     i18n::init("umrs-stat");
 
     if let Ok(logger) = systemd_journal_logger::JournalLog::new() {
@@ -162,7 +159,7 @@ fn main() {
         s.to_owned()
     } else {
         eprintln!("error: path contains non-UTF-8 characters and cannot be displayed");
-        std::process::exit(1);
+        return std::process::ExitCode::from(1);
     };
 
     verbose!("Target: {}", path_str);
@@ -256,4 +253,5 @@ fn main() {
     }
 
     ratatui::restore();
+    std::process::ExitCode::SUCCESS
 }

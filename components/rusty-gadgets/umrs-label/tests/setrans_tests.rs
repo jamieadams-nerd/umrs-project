@@ -23,6 +23,7 @@
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 use umrs_labels::cui::catalog;
+use umrs_selinux::secure_file;
 
 // ---------------------------------------------------------------------------
 // Path helpers
@@ -120,8 +121,11 @@ impl SetransEntry {
 /// that do not contain `=`) are returned as errors rather than silently skipped,
 /// so callers can distinguish between comment lines and malformed data.
 fn parse_setrans(path: &PathBuf) -> Result<Vec<SetransEntry>, String> {
-    let content = std::fs::read_to_string(path)
-        .map_err(|e| format!("Failed to read {}: {e}", path.display()))?;
+    const MAX_SETRANS_BYTES: usize = 4_194_304; // 4 MiB — matches MAX_CATALOG_BYTES precedent
+
+    let (_dirent, content) =
+        secure_file::read_to_string(path.as_path(), MAX_SETRANS_BYTES)
+            .map_err(|e| format!("Failed to read {}: {e}", path.display()))?;
 
     let mut entries = Vec::new();
 

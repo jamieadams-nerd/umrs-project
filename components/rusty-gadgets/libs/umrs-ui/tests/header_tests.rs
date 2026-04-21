@@ -103,7 +103,7 @@ impl AuditCardApp for MockHeaderApp {
         "OS Detection"
     }
 
-    fn report_subject(&self) -> &'static str {
+    fn report_subject(&self) -> &str {
         "Platform Identity and Integrity"
     }
 

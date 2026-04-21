@@ -1,0 +1,82 @@
+= OS Identity — Secure API Inventory
+
+For developers new to UMRS. You need to know what OS or kernel you are running on — here are three options at increasing assurance levels. For the full detection pipeline, see xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]. If the UMRS column says `(none)` or `not modeled`, flag it on the task board rather than rolling your own.
+
+== uname(2) field coverage
+
+[cols="1,3,3,3,1,1",options="header"]
+|===
+| uname field | Legacy Rust | rustix | UMRS secure method | Evidence | Trust
+
+| sysname
+| `libc::uname()` (unsafe) +
+  `nix::sys::utsname::uname()` +
+  `std::env::consts::OS`
+| `rustix::system::uname().sysname()` → `&CStr`
+| `OsFamily` + `Distro` from `SubstrateIdentity` — derived from the package DB, not the kernel self-report. Evidence via `SourceKind::PackageDb`. Feeds T3 gate.
+| yes
+| T3
+
+| release
+| `libc::uname()` +
+  `nix::sys::utsname::uname()`
+| `rustix::system::uname().release()` → `&CStr`
+| `KernelRelease` + `KernelVersion`, read from `/proc/sys/kernel/osrelease` via `SecureReader<ProcfsText>`. Evidence via `SourceKind::Procfs`, FS-magic-checked.
+| no
+| T1
+
+| version
+| `libc::uname()` +
+  `nix::sys::utsname::uname()`
+| `rustix::system::uname().version()` → `&CStr`
+| Folded into `KernelVersion` — same `/proc/sys/kernel/osrelease` source.
+| no
+| T1
+
+| machine
+| `libc::uname()` +
+  `nix::sys::utsname::uname()` +
+  `std::env::consts::ARCH`
+| `rustix::system::uname().machine()` → `&CStr`
+| `CpuArch` enum is declared in `umrs-platform` but not yet wired into the detect pipeline. The field is not populated today. See <<known-gaps>>.
+| —
+| —
+
+| nodename
+| `libc::gethostname()` +
+  `nix::unistd::gethostname()` +
+  `hostname` crate
+| `rustix::system::uname().nodename()` → `&CStr`
+| not modeled — hostname is intentionally outside the UMRS identity contract
+| —
+| —
+
+| domainname
+| `libc::getdomainname()`
+| `rustix::system::uname().domainname()` → `&CStr`
+| not modeled — same reason as nodename
+| —
+| —
+|===
+
+== Why UMRS rejects uname(2) as an identity source
+
+* `sysname` is always `"Linux"` — it identifies the kernel ABI family, not the distribution.
+* `release` and `version` come from the running kernel with no provenance tier attached — a string, not a measurement.
+* `machine` reports the kernel's architecture, which can legitimately differ from the package-substrate architecture under emulation or multilib environments.
+
+== Where rustix fits
+
+`rustix::system::uname()` is the clean, safe replacement for `libc::uname()` — no unsafe blocks, typed `Uname` struct. It is the right choice when you actually want raw `uname(2)` output. It is not a substitute for the UMRS identity model. If UMRS ever needed to cross-check uname output against substrate identity as a contradiction check, rustix is the primitive it would use internally.
+
+[#known-gaps]
+== Known gaps
+
+`CpuArch` not populated::
+The `CpuArch` enum is declared in `libs/umrs-platform/src/os_identity.rs` and re-exported from `lib.rs`, but no code in the workspace constructs it today. Decision needed: wire it into the detect pipeline or delete the type.
+
+Hostname / domainname unmodeled::
+If a future tool needs these values — unlikely for identity, possible for audit — the design question is whether to model them in UMRS (with provenance) or pass through to rustix. Flag when the need arises.
+
+Direct `std::fs` calls where `SecureReader` exists::
+Some posture sites bypass the secure API that already exists in the same file. Example: `libs/umrs-platform/src/posture/bootcmdline.rs:317` calls `std::fs::read_to_string` directly while the `read_kernel_osrelease` helper in the same file routes through `SecureReader<ProcfsText>`. These are migration opportunities surfaced by Phase B clippy work.

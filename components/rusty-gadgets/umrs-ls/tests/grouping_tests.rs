@@ -57,6 +57,7 @@ fn make_entry(name: &str, size: u64) -> ListEntry {
         is_mountpoint: false,
         encryption: EncryptionSource::None,
         access_denied: false,
+        symlink_target: None,
     };
 
     ListEntry {

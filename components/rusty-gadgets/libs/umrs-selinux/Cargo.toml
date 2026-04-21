@@ -18,10 +18,20 @@ rustix = { version = "1", features = ["fs", "std"] }
 nix    = { version = "0.27", features = ["user", "fs" ] }
 log    = { version = "0.4",  features = ["release_max_level_info"] }
 systemd-journal-logger = "2.2.2"
+# sha2 0.10 — RustCrypto SHA-2 family (pure Rust, no unsafe).
+# Used by secure_file::compute_digests for FIPS-approved SHA-256/SHA-384 streaming.
+# NOT used for trust decisions, key derivation, or MAC generation — display-only.
+# Supply chain: RustCrypto — same audit lineage as sha2 in umrs-stat.
+# FIPS 180-4: SHA-256 (32-byte) and SHA-384 (48-byte) are FIPS-approved.
+# NIST SP 800-53 SI-7: digests support tamper-evidence display by operators.
+sha2 = { version = "0.10", default-features = false }
 
 
 [dev-dependencies]
 criterion = { version = "0.5", features = ["html_reports"] }
+# tempfile — creates temporary files and directories for white-box SecureDirent tests.
+# Already used in umrs-platform dev-dependencies at the same version.
+tempfile = "3"
 
 [[bench]]
 name = "selinux_bench"

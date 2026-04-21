@@ -14,6 +14,8 @@
 
 * Secure API Inventory
 ** xref:file-operations-task.adoc[File operations]
+** xref:os-identity-task.adoc[OS identity]
+** xref:bounded-reads.adoc[Bounded reads]
 
 * Platform Internals
 ** xref:os-detection-deep-dive.adoc[OS Detection Pipeline — Deep Dive]

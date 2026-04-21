@@ -10,16 +10,22 @@
 
 use umrs_labels::cui::catalog;
 
-fn main() {
-    let path = std::env::args().nth(1).unwrap_or_else(|| {
-        eprintln!("Usage: cargo run --example labels -- <catalog.json>");
-        std::process::exit(1);
-    });
+fn main() -> std::process::ExitCode {
+    let path = match std::env::args().nth(1) {
+        Some(p) => p,
+        None => {
+            eprintln!("Usage: cargo run --example labels -- <catalog.json>");
+            return std::process::ExitCode::from(1);
+        }
+    };
 
-    let cat = catalog::load_catalog(&path).unwrap_or_else(|e| {
-        eprintln!("[FAIL] {}", e);
-        std::process::exit(2);
-    });
+    let cat = match catalog::load_catalog(&path) {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("[FAIL] {}", e);
+            return std::process::ExitCode::from(2);
+        }
+    };
 
     // ---------------------------------------------------------------------------
     // Metadata
@@ -112,4 +118,5 @@ fn main() {
             println!("  {key}");
         }
     }
+    std::process::ExitCode::SUCCESS
 }

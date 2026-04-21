@@ -2,6 +2,8 @@
 
 For developers new to UMRS. You need to do something basic with files — here's the secure alternative from our stack. If the UMRS column says `(none)`, flag it on the task board rather than rolling your own.
 
+Every read in UMRS is capped at a documented byte limit — see xref:bounded-reads.adoc[Bounded reads] for the canonical list.
+
 == Opening and reading files
 
 [cols="2,3,3,1,1",options="header"]

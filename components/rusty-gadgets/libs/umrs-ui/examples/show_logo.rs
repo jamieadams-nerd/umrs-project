@@ -99,7 +99,7 @@ impl AuditCardApp for LogoDemoApp {
         "Robot Gallery"
     }
 
-    fn report_subject(&self) -> &'static str {
+    fn report_subject(&self) -> &str {
         "umrs-core built-in ASCII art"
     }
 

@@ -104,6 +104,7 @@ pub mod user;
 pub mod fs_encrypt;
 pub mod posix;
 pub mod secure_dirent;
+pub mod secure_file;
 pub mod utils;
 pub mod xattrs;
 

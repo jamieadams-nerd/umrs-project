@@ -89,7 +89,7 @@ impl AuditCardApp for MinimalApp {
         "Test Report"
     }
 
-    fn report_subject(&self) -> &'static str {
+    fn report_subject(&self) -> &str {
         "test subject"
     }
 
@@ -193,7 +193,7 @@ impl AuditCardApp for TwoColumnApp {
         "TwoColumn Test"
     }
 
-    fn report_subject(&self) -> &'static str {
+    fn report_subject(&self) -> &str {
         "two-column layout test"
     }
 

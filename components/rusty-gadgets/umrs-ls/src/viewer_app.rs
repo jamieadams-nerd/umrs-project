@@ -96,80 +96,37 @@ pub struct DirMeta {
 impl DirMeta {
     /// Stat a directory path and extract its security metadata.
     ///
-    /// Attempts `SecureDirent::from_path` first.  For paths where
-    /// `SecureDirent` cannot construct a `ValidatedFileName` (notably `/`,
-    /// which has no filename component), falls back to a manual stat +
-    /// SELinux context read so the header still shows real metadata.
-    fn from_path(path: &Path) -> Self {
-        if let Ok(d) = SecureDirent::from_path(path) {
-            let ft = crate::tree_adapter::file_type_char_pub(d.file_type);
-            let mode = format!("{ft}{}", d.mode.as_mode_str());
-            let uid = d.ownership.user.uid.as_u32();
-            let gid = d.ownership.group.gid.as_u32();
-            let (owner, group) = resolve_owner_display(uid, gid);
-            let (selinux_type, marking) = extract_selinux_short(&d);
-            let is_mountpoint = d.is_mountpoint;
-            let encryption = detect_enclosing_encryption(path);
-            return Self {
-                mode,
-                owner,
-                group,
-                selinux_type,
-                marking,
-                is_mountpoint,
-                encryption,
-            };
-        }
-
-        // Fallback: manual stat for paths rejected by ValidatedFileName
-        // (e.g., `/` which has no filename component).
-        // DIRECT-IO-EXCEPTION: display-only header metadata for the root
-        // directory; no trust decision is made from this data.
-        Self::from_metadata_fallback(path)
-    }
-
-    /// Stat fallback used when `SecureDirent::from_path` cannot construct a
-    /// `ValidatedFileName` for the path (e.g., `/`).
+    /// Delegates entirely to [`SecureDirent::from_path`], which now handles
+    /// paths with no filename component (e.g., `/`) via the crate-private
+    /// `ValidatedFileName::root()` constructor.  If `from_path` fails for any
+    /// reason (a genuine I/O or validation error, not a missing filename
+    /// component), returns `Self::placeholder()` — fail closed.
     ///
-    /// Uses `std::fs::symlink_metadata` for POSIX attributes and
-    /// `umrs_selinux::utils::get_file_context` (fd-anchored, TPI-validated)
-    /// for the SELinux context.  The result is display-only; no security
-    /// decision is derived from it.
-    fn from_metadata_fallback(path: &Path) -> Self {
-        use std::os::unix::fs::MetadataExt as _;
-
-        use umrs_selinux::posix::primitives::FileMode;
-        use umrs_selinux::secure_dirent::FileType;
-
-        let Ok(meta) = std::fs::symlink_metadata(path) else {
-            return Self::placeholder();
-        };
-
-        let file_mode = FileMode::from_mode(meta.mode());
-        let file_type = FileType::from_mode(meta.mode());
-        let ft = crate::tree_adapter::file_type_char_pub(file_type);
-        let mode = format!("{ft}{}", file_mode.as_mode_str());
-
-        let (owner, group) = resolve_owner_display(meta.uid(), meta.gid());
-
-        let (selinux_type, marking) = selinux_from_path(path);
-
-        let is_mountpoint = path == Path::new("/")
-            || path.parent().is_none_or(|parent| {
-                std::fs::symlink_metadata(parent).map_or(true, |pm| pm.dev() != meta.dev())
-            });
-
-        let encryption = detect_enclosing_encryption(path);
-
-        Self {
-            mode,
-            owner,
-            group,
-            selinux_type,
-            marking,
-            is_mountpoint,
-            encryption,
-        }
+    /// NIST SP 800-53 AU-3: security posture of the listed directory is
+    /// displayed on every rendered frame.
+    fn from_path(path: &Path) -> Self {
+        SecureDirent::from_path(path).map_or_else(
+            |_| Self::placeholder(),
+            |d| {
+                let ft = crate::tree_adapter::file_type_char_pub(d.file_type);
+                let mode = format!("{ft}{}", d.mode.as_mode_str());
+                let uid = d.ownership.user.uid.as_u32();
+                let gid = d.ownership.group.gid.as_u32();
+                let (owner, group) = resolve_owner_display(uid, gid);
+                let (selinux_type, marking) = extract_selinux_short(&d);
+                let is_mountpoint = d.is_mountpoint;
+                let encryption = detect_enclosing_encryption(path);
+                Self {
+                    mode,
+                    owner,
+                    group,
+                    selinux_type,
+                    marking,
+                    is_mountpoint,
+                    encryption,
+                }
+            },
+        )
     }
 
     /// Return a placeholder `DirMeta` used when stat fails entirely.
@@ -490,37 +447,6 @@ fn format_elapsed(elapsed_us: u64) -> String {
     }
 }
 
-/// Read SELinux type and translated marking directly from a filesystem path.
-///
-/// Used as a fallback when `SecureDirent::from_path` cannot construct a
-/// `ValidatedFileName` (e.g., for `/`).  Opens the path via
-/// `umrs_selinux::utils::get_file_context`, which is fd-anchored and
-/// TPI-validated.  Returns `("?", "?")` on any failure.
-///
-/// NIST SP 800-53 AU-3 — security context of the listed directory is
-/// audit-relevant header context.
-fn selinux_from_path(path: &Path) -> (String, String) {
-    use umrs_selinux::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange};
-    use umrs_selinux::utils::get_file_context;
-
-    match get_file_context(path) {
-        Ok(ctx) => {
-            let selinux_type = ctx.security_type().to_string();
-            let marking = ctx.level().map_or_else(
-                || "<no-level>".to_owned(),
-                |lvl| {
-                    let range = SecurityRange::from_level(lvl);
-                    GLOBAL_TRANSLATOR.read().map_or_else(
-                        |_| lvl.raw().to_owned(),
-                        |g| g.lookup(&range).unwrap_or_else(|| lvl.raw().to_owned()),
-                    )
-                },
-            );
-            (selinux_type, marking)
-        }
-        Err(_) => ("?".to_owned(), "?".to_owned()),
-    }
-}
 
 /// Extract SELinux type and translated marking from a `SecureDirent`.
 ///

@@ -297,7 +297,7 @@ impl AuditCardApp for OsDetectApp {
         "OS Detection"
     }
 
-    fn report_subject(&self) -> &'static str {
+    fn report_subject(&self) -> &str {
         "Platform Identity and Integrity"
     }
 
@@ -1821,11 +1821,11 @@ fn main() {
     // Handle reserved future modes — emit informational message and exit.
     if args.json {
         eprintln!("[INFO] --json output is not yet implemented for umrs-uname");
-        std::process::exit(0);
+        return;
     }
     if args.cli {
         eprintln!("[INFO] --cli output is not yet implemented for umrs-uname");
-        std::process::exit(0);
+        return;
     }
 
     // ── Logging ──────────────────────────────────────────────────────────

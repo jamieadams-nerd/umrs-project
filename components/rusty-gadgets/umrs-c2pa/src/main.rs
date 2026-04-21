@@ -163,7 +163,21 @@ enum CredsAction {
     Validate,
 }
 
-fn main() -> Result<()> {
+fn main() -> std::process::ExitCode {
+    match run() {
+        Ok(true) => std::process::ExitCode::from(1),
+        Ok(false) => std::process::ExitCode::SUCCESS,
+        Err(e) => {
+            eprintln!("error: {e:#}");
+            std::process::ExitCode::from(1)
+        }
+    }
+}
+
+/// Inner entry point. Returns `Ok(true)` when validation checks report failures
+/// (non-zero exit warranted), `Ok(false)` on clean success, or `Err` on a hard
+/// operational failure (I/O, config parse, etc.).
+fn run() -> Result<bool> {
     // Initialize the i18n subsystem before any user-facing output.
     // This binds the "umrs-c2pa" gettext domain so that tr() calls resolve
     // against the correct message catalog for the active system locale.
@@ -256,17 +270,16 @@ fn main() -> Result<()> {
     log::set_max_level(level_filter);
 
     // Dispatch: subcommand takes priority, otherwise inspect a file.
-    match cli.command {
+    let had_failures = match cli.command {
         Some(Commands::Config {
             action,
         }) => match action {
-            ConfigAction::Validate => {
-                cmd_config_validate(&config);
-            }
+            ConfigAction::Validate => cmd_config_validate(&config),
             ConfigAction::Generate {
                 output,
             } => {
                 cmd_config_generate(output.as_deref())?;
+                false
             }
         },
         Some(Commands::Creds {
@@ -278,10 +291,9 @@ fn main() -> Result<()> {
                 days,
             } => {
                 cmd_creds_generate(&config, &output, csr, days)?;
+                false
             }
-            CredsAction::Validate => {
-                cmd_creds_validate(&config);
-            }
+            CredsAction::Validate => cmd_creds_validate(&config),
         },
         None => {
             // Default action: inspect or sign a file.
@@ -290,7 +302,7 @@ fn main() -> Result<()> {
                 use clap::CommandFactory;
                 Cli::command().print_help()?;
                 println!();
-                return Ok(());
+                return Ok(false);
             };
             cmd_c2pa(
                 &file,
@@ -301,10 +313,11 @@ fn main() -> Result<()> {
                 cli.output.as_deref(),
                 &config,
             )?;
+            false
         }
-    }
+    };
 
-    Ok(())
+    Ok(had_failures)
 }
 
 // ── inspect / sign a file ────────────────────────────────────────────────────
@@ -439,7 +452,8 @@ fn cmd_c2pa(
 
 // ── config validate ──────────────────────────────────────────────────────────
 
-fn cmd_config_validate(config: &UmrsConfig) {
+/// Returns `true` when one or more checks failed (non-zero exit warranted).
+fn cmd_config_validate(config: &UmrsConfig) -> bool {
     verbose!("{}", i18n::tr("Running configuration preflight checks..."));
     let results = validate_config(config);
     let n = results.len();
@@ -454,11 +468,9 @@ fn cmd_config_validate(config: &UmrsConfig) {
     );
     print_validation_report(&results);
 
-    let failures = results.iter().filter(|r| r.status == c2pa::validate::CheckStatus::Fail).count();
-
-    if failures > 0 {
-        std::process::exit(1);
-    }
+    let failures =
+        results.iter().filter(|r| r.status == c2pa::validate::CheckStatus::Fail).count();
+    failures > 0
 }
 
 // ── config generate ──────────────────────────────────────────────────────────
@@ -771,7 +783,8 @@ fn cmd_creds_generate(
 
 // ── creds validate ───────────────────────────────────────────────────────────
 
-fn cmd_creds_validate(config: &UmrsConfig) {
+/// Returns `true` when one or more credential checks failed (non-zero exit warranted).
+fn cmd_creds_validate(config: &UmrsConfig) -> bool {
     verbose!(
         "{}",
         i18n::tr("Validating configured signing credentials...")
@@ -812,8 +825,9 @@ fn cmd_creds_validate(config: &UmrsConfig) {
             "{} umrs-c2pa creds generate --output /path/to/certs/",
             i18n::tr("To generate new credentials:")
         );
-        std::process::exit(1);
+        true
     } else {
         println!("{}", i18n::tr("All checks passed."));
+        false
     }
 }

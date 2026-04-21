@@ -45,6 +45,7 @@ fn make_entry_full(name: &str, size: u64, file_type: FileType) -> ListEntry {
         sec_flags: InodeSecurityFlags::empty(),
         is_mountpoint: false,
         encryption: EncryptionSource::None,
+        symlink_target: None,
         access_denied: false,
     };
 

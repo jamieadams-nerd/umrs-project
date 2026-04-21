@@ -64,8 +64,9 @@
 //!   decisions are present; no convenience fields that expand attack surface.
 
 use std::fs::File;
+use std::io::Read as _;
 use std::os::unix::fs::MetadataExt;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 #[cfg(debug_assertions)]
 use std::time::Instant;
@@ -213,11 +214,18 @@ pub const NAME_MAX: usize = 255;
 ///   null byte, too long, or directory separator).
 /// - `SelinuxReadError(std::io::Error)` — SELinux xattr read failed.
 /// - `SelinuxParseError` — SELinux label bytes were not valid UTF-8 or failed both parse paths.
+/// - `ContentTooLarge { size, limit }` — file size exceeds the caller-supplied `max_bytes` cap.
+///   Used by `from_path_with_content` to prevent unbounded allocation on adversarial inputs.
+/// - `NotRegularFile` — the path does not refer to a regular file; used by
+///   `from_path_with_content` to reject directories, symlinks, and devices.
+/// - `Io(std::io::Error)` — I/O error reading file content in `from_path_with_content`.
 ///
 /// ## Compliance
 ///
 /// - **NIST SP 800-53 AU-3**: error variants carry sufficient detail for audit record generation
 ///   without requiring string parsing by the caller.
+/// - **NIST SP 800-53 SI-10**: `ContentTooLarge` enforces an explicit input-size bound,
+///   preventing resource exhaustion from malformed or adversarial catalog/config files.
 #[derive(Debug)]
 pub enum SecDirError {
     Metadata(std::io::Error),
@@ -225,6 +233,30 @@ pub enum SecDirError {
     InvalidFileName,
     SelinuxReadError(std::io::Error),
     SelinuxParseError,
+    /// File size `size` exceeds the caller-supplied read cap `limit`.
+    ContentTooLarge { size: u64, limit: usize },
+    /// Path does not refer to a regular file.
+    NotRegularFile,
+    /// I/O error reading file content.
+    Io(std::io::Error),
+    /// File is smaller than the requested magic-byte read.
+    ///
+    /// `size` is the actual file size; `wanted` is the number of bytes requested.
+    /// Used by `secure_file::read_magic` to distinguish a file that is simply
+    /// too short to hold a magic header from genuine I/O errors.
+    ///
+    /// NIST SP 800-53 SI-10: callers can fail closed rather than treating
+    /// a truncated file as matching a magic pattern.
+    FileTooSmall { size: u64, wanted: usize },
+    /// File content is not valid UTF-8.
+    ///
+    /// Returned by `secure_file::read_to_string` when the bytes read from the
+    /// file cannot be decoded as UTF-8. Carries the byte offset of the first
+    /// invalid sequence so the caller can produce a useful diagnostic.
+    ///
+    /// NIST SP 800-53 SI-10: callers must not silently substitute replacement
+    /// characters for invalid bytes in security-relevant content.
+    InvalidUtf8(std::str::Utf8Error),
 }
 
 impl std::fmt::Display for SecDirError {
@@ -239,6 +271,15 @@ impl std::fmt::Display for SecDirError {
             Self::SelinuxParseError => {
                 write!(f, "SELinux context parse failed (both paths)")
             }
+            Self::ContentTooLarge { size, limit } => {
+                write!(f, "file size {size} exceeds read limit {limit}")
+            }
+            Self::NotRegularFile => write!(f, "path is not a regular file"),
+            Self::Io(e) => write!(f, "I/O error reading file content: {e}"),
+            Self::FileTooSmall { size, wanted } => {
+                write!(f, "file size {size} is smaller than requested {wanted} bytes")
+            }
+            Self::InvalidUtf8(e) => write!(f, "file content is not valid UTF-8: {e}"),
         }
     }
 }
@@ -485,6 +526,26 @@ pub mod path {
                 return Err(PathError::InvalidComponent(raw.to_owned()));
             }
             Ok(Self(raw.to_owned()))
+        }
+
+        /// Construct a root-path name holding `"/"`.
+        ///
+        /// This is an explicit, documented exception to the no-separator invariant
+        /// of [`ValidatedFileName::new`].  It exists solely for use by
+        /// [`SecureDirent::from_path`] when `Path::file_name()` returns `None`
+        /// (i.e., the path has no filename component, as is the case for `/`).
+        ///
+        /// The resulting `ValidatedFileName` holds the single character `"/"` so
+        /// that callers doing `dirent.name.as_str()` receive a sensible display
+        /// string without encountering a panic.
+        ///
+        /// Do not use this constructor anywhere other than `from_path`'s
+        /// filename-extraction step.
+        ///
+        /// NIST SP 800-53 SI-10 — documented exception to the input validation
+        /// rule; the invariant relaxation is constrained to this one call site.
+        pub(crate) fn root() -> Self {
+            Self("/".to_owned())
         }
 
         /// Construct from `&OsStr`, explicitly rejecting non-UTF8.
@@ -855,6 +916,9 @@ pub mod flags {
 ///   `EncryptionSource::None` for non-mount-point entries. NIST SP 800-53 SC-28.
 /// - `access_denied` — access was denied during attribute reads; part of the audit record.
 ///   NIST SP 800-53 AU-3.
+/// - `symlink_target` — for symlinks: the target path captured via `readlinkat(2)` at
+///   construction time. `None` for non-symlinks or if readlink fails. Display-only;
+///   must not drive security decisions. NIST SP 800-53 AU-3.
 ///
 /// ## Compliance
 ///
@@ -884,24 +948,280 @@ pub struct SecureDirent {
     pub is_mountpoint: bool,
     pub encryption: crate::fs_encrypt::EncryptionSource,
     pub access_denied: bool,
+
+    // Symlink resolution (display-only, captured at construction).
+    //
+    // TOCTOU: the target is captured once via readlinkat(2) and may have changed
+    // since. This field is display-only and MUST NOT drive any security decision.
+    // NIST SP 800-53 AU-3: resolved target contributes to the audit record.
+    pub symlink_target: Option<PathBuf>,
 }
 
 impl SecureDirent {
+    // =======================================================================
+    // crate-private construction helper
+    // =======================================================================
+
+    /// Open `path` once, build the full metadata snapshot, then hand the open
+    /// `File` and the resulting `SecureDirent` to `with_fd` for any
+    /// operation-specific work. The fd is dropped before this function returns;
+    /// the caller receives the metadata snapshot alongside whatever `with_fd`
+    /// returns.
+    ///
+    /// This is the shared body for `from_path` and all `secure_file::*`
+    /// functions. It exists to eliminate duplication of the TOCTOU-safe
+    /// construction sequence (lstat → validate → open → xattr reads → drop fd)
+    /// across all entry points that need both metadata and file content.
+    ///
+    /// `from_path` uses `open_and_observe(path, |_, _| Ok(()))`.
+    /// The `secure_file::*` functions each supply their own closure.
+    ///
+    /// ## TOCTOU safety
+    ///
+    /// `symlink_metadata()` is called before `File::open()`. After open, the
+    /// path is never re-resolved; all subsequent reads go through the fd.
+    /// The symlink target is captured via `rustix::fs::readlink()` on the
+    /// same `path` immediately after the lstat — acceptable because symlink
+    /// resolution is display-only and does not drive any security decision.
+    ///
+    /// ## Access-denial semantics
+    ///
+    /// If `File::open()` returns a permission error, `with_fd` is called with
+    /// a `None` file handle represented as early return: the `SecureDirent` is
+    /// returned with `access_denied = true` and empty `sec_flags`. The caller's
+    /// closure is NOT invoked in this case (there is no fd to pass). If this
+    /// behavior is not appropriate for the caller, the caller must check
+    /// `dirent.access_denied` before trusting the secondary result `R`.
+    ///
+    /// ## Errors
+    ///
+    /// Returns `Err` for hard failures: `symlink_metadata()` failure, path
+    /// validation failure, or invalid filename. Access denial is not an error.
+    ///
+    /// NIST SP 800-53 AU-3 / AC-3 / AC-4 / SI-7.
+    /// NSA RTB: Non-Bypassability, Redundancy/TPI, Minimized TCB.
+    #[expect(
+        clippy::too_many_lines,
+        reason = "single sequential TOCTOU-safe construction sequence shared by all entry points; \
+                  splitting would obscure the security-critical fd-anchored ordering"
+    )]
+    pub(crate) fn open_and_observe<F, R>(
+        path: &Path,
+        with_fd: F,
+    ) -> Result<(Self, R), SecDirError>
+    where
+        F: FnOnce(&mut File, &Self) -> Result<R, SecDirError>,
+    {
+        #[cfg(debug_assertions)]
+        let start = Instant::now();
+
+        // Step 1: symlink_metadata — does NOT follow symlinks.
+        // TOCTOU: we capture the lstat result before opening.
+        let meta = std::fs::symlink_metadata(path).map_err(SecDirError::Metadata)?;
+
+        // Step 2: Validate and type the path.
+        let abs_path = path
+            .to_str()
+            .ok_or(SecDirError::InvalidPath(path::PathError::ContainsNull))
+            .and_then(|s| AbsolutePath::new(s).map_err(SecDirError::InvalidPath))?;
+
+        // Step 3: Validate and type the filename component.
+        // Non-UTF8 filenames are rejected here — explicit OsStr boundary.
+        let validated_name = match path.file_name() {
+            Some(name_os) => {
+                let s = name_os.to_str().ok_or(SecDirError::InvalidFileName)?;
+                ValidatedFileName::new(s).map_err(|_| SecDirError::InvalidFileName)?
+            }
+            None => ValidatedFileName::root(),
+        };
+
+        // Step 4: Extract primitives from Metadata, then discard it.
+        // NSA RTB: Minimized TCB — do not retain kernel objects.
+        let inode = posix::primitives::Inode::new(meta.ino());
+        let size = posix::primitives::FileSize::new(meta.size());
+        let mode = posix::primitives::FileMode::from_mode(meta.mode());
+        let nlink = posix::primitives::HardLinkCount::from_u64(meta.nlink());
+        let dev = posix::primitives::DevId::new(meta.dev());
+        let file_type = FileType::from_mode(meta.mode());
+        let ownership = posix::identity::LinuxOwnership::resolve(
+            posix::primitives::Uid::new(meta.uid()),
+            posix::primitives::Gid::new(meta.gid()),
+        );
+
+        // Step 4b: Capture symlink target (display-only).
+        // TOCTOU: captured immediately after lstat; may change at any time.
+        // rustix::fs::readlink is path-based but acceptable here because the
+        // target is display-only and never drives a security decision.
+        // NIST SP 800-53 AU-3: resolved target is part of the audit record.
+        let symlink_target = if file_type.is_symlink() {
+            rustix::fs::readlink(path, Vec::new()).ok().map(|s| {
+                PathBuf::from(s.to_string_lossy().as_ref())
+            })
+        } else {
+            None
+        };
+
+        // Step 5: Open the file once — all attribute reads use this fd.
+        // TOCTOU: after this open, path is never re-resolved.
+        // NSA RTB: Non-Bypassability — fd-based attribute reads.
+        #[expect(
+            clippy::option_if_let_else,
+            reason = "explicit match is clearer here: the error arm sets a boolean side-effect \
+                      that map_or_else would obscure"
+        )]
+        let (file_opt, mut access_denied) = match File::open(path) {
+            Ok(f) => (Some(f), false),
+            Err(_) => (None, true),
+        };
+
+        let mut sec_flags = InodeSecurityFlags::empty();
+        let mut selinux_label = SelinuxCtxState::Unlabeled;
+
+        if let Some(ref file) = file_opt {
+            // Step 6: Inode flags via ioctl(FS_IOC_GETFLAGS) through the fd.
+            if let Ok(iflags) = ioctl_getflags(file) {
+                let raw = iflags.bits();
+                if raw & IFlags::IMMUTABLE.bits() != 0 {
+                    sec_flags |= InodeSecurityFlags::IMMUTABLE;
+                }
+                if raw & IFlags::APPEND.bits() != 0 {
+                    sec_flags |= InodeSecurityFlags::APPEND_ONLY;
+                }
+                if raw & IFlags::NODUMP.bits() != 0 {
+                    sec_flags |= InodeSecurityFlags::NO_DUMP;
+                }
+                if raw & IFlags::NOATIME.bits() != 0 {
+                    sec_flags |= InodeSecurityFlags::NO_ATIME;
+                }
+                if raw & IFlags::UNRM.bits() != 0 {
+                    sec_flags |= InodeSecurityFlags::UNDELETE;
+                }
+            }
+
+            // Step 7: POSIX ACL xattr.
+            let has_acl = SecureXattrReader::read_raw(file, "system.posix_acl_access")
+                .map(|v| !v.is_empty())
+                .unwrap_or(false);
+            if has_acl {
+                sec_flags |= InodeSecurityFlags::ACL_PRESENT;
+            }
+
+            // Step 8: IMA xattr.
+            let has_ima = SecureXattrReader::read_raw(file, "security.ima")
+                .map(|v| !v.is_empty())
+                .unwrap_or(false);
+            if has_ima {
+                sec_flags |= InodeSecurityFlags::IMA_PRESENT;
+            }
+
+            // Step 9: SELinux context — dual-path RTB gate.
+            sec_flags |= InodeSecurityFlags::XATTR_PRESENT;
+            match SecureXattrReader::read_context(file) {
+                Ok(ctx) => {
+                    sec_flags |= InodeSecurityFlags::SELINUX_XATTR;
+                    selinux_label = SelinuxCtxState::Labeled(Box::new(ctx));
+                }
+                Err(XattrReadError::OsError(ref e))
+                    if e.raw_os_error().is_some()
+                        && e.kind() == std::io::ErrorKind::PermissionDenied =>
+                {
+                    log::warn!("SELinux xattr access denied for {abs_path}: {e}");
+                    access_denied = true;
+                }
+                Err(XattrReadError::OsError(ref e)) => {
+                    log::debug!("SELinux xattr not present for {abs_path}: {e}");
+                }
+                Err(XattrReadError::Tpi(TpiError::Disagreement(_, _))) => {
+                    log::error!(
+                        "TPI disagreement on SELinux label for {abs_path} \
+                         — object treated as unverifiable"
+                    );
+                    selinux_label = SelinuxCtxState::TpiDisagreement;
+                }
+                Err(XattrReadError::Tpi(_)) => {
+                    log::warn!(
+                        "SELinux label parse failure for {abs_path} — \
+                         label present but unverifiable"
+                    );
+                    selinux_label = SelinuxCtxState::ParseFailure;
+                }
+            }
+        }
+
+        // Step 10: Mount point detection.
+        let is_mountpoint = path
+            .parent()
+            .and_then(|p| std::fs::symlink_metadata(p).ok())
+            .is_some_and(|pm| !dev.same_device_as(posix::primitives::DevId::new(pm.dev())));
+
+        // Step 11: Encryption detection — only for mount points.
+        let encryption = if is_mountpoint {
+            crate::fs_encrypt::detect_mount_encryption(path)
+        } else {
+            crate::fs_encrypt::EncryptionSource::None
+        };
+
+        let dirent = Self {
+            path: abs_path,
+            name: validated_name,
+            file_type,
+            inode,
+            size,
+            mode,
+            nlink,
+            dev,
+            ownership,
+            selinux_label,
+            sec_flags,
+            is_mountpoint,
+            encryption,
+            access_denied,
+            symlink_target,
+        };
+
+        // Step 12: Invoke the caller's closure with the open fd (if available),
+        // then drop the fd before returning. If access was denied, skip the
+        // closure — there is no fd to pass.
+        let extra = if let Some(mut file) = file_opt {
+            let result = with_fd(&mut file, &dirent)?;
+            // fd dropped here — NSA RTB: Minimized TCB.
+            result
+        } else {
+            // Access was denied; closure cannot run. Callers that require fd
+            // access (e.g., read_bytes) will return an error naturally because
+            // the dirent has access_denied = true and no bytes were produced.
+            // We need a value of type R; we cannot produce one without the fd.
+            // Return the dirent with access_denied = true and propagate an Io
+            // error so that the caller's ? operator surfaces it cleanly.
+            return Err(SecDirError::Io(std::io::Error::new(
+                std::io::ErrorKind::PermissionDenied,
+                "open failed — access denied",
+            )));
+        };
+
+        #[cfg(debug_assertions)]
+        log::debug!(
+            "SecureDirent::open_and_observe completed in {} µs — access_denied: {}, \
+             label_state: {}",
+            start.elapsed().as_micros(),
+            dirent.access_denied,
+            match &dirent.selinux_label {
+                SelinuxCtxState::Labeled(_) => "labeled",
+                SelinuxCtxState::Unlabeled => "unlabeled",
+                SelinuxCtxState::ParseFailure => "parse-failure",
+                SelinuxCtxState::TpiDisagreement => "tpi-disagreement",
+            },
+        );
+
+        Ok((dirent, extra))
+    }
+
     /// Construct a `SecureDirent` by reading all security attributes from
     /// the filesystem object at `path`.
     ///
-    /// ## TOCTOU Safety
-    ///
-    /// `symlink_metadata()` does not follow symlinks — the entry is for
-    /// the symlink itself, not its target. After `File::open()`, all
-    /// attribute reads use the same fd, so the path is never re-resolved.
-    ///
-    /// ## SELinux Context
-    ///
-    /// Read via `SecureXattrReader::read_context()` which runs two
-    /// independent parse paths (nom + FromStr) and enforces agreement.
-    /// If the paths disagree, an error is returned. This is the RTB
-    /// redundancy / TPI gate.
+    /// This is a thin wrapper over the crate-private `open_and_observe` helper
+    /// with a no-op closure. All TOCTOU-safe construction logic, inode flag reads,
+    /// xattr reads, and SELinux TPI gating are performed in that helper.
     ///
     /// ## Partial Population
     ///
@@ -921,38 +1241,53 @@ impl SecureDirent {
     ///
     /// NIST SP 800-53 AU-3 / SI-7 / AC-3 / AC-4.
     /// NSA RTB: Non-Bypassability, Redundancy/TPI, Minimized TCB.
-    // The xattr permission-denial branch adds a few lines beyond the 100-line
-    // default limit.  The function is a single sequential construction sequence
-    // with no hidden branches; splitting it would hurt readability more than help.
-    #[expect(
-        clippy::too_many_lines,
-        reason = "single sequential TOCTOU-safe construction sequence; splitting would obscure the security-critical ordering"
-    )]
     pub fn from_path(path: &Path) -> Result<Self, SecDirError> {
-        #[cfg(debug_assertions)]
-        let start = Instant::now();
+        // For from_path the access-denied case should NOT be an error —
+        // we want a partial entry. Handle that by calling open_and_observe
+        // with a no-op closure, but map the access-denied Io error back to
+        // a partial entry by repeating the lstat-only path in that case.
+        //
+        // Rationale for the dual-path approach: open_and_observe's access-denied
+        // branch returns Err so that content-requiring callers (read_bytes etc.)
+        // fail cleanly. from_path has different semantics: it returns Ok with
+        // access_denied = true even when open fails. We reconcile these by
+        // falling back to the lstat-only path when Io(PermissionDenied) is seen.
+        match Self::open_and_observe(path, |_, _| Ok(())) {
+            Ok((dirent, ())) => Ok(dirent),
+            Err(SecDirError::Io(ref e))
+                if e.kind() == std::io::ErrorKind::PermissionDenied =>
+            {
+                // File::open was denied — build the partial entry from lstat only.
+                Self::from_path_lstat_only(path)
+            }
+            Err(e) => Err(e),
+        }
+    }
 
-        // Step 1: symlink_metadata — does NOT follow symlinks
-        // TOCTOU: we capture the lstat result before opening.
+    /// Build a partial `SecureDirent` from `symlink_metadata()` alone.
+    ///
+    /// Used exclusively by `from_path` when `File::open()` is denied.
+    /// The resulting entry has `access_denied = true`, empty `sec_flags`,
+    /// and `selinux_label = Unlabeled`.
+    ///
+    /// NIST SP 800-53 AU-3: partial entries must still carry path, inode,
+    /// mode, and ownership for audit record completeness.
+    fn from_path_lstat_only(path: &Path) -> Result<Self, SecDirError> {
         let meta = std::fs::symlink_metadata(path).map_err(SecDirError::Metadata)?;
 
-        // Step 2: Validate and type the path
         let abs_path = path
             .to_str()
             .ok_or(SecDirError::InvalidPath(path::PathError::ContainsNull))
             .and_then(|s| AbsolutePath::new(s).map_err(SecDirError::InvalidPath))?;
 
-        // Step 3: Validate and type the filename component
-        // Non-UTF8 filenames are rejected here — explicit OsStr boundary.
-        let validated_name = path
-            .file_name()
-            .unwrap_or_else(|| std::ffi::OsStr::new("/"))
-            .to_str()
-            .ok_or(SecDirError::InvalidFileName)
-            .and_then(|s| ValidatedFileName::new(s).map_err(|_| SecDirError::InvalidFileName))?;
+        let validated_name = match path.file_name() {
+            Some(name_os) => {
+                let s = name_os.to_str().ok_or(SecDirError::InvalidFileName)?;
+                ValidatedFileName::new(s).map_err(|_| SecDirError::InvalidFileName)?
+            }
+            None => ValidatedFileName::root(),
+        };
 
-        // Step 4: Extract primitives from Metadata, then discard it
-        // NSA RTB: Minimized TCB — do not retain kernel objects.
         let inode = posix::primitives::Inode::new(meta.ino());
         let size = posix::primitives::FileSize::new(meta.size());
         let mode = posix::primitives::FileMode::from_mode(meta.mode());
@@ -964,157 +1299,26 @@ impl SecureDirent {
             posix::primitives::Gid::new(meta.gid()),
         );
 
-        // Step 5: Open the file once — all attribute reads use this fd
-        // TOCTOU: after this open, path is never re-resolved.
-        // NSA RTB: Non-Bypassability — fd-based attribute reads.
-        #[expect(
-            clippy::option_if_let_else,
-            reason = "explicit match is clearer here: the error arm sets a boolean side-effect that map_or_else would obscure"
-        )]
-        let (file_opt, mut access_denied) = match File::open(path) {
-            Ok(f) => (Some(f), false),
-            Err(_) => (None, true),
+        let symlink_target = if file_type.is_symlink() {
+            rustix::fs::readlink(path, Vec::new()).ok().map(|s| {
+                PathBuf::from(s.to_string_lossy().as_ref())
+            })
+        } else {
+            None
         };
-
-        let mut sec_flags = InodeSecurityFlags::empty();
-        // Default to Unlabeled; updated below if an xattr is found.
-        let mut selinux_label = SelinuxCtxState::Unlabeled;
-
-        if let Some(ref file) = file_opt {
-            // Step 6: Inode flags via ioctl(FS_IOC_GETFLAGS)
-            // NOT via sysfs/procfs — direct ioctl through our fd.
-            // This is the correct, TOCTOU-safe path per KATTRS design.
-            if let Ok(iflags) = ioctl_getflags(file) {
-                // Map kernel IFlags bits to our InodeSecurityFlags.
-                // We store our own bitfield rather than IFlags directly
-                // to allow adding xattr-derived flags in the same set.
-                let raw = iflags.bits();
-                if raw & IFlags::IMMUTABLE.bits() != 0 {
-                    sec_flags |= InodeSecurityFlags::IMMUTABLE;
-                }
-                if raw & IFlags::APPEND.bits() != 0 {
-                    sec_flags |= InodeSecurityFlags::APPEND_ONLY;
-                }
-                if raw & IFlags::NODUMP.bits() != 0 {
-                    sec_flags |= InodeSecurityFlags::NO_DUMP;
-                }
-                if raw & IFlags::NOATIME.bits() != 0 {
-                    sec_flags |= InodeSecurityFlags::NO_ATIME;
-                }
-                //if raw & IFlags::SECRM.bits() != 0 {
-                //    sec_flags |= InodeSecurityFlags::SECURE_DELETE;
-                //}
-                if raw & IFlags::UNRM.bits() != 0 {
-                    sec_flags |= InodeSecurityFlags::UNDELETE;
-                }
-            }
-
-            // Step 7: POSIX ACL xattr
-            // NIST SP 800-53 AC-3: detect extended DAC in effect.
-            let has_acl = SecureXattrReader::read_raw(file, "system.posix_acl_access")
-                .map(|v| !v.is_empty())
-                .unwrap_or(false);
-            if has_acl {
-                sec_flags |= InodeSecurityFlags::ACL_PRESENT;
-            }
-
-            // Step 8: IMA xattr
-            // NIST SP 800-53 SI-7 / CMMC SI.L2-3.14.1.
-            let has_ima = SecureXattrReader::read_raw(file, "security.ima")
-                .map(|v| !v.is_empty())
-                .unwrap_or(false);
-            if has_ima {
-                sec_flags |= InodeSecurityFlags::IMA_PRESENT;
-            }
-
-            // Step 9: SELinux context — dual-path RTB gate
-            //
-            // SecureXattrReader::read_context() runs nom + FromStr parsers
-            // and cross-checks them.  Returns XattrReadError which
-            // distinguishes OS errors (ENODATA, EACCES) from TPI failures.
-            //
-            // NIST SP 800-53 AC-3/AC-4 / CMMC AC.L2-3.1.3.
-            // NSA RTB RAIN: Non-Bypassability, Redundancy/TPI.
-            sec_flags |= InodeSecurityFlags::XATTR_PRESENT;
-            match SecureXattrReader::read_context(file) {
-                Ok(ctx) => {
-                    sec_flags |= InodeSecurityFlags::SELINUX_XATTR;
-                    selinux_label = SelinuxCtxState::Labeled(Box::new(ctx));
-                }
-                Err(XattrReadError::OsError(ref e))
-                    if e.raw_os_error().is_some()
-                        && e.kind() == std::io::ErrorKind::PermissionDenied =>
-                {
-                    // OS-level permission denial on xattr read (EACCES/EPERM).
-                    // open() succeeded but MAC/DAC policy blocks fgetxattr().
-                    // Treat as access_denied: inode anchor exists but label is
-                    // unverifiable. Shows as <restricted> rather than <unlabeled>.
-                    // NIST SP 800-53 AC-3; NSA RTB Non-Bypassability (RAIN).
-                    log::warn!("SELinux xattr access denied for {abs_path}: {e}");
-                    access_denied = true;
-                }
-                Err(XattrReadError::OsError(ref e)) => {
-                    // ENODATA or other OS error — inode is genuinely unlabeled
-                    // or the xattr subsystem is unavailable.
-                    // selinux_label stays Unlabeled.
-                    log::debug!("SELinux xattr not present for {abs_path}: {e}");
-                }
-                Err(XattrReadError::Tpi(TpiError::Disagreement(_, _))) => {
-                    // Both parsers succeeded but disagreed — potential
-                    // integrity event.  Set TpiDisagreement so the display
-                    // layer renders <unverifiable> and the observations
-                    // layer emits SecurityObservation::TpiDisagreement.
-                    log::error!(
-                        "TPI disagreement on SELinux label for {abs_path} \
-                         — object treated as unverifiable"
-                    );
-                    selinux_label = SelinuxCtxState::TpiDisagreement;
-                }
-                Err(XattrReadError::Tpi(_)) => {
-                    // One or both TPI parse paths failed — code/validator
-                    // defect.  The label is present but unverifiable.
-                    // Set ParseFailure so the display layer renders
-                    // <parse-error> rather than <unlabeled>.
-                    log::warn!(
-                        "SELinux label parse failure for {abs_path} — \
-                         label present but unverifiable"
-                    );
-                    selinux_label = SelinuxCtxState::ParseFailure;
-                }
-            }
-        }
-
-        // Step 10: mount point detection
-        // A path is a mount point if its dev differs from its parent's dev.
-        // We use the dev we already captured from metadata — no second stat.
 
         let is_mountpoint = path
             .parent()
             .and_then(|p| std::fs::symlink_metadata(p).ok())
             .is_some_and(|pm| !dev.same_device_as(posix::primitives::DevId::new(pm.dev())));
 
-        // Step 11: encryption detection — only for mount points.
-        // Non-mount-point entries always carry EncryptionSource::None.
-        // NIST SP 800-53 SC-28: at-rest encryption posture per mount point.
         let encryption = if is_mountpoint {
             crate::fs_encrypt::detect_mount_encryption(path)
         } else {
             crate::fs_encrypt::EncryptionSource::None
         };
 
-        #[cfg(debug_assertions)]
-        log::debug!(
-            "SecureDirent::from_path completed in {} µs — access_denied: {}, \
-             label_state: {}",
-            start.elapsed().as_micros(),
-            access_denied,
-            match &selinux_label {
-                SelinuxCtxState::Labeled(_) => "labeled",
-                SelinuxCtxState::Unlabeled => "unlabeled",
-                SelinuxCtxState::ParseFailure => "parse-failure",
-                SelinuxCtxState::TpiDisagreement => "tpi-disagreement",
-            },
-        );
+        log::warn!("SecureDirent::from_path access denied for {abs_path} — returning partial entry");
 
         Ok(Self {
             path: abs_path,
@@ -1126,11 +1330,81 @@ impl SecureDirent {
             nlink,
             dev,
             ownership,
-            selinux_label,
-            sec_flags,
+            selinux_label: SelinuxCtxState::Unlabeled,
+            sec_flags: InodeSecurityFlags::empty(),
             is_mountpoint,
             encryption,
-            access_denied,
+            access_denied: true,
+            symlink_target,
+        })
+    }
+
+    /// Open the file once, build the metadata snapshot, then read the file
+    /// bytes from the same fd before it closes. Fd lifetime matches
+    /// `from_path` — no kernel objects are retained in the returned
+    /// `SecureDirent`.
+    ///
+    /// TOCTOU-safe: single `open(2)`, path never re-resolved. Metadata and
+    /// content come from the same inode.
+    ///
+    /// Bounded: fails with [`SecDirError::ContentTooLarge`] if the file
+    /// exceeds `max_bytes`. Unbounded reads on untrusted files are a DoS
+    /// vector.
+    ///
+    /// Returns `(SecureDirent, Vec<u8>)`. The caller can inspect the
+    /// dirent's SELinux label, mode, and ownership before trusting the
+    /// content bytes.
+    ///
+    /// # Errors
+    ///
+    /// - Same error cases as `from_path`.
+    /// - [`SecDirError::ContentTooLarge`] if the file exceeds `max_bytes`.
+    /// - [`SecDirError::NotRegularFile`] if the path does not refer to a
+    ///   regular file (symlinks, directories, devices are rejected).
+    /// - [`SecDirError::Io`] wrapping any I/O error from the content read.
+    ///
+    /// ## Compliance
+    ///
+    /// - **NIST SP 800-53 SI-10**: bounded read enforces explicit input-size
+    ///   limit, preventing resource exhaustion from adversarial inputs.
+    /// - **NIST SP 800-53 AC-3 / AC-4**: SELinux label and mode are
+    ///   captured from the same fd as the content — no TOCTOU window.
+    /// - **NSA RTB — Minimized TCB**: fd is dropped before returning;
+    ///   no kernel objects are retained in the returned value.
+    #[must_use = "content bytes must be consumed by the caller"]
+    pub fn from_path_with_content(
+        path: &Path,
+        max_bytes: usize,
+    ) -> Result<(Self, Vec<u8>), SecDirError> {
+        // Pre-validate file type and size via lstat before calling open_and_observe.
+        // This is necessary because open_and_observe does not know the caller's
+        // intent (content read vs. metadata-only), so these guards live here.
+        //
+        // NIST SP 800-53 SI-10: reject oversized inputs before opening.
+        let pre_meta = std::fs::symlink_metadata(path).map_err(SecDirError::Metadata)?;
+        let file_type = FileType::from_mode(pre_meta.mode());
+        if !file_type.is_regular() {
+            return Err(SecDirError::NotRegularFile);
+        }
+        let raw_size = pre_meta.size();
+        if raw_size > max_bytes as u64 {
+            return Err(SecDirError::ContentTooLarge {
+                size: raw_size,
+                limit: max_bytes,
+            });
+        }
+
+        // open_and_observe handles the open → xattr reads → fd-drop sequence.
+        // The closure reads content bytes from the same fd before it is dropped.
+        // `take` enforces the bound at the I/O layer — defense in depth against
+        // a file that grew between lstat and open.
+        Self::open_and_observe(path, |file, _dirent| {
+            let mut buf = Vec::new();
+            file.by_ref()
+                .take(max_bytes as u64)
+                .read_to_end(&mut buf)
+                .map_err(SecDirError::Io)?;
+            Ok(buf)
         })
     }
 

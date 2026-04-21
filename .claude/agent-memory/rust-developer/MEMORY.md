@@ -98,6 +98,13 @@ RPM DB has absolute path. Fix: `find_resolved_path` → canonicalize → use for
 - `SecurityContext`: `.user()`, `.role()`, `.security_type()`, `.level()` → `Option<&MlsLevel>`
 - `FileSize` is `Copy` — pass by value. Has `.as_u64()`.
 - `SecureDirent::access_denied` is a `pub bool` field
+- `SecureDirent::from_path_with_content(path, max_bytes) -> Result<(Self, Vec<u8>), SecDirError>` added 2026-04-20. TOCTOU-safe, bounded read; single fd for metadata + content. Use this from any crate reading small security-relevant files (catalogs, configs).
+- `SecDirError` variants added 2026-04-20: `ContentTooLarge { size, limit }`, `NotRegularFile`, `Io(std::io::Error)`, `FileTooSmall { size, wanted }`, `InvalidUtf8(Utf8Error)`.
+- `SecureDirent::symlink_target: Option<PathBuf>` — populated at construction via `rustix::fs::readlink`. Display-only. Added 2026-04-20.
+- `tempfile = "3"` added to `umrs-selinux` dev-dependencies for `secure_dirent_tests.rs`.
+- `secure_file` module (`libs/umrs-selinux/src/secure_file.rs`) added 2026-04-20. Contains `read_bytes`, `read_to_string`, `compute_digests`, `read_magic::<N>`, `MAX_DIGEST_BYTES`. All backed by crate-private `SecureDirent::open_and_observe`. Call sites: umrs-label catalog.rs, setrans_tests.rs; umrs-stat lib.rs (replaced DIRECT-IO-EXCEPTION sites).
+- `AuditCardApp::report_subject` changed from `-> &'static str` to `-> &str` (2026-04-20). All 9 impls updated. `StandaloneAuditCard` now returns `&self.0.report_subject` (no leak).
+- `sha2 = "0.10"` moved from `umrs-stat` to `umrs-selinux` Cargo.toml (2026-04-20). umrs-stat no longer directly uses sha2.
 
 ## Outstanding Audit Findings
 

@@ -41,16 +41,6 @@ tree_magic_mini = "3"
 log = "0.4"
 systemd-journal-logger = "2"
 
-# sha2 0.10 — RustCrypto SHA-2 family (pure Rust, no unsafe).
-# Used exclusively for display-only digest rows in the Identity tab
-# (SHA-256 and SHA-384 side-by-side; single pass over the file).
-# NOT used for trust decisions, key derivation, or MAC generation.
-# Supply chain: RustCrypto family — same audit lineage as sha2 in umrs-platform.
-# Transitive deps: digest, block-buffer, crypto-common.
-# FIPS 180-4: SHA-256 and SHA-384 are approved hash algorithms.
-# NIST SP 800-53 SI-7: digest rows provide tamper-evidence display.
-sha2 = { version = "0.10", default-features = false }
-
 
 [lints.rust]
 unsafe_code = "forbid"

@@ -45,16 +45,15 @@
 //!   `/proc/mounts` is read via provenance-verified `ProcfsText`;
 //!   SHA-256 and SHA-384 digest rows (FIPS 180-4) provide tamper-evidence display.
 
-use std::io::{BufReader, Read};
 use std::path::{Path, PathBuf};
 
-use sha2::{Digest, Sha256, Sha384};
 use umrs_core::i18n;
 use umrs_platform::kattrs::{ProcfsText, SecureReader};
 use umrs_selinux::fs_encrypt::EncryptionSource;
 use umrs_selinux::mcs::translator::{GLOBAL_TRANSLATOR, SecurityRange};
 use umrs_selinux::posix::primitives::FileSize;
 use umrs_selinux::secure_dirent::{InodeSecurityFlags, SecDirError, SecureDirent};
+use umrs_selinux::secure_file;
 use umrs_selinux::{ObservationKind, SecurityObservation, SelinuxCtxState};
 use umrs_ui::app::{DataRow, StatusLevel, StatusMessage, StyleHint, TabDef};
 use umrs_ui::icons::{EM_DASH, ICON_MOUNT, ICON_WARNING};
@@ -223,21 +222,16 @@ pub struct ElfInfo {
 
 /// Read the first 20 bytes of `path` and extract ELF class and type.
 ///
-/// Returns `None` if the file is not ELF or cannot be read.
+/// Returns `None` if the file is not ELF, cannot be read, or is too small.
 ///
-/// This opens its own fd for MIME detection (display-only, not a trust-relevant
-/// assertion; not part of any policy decision).
+/// Uses `secure_file::read_magic::<20>` to open the file with full metadata
+/// capture through the same fd. Display-only — not a trust-relevant assertion.
 ///
-/// DIRECT-IO-EXCEPTION: ELF magic byte read is display-only (binary type hint),
-/// never influences a security decision, and no umrs-platform abstraction exists
-/// for this purpose.
-/// TOCTOU: the file may have been replaced since SecureDirent construction;
-/// the ELF bytes are display hints, not assertions.
+/// NIST SP 800-53 AU-3: ELF class and type are part of the binary's identity
+/// record in the audit card.
 #[must_use = "ElfInfo is the only output; discarding it means binary type context is not displayed"]
 pub fn read_elf_info(path: &Path) -> Option<ElfInfo> {
-    let mut f = std::fs::File::open(path).ok()?;
-    let mut buf = [0u8; 20];
-    f.read_exact(&mut buf).ok()?;
+    let (_dirent, buf) = secure_file::read_magic::<20>(path).ok()?;
 
     if buf[0..4] != [0x7f, b'E', b'L', b'F'] {
         return None;
@@ -270,54 +264,36 @@ pub fn read_elf_info(path: &Path) -> Option<ElfInfo> {
 
 /// Compute SHA-256 and SHA-384 digests of a regular file in a single pass.
 ///
-/// Returns `None` if the file cannot be read (access denied, disappeared, etc.).
-/// Reads the file in 8 KiB chunks to bound memory usage on arbitrarily large files.
-/// Both hashers are updated on each chunk so the file is read exactly once.
+/// Returns `None` if the file cannot be read (access denied, disappeared, too
+/// large, not regular, etc.). Delegates to `secure_file::compute_digests`
+/// which streams the file in 8 KiB chunks through both hashers simultaneously
+/// and returns fixed-size byte arrays; the hex encoding is applied here.
 ///
 /// The returned strings are lowercase hex-encoded digests.
 ///
-/// ## DIRECT-IO-EXCEPTION
-///
-/// Opens the file with `std::fs::File::open` rather than routing through
-/// a provenance-verified abstraction.  This is permissible because:
-/// 1. No `umrs-platform` or `umrs-selinux` abstraction exists for raw file
-///    content hashing.
-/// 2. The digest is display-only — it is never compared against a stored
-///    reference value, never used in a trust decision, and never influences
-///    any policy gate.
-/// 3. TOCTOU: the file may have changed since `SecureDirent` construction;
-///    the displayed digest reflects the file at the moment of the read, which
-///    is the correct semantics for a live "what is this file right now" view.
-///
 /// ## Compliance
 ///
-/// - **NIST SP 800-53 SI-7**: Software and Information Integrity — displayed
-///   digests give operators tamper-evidence for the file's content.
+/// - **NIST SP 800-53 SI-7**: displayed digests give operators tamper-evidence
+///   for the file's content.
 /// - **FIPS 180-4**: SHA-256 and SHA-384 are both FIPS-approved hash algorithms.
+/// - **NSA RTB — Non-Bypassability**: routes through `SecureDirent` so the TPI
+///   SELinux gate and fd-anchored reads are applied even for digest computation.
 #[must_use = "digest strings are the only output; discarding them means the hash rows are never shown"]
 pub fn compute_file_digests(path: &Path) -> Option<(String, String)> {
-    // DIRECT-IO-EXCEPTION: display-only digest, no trust decision.
-    // See doc comment above for full rationale.
-    let file = std::fs::File::open(path).ok()?;
-    let mut reader = BufReader::new(file);
-
-    let mut sha256 = Sha256::new();
-    let mut sha384 = Sha384::new();
-    let mut buf = [0u8; 8192];
-
-    loop {
-        let n = reader.read(&mut buf).ok()?;
-        if n == 0 {
-            break;
-        }
-        sha256.update(&buf[..n]);
-        sha384.update(&buf[..n]);
-    }
-
-    let digest256 = sha256.finalize();
-    let digest384 = sha384.finalize();
-
-    Some((format!("{digest256:x}"), format!("{digest384:x}")))
+    let (_dirent, sha256, sha384) =
+        secure_file::compute_digests(path, secure_file::MAX_DIGEST_BYTES).ok()?;
+    Some((
+        sha256.iter().fold(String::new(), |mut s, b| {
+            use std::fmt::Write as _;
+            let _ = write!(s, "{b:02x}");
+            s
+        }),
+        sha384.iter().fold(String::new(), |mut s, b| {
+            use std::fmt::Write as _;
+            let _ = write!(s, "{b:02x}");
+            s
+        }),
+    ))
 }
 
 // ---------------------------------------------------------------------------
@@ -359,13 +335,16 @@ pub fn build_identity_rows(dirent: &SecureDirent, mime: &str, path: &Path) -> Ve
     ));
 
     if dirent.file_type.is_symlink() {
-        // DIRECT-IO-EXCEPTION: display-only symlink target resolution.
-        // No trust decision is derived from this value. TOCTOU: the link
-        // target may have changed since SecureDirent construction.
-        let target = match std::fs::read_link(path) {
-            Ok(p) => p.to_string_lossy().into_owned(),
-            Err(_) => "(unreadable)".to_owned(),
-        };
+        // Read the symlink target from the already-captured SecureDirent field.
+        // Captured at construction via readlinkat(2); display-only.
+        // TOCTOU: the target may have changed since SecureDirent construction,
+        // but this field is display-only and does not drive any security decision.
+        // NIST SP 800-53 AU-3: resolved target is part of the audit record.
+        let target = dirent
+            .symlink_target
+            .as_ref()
+            .map(|p| p.to_string_lossy().into_owned())
+            .unwrap_or_else(|| "(unreadable)".to_owned());
         rows.push(DataRow::new(
             "Link target",
             format!("--> {target}"),

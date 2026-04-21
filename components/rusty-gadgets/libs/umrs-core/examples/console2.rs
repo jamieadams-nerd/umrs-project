@@ -186,6 +186,4 @@ fn main() {
     //println!("  Term size (chars):     {:?}", QUERY_TERM_SIZE_CHARS);
     //println!("  Term size (pixels):   {:?}", QUERY_TERM_SIZE_PIXELS);
 
-    // Final newline ensures clean terminal state
-    std::process::exit(0);
 }

@@ -786,7 +786,11 @@ pub trait AuditCardApp {
     }
 
     /// Subject of the report (e.g., a hostname, file path, or component name).
-    fn report_subject(&self) -> &'static str;
+    ///
+    /// Returns `&str` rather than `&'static str` so that implementations can
+    /// borrow from `self` (e.g., a path stored in a `String` field) without
+    /// leaking memory. All existing literal-returning impls remain compatible.
+    fn report_subject(&self) -> &str;
 
     /// Ordered list of tab definitions. Must not be empty.
     fn tabs(&self) -> &[TabDef];

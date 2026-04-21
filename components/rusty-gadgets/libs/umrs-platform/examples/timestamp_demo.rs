@@ -8,7 +8,7 @@
 
 use umrs_platform::timestamp::{BootSessionDuration, BootSessionTimestamp};
 
-fn main() {
+fn main() -> std::process::ExitCode {
     println!("=== BootSessionTimestamp Demo ===");
     println!();
     println!("Clock source: CLOCK_MONOTONIC_RAW (hardware rate, no NTP slewing)");
@@ -17,10 +17,15 @@ fn main() {
     println!();
 
     // --- Capture a sequence of audit event timestamps ---
-    let t0 = capture("event 0: start of audit window");
-    let t1 = capture("event 1: kernel attribute read");
-    let t2 = capture("event 2: policy decision");
-    let t3 = capture("event 3: end of audit window");
+    let (t0, t1, t2, t3) = match (
+        capture("event 0: start of audit window"),
+        capture("event 1: kernel attribute read"),
+        capture("event 2: policy decision"),
+        capture("event 3: end of audit window"),
+    ) {
+        (Some(a), Some(b), Some(c), Some(d)) => (a, b, c, d),
+        _ => return std::process::ExitCode::from(1),
+    };
 
     println!();
     println!("--- Interval Analysis ---");
@@ -83,17 +88,18 @@ fn main() {
         Some(_) => println!("  overflow check FAILED (should not happen)"),
         None => println!("  u64::MAX + 1 overflow correctly returns None"),
     }
+    std::process::ExitCode::SUCCESS
 }
 
-fn capture(label: &str) -> BootSessionTimestamp {
+fn capture(label: &str) -> Option<BootSessionTimestamp> {
     match BootSessionTimestamp::now() {
         Ok(ts) => {
             println!("  [{label}]  {ts}  ({} ns)", ts.as_nanos());
-            ts
+            Some(ts)
         }
         Err(e) => {
             eprintln!("  [{label}]  ERROR: {e}");
-            std::process::exit(1);
+            None
         }
     }
 }

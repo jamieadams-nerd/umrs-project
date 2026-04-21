@@ -1,0 +1,78 @@
+= Bounded Reads — Byte Limit Reference
+:description: Canonical table of every file-read byte cap in the UMRS codebase.
+
+UMRS caps every file read at a documented byte limit.
+This page collects those limits in one place so developers can find them, understand the rationale, and follow the same pattern when adding new reads.
+
+== Compliance basis
+
+These limits satisfy the following controls and guidance:
+
+* **NIST SP 800-53 SC-5** — Denial of Service Protection: the system restricts the ability of individuals to launch denial-of-service attacks.
+* **NIST SP 800-53 SI-10** — Information Input Validation: inputs are length-bounded before any allocation occurs.
+* **CWE-400** — Uncontrolled Resource Consumption: a missing cap allows a malformed or adversarial file to exhaust heap memory.
+* **CWE-770** — Allocation of Resources Without Limits or Throttling: the cap is enforced at the I/O boundary, not after the buffer is allocated.
+* **SEI CERT C MSC24 / ANSSI-BP-092 R.ALLOC** — bounded allocation principles, adapted to Rust: every heap-allocating read must have a worst-case ceiling.
+
+== Bounded-read limits
+
+[cols="2,2,3,2,3",options="header"]
+|===
+| Constant | Value | Location | Applies to | Rationale
+
+| `OsDetector::max_read_bytes` (default)
+| 64 KiB (65,536 bytes)
+| `libs/umrs-platform/src/detect/mod.rs` — `OsDetector::default()`, field at line 291
+| Generic bounded file read during OS detection
+| Default cap for single-file reads in the detect pipeline; rejects malformed or replaced files before allocation.
+
+| `OsDetector::max_mountinfo_bytes` (default)
+| 4 MiB (4,194,304 bytes)
+| `libs/umrs-platform/src/detect/mod.rs` — `OsDetector::default()`, field at line 292
+| `/proc/self/mountinfo` read
+| `/proc/self/mountinfo` grows large on systems with many bind mounts or container overlay layers; a higher cap is legitimate here.
+
+| `rpm_header::MAX_BLOB_BYTES`
+| 16 MiB (16,777,216 bytes)
+| `libs/umrs-platform/src/detect/substrate/rpm_header.rs`, line 70
+| RPM package DB header blob
+| RPM headers can legitimately be several megabytes; the 16 MiB cap rejects obvious corruption without rejecting valid headers.
+
+| `umrs_label::cui::catalog::MAX_CATALOG_BYTES`
+| 4 MiB (4,194,304 bytes)
+| `umrs-label/src/cui/catalog.rs`, line 66 — used at lines 210 and 568
+| CUI catalog JSON and MCS level registry JSON reads via `SecureDirent::from_path_with_content`
+| Approximately 100x the size of today's largest catalog (38 KiB); matches the `max_mountinfo_bytes` precedent so the value is recognizable across the codebase.
+
+| `MAX_SETRANS_BYTES` (test-local)
+| 4 MiB (4,194,304 bytes)
+| `umrs-label/tests/setrans_tests.rs`, line 124
+| `setrans.conf` fixture read in integration tests
+| The test uses the same `SecureDirent::from_path_with_content` API as production; the limit matches `MAX_CATALOG_BYTES` so test and production behavior are consistent.
+|===
+
+== Adding a new bounded read
+
+Follow this procedure when adding a file read to the codebase.
+
+. Define the limit as a named constant — on the struct that owns the read, or as a module-level `pub const` if the limit is shared.
++
+Write a doc comment on the constant that states: the value, what the cap protects against, and the applicable compliance controls (at minimum SI-10 and CWE-400).
+
+. Use the appropriate bounded API:
+** Regular files: `SecureDirent::from_path_with_content(path, max_bytes)`
+** Kernel attribute files under `/proc`: `umrs_platform::kattrs::SecureReader<ProcfsText>::read_generic_text`
+** Kernel attribute files under `/sys`: `umrs_platform::kattrs::SecureReader<SysfsText>::read_generic_text`
+** OS detection with configurable limits: set `OsDetector::max_read_bytes` or `OsDetector::max_mountinfo_bytes`
+
+. If the constant is a long-lived project constant (not a one-off local), add a row to the table above.
+
+. Do not pass `usize::MAX` or an unbounded value as the limit argument.
+  The purpose of the API is to bound allocation; passing an uncapped value defeats it.
+
+NOTE: Test-local constants (like `MAX_SETRANS_BYTES`) are still worth adding to this table when the test exercises the same code path as production — the limit communicates the intended maximum to anyone reading the test.
+
+== Non-goals
+
+This page lists byte limits only.
+For the full inventory of UMRS secure file APIs and their traditional equivalents, see xref:file-operations-task.adoc[File operations].

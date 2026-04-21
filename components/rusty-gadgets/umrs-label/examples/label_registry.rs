@@ -19,11 +19,14 @@
 use umrs_labels::cui::catalog::load_catalog;
 use umrs_labels::tui::app::LabelRegistryApp;
 
-fn main() {
-    let us_catalog = load_catalog("config/US-CUI-LABELS.json").unwrap_or_else(|e| {
-        eprintln!("[FAIL] US catalog: {e}");
-        std::process::exit(2);
-    });
+fn main() -> std::process::ExitCode {
+    let us_catalog = match load_catalog("config/US-CUI-LABELS.json") {
+        Ok(c) => c,
+        Err(e) => {
+            eprintln!("[FAIL] US catalog: {e}");
+            return std::process::ExitCode::from(2);
+        }
+    };
     let ca_catalog = load_catalog("config/CANADIAN-PROTECTED.json").ok();
 
     let app = LabelRegistryApp::new(us_catalog, ca_catalog);
@@ -77,4 +80,5 @@ fn main() {
     } else {
         println!("  (not found)");
     }
+    std::process::ExitCode::SUCCESS
 }
